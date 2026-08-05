@@ -1,9 +1,6 @@
 /**
  * S6 크리에이티브 월 자산 — 자동 스와이프 마퀴에 흐른다.
- *
- * 같은 브랜드가 연달아 나오면 "소재가 몇 개 없다"로 읽히므로
- * 브랜드 라운드로빈으로 섞어 배치했다.
- * KakaoTalk 캡처는 내용 확인 전이라 제외 — 개인정보가 담겼을 수 있다.
+ * 같은 브랜드가 연달아 나오면 소재가 적어 보이므로 브랜드 라운드로빈으로 섞었다.
  */
 
 export type WallItem = { src: string; video?: string; brand?: string };
@@ -55,11 +52,23 @@ export const WALL_WIDE: WallItem[] = [
   { src: "/portfolio/wall/yt-16.webp" },
 ];
 
-/** 상세페이지·배너·카드뉴스 등 기타 산출물 */
+/** 상세페이지·배너·카드뉴스·카톡 캡처 등 실제 게시 산출물 */
 export const WALL_MISC: WallItem[] = [
   { src: "/portfolio/wall/dv-1200-600.webp" },
   { src: "/portfolio/wall/dv-240123_모엔샴푸_영상_건강시대PPLv04_썸네일.webp" },
   { src: "/portfolio/wall/dv-250-250.webp" },
+  { src: "/portfolio/wall/dv-KakaoTalk_20231121_163615251.webp" },
+  { src: "/portfolio/wall/dv-KakaoTalk_20240118_151938035.webp" },
+  { src: "/portfolio/wall/dv-KakaoTalk_20240118_151938035_01.webp" },
+  { src: "/portfolio/wall/dv-KakaoTalk_20240913_191305932_01.webp" },
+  { src: "/portfolio/wall/dv-KakaoTalk_20240913_191305932_04.webp" },
+  { src: "/portfolio/wall/dv-KakaoTalk_20240920_193931390_01.webp" },
+  { src: "/portfolio/wall/dv-KakaoTalk_20240920_193931390_02.webp" },
+  { src: "/portfolio/wall/dv-KakaoTalk_20250327_160943978_01.webp" },
+  { src: "/portfolio/wall/dv-KakaoTalk_20250327_160943978_04.webp" },
+  { src: "/portfolio/wall/dv-KakaoTalk_20250410_120301227.webp" },
+  { src: "/portfolio/wall/dv-KakaoTalk_20250410_120301227_01.webp" },
+  { src: "/portfolio/wall/dv-KakaoTalk_20250714_131510194.webp" },
   { src: "/portfolio/wall/dv-hwang_b_1200.webp" },
   { src: "/portfolio/wall/dv-hwang_c_a_1200.webp" },
   { src: "/portfolio/wall/dv-ㅈㅈㄹ.webp" },
@@ -75,11 +84,28 @@ export const WALL_MISC: WallItem[] = [
   { src: "/portfolio/wall/dv-핏플렉스15.webp" },
 ];
 
-/** 움직이는 배너 (원본 GIF → mp4) */
+/** 촬영 현장 스케치 */
+export const WALL_SITE: WallItem[] = [
+  { src: "/portfolio/wall/site-0.webp" },
+  { src: "/portfolio/wall/site-1.webp" },
+  { src: "/portfolio/wall/site-2.webp" },
+  { src: "/portfolio/wall/site-3.webp" },
+  { src: "/portfolio/wall/site-4.webp" },
+  { src: "/portfolio/wall/site-5.webp" },
+  { src: "/portfolio/wall/site-6.webp" },
+  { src: "/portfolio/wall/site-7.webp" },
+];
+
+/** 움직이는 배너 (원본 GIF -> mp4) */
 export const WALL_MOTION: WallItem[] = [
   { src: "/portfolio/wall/gif-0.jpg", video: "/portfolio/wall/gif-0.mp4" },
   { src: "/portfolio/wall/gif-1.jpg", video: "/portfolio/wall/gif-1.mp4" },
   { src: "/portfolio/wall/gif-2.jpg", video: "/portfolio/wall/gif-2.mp4" },
   { src: "/portfolio/wall/gif-3.jpg", video: "/portfolio/wall/gif-3.mp4" },
   { src: "/portfolio/wall/gif-4.jpg", video: "/portfolio/wall/gif-4.mp4" },
+];
+
+/** 히어로 세로 컬럼용 — 전 자산 셔플 */
+export const WALL_ALL: WallItem[] = [
+  ...WALL_SQUARE, ...WALL_MISC, ...WALL_SITE, ...WALL_WIDE,
 ];

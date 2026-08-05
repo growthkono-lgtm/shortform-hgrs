@@ -179,3 +179,26 @@ h4 {
     animation: none;
   }
 }
+
+/* ── 세로 마퀴 (히어로 소재 컬럼) ── */
+@keyframes vmarquee-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, -50%, 0);
+  }
+}
+
+.vmarquee-track {
+  animation-name: vmarquee-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vmarquee-track {
+    animation: none;
+  }
+}

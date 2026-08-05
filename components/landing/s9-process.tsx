@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Section, SectionHeading } from "@/components/ui/section";
-import { DataSlot } from "@/components/ui/slot";
 import { cn } from "@/lib/cn";
 import { FULL_STEPS, SHORTS_ONLY_STEPS } from "@/lib/landing-data";
 import { POLICY } from "@/lib/constants";
@@ -64,8 +63,8 @@ export function Process() {
                 </p>
               )}
             </div>
-            <span className="mt-2 shrink-0 text-xs text-muted sm:mt-0">
-              {step.duration ?? <DataSlot name="step_durations" />}
+            <span className="mt-2 shrink-0 text-xs font-bold text-accent-deep sm:mt-0">
+              {step.duration}
             </span>
           </li>
         ))}

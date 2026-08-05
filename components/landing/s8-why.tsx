@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { Section, SectionHeading } from "@/components/ui/section";
-import { DataSlot } from "@/components/ui/slot";
 import { TRUST_COUNTERS } from "@/lib/landing-data";
 import { GROWTH_SHOTS } from "@/lib/portfolio";
 import { COMPANY } from "@/lib/constants";
@@ -48,19 +47,19 @@ export function WhyHgrs() {
         {TRUST_COUNTERS.map((counter) => (
           <div key={counter.key}>
             <dd className="stat-figure text-3xl sm:text-4xl">
-              {counter.value ? (
-                <>
-                  {counter.value}
-                  <span className="text-2xl">{counter.suffix}</span>
-                </>
-              ) : (
-                <DataSlot name={counter.key} />
-              )}
+              {counter.value}
+              <span className="text-2xl">{counter.suffix}</span>
             </dd>
             <dt className="mt-3 text-sm font-bold">{counter.label}</dt>
             <p className="font-display text-[0.6875rem] tracking-[0.02em] text-muted uppercase">
               {counter.en}
             </p>
+            {/* 자체 집계 수치는 기준을 함께 밝힌다 */}
+            {counter.note && (
+              <p className="mt-1.5 text-[0.6875rem] leading-[1.5] text-muted">
+                {counter.note}
+              </p>
+            )}
           </div>
         ))}
       </dl>

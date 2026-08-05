@@ -9,6 +9,7 @@ import { REELS, YOUTUBE, youtubeThumb, youtubeWatch } from "@/lib/portfolio";
 import {
   WALL_MISC,
   WALL_MOTION,
+  WALL_SITE,
   WALL_SQUARE,
   WALL_WIDE,
   type WallItem,
@@ -142,6 +143,9 @@ export function Portfolio() {
               <Tile key={item.src} item={item} ratio="1/1" />
             ))}
             {WALL_MISC.map((item) => (
+              <Tile key={item.src} item={item} ratio="1/1" />
+            ))}
+            {WALL_SITE.map((item) => (
               <Tile key={item.src} item={item} ratio="1/1" />
             ))}
           </div>

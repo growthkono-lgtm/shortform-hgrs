@@ -203,18 +203,27 @@ export const PIPELINE_SHOTS = [
  */
 export const FORMAT_SHOTS: Record<
   string,
-  { video?: string; poster: string } | undefined
+  { video: string; poster: string } | undefined
 > = {
+  // 제로블럭 소재 앞부분 — 평점 4.92와 실제 리뷰 캡처
   후기형: {
-    video: "/portfolio/reels/tpu-compare.mp4",
-    poster: "/portfolio/reels/tpu-compare.jpg",
+    video: "/portfolio/reels/fmt-review.mp4",
+    poster: "/portfolio/reels/fmt-review.jpg",
   },
-  전문가형: undefined,
+  // 원어민 강사가 카메라에 직접 설명하는 구간을 세로로 잘라 씀
+  전문가형: {
+    video: "/portfolio/reels/fmt-expert.mp4",
+    poster: "/portfolio/reels/fmt-expert.jpg",
+  },
   "제품 실험형": {
     video: "/portfolio/reels/white-bg-01.mp4",
     poster: "/portfolio/reels/white-bg-01.jpg",
   },
-  비교형: undefined,
+  // 같은 소재 후반부 — "어떤 매트든" 하며 경쟁 제품과 나란히 두는 구간
+  비교형: {
+    video: "/portfolio/reels/fmt-compare.mp4",
+    poster: "/portfolio/reels/fmt-compare.jpg",
+  },
   문제제기형: {
     video: "/portfolio/reels/moen-ppl.mp4",
     poster: "/portfolio/reels/moen-ppl.jpg",
