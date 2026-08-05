@@ -82,3 +82,68 @@ h4 {
     scroll-behavior: auto !important;
   }
 }
+
+/* 약관·정책 문서 — 본문 위주라 유틸리티 대신 스코프 스타일로 관리 */
+.legal h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+}
+.legal h2 {
+  margin-top: 3rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+.legal h3 {
+  margin-top: 2rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+.legal p,
+.legal li {
+  font-size: 0.875rem;
+  line-height: 1.85;
+  color: var(--color-muted);
+}
+.legal p {
+  margin-top: 1rem;
+}
+.legal ul,
+.legal ol {
+  margin-top: 1rem;
+  padding-left: 1.25rem;
+  list-style: outside;
+}
+.legal ul {
+  list-style-type: disc;
+}
+.legal ol {
+  list-style-type: decimal;
+}
+.legal li {
+  margin-top: 0.5rem;
+}
+.legal strong {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+.legal table {
+  margin-top: 1.25rem;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+.legal th,
+.legal td {
+  border: 1px solid var(--color-line);
+  padding: 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+.legal th {
+  background: var(--color-paper-alt);
+  font-weight: 700;
+  color: var(--color-ink);
+}
+.legal td {
+  color: var(--color-muted);
+}

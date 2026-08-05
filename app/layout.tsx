@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import { SERVICE } from "@/lib/constants";
+import { ChannelTalk } from "@/components/channel-talk";
 import "./globals.css";
 
 // 라틴 — hgrs.io는 Inter / Inter Display 사용
@@ -45,6 +46,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col bg-paper text-ink">
         {children}
+        {/* 전 페이지 상담 위젯. pluginKey 미설정 시 렌더되지 않는다 (F11) */}
+        <ChannelTalk />
       </body>
     </html>
   );

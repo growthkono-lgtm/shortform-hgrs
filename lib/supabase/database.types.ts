@@ -233,6 +233,7 @@ export type Database = {
         Row: {
           amount: number
           biz_reg_number: string | null
+          brand_profile_id: string | null
           created_at: string
           id: string
           paid_at: string | null
@@ -247,6 +248,7 @@ export type Database = {
         Insert: {
           amount: number
           biz_reg_number?: string | null
+          brand_profile_id?: string | null
           created_at?: string
           id?: string
           paid_at?: string | null
@@ -261,6 +263,7 @@ export type Database = {
         Update: {
           amount?: number
           biz_reg_number?: string | null
+          brand_profile_id?: string | null
           created_at?: string
           id?: string
           paid_at?: string | null
@@ -273,6 +276,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "orders_brand_profile_id_fkey"
+            columns: ["brand_profile_id"]
+            isOneToOne: false
+            referencedRelation: "brand_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "orders_plan_id_fkey"
             columns: ["plan_id"]

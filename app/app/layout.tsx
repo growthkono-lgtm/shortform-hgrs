@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requireProfile } from "@/lib/supabase/auth";
+import { createClient } from "@/lib/supabase/server";
+import { ChannelTalkIdentify } from "@/components/channel-talk-identify";
 import { SERVICE } from "@/lib/constants";
 
 /** 포털은 검색 노출 금지 (PART F13) */
@@ -10,6 +12,16 @@ export const metadata: Metadata = {
 
 export default async function PortalLayout({ children }: LayoutProps<"/app">) {
   const profile = await requireProfile();
+
+  // 상담 컨텍스트용 — 가장 최근 진행 프로젝트 한 건
+  const supabase = await createClient();
+  const { data: activeProject } = await supabase
+    .from("projects")
+    .select("id, stage_a, stage_b")
+    .neq("stage_b", "done")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -43,6 +55,19 @@ export default async function PortalLayout({ children }: LayoutProps<"/app">) {
       <main className="mx-auto w-full max-w-5xl flex-1 px-5 py-12 sm:px-8">
         {children}
       </main>
+
+      {/* 상담 들어올 때 누가 어느 단계에서 막혔는지 바로 보이게 (F11) */}
+      <ChannelTalkIdentify
+        profile={{
+          memberId: profile.id,
+          name: profile.contact_name,
+          companyName: profile.company_name,
+          activeProjectId: activeProject?.id,
+          activeStage: activeProject
+            ? (activeProject.stage_a ?? activeProject.stage_b)
+            : undefined,
+        }}
+      />
     </div>
   );
 }
