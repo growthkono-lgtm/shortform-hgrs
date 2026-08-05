@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import { Section, SectionHeading } from "@/components/ui/section";
 import { cn } from "@/lib/cn";
+import { LoopVideo } from "@/components/ui/loop-video";
 import {
   BANNERS,
   PORTFOLIO_CATEGORIES,
@@ -18,7 +19,8 @@ export function Portfolio() {
   const [active, setActive] = useState<string>("전체");
 
   const { reels, youtube, banners } = useMemo(() => {
-    const match = (category: string) => active === "전체" || active === category;
+    const match = (category: string) =>
+      active === "전체" || active === category;
     return {
       reels: REELS.filter((r) => match(r.category)),
       youtube: YOUTUBE.filter((y) => match(y.category)),
@@ -26,7 +28,8 @@ export function Portfolio() {
     };
   }, [active]);
 
-  const empty = reels.length === 0 && youtube.length === 0 && banners.length === 0;
+  const empty =
+    reels.length === 0 && youtube.length === 0 && banners.length === 0;
 
   return (
     <Section eyebrow="Portfolio" alt>
@@ -67,15 +70,10 @@ export function Portfolio() {
               <li key={i} className="w-40 shrink-0 sm:w-48">
                 <div className="relative aspect-[9/16] overflow-hidden rounded-xl border border-line bg-paper">
                   {reel.video ? (
-                    <video
-                      className="size-full object-cover"
+                    <LoopVideo
                       src={reel.video}
                       poster={reel.poster}
-                      muted
-                      loop
-                      playsInline
-                      autoPlay
-                      controlsList="nodownload"
+                      alt={reel.caption}
                     />
                   ) : (
                     <Image
@@ -87,7 +85,9 @@ export function Portfolio() {
                     />
                   )}
                 </div>
-                <p className="mt-2 text-xs leading-[1.6] text-muted">{reel.caption}</p>
+                <p className="mt-2 text-xs leading-[1.6] text-muted">
+                  {reel.caption}
+                </p>
               </li>
             ))}
           </ul>
@@ -117,8 +117,12 @@ export function Portfolio() {
                 <p className="font-display mt-3 text-[0.6875rem] tracking-[0.02em] text-muted uppercase">
                   {item.channel}
                 </p>
-                <p className="mt-1 text-sm leading-snug font-bold">{item.title}</p>
-                <p className="mt-1 text-xs leading-[1.6] text-muted">{item.role}</p>
+                <p className="mt-1 text-sm leading-snug font-bold">
+                  {item.title}
+                </p>
+                <p className="mt-1 text-xs leading-[1.6] text-muted">
+                  {item.role}
+                </p>
               </a>
             </li>
           ))}
@@ -133,13 +137,17 @@ export function Portfolio() {
               key={i}
               className="relative aspect-square overflow-hidden rounded-xl border border-line bg-paper"
             >
-              <Image
-                src={banner.src}
-                alt=""
-                fill
-                sizes="(max-width: 640px) 50vw, 260px"
-                className="object-cover"
-              />
+              {banner.video ? (
+                <LoopVideo src={banner.video} poster={banner.src} />
+              ) : (
+                <Image
+                  src={banner.src}
+                  alt=""
+                  fill
+                  sizes="(max-width: 640px) 50vw, 260px"
+                  className="object-cover"
+                />
+              )}
             </li>
           ))}
         </ul>

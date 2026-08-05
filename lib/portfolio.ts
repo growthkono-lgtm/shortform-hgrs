@@ -18,25 +18,53 @@ export type Reel = {
   caption: string;
 };
 
-export type PortfolioCategory = "펫" | "리빙" | "브랜드";
+export type PortfolioCategory = "펫" | "리빙" | "뷰티" | "브랜드";
 
 /**
  * 실제 보유 자산에 있는 카테고리만 노출한다.
- * 뷰티·헬스·푸드·패션 소재가 도착하면 여기와 REELS/BANNERS에 함께 추가한다 —
+ * 헬스·푸드·패션 소재가 도착하면 여기와 REELS/BANNERS에 함께 추가한다 —
  * 빈 카테고리 탭은 클릭했을 때 아무것도 없어 신뢰를 깎는다.
  */
-export const PORTFOLIO_CATEGORIES = ["전체", "펫", "리빙", "브랜드"] as const;
+export const PORTFOLIO_CATEGORIES = ["전체", "리빙", "펫", "뷰티", "브랜드"] as const;
 
 /**
- * S6 1행 — 9:16 숏폼. 캡션은 실제 브랜드 기준.
+ * S6 1행 — 9:16 숏폼. **재생되는 소재를 앞에 둔다.**
+ *
+ * 포맷 분류는 파일명이 아니라 실제 영상 첫 화면을 확인해 붙였다.
+ * (예: `tpu 비교.mp4`는 비교 영상이 아니라 평점·리뷰를 내세운 후기형이다)
+ *
  * ⚠️ 브랜드명 표기는 게시 동의를 받은 범위에서만 유지할 것.
  */
 export const REELS: Reel[] = [
   {
-    poster: "/portfolio/shorts/sh-01.webp",
-    video: "/portfolio/reel.mp4",
+    video: "/portfolio/reels/zeroblock-itv.mp4",
+    poster: "/portfolio/reels/zeroblock-itv.jpg",
+    category: "리빙",
+    caption: "제로블럭 · 비포애프터형 — 시공 전후를 한 화면에",
+  },
+  {
+    video: "/portfolio/reels/tpu-compare.mp4",
+    poster: "/portfolio/reels/tpu-compare.jpg",
+    category: "리빙",
+    caption: "제로블럭 · 후기형 — 평점 4.92와 실제 리뷰를 전면에",
+  },
+  {
+    video: "/portfolio/reels/white-bg-01.mp4",
+    poster: "/portfolio/reels/white-bg-01.jpg",
+    category: "리빙",
+    caption: "제로블럭 · 제품 실험형 — 직접 눌러 보여주는 내구성 훅",
+  },
+  {
+    video: "/portfolio/reels/dangterview-3.mp4",
+    poster: "/portfolio/reels/dangterview-3.jpg",
     category: "펫",
-    caption: "트러스티랩스 · 트푸터뷰 — 사연 기반 인터뷰 시리즈",
+    caption: "트러스티랩스 · 인터뷰형 — 반려견 사연으로 여는 시리즈",
+  },
+  {
+    video: "/portfolio/reels/moen-ppl.mp4",
+    poster: "/portfolio/reels/moen-ppl.jpg",
+    category: "뷰티",
+    caption: "모엔 · 문제제기형 — 산후 탈모 원리부터 짚고 들어가는 훅",
   },
   {
     poster: "/portfolio/shorts/sh-02.webp",
@@ -47,21 +75,6 @@ export const REELS: Reel[] = [
     poster: "/portfolio/shorts/sh-04.webp",
     category: "펫",
     caption: "트러스티랩스 · 제품 라인업 소개",
-  },
-  {
-    poster: "/portfolio/shorts/sh-00.webp",
-    category: "리빙",
-    caption: "제로블럭 · 내구성 실험형 — 제품을 직접 눌러 보여주는 훅",
-  },
-  {
-    poster: "/portfolio/shorts/sh-03.webp",
-    category: "리빙",
-    caption: "제로블럭 · 비포애프터형 — 시공 전후를 한 화면에",
-  },
-  {
-    poster: "/portfolio/shorts/sh-05.webp",
-    category: "리빙",
-    caption: "제로블럭 · 후기형 — 평점과 리뷰를 전면에",
   },
 ];
 
@@ -120,7 +133,16 @@ export const YOUTUBE: YoutubeItem[] = [
 ];
 
 /** S6 3행 — 1:1 소셜·배너 크리에이티브 */
-export const BANNERS: { src: string; category: PortfolioCategory }[] = [
+export const BANNERS: {
+  src: string;
+  video?: string;
+  category: PortfolioCategory;
+}[] = [
+  {
+    src: "/portfolio/reels/gaehogang-sq.jpg",
+    video: "/portfolio/reels/gaehogang-sq.mp4",
+    category: "펫",
+  },
   { src: "/portfolio/social/sq-00.webp", category: "브랜드" },
   { src: "/portfolio/social/sq-01.webp", category: "브랜드" },
   { src: "/portfolio/social/sq-02.webp", category: "브랜드" },
@@ -131,14 +153,21 @@ export const BANNERS: { src: string; category: PortfolioCategory }[] = [
   { src: "/portfolio/social/sq-07.webp", category: "브랜드" },
 ];
 
-/** S1 히어로 배경 그리드 — 9:16 스틸 */
+/**
+ * S1 히어로 배경 그리드 — 9:16 **스틸**.
+ *
+ * 스펙 PART C는 영상 그리드를 요구하지만 스틸로 간다.
+ * 이 그리드는 화이트 페이드로 덮여 거의 안 보이는 배경인데,
+ * 여기서 영상 6개를 동시에 자동재생하면 첫 화면 로딩과 모바일 데이터를
+ * 그대로 태운다. 재생은 포트폴리오·포맷 섹션에서 한다.
+ */
 export const HERO_GRID = [
-  "/portfolio/shorts/sh-00.webp",
+  "/portfolio/reels/zeroblock-itv.jpg",
   "/portfolio/shorts/sh-01.webp",
+  "/portfolio/reels/tpu-compare.jpg",
   "/portfolio/shorts/sh-02.webp",
-  "/portfolio/shorts/sh-03.webp",
+  "/portfolio/reels/moen-ppl.jpg",
   "/portfolio/shorts/sh-04.webp",
-  "/portfolio/shorts/sh-05.webp",
 ];
 
 /** S8 · S14 — 촬영 현장 */
@@ -167,13 +196,28 @@ export const PIPELINE_SHOTS = [
  * 비어 있는 셋(전문가형·비교형·문제제기형)은 해당 소재가 도착하면 채운다.
  * — 비교형 후보: Drive의 `tpu 비교.mp4`
  */
-export const FORMAT_SHOTS: Record<string, string | undefined> = {
-  후기형: "/portfolio/shorts/sh-05.webp",
+export const FORMAT_SHOTS: Record<
+  string,
+  { video?: string; poster: string } | undefined
+> = {
+  후기형: {
+    video: "/portfolio/reels/tpu-compare.mp4",
+    poster: "/portfolio/reels/tpu-compare.jpg",
+  },
   전문가형: undefined,
-  "제품 실험형": "/portfolio/shorts/sh-00.webp",
+  "제품 실험형": {
+    video: "/portfolio/reels/white-bg-01.mp4",
+    poster: "/portfolio/reels/white-bg-01.jpg",
+  },
   비교형: undefined,
-  문제제기형: undefined,
-  비포애프터형: "/portfolio/shorts/sh-03.webp",
+  문제제기형: {
+    video: "/portfolio/reels/moen-ppl.mp4",
+    poster: "/portfolio/reels/moen-ppl.jpg",
+  },
+  비포애프터형: {
+    video: "/portfolio/reels/zeroblock-itv.mp4",
+    poster: "/portfolio/reels/zeroblock-itv.jpg",
+  },
 };
 
 /**

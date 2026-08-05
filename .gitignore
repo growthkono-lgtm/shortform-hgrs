@@ -42,3 +42,8 @@ next-env.d.ts
 
 # 템플릿은 커밋 (실제 값 없음)
 !.env.example
+
+# 원본 영상은 커밋하지 않는다 (523MB) — ~/Documents/hgrs-assets/raw 에 보관
+
+# Drive 원본 덤프는 레포에 두지 않는다 — ~/Documents/hgrs-assets/ 에 보관
+drive-download-*

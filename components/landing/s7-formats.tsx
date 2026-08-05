@@ -26,7 +26,8 @@ export function Formats() {
             className="rounded-2xl border border-line bg-paper p-6"
           >
             <PhoneMockup
-              poster={FORMAT_SHOTS[format.title]}
+              src={FORMAT_SHOTS[format.title]?.video}
+              poster={FORMAT_SHOTS[format.title]?.poster}
               alt={`${format.title} 숏폼 예시`}
               slotName={`format_${i + 1}`}
               className="max-w-[180px]"

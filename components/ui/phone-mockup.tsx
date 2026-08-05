@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { cn } from "@/lib/cn";
 import { AssetSlot } from "./slot";
+import { LoopVideo } from "./loop-video";
 
 /**
  * 9:16 폰 목업 — S5·S7 공용 (PART B).
@@ -31,17 +32,8 @@ export function PhoneMockup({
       )}
     >
       <div className="relative aspect-[9/16] overflow-hidden rounded-[1.5rem] bg-paper-alt">
-        {src ? (
-          <video
-            className="size-full object-cover"
-            src={src}
-            poster={poster ?? undefined}
-            muted
-            loop
-            playsInline
-            autoPlay
-            controlsList="nodownload"
-          />
+        {src && poster ? (
+          <LoopVideo src={src} poster={poster} alt={alt} />
         ) : poster ? (
           <Image
             src={poster}
@@ -52,7 +44,11 @@ export function PhoneMockup({
             className="object-cover"
           />
         ) : (
-          <AssetSlot name={slotName} ratio="9/16" className="h-full rounded-none border-0" />
+          <AssetSlot
+            name={slotName}
+            ratio="9/16"
+            className="h-full rounded-none border-0"
+          />
         )}
       </div>
     </div>
