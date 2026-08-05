@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SERVICE } from "@/lib/constants";
+import { HeaderAuth } from "@/components/auth/header-auth";
 
 export function SiteHeader() {
   return (
@@ -23,15 +24,7 @@ export function SiteHeader() {
           <Link href="#pricing" className="hidden text-muted hover:text-ink sm:block">
             가격
           </Link>
-          <Link href="/login" className="text-muted hover:text-ink">
-            로그인
-          </Link>
-          <Link
-            href="/signup"
-            className="rounded-full bg-ink px-4 py-2 text-xs font-bold text-paper transition-colors duration-200 hover:bg-ink-soft"
-          >
-            무료 가입
-          </Link>
+          <HeaderAuth />
         </nav>
       </div>
     </header>
