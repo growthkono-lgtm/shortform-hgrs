@@ -1,6 +1,8 @@
+import Image from "next/image";
 import { Section, SectionHeading } from "@/components/ui/section";
-import { AssetSlot, DataSlot } from "@/components/ui/slot";
+import { DataSlot } from "@/components/ui/slot";
 import { TRUST_COUNTERS } from "@/lib/landing-data";
+import { PRODUCTION_SHOTS } from "@/lib/portfolio";
 import { COMPANY } from "@/lib/constants";
 
 /** A1 3기둥 — hgrs.io 1·2·3 넘버링 카드 패턴 */
@@ -63,17 +65,31 @@ export function WhyHgrs() {
         ))}
       </dl>
 
-      <div className="mt-12 grid items-center gap-8 rounded-2xl border border-line bg-paper p-6 sm:p-8 md:grid-cols-[1fr_minmax(0,320px)]">
-        <div>
-          <p className="text-base font-bold sm:text-lg">
-            자체 촬영 오피스를 두고 제작합니다
-          </p>
-          <p className="mt-2 text-sm leading-[1.75] text-muted">
-            {COMPANY.address} — {COMPANY.addressLabel}. 기획부터 촬영·편집까지 한 곳에서
-            돌아가는 실물 인프라입니다.
-          </p>
-        </div>
-        <AssetSlot name="logo_wall" ratio="16/9" hint="로고월 (허락분만)" />
+      <div className="mt-12 rounded-2xl border border-line bg-paper p-6 sm:p-8">
+        <p className="text-base font-bold sm:text-lg">
+          자체 촬영 오피스를 두고 제작합니다
+        </p>
+        <p className="mt-2 max-w-2xl text-sm leading-[1.75] text-muted">
+          {COMPANY.address} — {COMPANY.addressLabel}. 기획부터 촬영·편집까지 한 곳에서
+          돌아가는 실물 인프라입니다.
+        </p>
+
+        <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {PRODUCTION_SHOTS.map((shot, i) => (
+            <li
+              key={shot}
+              className="relative aspect-[4/3] overflow-hidden rounded-xl bg-paper-alt"
+            >
+              <Image
+                src={shot}
+                alt={`촬영 현장 ${i + 1}`}
+                fill
+                sizes="(max-width: 640px) 50vw, 180px"
+                className="object-cover"
+              />
+            </li>
+          ))}
+        </ul>
       </div>
     </Section>
   );

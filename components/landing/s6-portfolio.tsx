@@ -1,14 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import Image from "next/image";
+import { useMemo, useState } from "react";
 import { Section, SectionHeading } from "@/components/ui/section";
-import { AssetSlot } from "@/components/ui/slot";
 import { cn } from "@/lib/cn";
-import { PORTFOLIO_CATEGORIES } from "@/lib/landing-data";
+import {
+  BANNERS,
+  PORTFOLIO_CATEGORIES,
+  REELS,
+  YOUTUBE,
+  youtubeThumb,
+  youtubeWatch,
+} from "@/lib/portfolio";
 
-/** S6. 레퍼런스 포트폴리오 — Portfolio (portfolio.json 로드 전 스켈레톤) */
+/** S6. 레퍼런스 포트폴리오 — Portfolio */
 export function Portfolio() {
   const [active, setActive] = useState<string>("전체");
+
+  const { reels, youtube, banners } = useMemo(() => {
+    const match = (category: string) => active === "전체" || active === category;
+    return {
+      reels: REELS.filter((r) => match(r.category)),
+      youtube: YOUTUBE.filter((y) => match(y.category)),
+      banners: BANNERS.filter((b) => match(b.category)),
+    };
+  }, [active]);
+
+  const empty = reels.length === 0 && youtube.length === 0 && banners.length === 0;
 
   return (
     <Section eyebrow="Portfolio" alt>
@@ -35,40 +53,97 @@ export function Portfolio() {
         ))}
       </div>
 
-      {/* 1행 — 9:16 영상 캐러셀 */}
-      <div className="mt-10 -mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
-        <ul className="flex gap-4">
-          {Array.from({ length: 6 }, (_, i) => (
-            <li key={i} className="w-40 shrink-0 sm:w-48">
-              <AssetSlot name={`reel_${i + 1}`} ratio="9/16" />
+      {empty && (
+        <p className="mt-10 rounded-2xl border border-line bg-paper p-8 text-center text-sm text-muted">
+          해당 카테고리의 공개 가능한 산출물을 준비 중입니다.
+        </p>
+      )}
+
+      {/* 1행 — 9:16 숏폼 */}
+      {reels.length > 0 && (
+        <div className="mt-10 -mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0">
+          <ul className="flex gap-4">
+            {reels.map((reel, i) => (
+              <li key={i} className="w-40 shrink-0 sm:w-48">
+                <div className="relative aspect-[9/16] overflow-hidden rounded-xl border border-line bg-paper">
+                  {reel.video ? (
+                    <video
+                      className="size-full object-cover"
+                      src={reel.video}
+                      poster={reel.poster}
+                      muted
+                      loop
+                      playsInline
+                      autoPlay
+                      controlsList="nodownload"
+                    />
+                  ) : (
+                    <Image
+                      src={reel.poster}
+                      alt={reel.caption}
+                      fill
+                      sizes="(max-width: 640px) 160px, 192px"
+                      className="object-cover"
+                    />
+                  )}
+                </div>
+                <p className="mt-2 text-xs leading-[1.6] text-muted">{reel.caption}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* 2행 — 유튜브 */}
+      {youtube.length > 0 && (
+        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {youtube.map((item) => (
+            <li key={item.id}>
+              <a
+                href={youtubeWatch(item.id)}
+                target="_blank"
+                rel="noreferrer"
+                className="group block"
+              >
+                <div className="relative aspect-video overflow-hidden rounded-xl border border-line bg-paper">
+                  <Image
+                    src={youtubeThumb(item.id)}
+                    alt={item.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 380px"
+                    className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                  />
+                </div>
+                <p className="font-display mt-3 text-[0.6875rem] tracking-[0.02em] text-muted uppercase">
+                  {item.channel}
+                </p>
+                <p className="mt-1 text-sm leading-snug font-bold">{item.title}</p>
+                <p className="mt-1 text-xs leading-[1.6] text-muted">{item.role}</p>
+              </a>
             </li>
           ))}
         </ul>
-      </div>
+      )}
 
-      {/* 2행 — 유튜브 임베드 */}
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {Array.from({ length: 4 }, (_, i) => (
-          <AssetSlot
-            key={i}
-            name={`youtube_links[${i}]`}
-            ratio="16/9"
-            hint="유튜브 임베드"
-          />
-        ))}
-      </div>
-
-      {/* 3행 — 배너 갤러리 */}
-      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {Array.from({ length: 4 }, (_, i) => (
-          <AssetSlot key={i} name={`banner_${i + 1}`} ratio="4/3" />
-        ))}
-      </div>
-
-      <p className="mt-8 text-xs text-muted">
-        자산은 <code className="font-mono">portfolio.json</code>에서 로드됩니다 —
-        전달 후 카테고리 필터가 실제로 동작합니다.
-      </p>
+      {/* 3행 — 소셜·배너 */}
+      {banners.length > 0 && (
+        <ul className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {banners.map((banner, i) => (
+            <li
+              key={i}
+              className="relative aspect-square overflow-hidden rounded-xl border border-line bg-paper"
+            >
+              <Image
+                src={banner.src}
+                alt=""
+                fill
+                sizes="(max-width: 640px) 50vw, 260px"
+                className="object-cover"
+              />
+            </li>
+          ))}
+        </ul>
+      )}
     </Section>
   );
 }

@@ -1,5 +1,6 @@
 import { Section, SectionHeading } from "@/components/ui/section";
 import { PhoneMockup } from "@/components/ui/phone-mockup";
+import { FORMAT_SHOTS } from "@/lib/portfolio";
 
 const FORMATS = [
   { title: "후기형", body: "실사용 경험을 1인칭으로. 신뢰가 구매 장벽을 낮춥니다." },
@@ -24,7 +25,12 @@ export function Formats() {
             key={format.title}
             className="rounded-2xl border border-line bg-paper p-6"
           >
-            <PhoneMockup slotName={`format_${i + 1}`} className="max-w-[180px]" />
+            <PhoneMockup
+              poster={FORMAT_SHOTS[format.title]}
+              alt={`${format.title} 숏폼 예시`}
+              slotName={`format_${i + 1}`}
+              className="max-w-[180px]"
+            />
             <h3 className="mt-6 text-base font-bold">{format.title}</h3>
             <p className="mt-2 text-sm leading-[1.7] text-muted">{format.body}</p>
           </div>

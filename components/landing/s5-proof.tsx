@@ -2,6 +2,7 @@ import { Section, SectionHeading } from "@/components/ui/section";
 import { PhoneMockup } from "@/components/ui/phone-mockup";
 import { DataSlot } from "@/components/ui/slot";
 import { PROOF_CASES, PROOF_CASE_HINTS } from "@/lib/landing-data";
+import { PROOF_POSTERS } from "@/lib/portfolio";
 import { POLICY } from "@/lib/constants";
 
 const METRIC_ROWS = [
@@ -27,6 +28,8 @@ export function Proof() {
           >
             <PhoneMockup
               src={proofCase.pending ? null : proofCase.video}
+              poster={PROOF_POSTERS[i]}
+              alt={`성과 케이스 ${i + 1} 대표 소재`}
               slotName={`case${i + 1}_video`}
             />
 

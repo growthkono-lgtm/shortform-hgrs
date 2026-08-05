@@ -1,11 +1,12 @@
+import Image from "next/image";
 import { Section, SectionHeading } from "@/components/ui/section";
-import { AssetSlot } from "@/components/ui/slot";
+import { PIPELINE_SHOTS } from "@/lib/portfolio";
 
 const STEPS = [
-  { title: "인플루언서 모집·배포", asset: "pipeline_1" },
-  { title: "클린 소스 확보", asset: "pipeline_2" },
-  { title: "전환형 숏폼 제작", asset: "pipeline_3" },
-  { title: "위너 소재 도출", asset: "pipeline_4" },
+  { title: "인플루언서 모집·배포", shot: PIPELINE_SHOTS[0] },
+  { title: "클린 소스 확보", shot: PIPELINE_SHOTS[1] },
+  { title: "전환형 숏폼 제작", shot: PIPELINE_SHOTS[2] },
+  { title: "위너 소재 도출", shot: PIPELINE_SHOTS[3] },
 ];
 
 /** S4. 솔루션 파이프라인 — Pipeline */
@@ -20,19 +21,22 @@ export function Pipeline() {
       <ol className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {STEPS.map((step, i) => (
           <li
-            key={step.asset}
+            key={step.title}
             className="relative rounded-2xl border border-line bg-paper p-6"
           >
             <span className="font-display text-sm font-bold text-accent">
               0{i + 1}
             </span>
             <h3 className="mt-2 text-base leading-snug font-bold">{step.title}</h3>
-            <AssetSlot
-              name={step.asset}
-              ratio="9/16"
-              className="mt-5 max-h-44"
-              hint="실산출물 썸네일"
-            />
+            <div className="relative mt-5 aspect-[4/3] overflow-hidden rounded-xl bg-paper-alt">
+              <Image
+                src={step.shot}
+                alt={`${step.title} 산출물`}
+                fill
+                sizes="(max-width: 640px) 100vw, 260px"
+                className="object-cover"
+              />
+            </div>
             {i < STEPS.length - 1 && (
               <span
                 aria-hidden

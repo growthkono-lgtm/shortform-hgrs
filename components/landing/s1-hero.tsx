@@ -1,12 +1,13 @@
-import { AssetSlot } from "@/components/ui/slot";
+import Image from "next/image";
 import { Cta } from "@/components/ui/cta";
 import { cn } from "@/lib/cn";
+import { HERO_GRID } from "@/lib/portfolio";
 
 /** S1. 히어로 — Winner Creative Program */
 export function Hero() {
   return (
     <section className="relative overflow-hidden px-5 pt-28 pb-20 sm:px-8 md:pt-36 md:pb-28">
-      {/* 배경 [ASSET hero_grid] — 9:16 숏폼 6~8개 무한 스크롤 그리드 + 화이트 페이드 */}
+      {/* 배경 — 실제 제작 숏폼 9:16 그리드 + 화이트 페이드 */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
@@ -22,19 +23,30 @@ export function Hero() {
                 col > 3 && "hidden lg:flex",
               )}
             >
-              {Array.from({ length: 2 }, (_, row) => (
-                <AssetSlot
-                  key={row}
-                  name={`hero_grid_${col * 2 + row + 1}`}
-                  ratio="9/16"
-                />
-              ))}
+              {Array.from({ length: 2 }, (_, row) => {
+                const src = HERO_GRID[(col * 2 + row) % HERO_GRID.length];
+                return (
+                  <div
+                    key={row}
+                    className="relative aspect-[9/16] overflow-hidden rounded-xl bg-paper-alt"
+                  >
+                    <Image
+                      src={src}
+                      alt=""
+                      fill
+                      sizes="(max-width: 640px) 50vw, 200px"
+                      className="object-cover"
+                      priority={col < 2}
+                    />
+                  </div>
+                );
+              })}
             </div>
           ))}
         </div>
-        {/* 위·아래로 흰색 페이드 — 카피 가독성 확보 */}
+        {/* 카피 가독성 확보 */}
         <div className="absolute inset-0 bg-gradient-to-b from-paper via-paper/92 to-paper" />
-        <div className="absolute inset-0 bg-gradient-to-r from-paper via-paper/80 to-paper/40" />
+        <div className="absolute inset-0 bg-gradient-to-r from-paper via-paper/85 to-paper/45" />
       </div>
 
       <div className="mx-auto w-full max-w-6xl">

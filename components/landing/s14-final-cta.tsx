@@ -1,5 +1,6 @@
+import Image from "next/image";
 import { Cta } from "@/components/ui/cta";
-import { AssetSlot } from "@/components/ui/slot";
+import { PRODUCTION_SHOTS } from "@/lib/portfolio";
 import { PRICE_RATIONALE } from "@/lib/constants";
 
 /** S14. 파이널 CTA */
@@ -22,11 +23,15 @@ export function FinalCta() {
           </div>
         </div>
 
-        <AssetSlot
-          name="team_or_workspace"
-          ratio="4/3"
-          hint="김포 오피스 / 작업 현장"
-        />
+        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-paper">
+          <Image
+            src={PRODUCTION_SHOTS[4]}
+            alt="김포 촬영 오피스 작업 현장"
+            fill
+            sizes="(max-width: 768px) 100vw, 380px"
+            className="object-cover"
+          />
+        </div>
       </div>
     </section>
   );
