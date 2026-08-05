@@ -1,6 +1,5 @@
-import Image from "next/image";
 import { Cta } from "@/components/ui/cta";
-import { PRODUCTION_SHOTS } from "@/lib/portfolio";
+import { LoopVideo } from "@/components/ui/loop-video";
 import { PRICE_RATIONALE } from "@/lib/constants";
 
 /** S14. 파이널 CTA */
@@ -23,13 +22,11 @@ export function FinalCta() {
           </div>
         </div>
 
-        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-paper">
-          <Image
-            src={PRODUCTION_SHOTS[4]}
-            alt="김포 촬영 오피스 작업 현장"
-            fill
-            sizes="(max-width: 768px) 100vw, 380px"
-            className="object-cover"
+        <div className="relative mx-auto aspect-[9/16] w-full max-w-[280px] overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_20px_50px_-24px_rgba(3,3,3,0.35)]">
+          <LoopVideo
+            src="/portfolio/reels/white-bg-01.mp4"
+            poster="/portfolio/reels/white-bg-01.jpg"
+            alt="제로블럭 제품 실험형 숏폼"
           />
         </div>
       </div>

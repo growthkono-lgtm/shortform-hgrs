@@ -170,8 +170,13 @@ export const HERO_GRID = [
   "/portfolio/shorts/sh-04.webp",
 ];
 
-/** S8 · S14 — 촬영 현장 */
-export const PRODUCTION_SHOTS = [
+/**
+ * 그로스 실행 화면 — SEO 구조도, 검색 결과 점유, 서치콘솔 지표 등.
+ *
+ * ⚠️ 촬영 현장 사진이 아니다. 이전에 "촬영 현장"으로 잘못 표기했다가 바로잡았다.
+ * 김포 오피스 실사진이 들어오면 그때 촬영 인프라 근거로 따로 쓴다.
+ */
+export const GROWTH_SHOTS = [
   "/portfolio/production/pr-00.webp",
   "/portfolio/production/pr-01.webp",
   "/portfolio/production/pr-02.webp",

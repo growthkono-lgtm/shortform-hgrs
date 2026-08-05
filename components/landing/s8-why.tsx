@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Section, SectionHeading } from "@/components/ui/section";
 import { DataSlot } from "@/components/ui/slot";
 import { TRUST_COUNTERS } from "@/lib/landing-data";
-import { PRODUCTION_SHOTS } from "@/lib/portfolio";
+import { GROWTH_SHOTS } from "@/lib/portfolio";
 import { COMPANY } from "@/lib/constants";
 
 /** A1 3기둥 — hgrs.io 1·2·3 넘버링 카드 패턴 */
@@ -67,25 +67,26 @@ export function WhyHgrs() {
 
       <div className="mt-12 rounded-2xl border border-line bg-paper p-6 sm:p-8">
         <p className="text-base font-bold sm:text-lg">
-          자체 촬영 오피스를 두고 제작합니다
+          소재만 찍는 게 아니라, 성과가 나는 구조를 함께 봅니다
         </p>
         <p className="mt-2 max-w-2xl text-sm leading-[1.75] text-muted">
-          {COMPANY.address} — {COMPANY.addressLabel}. 기획부터 촬영·편집까지 한 곳에서
-          돌아가는 실물 인프라입니다.
+          검색 점유·유입 구조·전환 지표까지 들여다보며 어떤 소재가 필요한지
+          역산합니다. {COMPANY.address}의 {COMPANY.addressLabel}에서 기획부터
+          촬영·편집까지 이어집니다.
         </p>
 
         <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {PRODUCTION_SHOTS.map((shot, i) => (
+          {GROWTH_SHOTS.map((shot, i) => (
             <li
               key={shot}
-              className="relative aspect-[4/3] overflow-hidden rounded-xl bg-paper-alt"
+              className="relative aspect-[4/3] overflow-hidden rounded-xl border border-line bg-paper-alt"
             >
               <Image
                 src={shot}
-                alt={`촬영 현장 ${i + 1}`}
+                alt={`그로스 실행 화면 ${i + 1}`}
                 fill
                 sizes="(max-width: 640px) 50vw, 180px"
-                className="object-cover"
+                className="object-contain p-1"
               />
             </li>
           ))}

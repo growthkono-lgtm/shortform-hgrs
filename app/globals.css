@@ -147,3 +147,35 @@ h4 {
 .legal td {
   color: var(--color-muted);
 }
+
+/* ── 자동 스와이프 마퀴 (S6 크리에이티브 월) ── */
+@keyframes marquee-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    /* 트랙을 두 벌 이어붙였으므로 절반만 흘리면 원위치가 된다 */
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.marquee-track {
+  animation-name: marquee-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+/* 하나를 자세히 보려고 마우스를 올리면 멈춘다 */
+.marquee:hover .marquee-track {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    overflow-x: auto;
+  }
+  .marquee-track {
+    animation: none;
+  }
+}
