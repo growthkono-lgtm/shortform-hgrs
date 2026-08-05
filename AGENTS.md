@@ -8,7 +8,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-# HGRS 숏폼 부스팅 (boost.hgrs.io)
+# HGRS 숏폼 부스팅 (shortform.hgrs.io)
 
 ## 유일한 스펙 문서
 

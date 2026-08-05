@@ -278,9 +278,9 @@ hgrs.io 톤 계승. CCFM 랜딩은 **섹션 구조 벤치마크로만** 사용, 
 ## F1. 아키텍처
 
 ```
-hgrs.io (프레이머, 불변) ── [버튼 링크] ──▶ boost.hgrs.io (본 프로젝트)
+hgrs.io (프레이머, 불변) ── [버튼 링크] ──▶ shortform.hgrs.io (본 프로젝트)
 
-boost.hgrs.io
+shortform.hgrs.io
  ├─ Next.js (App Router) on Vercel
  ├─ Supabase: Auth / Postgres / Storage
  ├─ 토스페이먼츠 결제위젯 (일반결제) — Phase 2: 빌링키
@@ -291,7 +291,7 @@ boost.hgrs.io
  └─ 채널톡 위젯 — 문의/상담
 ```
 
-- 서브도메인: DNS CNAME `boost` → `cname.vercel-dns.com`, `vercel domains add boost.hgrs.io`
+- 서브도메인: DNS CNAME `shortform` → `cname.vercel-dns.com`, `vercel domains add shortform.hgrs.io`
 - 레포: 단일 Next.js 앱. `/` 랜딩(공개·SSG) / `/app/*` 대시보드(인증) / `/admin/*` (role 가드)
 
 ## F2. 권한

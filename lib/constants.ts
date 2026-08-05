@@ -8,7 +8,7 @@
 export const SERVICE = {
   name: "HGRS 숏폼 부스팅",
   nameEn: "HGRS Winner Creative",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://boost.hgrs.io",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://shortform.hgrs.io",
   parentName: "해그로시 해킹마케팅랩",
   parentUrl: "https://hgrs.io",
   instagram: "https://www.instagram.com/hgrs.io/",
