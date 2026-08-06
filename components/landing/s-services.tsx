@@ -110,16 +110,18 @@ export function Services() {
                 key={p.no}
                 className="overflow-hidden rounded-2xl border border-line bg-paper"
               >
+                {/* 번호를 미리보기 위에 얹으면 화면 안 제목(폴더명·핸들)을 가린다.
+                    모바일에서 특히 심했다. 본문 영역으로 내려 제목 앞에 둔다. */}
                 <div className="relative aspect-[4/3] overflow-hidden bg-paper-alt">
                   <p.Preview />
-                  <span
-                    className="stat-figure absolute top-3 left-3 grid size-7 place-items-center rounded-full bg-accent text-sm text-white"
-                  >
-                    {p.no}
-                  </span>
                 </div>
-                <div className="p-7">
-                  <h3 className="text-lg font-bold">{p.title}</h3>
+                <div className="p-6 sm:p-7">
+                  <h3 className="flex items-center gap-2.5 text-lg font-bold">
+                    <span className="stat-figure grid size-6 shrink-0 place-items-center rounded-full bg-accent text-xs text-white">
+                      {p.no}
+                    </span>
+                    {p.title}
+                  </h3>
                   <p className="mt-3 text-sm leading-[1.8] text-muted">{p.body}</p>
                 </div>
               </div>

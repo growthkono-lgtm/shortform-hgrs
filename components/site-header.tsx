@@ -24,12 +24,14 @@ export function SiteHeader() {
           </a>
         </div>
 
-        <nav className="flex items-center gap-6 text-sm">
+        {/* 모바일에서도 "플랜 보기"는 남긴다. 숨겼더니 우상단이 로그인·가입만 남아
+            사이트가 뭘 파는지 모르는 화면이 됐다. */}
+        <nav className="flex items-center gap-4 text-sm sm:gap-6">
           <Link
             href="#pricing"
-            className="hidden text-white/60 hover:text-white sm:block"
+            className="shrink-0 text-xs text-white/60 hover:text-white sm:text-sm"
           >
-            가격
+            플랜 보기
           </Link>
           <HeaderAuth />
         </nav>

@@ -1,7 +1,6 @@
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PlanSelectionProvider } from "@/components/landing/plan-selection";
-import { StickyCta } from "@/components/landing/sticky-cta";
 import { Hero } from "@/components/landing/s1-hero";
 import { ServiceFlow } from "@/components/landing/s-service-flow";
 import { Services } from "@/components/landing/s-services";
@@ -42,7 +41,6 @@ export default function LandingPage() {
         <FinalCta />
       </main>
       <SiteFooter />
-      <StickyCta />
     </PlanSelectionProvider>
   );
 }

@@ -1,0 +1,24 @@
+# Vercel CLI 는 .gitignore 를 그대로 따르지 않는다. 여기서 다시 막아야
+# 원본 영상 1.6GB 를 업로드하다 타임아웃난다 (한 번 그렇게 끊겼다).
+
+# 원본 영상·캡처 — 배포에 쓰는 건 public/portfolio/clips 의 720p 인코딩본뿐
+*.mp4
+*.mov
+!public/portfolio/**/*.mp4
+영상모음1
+영상모음2, 유튜브링크
+스크린샷*.png
+
+# 업무 문서
+*.docx
+*.xlsx
+*.pdf
+*.pptx
+
+# 로고 정규화 전 원본 백업 (재생성 스크립트 입력일 뿐)
+public/logos/_raw
+
+# 로컬 산출물
+.next
+node_modules
+supabase/.temp

@@ -1,4 +1,5 @@
 import { LoopVideo } from "@/components/ui/loop-video";
+import { Marquee } from "@/components/ui/marquee";
 import { VerticalMarquee } from "@/components/ui/vertical-marquee";
 import { WALL_CLIPS, clipPoster, clipVideo } from "@/lib/clips";
 
@@ -91,19 +92,22 @@ export function Hero() {
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-night to-transparent" />
         </div>
 
-        {/* 모바일 — 가로 한 줄 */}
-        <div
-          aria-hidden
-          className="-mx-5 flex gap-3 overflow-x-auto px-5 lg:hidden"
-        >
-          {WALL_CLIPS.slice(0, 8).map((c) => (
-            <div key={c.slug} className="w-32 shrink-0">
-              <Cell
-                slug={c.slug}
-                aspect={c.ratio === "1/1" ? "1 / 1" : "9 / 16"}
-              />
+        {/* 모바일 — 가로로 계속 흐른다.
+            예전엔 overflow-x-auto 라 손으로 밀어야 소재가 보였다. 히어로는
+            "영상이 많다"를 암시하는 자리라 가만히 있어도 흘러야 한다. */}
+        <div aria-hidden className="-mx-5 lg:hidden">
+          <Marquee durationSec={28}>
+            <div className="flex gap-3 pr-3">
+              {WALL_CLIPS.map((c) => (
+                <div key={c.slug} className="w-28 shrink-0 sm:w-32">
+                  <Cell
+                    slug={c.slug}
+                    aspect={c.ratio === "1/1" ? "1 / 1" : "9 / 16"}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
+          </Marquee>
         </div>
       </div>
     </section>

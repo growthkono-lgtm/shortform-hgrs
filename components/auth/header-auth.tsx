@@ -41,7 +41,7 @@ export function HeaderAuth() {
     return (
       <Link
         href="/app"
-        className="rounded-full bg-accent px-4 py-2 text-xs font-bold text-white transition-colors duration-200 hover:bg-accent-deep"
+        className="shrink-0 rounded-full bg-accent px-3.5 py-2 text-xs font-bold whitespace-nowrap text-white transition-colors duration-200 hover:bg-accent-deep sm:px-4"
       >
         내 대시보드
       </Link>
@@ -50,12 +50,15 @@ export function HeaderAuth() {
 
   return (
     <>
-      <Link href="/login" className="text-white/60 hover:text-white">
+      <Link
+        href="/login"
+        className="hidden text-white/60 hover:text-white sm:block"
+      >
         로그인
       </Link>
       <Link
         href="/signup"
-        className="rounded-full bg-accent px-4 py-2 text-xs font-bold text-white transition-colors duration-200 hover:bg-accent-deep"
+        className="shrink-0 rounded-full bg-accent px-3.5 py-2 text-xs font-bold whitespace-nowrap text-white transition-colors duration-200 hover:bg-accent-deep sm:px-4"
       >
         무료 가입
       </Link>
