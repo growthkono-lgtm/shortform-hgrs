@@ -41,21 +41,21 @@ export function HeaderAuth() {
     return (
       <Link
         href="/app"
-        className="rounded-full bg-ink px-4 py-2 text-xs font-bold text-paper transition-colors duration-200 hover:bg-ink-soft"
+        className="rounded-full bg-accent px-4 py-2 text-xs font-bold text-white transition-colors duration-200 hover:bg-accent-deep"
       >
-        내 프로젝트
+        내 대시보드
       </Link>
     );
   }
 
   return (
     <>
-      <Link href="/login" className="text-muted hover:text-ink">
+      <Link href="/login" className="text-white/60 hover:text-white">
         로그인
       </Link>
       <Link
         href="/signup"
-        className="rounded-full bg-ink px-4 py-2 text-xs font-bold text-paper transition-colors duration-200 hover:bg-ink-soft"
+        className="rounded-full bg-accent px-4 py-2 text-xs font-bold text-white transition-colors duration-200 hover:bg-accent-deep"
       >
         무료 가입
       </Link>

@@ -1,105 +1,71 @@
-import { Cta } from "@/components/ui/cta";
 import { LoopVideo } from "@/components/ui/loop-video";
 import { VerticalMarquee } from "@/components/ui/vertical-marquee";
-import { REELS } from "@/lib/portfolio";
-import { WALL_ALL } from "@/lib/wall";
+import { WALL_CLIPS, clipPoster, clipVideo } from "@/lib/clips";
 
-/** 세로 컬럼 한 칸 */
-function Cell({
-  src,
-  video,
-  ratio,
-}: {
-  src: string;
-  video?: string;
-  ratio: "9/16" | "1/1";
-}) {
+/**
+ * S1. 히어로 — 2026-08-06 피그마 개편안 + hgrs.io 히어로 톤 계승.
+ *
+ * · 배경은 다크. 인디고·골드탄 두 곡선이 교차하는 hgrs.io 시그니처를 그대로 쓴다.
+ * · 우측 컬럼 지시는 "영상 소재만 나오도록" — 배너·캡처 이미지는 넣지 않는다.
+ * · 여기는 자세히 보는 자리가 아니라 암시하는 자리다. 그래서 **빠르게** 흐른다.
+ */
+
+function Cell({ slug, aspect }: { slug: string; aspect: string }) {
   return (
     <div
-      className={`relative w-full overflow-hidden rounded-xl bg-paper-alt ${
-        ratio === "9/16" ? "aspect-[9/16]" : "aspect-square"
-      }`}
+      className="relative w-full overflow-hidden rounded-xl bg-night-soft"
+      style={{ aspectRatio: aspect }}
     >
-      {video ? (
-        <LoopVideo src={video} poster={src} />
-      ) : (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={src}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          className="absolute inset-0 size-full object-cover"
-        />
-      )}
+      <LoopVideo src={clipVideo(slug)} poster={clipPoster(slug)} />
     </div>
   );
 }
 
-/** 컬럼 하나를 채울 소재 — 세로 숏폼과 정사각 소재를 섞는다 */
-function buildColumn(offset: number, count: number) {
-  const videos = REELS.filter((r) => r.video);
-  const cells: { src: string; video?: string; ratio: "9/16" | "1/1" }[] = [];
+/** 3개 컬럼에 소재를 라운드로빈으로 흩어 같은 컬럼에 몰리지 않게 한다 */
+const column = (index: number) => WALL_CLIPS.filter((_, i) => i % 3 === index);
 
-  for (let i = 0; i < count; i++) {
-    const idx = offset + i;
-    // 3칸마다 실제 재생 숏폼을 끼워 넣어 "영상이 흐르는" 인상을 만든다
-    if (i % 3 === 0) {
-      const reel = videos[(offset + i) % videos.length];
-      cells.push({ src: reel.poster, video: reel.video, ratio: "9/16" });
-    } else {
-      const item = WALL_ALL[idx % WALL_ALL.length];
-      cells.push({ src: item.src, ratio: "1/1" });
-    }
-  }
-  return cells;
-}
-
-/** S1. 히어로 — Winner Creative Program */
 export function Hero() {
   const columns = [
-    { cells: buildColumn(0, 9), duration: 55 },
-    { cells: buildColumn(9, 9), duration: 70, reverse: true },
-    { cells: buildColumn(18, 9), duration: 62 },
+    { cells: column(0), duration: 20 },
+    { cells: column(1), duration: 26, reverse: true },
+    { cells: column(2), duration: 23 },
   ];
 
   return (
-    <section className="relative overflow-hidden pt-24 pb-16 md:pt-28 md:pb-24">
-      <div className="mx-auto grid w-full max-w-6xl items-center gap-10 px-5 sm:px-8 lg:grid-cols-[1fr_minmax(0,520px)] lg:gap-12">
-        {/* 카피 */}
+    <section className="hero-night on-dark relative overflow-hidden pt-24 pb-16 text-white sm:pt-28 sm:pb-20 md:pt-32 md:pb-28">
+      <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-[1fr_minmax(0,480px)] lg:gap-16">
         <div>
-          <p className="eyebrow">Winner Creative Program</p>
+          <p className="eyebrow">Scaleup Shortform Studio</p>
 
-          <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/[0.07] px-3.5 py-1.5 text-xs font-bold text-accent-deep">
-            <span className="size-1.5 rounded-full bg-accent" />
-            Beta Open — 한정 가격
-          </span>
-
-          <h1 className="mt-6 text-[2.125rem] leading-[1.24] font-bold sm:text-5xl lg:text-[3.5rem]">
-            매출로 검증된 팀이 만드는,
+          <h1 className="mt-5 text-[1.75rem] leading-[1.3] font-bold text-balance sm:mt-6 sm:text-[2.75rem] sm:leading-[1.24] lg:text-[3.375rem]">
+            대기업부터 스타트업까지
             <br />
-            위너 숏폼
+            숏폼 부스팅 프로젝트
           </h1>
 
-          <p className="mt-7 max-w-xl text-lg leading-[1.7] font-bold text-ink-soft sm:text-xl">
-            인플루언서 바이럴부터 구매전환 소재까지 — 하나의 파이프라인, 결제 한
-            번으로
+          <p className="mt-6 max-w-xl text-[0.9375rem] leading-[1.75] font-bold text-white/70 sm:mt-8 sm:text-xl sm:leading-[1.7]">
+            인플루언서 시딩과 채널 바이럴
+            <br className="hidden sm:block" /> 그리고 구매 전환형 광고 소재를
+            한번에!
           </p>
 
-          <p className="mt-4 max-w-xl text-base leading-[1.75] text-muted">
-            평균 프로젝트 단가 2천만원 이상의 전략 집단 해그로시가, 숏폼 소재
-            시스템만 패키지로 열었습니다.
-          </p>
-
-          <div className="mt-10 flex flex-wrap gap-3">
-            <Cta href="#pricing">플랜 보기</Cta>
-            <Cta href="/signup" variant="outline">
-              무료 가입
-            </Cta>
+          <div className="mt-8 flex flex-wrap gap-2.5 sm:mt-10 sm:gap-3">
+            <a
+              href="#pricing"
+              className="inline-flex items-center justify-center rounded-full bg-accent px-7 py-3.5 text-sm font-bold text-white transition-colors duration-200 hover:bg-accent-deep"
+            >
+              플랜 보기
+            </a>
+            <a
+              href="#services"
+              className="inline-flex items-center justify-center rounded-full border border-white/25 px-7 py-3.5 text-sm font-bold text-white transition-colors duration-200 hover:border-white/60 hover:bg-white/[0.06]"
+            >
+              서비스 안내
+            </a>
           </div>
         </div>
 
-        {/* 소재 컬럼 — 세로로 계속 흐른다 */}
+        {/* 소재 컬럼 — 세로로 빠르게 흐른다. 영상만 */}
         <div
           aria-hidden
           className="relative hidden h-[560px] grid-cols-3 gap-3 lg:grid"
@@ -111,25 +77,31 @@ export function Hero() {
               reverse={col.reverse}
               className="h-full"
             >
-              {col.cells.map((cell, i) => (
-                <Cell key={`${ci}-${i}`} {...cell} />
+              {col.cells.map((c) => (
+                <Cell
+                  key={c.slug}
+                  slug={c.slug}
+                  aspect={c.ratio === "1/1" ? "1 / 1" : "9 / 16"}
+                />
               ))}
             </VerticalMarquee>
           ))}
 
-          {/* 위아래 페이드 — 컬럼이 잘린 느낌 대신 흘러가는 느낌을 준다 */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-paper to-transparent" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-paper to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-night to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-night to-transparent" />
         </div>
 
-        {/* 모바일 — 가로로 한 줄 */}
+        {/* 모바일 — 가로 한 줄 */}
         <div
           aria-hidden
           className="-mx-5 flex gap-3 overflow-x-auto px-5 lg:hidden"
         >
-          {REELS.filter((r) => r.video).map((reel) => (
-            <div key={reel.poster} className="w-32 shrink-0">
-              <Cell src={reel.poster} video={reel.video} ratio="9/16" />
+          {WALL_CLIPS.slice(0, 8).map((c) => (
+            <div key={c.slug} className="w-32 shrink-0">
+              <Cell
+                slug={c.slug}
+                aspect={c.ratio === "1/1" ? "1 / 1" : "9 / 16"}
+              />
             </div>
           ))}
         </div>

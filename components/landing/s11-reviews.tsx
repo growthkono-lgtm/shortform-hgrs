@@ -20,25 +20,29 @@ function Card({ review }: { review: Review }) {
 
 /** S11. 고객 후기 — Reviews */
 export function Reviews() {
-  const half = Math.ceil(REVIEWS.length / 2);
-  const rows = [REVIEWS.slice(0, half), REVIEWS.slice(half)];
+  // 4행으로 깐다 — 2행이면 한 화면에서 카드가 듬성듬성해 섹션이 비어 보인다
+  const ROWS = 4;
+  const per = Math.ceil(REVIEWS.length / ROWS);
+  const rows = Array.from({ length: ROWS }, (_, i) =>
+    REVIEWS.slice(i * per, (i + 1) * per),
+  ).filter((r) => r.length);
 
   return (
     <section className="scroll-mt-16 py-20 md:py-28">
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <p className="eyebrow">Reviews</p>
         <SectionHeading className="mt-5">
-          함께한 브랜드들이 <strong className="font-bold">남긴 말</strong>
+          실제 <strong className="font-bold">클라이언트 후기</strong>
         </SectionHeading>
         <p className="mt-5 max-w-2xl text-sm leading-[1.8] text-muted sm:text-base">
-          해그로시 프로젝트를 마친 뒤 받은 실제 후기입니다. 계약상 브랜드명은
-          이니셜로 표기했습니다.
+          평균 2천만원 (최소 5백 ~ 최대 2억) 프로젝트를 진행하며 얻어온
+          후기입니다.
         </p>
       </div>
 
       <div className="mt-12 space-y-3">
         {rows.map((row, i) => (
-          <Marquee key={i} durationSec={i === 0 ? 90 : 105} reverse={i === 1}>
+          <Marquee key={i} durationSec={72 + i * 11} reverse={i % 2 === 1}>
             <div className="flex gap-3">
               {row.map((review) => (
                 <Card key={review.company + review.body.slice(0, 12)} review={review} />

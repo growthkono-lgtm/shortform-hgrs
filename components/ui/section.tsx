@@ -14,7 +14,7 @@ export function Section({ id, eyebrow, alt, className, children }: SectionProps)
     <section
       id={id}
       className={cn(
-        "scroll-mt-16 px-5 py-20 sm:px-8 md:py-28 lg:py-(--spacing-section)",
+        "scroll-mt-16 px-5 py-16 sm:px-8 sm:py-20 md:py-28 lg:py-(--spacing-section)",
         alt && "bg-paper-alt",
         className,
       )}
@@ -38,7 +38,7 @@ export function SectionHeading({
   return (
     <h2
       className={cn(
-        "max-w-3xl text-[1.75rem] leading-[1.3] font-bold sm:text-4xl lg:text-[2.75rem]",
+        "max-w-3xl text-[1.5rem] leading-[1.35] font-bold sm:text-[2.125rem] sm:leading-[1.3] lg:text-[2.75rem]",
         className,
       )}
     >
@@ -49,7 +49,7 @@ export function SectionHeading({
 
 export function SectionLede({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mt-5 max-w-2xl text-base leading-[1.75] text-muted sm:text-lg">
+    <p className="mt-4 max-w-2xl text-[0.9375rem] leading-[1.8] text-muted sm:mt-5 sm:text-lg">
       {children}
     </p>
   );

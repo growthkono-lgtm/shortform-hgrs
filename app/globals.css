@@ -4,8 +4,12 @@
    HGRS 숏폼 부스팅 — 디자인 토큰
    hgrs.io 라이브 CSS에서 추출한 실측값 기반 (PART B)
    · 베이스: 라이트/뉴트럴 에디토리얼. 다크 테마 없음
-   · 액센트 #B88C8C — hgrs.io 1·2·3 넘버링 카드의 실제 포인트 컬러
-     (hgrs.io의 #0099FF는 Framer 기본 링크색이라 브랜드색 아님 — 사용 금지)
+   · 브랜드는 **2색**이다. hgrs.io 히어로에서 교차하는 두 곡선이 그대로 근거다.
+     ─ 인디고 #4D5FE8 : 히어로 곡선 + Project Story 풀블록 패널. 주 액센트.
+     ─ 골드탄 #B89B8D : 히어로 반대편 곡선. 아이브로우·보조 강조.
+   · #0099FF는 Framer 기본 링크색이라 브랜드색이 아니다 — 이건 여전히 사용 금지.
+     (이전 커밋은 여기서 "블루 자체가 브랜드색이 아니다"로 잘못 결론냈다.
+      진짜 브랜드 블루는 위 인디고다.)
    ───────────────────────────────────────────────────────────── */
 
 @theme {
@@ -15,13 +19,21 @@
   --color-muted: #595959; /* 보조 텍스트 */
   --color-line: #e6e6e6; /* 구분선 */
   --color-paper: #ffffff; /* 기본 배경 */
-  --color-paper-alt: #f7f7f7; /* 섹션 교차 배경 */
-  --color-accent: #b88c8c; /* 포인트 — 넘버링·아이브로우 강조 */
-  --color-accent-deep: #6e4a47; /* 액센트 진한 변형 */
+  /* 섹션 교차 배경 — 회색이 아니라 골드탄을 아주 옅게 섞은 웜 그레이.
+     골드는 이렇게 배경에서 은은하게 깔릴 때가 제일 낫다 (전경 강조색으로 쓰면 탁해진다) */
+  --color-paper-alt: #f7f5f3;
+  --color-accent: #4d5fe8; /* 인디고 — 넘버링·CTA·강조 */
+  --color-accent-deep: #3948b8; /* 인디고 진한 변형 (틴트 위 텍스트) */
+  --color-gold: #b89b8d; /* 골드탄 — 아이브로우·보조 강조 */
+  --color-gold-deep: #8e6b68; /* 골드탄 진한 변형 */
 
-  /* 서체 */
-  --font-sans: var(--font-pyeojin), var(--font-inter), system-ui, sans-serif;
-  --font-display: var(--font-inter), var(--font-pyeojin), system-ui, sans-serif;
+  /* 다크 섹션 — hgrs.io 히어로/Project Story 패널의 값 */
+  --color-night: #0a0a0c;
+  --color-night-soft: #171717;
+
+  /* 서체 — hgrs.io 실측: 한글 Pyeojin Gothic, 라틴 DM Sans */
+  --font-sans: var(--font-pyeojin), var(--font-dm-sans), system-ui, sans-serif;
+  --font-display: var(--font-dm-sans), var(--font-pyeojin), system-ui, sans-serif;
 
   /* 자간 — hgrs.io 실측: 헤드라인 -0.04em, 영문 아이브로우 +0.02em */
   --tracking-head: -0.04em;
@@ -43,7 +55,16 @@ body {
   line-height: 1.6;
 }
 
-/* 헤드라인은 조밀한 자간 */
+/* ── 한글 줄바꿈 ──────────────────────────────────────────────
+   브라우저 기본값(break-all에 가까운 한글 처리)은 "요즘 브랜드의 필수 요 /
+   소," 처럼 **단어 한가운데를 끊는다**. keep-all 이면 어절 단위로만 끊긴다.
+   한글 페이지에서 이건 취향이 아니라 필수다. 전역으로 건다. */
+html {
+  word-break: keep-all;
+  overflow-wrap: break-word; /* 끊을 곳이 없는 긴 URL·영문만 예외적으로 쪼갠다 */
+}
+
+/* 헤드라인은 조밀한 자간 + 줄 길이를 고르게 */
 h1,
 h2,
 h3,
@@ -53,14 +74,68 @@ h4 {
   text-wrap: balance;
 }
 
-/* 영문 아이브로우 레이블 — 섹션마다 반복 (PART B) */
+/* 본문은 마지막 줄에 한 단어만 남는 것(고아 줄)을 피한다 */
+p,
+li,
+dd {
+  text-wrap: pretty;
+}
+
+/* 영문 아이브로우 레이블 — 섹션마다 반복 (PART B).
+   두 브랜드색 중 골드탄을 여기 쓴다. 인디고는 넘버링·CTA·강조에 몰아준다 —
+   hgrs.io 히어로에서 두 곡선이 서로 다른 역할을 하는 것과 같은 분담이다. */
 .eyebrow {
   font-family: var(--font-display);
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
-  color: var(--color-accent);
+  color: var(--color-gold-deep);
+}
+
+/* 다크 섹션 위에서는 골드탄을 밝은 쪽으로 올려야 읽힌다 */
+.on-dark .eyebrow {
+  color: var(--color-gold);
+}
+
+/* ── 히어로 배경 — hgrs.io 히어로의 교차하는 두 곡선을 그대로 옮겼다.
+   인디고와 골드탄이 화면을 가로지르며 만나는 그 구도가 브랜드 시그니처다. ── */
+.hero-night {
+  background-color: var(--color-night);
+  position: relative;
+  isolation: isolate;
+}
+.hero-night::before,
+.hero-night::after {
+  content: "";
+  position: absolute;
+  inset: -20% -10%;
+  z-index: -1;
+  pointer-events: none;
+}
+/* 인디고 — 좌하단에서 우상단으로 솟는 빛 */
+.hero-night::before {
+  background:
+    radial-gradient(
+      60% 45% at 78% 18%,
+      color-mix(in oklab, var(--color-accent) 55%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      55% 40% at 12% 88%,
+      color-mix(in oklab, var(--color-accent) 42%, transparent),
+      transparent 72%
+    );
+  filter: blur(10px);
+}
+/* 골드탄 — 반대 방향으로 지나가는 따뜻한 곡선 */
+.hero-night::after {
+  background: radial-gradient(
+    50% 38% at 22% 12%,
+    color-mix(in oklab, var(--color-gold) 38%, transparent),
+    transparent 68%
+  );
+  filter: blur(14px);
 }
 
 /* 큰 숫자 지표 — hgrs.io "90%" 스타일 */

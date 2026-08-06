@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import { SERVICE } from "@/lib/constants";
 import { ChannelTalk } from "@/components/channel-talk";
 import "./globals.css";
 
-// 라틴 — hgrs.io는 Inter / Inter Display 사용
-const inter = Inter({
-  variable: "--font-inter",
+// 라틴 — hgrs.io 실측: DM Sans (400/500/600/700). Inter 아님.
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "700"],
   display: "swap",
 });
 
@@ -42,7 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="ko"
-      className={`${pyeojin.variable} ${inter.variable} h-full antialiased`}
+      className={`${pyeojin.variable} ${dmSans.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-paper text-ink">
         {children}

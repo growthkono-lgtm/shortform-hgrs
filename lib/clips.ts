@@ -1,0 +1,88 @@
+/**
+ * 원본 영상 자산 — `영상모음2, 유튜브링크/` 17편을 720p H.264로 인코딩한 결과.
+ *
+ * 이 중 riiid-report / parkron-tpu 두 편은 성장 사례 대표 소재로 따로 쓰이고,
+ * **나머지 15편은 전부 크리에이티브 월에 그냥 깔린다.**
+ * 사장님 지시: 월에 들어가는 소재에는 캡션·브랜드명을 붙이지 않는다.
+ *
+ * 파일명 주의 — 원본 파일명이 내용과 다른 것이 셋 있었다. 첫 프레임을 직접 확인해 바로잡았다.
+ *  · 맘카페_세로형.mov  → 뤼이드 리얼 아카데미 소재 (riiid-momcafe)
+ *  · 40대여성.mp4       → 탈모가 아니라 뼈 건강 (bone-w40s)
+ *  · 빌고빌었는데.mp4    → 탈모가 아니라 펫 사료 (pet-treats-plea)
+ */
+
+export type Clip = { slug: string; ratio: "9/16" | "1/1" };
+
+const P = "/portfolio/clips";
+
+/** 성장 사례·스텝 섹션에 쓰여 월에서는 빼는 소재 */
+export const CASE_CLIPS = [
+  "riiid-report",
+  "parkron-tpu",
+  "riiid-parent-empathy",
+] as const;
+
+/** 크리에이티브 월에 흐르는 세로/정사각 실사 소재 15편 */
+export const WALL_CLIPS: Clip[] = [
+  { slug: "riiid-momcafe", ratio: "9/16" },
+  { slug: "pet-dangterview-3", ratio: "9/16" },
+  { slug: "krafton-pnc-inonix", ratio: "9/16" },
+  { slug: "moen-shampoo-ppl", ratio: "9/16" },
+  { slug: "riiid-toefl-junior", ratio: "9/16" },
+  { slug: "bone-w40s", ratio: "9/16" },
+  { slug: "pet-portion", ratio: "9/16" },
+  { slug: "riiid-self-study", ratio: "9/16" },
+  { slug: "krafton-pnc-salute", ratio: "9/16" },
+  { slug: "seeding-patty", ratio: "9/16" },
+  { slug: "pet-vet-pancreas", ratio: "9/16" },
+  { slug: "bone-m50s", ratio: "9/16" },
+  { slug: "riiid-trial-reviews", ratio: "9/16" },
+  { slug: "pet-treats-plea", ratio: "9/16" },
+  { slug: "riiid-parent-itv", ratio: "9/16" },
+  { slug: "pet-custom-meal", ratio: "9/16" },
+  { slug: "seeding-garnish", ratio: "9/16" },
+  { slug: "gaehogang-square", ratio: "1/1" },
+];
+
+export const clipVideo = (slug: string) => `${P}/${slug}.mp4`;
+export const clipPoster = (slug: string) => `${P}/${slug}.jpg`;
+
+/**
+ * 유튜브·인스타 링크 (사장님 `영상링크.docx` 전량).
+ *
+ * 썸네일은 i.ytimg.com 을 그대로 건다 — 파일로 내려받아 두면 원본 영상을
+ * 교체할 때마다 같이 갈아야 해서 어긋난다. maxres 가 없는 영상이 있어
+ * onError 로 hq 로 떨어뜨린다 (Tile 참고).
+ */
+export type VideoLink = {
+  id: string;
+  label: string;
+  kind: "long" | "short";
+};
+
+export const YOUTUBE_LINKS: VideoLink[] = [
+  { id: "TJGx4iZBgTI", label: "핏플렉스 쇼츠 캠페인", kind: "short" },
+  { id: "Yy9K61hUC3Y", label: "핏플렉스 브랜드 캠페인", kind: "long" },
+  { id: "BdGKoiPITZ0", label: "크래프톤 · 조나단", kind: "short" },
+  { id: "Bsp_HBS8ckM", label: "크래프톤 · 배그 극장", kind: "long" },
+  { id: "aEbmZ3H5EWo", label: "크래프톤 · 배그 극장", kind: "long" },
+  { id: "_h3PLQlhs1s", label: "크래프톤 · PNC", kind: "long" },
+  { id: "f5QK9Hik2C8", label: "크래프톤 · PNC", kind: "long" },
+  { id: "yNsu5XfTN1E", label: "크래프톤 · 스케치", kind: "long" },
+  { id: "kN57OTVMSD0", label: "크래프톤 · 하이라이트", kind: "long" },
+  { id: "XmX0iYOTUGE", label: "열다 · 옷장정리", kind: "long" },
+  { id: "EU26OQv6ATE", label: "열다 · 옷장정리", kind: "long" },
+  { id: "6gfORrmxY2Q", label: "열다 · 옷장정리", kind: "long" },
+];
+
+export const INSTAGRAM_LINKS = [
+  { code: "DJDs43Tv0sD", label: "우비 댕터뷰" },
+  { code: "DJ_KuU5vGyD", label: "강아지 MBTI" },
+];
+
+export const ytThumbMax = (id: string) =>
+  `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`;
+export const ytThumbFallback = (id: string) =>
+  `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+export const ytWatch = (id: string) => `https://www.youtube.com/watch?v=${id}`;
+export const igUrl = (code: string) => `https://www.instagram.com/reel/${code}/`;

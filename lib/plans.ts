@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/database.types";
+import { SERVICE } from "@/lib/constants";
 
 export type PlanRow = Database["public"]["Tables"]["plans"]["Row"];
 
@@ -54,5 +55,6 @@ export const formatKRW = (won: number) => `₩${won.toLocaleString("ko-KR")}`;
 
 export function planOrderName(plan: PlanRow) {
   const base = plan.code === "full" ? "풀 파이프라인" : "전환 숏폼 단독";
-  return `HGRS 숏폼 부스팅 — ${base} ${plan.label}`;
+  // 결제창·영수증에 찍히는 상품명이다. 서비스명은 한 곳(SERVICE.name)에서만 읽는다
+  return `${SERVICE.name} — ${base} ${plan.label}`;
 }

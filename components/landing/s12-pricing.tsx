@@ -5,64 +5,27 @@ import { cn } from "@/lib/cn";
 import {
   POLICY,
   PRICE_RATIONALE,
-  discountRate,
   formatKRW,
-  type PlanCode,
 } from "@/lib/constants";
 import { usePlanSelection, useSwitchPlanCode } from "./plan-selection";
-
-const PLAN_TABS: { code: PlanCode; label: string; note: string }[] = [
-  {
-    code: "full",
-    label: "플랜 1 — 풀 파이프라인",
-    note: "인플루언서 바이럴 시딩 + 확보 소스로 전환형 숏폼 제작",
-  },
-  {
-    code: "shorts_only",
-    label: "플랜 2 — 전환 숏폼 단독",
-    note: "브랜드 보유 소스 제공 조건",
-  },
-];
+import { PricingTable } from "./pricing-table";
 
 /** S12. 가격 — Pricing */
 export function Pricing() {
-  const { code, tier, setTier, tiersForCode } = usePlanSelection();
+  const { tier, setTier, tiersForCode } = usePlanSelection();
   const switchCode = useSwitchPlanCode();
 
   return (
     <Section eyebrow="Pricing" alt id="pricing">
       <SectionHeading>
-        <strong className="font-bold">베타 오픈 특별가</strong>
+        <strong className="font-bold">플랜 안내</strong>
       </SectionHeading>
       <p className="mt-5 max-w-2xl text-base leading-[1.75] text-muted sm:text-lg">
         {PRICE_RATIONALE}
       </p>
 
-      {/* 플랜 토글 */}
-      <div
-        role="tablist"
-        aria-label="상품 플랜"
-        className="mt-10 grid gap-3 sm:grid-cols-2"
-      >
-        {PLAN_TABS.map((planTab) => (
-          <button
-            key={planTab.code}
-            type="button"
-            role="tab"
-            aria-selected={code === planTab.code}
-            onClick={() => switchCode(planTab.code)}
-            className={cn(
-              "rounded-2xl border p-5 text-left transition-colors duration-200",
-              code === planTab.code
-                ? "border-ink bg-paper"
-                : "border-line bg-paper/60 hover:border-ink/40",
-            )}
-          >
-            <span className="block text-base font-bold">{planTab.label}</span>
-            <span className="mt-1 block text-sm text-muted">{planTab.note}</span>
-          </button>
-        ))}
-      </div>
+      {/* 피그마 요금표 — 구성과 금액을 한눈에 비교시키는 자리 */}
+      <PricingTable />
 
       {/* 수량 라디오 카드 */}
       <fieldset className="mt-6">
@@ -97,14 +60,8 @@ export function Pricing() {
                 </div>
                 <span className="mt-1 text-sm text-muted">{plan.composition}</span>
 
-                <span className="mt-6 block text-sm text-muted line-through">
-                  {formatKRW(plan.listPrice)}
-                </span>
-                <span className="stat-figure mt-1 block text-3xl">
+                <span className="stat-figure mt-6 block text-3xl text-accent-deep">
                   {formatKRW(plan.betaPrice)}
-                </span>
-                <span className="mt-2 inline-flex w-fit rounded-full bg-accent/[0.12] px-2.5 py-1 text-xs font-bold text-accent-deep">
-                  {discountRate(plan.listPrice, plan.betaPrice)}% 할인
                 </span>
 
                 {/* 헤드 전략 리뷰 배지 — 스케일 / 20편 한정 (A2) */}
@@ -113,7 +70,7 @@ export function Pricing() {
                     title={POLICY.headReviewScope}
                     className="mt-5 block rounded-xl border border-accent/40 bg-accent/[0.06] px-3.5 py-3 text-xs leading-[1.7] font-bold text-accent-deep"
                   >
-                    + 헤드 전략 리뷰 1회 (베타 한정)
+                    + 헤드 전략 리뷰 1회
                     <span className="mt-1 block font-normal text-muted">
                       {POLICY.headReviewScope}
                     </span>
@@ -135,6 +92,26 @@ export function Pricing() {
           })}
         </div>
       </fieldset>
+
+      {/* 숏폼 단독 — 풀 파이프라인이 최우선순위라 대등한 탭이 아니라 각주로 둔다 */}
+      <button
+        type="button"
+        onClick={() => switchCode("shorts_only")}
+        className="mt-8 w-full rounded-2xl border border-line bg-paper/70 px-5 py-4 text-left transition-colors duration-200 hover:border-ink/30"
+      >
+        <span className="text-sm font-bold">
+          이미 소스가 있으신가요? 전환 숏폼만 따로 받기
+        </span>
+        <span className="mt-1 block text-xs leading-[1.7] text-muted">
+          브랜드 보유 소스(촬영본·UGC·제품컷) 제공 조건 · 5편 / 10편 / 20편
+        </span>
+        <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-xs font-bold text-white">
+          숏폼 단독 가격 보기
+          <svg viewBox="0 0 16 16" className="size-3.5 fill-current" aria-hidden>
+            <path d="M6 3l5 5-5 5z" />
+          </svg>
+        </span>
+      </button>
 
       {/* 정책 노출 ②③④ — 카드 하단 고정 3줄 (PART E4) */}
       <ul className="mt-8 space-y-2 text-xs leading-[1.7] text-muted">

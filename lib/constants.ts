@@ -4,10 +4,14 @@
  * 화면에 하드코딩 금지 — 확정되면 이 파일 한 곳만 고친다.
  */
 
-/** PART I-1: 서비스명·서브도메인 확정 전 임시값 */
+/**
+ * 서비스명 확정 (2026-08-06 피그마 개편안).
+ * 헤더 브랜드명이 "스케일업 숏폼 스튜디오"로 바뀌었다. 서브도메인은 shortform 고정 —
+ * 폴더명(hgrs-boost)이 boost라 헷갈리지만 boost는 쓰지 않는다.
+ */
 export const SERVICE = {
-  name: "HGRS 숏폼 부스팅",
-  nameEn: "HGRS Winner Creative",
+  name: "스케일업 숏폼 스튜디오",
+  nameEn: "Scaleup Shortform Studio",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://shortform.hgrs.io",
   parentName: "해그로시 해킹마케팅랩",
   parentUrl: "https://hgrs.io",
@@ -33,7 +37,7 @@ export const COMPANY = {
 
 /** A1 가격 명분 — 반복 사용되는 한 줄 */
 export const PRICE_RATIONALE =
-  "월 1천만원 이상 용역으로만 진행되던 해그로시의 소재 시스템을, 숏폼 영역만 패키지로 열었습니다.";
+  "인플루언서 컨텐츠 가이드라인부터 광고용 소스컷 확보, 부스팅 숏폼 기획제작이 논스톱으로 진행됩니다.";
 
 /** PART E4 정책 문구 — 노출 위치마다 같은 문장을 재사용 */
 export const POLICY = {
@@ -48,7 +52,7 @@ export const POLICY = {
   noGuarantee:
     "위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.",
   headReviewScope:
-    "해그로시 헤드가 캠페인 구조와 USP를 직접 리뷰하는 60분 세션. 베타 기간 한정 제공.",
+    "해그로시 헤드가 캠페인 구조와 USP를 직접 리뷰하는 60분 세션.",
 } as const;
 
 export type PlanCode = "full" | "shorts_only";
@@ -115,7 +119,7 @@ export const PLANS: Plan[] = [
     influencerCount: 0,
     shortsCount: 5,
     listPrice: 1_250_000,
-    betaPrice: 900_000,
+    betaPrice: 1_100_000,
     headReview: false,
   },
   {
@@ -126,7 +130,7 @@ export const PLANS: Plan[] = [
     influencerCount: 0,
     shortsCount: 10,
     listPrice: 2_100_000,
-    betaPrice: 1_500_000,
+    betaPrice: 1_800_000,
     headReview: false,
     recommended: true,
   },
@@ -138,7 +142,7 @@ export const PLANS: Plan[] = [
     influencerCount: 0,
     shortsCount: 20,
     listPrice: 2_800_000,
-    betaPrice: 2_000_000,
+    betaPrice: 2_400_000,
     headReview: true,
   },
 ];
