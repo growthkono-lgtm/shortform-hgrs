@@ -15,11 +15,14 @@ export function LoopVideo({
   src,
   poster,
   alt,
+  fit = "cover",
   className,
 }: {
   src: string;
   poster: string;
   alt?: string;
+  /** 비율이 다른 소재(정사각 배너 등)를 세로 칸에 넣을 때 잘리지 않게 contain */
+  fit?: "cover" | "contain";
   className?: string;
 }) {
   const holderRef = useRef<HTMLDivElement>(null);
@@ -47,11 +50,17 @@ export function LoopVideo({
         alt={alt ?? ""}
         loading="lazy"
         decoding="async"
-        className="absolute inset-0 size-full object-cover"
+        className={cn(
+          "absolute inset-0 size-full",
+          fit === "contain" ? "object-contain" : "object-cover",
+        )}
       />
       {visible && (
         <video
-          className="absolute inset-0 size-full object-cover"
+          className={cn(
+          "absolute inset-0 size-full",
+          fit === "contain" ? "object-contain" : "object-cover",
+        )}
           src={src}
           poster={poster}
           muted

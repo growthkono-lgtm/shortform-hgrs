@@ -20,8 +20,10 @@ export function PlanSelectionProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [code, setCode] = useState<PlanCode>("full");
-  const [tier, setTier] = useState<string>("growth");
+  // 숏폼 기획제작 단독이 기본이다. 시딩까지 묶인 금액을 먼저 보여주면
+  // 실제로 파는 것(숏폼 편수)보다 총액이 앞서 읽혀 무조건 비싸 보인다.
+  const [code, setCode] = useState<PlanCode>("shorts_only");
+  const [tier, setTier] = useState<string>("10");
 
   const value = useMemo<PlanSelectionValue>(() => {
     const tiersForCode = PLANS.filter((plan) => plan.code === code);
