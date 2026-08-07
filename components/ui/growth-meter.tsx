@@ -1,12 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { countUpText, useCountUp } from "@/components/ui/use-count-up";
 
 /**
  * 성장 사례용 우상향 연출 — 선이 그려지며 숫자가 목표치까지 올라간다.
  *
  * 성과 문장만 놓으면 "그래서 얼마나?"가 눈에 안 들어온다. 문장 옆에서 숫자가
  * 실제로 올라가야 성장으로 읽힌다. 화면에 들어올 때 한 번만 돈다.
+ *
+ * 숫자의 초기값은 0이 아니라 **최종값**이다 — 이유는 use-count-up.ts 주석 참고.
+ * (JS 없는 환경에서 성과가 전부 0으로 노출되던 문제)
  *
  * 색은 골드탄이다. 인디고는 CTA·넘버링이 가져가고, 성과 지표는 골드가 맡는다 —
  * 두 브랜드색이 각자 역할을 갖게 하는 편이 아무 데나 섞는 것보다 세다.
@@ -23,45 +26,8 @@ export type Metric = {
   grouped?: boolean;
 };
 
-const EASE = (t: number) => 1 - Math.pow(1 - t, 3);
-
 export function GrowthMeter({ metrics }: { metrics: Metric[] }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [p, setP] = useState(0); // 0 → 1
-
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setP(1);
-      return;
-    }
-
-    let raf = 0;
-    let start = 0;
-    const DURATION = 1600;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        observer.disconnect();
-        const tick = (now: number) => {
-          if (!start) start = now;
-          const t = Math.min(1, (now - start) / DURATION);
-          setP(EASE(t));
-          if (t < 1) raf = requestAnimationFrame(tick);
-        };
-        raf = requestAnimationFrame(tick);
-      },
-      { threshold: 0.35 },
-    );
-    observer.observe(node);
-    return () => {
-      observer.disconnect();
-      cancelAnimationFrame(raf);
-    };
-  }, []);
+  const { ref, p } = useCountUp();
 
   return (
     <div ref={ref} className="mt-8">
@@ -91,19 +57,14 @@ export function GrowthMeter({ metrics }: { metrics: Metric[] }) {
       </svg>
 
       <dl className="mt-4 flex flex-wrap gap-x-10 gap-y-4">
-        {metrics.map((m) => {
-          const v = Math.round(m.to * p);
-          return (
-            <div key={m.label}>
-              <dd className="stat-figure text-gold text-3xl tabular-nums sm:text-4xl">
-                {m.prefix}
-                {m.grouped ? v.toLocaleString("ko-KR") : v}
-                {m.suffix}
-              </dd>
-              <dt className="mt-1.5 text-xs text-white/55">{m.label}</dt>
-            </div>
-          );
-        })}
+        {metrics.map((m) => (
+          <div key={m.label}>
+            <dd className="stat-figure text-gold text-3xl tabular-nums sm:text-4xl">
+              {countUpText(p, m)}
+            </dd>
+            <dt className="mt-1.5 text-xs text-white/55">{m.label}</dt>
+          </div>
+        ))}
       </dl>
     </div>
   );

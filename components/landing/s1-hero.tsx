@@ -1,3 +1,4 @@
+import { HeroStats } from "@/components/landing/hero-stats";
 import { LoopVideo } from "@/components/ui/loop-video";
 import { Marquee } from "@/components/ui/marquee";
 import { VerticalMarquee } from "@/components/ui/vertical-marquee";
@@ -44,11 +45,20 @@ export function Hero() {
             숏폼 부스팅 프로젝트
           </h1>
 
-          <p className="mt-6 max-w-xl text-[0.9375rem] leading-[1.75] font-bold text-white/70 sm:mt-8 sm:text-xl sm:leading-[1.7]">
+          {/* 혈통 한 줄 — 헤드라인 바로 아래. 이 줄이 없으면 아래 가격이
+              "싸게 파는 숏폼 외주"로만 읽힌다. 서브카피보다 먼저 와야 한다. */}
+          <p className="mt-5 max-w-xl text-[0.8125rem] leading-[1.7] text-gold sm:mt-6 sm:text-sm">
+            기획부터 운영까지 통으로 수행하던 프로젝트 팀이, 숏폼 소재 시스템만 잘라
+            열었습니다.
+          </p>
+
+          <p className="mt-4 max-w-xl text-[0.9375rem] leading-[1.75] font-bold text-white/70 sm:mt-5 sm:text-xl sm:leading-[1.7]">
             {/* 줄바꿈은 모바일에서도 살린다 — 안 그러면 한 줄로 길게 흘러 안 읽힌다 */}
             인플루언서 시딩과 채널 바이럴
             <br /> 그리고 구매 전환형 광고 소재를 한번에!
           </p>
+
+          <HeroStats />
 
           <div className="mt-8 flex flex-wrap gap-2.5 sm:mt-10 sm:gap-3">
             <a

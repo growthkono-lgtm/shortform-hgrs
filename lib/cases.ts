@@ -22,7 +22,14 @@ export type GrowthCase = {
   metrics?: { label: string; to: number; prefix?: string; suffix?: string; grouped?: boolean }[];
   /** 성과 한 줄 — 크게 조판한다 */
   result: string;
-  /** 어떤 계약 형태에서 난 성과인지. 성과 문장과 반드시 함께 보여야 한다 */
+  /**
+   * 어떤 계약 형태에서 난 성과인지. 성과 문장과 반드시 함께 보여야 한다.
+   *
+   * 문구를 "소재 납품 및 캠페인 운영 대행 시" → "풀 프로젝트 수행 성과 (…)"로 바꿨다.
+   * 앞의 표현은 "이 패키지를 사면 이 성과가 난다"로 읽힐 여지가 있었다.
+   * 실제로는 브랜드를 통으로 맡은 프로젝트에서 나온 결과이고, 이 패키지는 그 프로젝트의
+   * **제작 시스템만** 떼어 온 것이다 — 그 구분이 라벨에서 먼저 보여야 한다.
+   */
   scope: string;
 };
 
@@ -42,7 +49,7 @@ export const GROWTH_CASES: GrowthCase[] = [
       { label: "CPA 단가", to: 1, prefix: "▼", suffix: "위" },
     ],
     result: "3주 연속 고지출 & CPA 단가 견인 소재",
-    scope: "소재 납품 및 캠페인 운영 대행 시",
+    scope: "풀 프로젝트 수행 성과 (소재 제작 + 캠페인 운영)",
   },
   {
     title: "파크론 제로블럭",
@@ -61,7 +68,7 @@ export const GROWTH_CASES: GrowthCase[] = [
       { label: "CPA 절감", to: 9, prefix: "▼", suffix: "만원" },
     ],
     result: "메타 캠페인 예산 5배 증액 성공, CPA 9만원 절감 소재 중 일부",
-    scope: "소재 납품 및 캠페인 운영 대행 시",
+    scope: "풀 프로젝트 수행 성과 (소재 제작 + 캠페인 운영)",
   },
   {
     title: "이노바인코리아 모에브",
@@ -74,7 +81,7 @@ export const GROWTH_CASES: GrowthCase[] = [
     ],
     result:
       "제품 출시 고투마켓 단계 소재 부스팅, 3개월 내 매출 4천만원 · ROAS 3배",
-    scope: "프로젝트 총괄 시",
+    scope: "풀 프로젝트 수행 성과 (프로젝트 총괄)",
   },
   {
     title: "크래프톤 배틀그라운드",
@@ -84,6 +91,6 @@ export const GROWTH_CASES: GrowthCase[] = [
       clip("krafton-pnc-inonix"),
     ],
     result: "대표이사 컨텐츠부터 협찬 연예인까지 다양한 바이럴 쇼츠 촬영 기획 제작",
-    scope: "연간 공식 대행 시",
+    scope: "연간 공식 프로젝트 수행 (바이럴 컨텐츠 기획·제작)",
   },
 ];

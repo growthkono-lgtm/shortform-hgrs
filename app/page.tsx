@@ -4,11 +4,14 @@ import { PlanSelectionProvider } from "@/components/landing/plan-selection";
 import { Hero } from "@/components/landing/s1-hero";
 import { ServiceFlow } from "@/components/landing/s-service-flow";
 import { Services } from "@/components/landing/s-services";
+import { System } from "@/components/landing/s-system";
+import { Clients } from "@/components/landing/s-clients";
 import { GrowthCases } from "@/components/landing/s-growth-cases";
 import { CreativeWall } from "@/components/landing/s-creative-wall";
 import { Crew } from "@/components/landing/s-crew";
 import { Reviews } from "@/components/landing/s11-reviews";
 import { Pricing } from "@/components/landing/s12-pricing";
+import { Beyond } from "@/components/landing/s-beyond";
 import { Faq } from "@/components/landing/s13-faq";
 import { FinalCta } from "@/components/landing/s14-final-cta";
 
@@ -29,6 +32,11 @@ import { FinalCta } from "@/components/landing/s14-final-cta";
  * 추가한 것 — Crew(누가 만드나). 와이어프레임에는 없지만 FAQ 한 줄로 묻혀 있던
  * "숏폼 기획제작은 어떤 전문가가 하나요?"를 섹션으로 꺼낸 것이다. 소재를 다 보여준
  * 직후(CreativeWall) ~ 남의 말(Reviews) 앞이 이 질문이 실제로 떠오르는 자리다.
+ *
+ * 2026-08-07 랜딩 보강 — "풀 프로젝트를 하던 팀이 숏폼만 린하게 열었다"를 축으로 두 곳을 열었다:
+ *  · System (Service ↔ Clients 사이) — 왜 이 가격에 이 퀄리티가 나오는가
+ *  · Beyond (Pricing ↔ FAQ 사이)     — 브랜드 단위 프로젝트가 필요한 사람을 본진으로 보내는 갈림길
+ * Clients 로고월은 System을 끼우기 위해 s-services.tsx에서 s-clients.tsx로 분리했다.
  */
 export default function LandingPage() {
   return (
@@ -38,11 +46,14 @@ export default function LandingPage() {
         <Hero />
         <ServiceFlow />
         <Services />
+        <System />
+        <Clients />
         <GrowthCases />
         <CreativeWall />
         <Crew />
         <Reviews />
         <Pricing />
+        <Beyond />
         <Faq />
         <FinalCta />
       </main>

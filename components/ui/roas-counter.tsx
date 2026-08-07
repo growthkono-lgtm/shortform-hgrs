@@ -9,24 +9,31 @@ import { useEffect, useRef, useState } from "react";
  * 지시대로 **정해진 단계만** 밟는다 (10→20→30→40→50→300+). 부드럽게 보간하면
  * 마지막 300+ 로 튀는 구간이 뭉개져 지시한 리듬이 사라진다.
  * 화면에 들어올 때 한 번만 돌고, 감속 설정이 켜져 있으면 최종값만 보여준다.
+ *
+ * 초기 DOM은 **최종 단계(300+)**로 그린다 — GrowthMeter와 같은 이유다.
+ * JS가 안 도는 환경에서 첫 단계("10")가 최종 성과처럼 노출되면 안 된다.
+ * 마운트 시점에 이미 화면 안이면 되돌리지 않고 그대로 둔다 (0으로 튀는 깜빡임 방지).
  */
 const STEPS = ["10", "20", "30", "40", "50", "300+"] as const;
+const LAST = STEPS.length - 1;
 
 export function RoasCounter({ className }: { className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [step, setStep] = useState(0);
-  const [drawn, setDrawn] = useState(false);
+  const [step, setStep] = useState(LAST);
+  const [drawn, setDrawn] = useState(true);
 
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) {
-      setStep(STEPS.length - 1);
-      setDrawn(true);
-      return;
-    }
+    if (reduced) return;
+
+    const rect = node.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) return;
+
+    setStep(0);
+    setDrawn(false);
 
     let timers: ReturnType<typeof setTimeout>[] = [];
     const observer = new IntersectionObserver(
@@ -49,7 +56,7 @@ export function RoasCounter({ className }: { className?: string }) {
     };
   }, []);
 
-  const last = step === STEPS.length - 1;
+  const last = step === LAST;
 
   return (
     <div

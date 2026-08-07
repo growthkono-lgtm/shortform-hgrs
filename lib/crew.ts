@@ -37,7 +37,13 @@ export const CREW_ROLES: CrewRole[] = [
     from: "대형 라이브커머스 종합몰 컨텐츠 담당 출신",
     scope: "상세·판매 흐름 설계",
   },
-  { tag: "GH", role: "그로스 헤드", scope: "캠페인 구조·KPI 리뷰" },
+  // 사장님 본인. 이력이 확인된 줄이라 from 에 올린다 (30여 브랜드 그로스 프로젝트 총괄)
+  {
+    tag: "GH",
+    role: "그로스 헤드",
+    from: "30여 브랜드 그로스 프로젝트 총괄",
+    scope: "캠페인 구조·KPI 리뷰",
+  },
   { tag: "PF", role: "퍼포먼스 미디어바이어", scope: "소재별 CPA·ROAS 판독" },
   { tag: "DP", role: "촬영 감독", scope: "현장 디렉팅·촬영" },
   { tag: "ED", role: "편집 리드", scope: "컷 편집·리텐션 설계" },
