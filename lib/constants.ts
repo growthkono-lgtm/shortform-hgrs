@@ -18,6 +18,13 @@ export const SERVICE = {
   instagram: "https://www.instagram.com/hgrs.io/",
 } as const;
 
+/**
+ * 본사 파트너십 페이지. 이 랜딩은 "숏폼 편수"를 파는 화면이라
+ * 브랜드 종합 대행·장기 파트너십을 찾는 방문자는 여기서 답을 못 찾는다.
+ * 헤더(상시 노출)와 팀 섹션·푸터 세 곳에서 넘긴다.
+ */
+export const PARTNERSHIP_URL = "https://hgrs.io/partnership";
+
 /** S15 푸터 — hgrs.io 게시 실데이터 + PG 심사 요건 */
 export const COMPANY = {
   name: "(주)해그로시(해킹마케팅랩)",

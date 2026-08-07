@@ -6,6 +6,7 @@ import { ServiceFlow } from "@/components/landing/s-service-flow";
 import { Services } from "@/components/landing/s-services";
 import { GrowthCases } from "@/components/landing/s-growth-cases";
 import { CreativeWall } from "@/components/landing/s-creative-wall";
+import { Crew } from "@/components/landing/s-crew";
 import { Reviews } from "@/components/landing/s11-reviews";
 import { Pricing } from "@/components/landing/s12-pricing";
 import { Faq } from "@/components/landing/s13-faq";
@@ -24,6 +25,10 @@ import { FinalCta } from "@/components/landing/s14-final-cta";
  * 되살리려면 파일이 아니라 와이어프레임을 먼저 고칠 것.
  *
  * 배경 톤은 라이트 ↔ 인디고 ↔ 다크로 교차시킨다. 성장 사례는 다크로 몰아 세게 읽히게 한다.
+ *
+ * 추가한 것 — Crew(누가 만드나). 와이어프레임에는 없지만 FAQ 한 줄로 묻혀 있던
+ * "숏폼 기획제작은 어떤 전문가가 하나요?"를 섹션으로 꺼낸 것이다. 소재를 다 보여준
+ * 직후(CreativeWall) ~ 남의 말(Reviews) 앞이 이 질문이 실제로 떠오르는 자리다.
  */
 export default function LandingPage() {
   return (
@@ -35,6 +40,7 @@ export default function LandingPage() {
         <Services />
         <GrowthCases />
         <CreativeWall />
+        <Crew />
         <Reviews />
         <Pricing />
         <Faq />

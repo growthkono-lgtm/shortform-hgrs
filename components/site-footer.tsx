@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { COMPANY, SERVICE } from "@/lib/constants";
+import { COMPANY, PARTNERSHIP_URL, SERVICE } from "@/lib/constants";
 
 /** PG 심사 요건 — 확정 전까지 어떤 항목이 비었는지 개발 화면에서 보이게 둔다 */
 const REQUIRED_FIELDS = [
@@ -25,6 +25,15 @@ export function SiteFooter() {
           <Link href="/refund-policy" className="text-muted hover:text-ink">
             환불규정
           </Link>
+          {/* 헤더의 파트너십 버튼이 sm 미만에서는 숨겨진다 — 모바일 방문자는 여기서 받는다 */}
+          <a
+            href={PARTNERSHIP_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="font-bold text-ink-soft hover:text-ink"
+          >
+            파트너십 문의
+          </a>
           <a
             href={SERVICE.parentUrl}
             target="_blank"
