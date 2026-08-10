@@ -66,10 +66,10 @@ export function Hero() {
 
           <div className="mt-8 flex flex-wrap gap-2.5 sm:mt-10 sm:gap-3">
             <a
-              href="#pricing"
+              href="#diagnosis"
               className="inline-flex items-center justify-center rounded-full bg-accent px-7 py-3.5 text-sm font-bold text-white transition-colors duration-200 hover:bg-accent-deep"
             >
-              플랜 보기
+              30초 진단받기
             </a>
             <a
               href="#services"

@@ -30,7 +30,7 @@ export default async function CheckoutFailPage({
 
       <div className="mt-10 flex flex-col gap-3">
         <Link
-          href="/#pricing"
+          href="/"
           className="rounded-full bg-ink px-6 py-3.5 text-sm font-bold text-paper"
         >
           플랜 다시 고르기

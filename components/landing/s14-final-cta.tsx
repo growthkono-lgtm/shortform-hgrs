@@ -18,7 +18,7 @@ export function FinalCta() {
             {PRICE_RATIONALE}
           </p>
           <div className="mt-8">
-            <Cta href="#pricing">플랜 보고 시작하기</Cta>
+            <Cta href="#apply">소개서 받아보기</Cta>
           </div>
         </div>
 

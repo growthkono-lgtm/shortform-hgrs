@@ -24,7 +24,7 @@ export function SiteHeader() {
           </a>
         </div>
 
-        {/* 모바일에서도 "플랜 보기"는 남긴다. 숨겼더니 우상단이 로그인·가입만 남아
+        {/* 모바일에서도 "신청하기"는 남긴다. 숨겼더니 우상단이 로그인·가입만 남아
             사이트가 뭘 파는지 모르는 화면이 됐다.
 
             2026-08-10: "파트너십"을 헤더에서 뺐다. 첫 화면 우상단에 밖으로 나가는
@@ -39,10 +39,10 @@ export function SiteHeader() {
             제작팀
           </Link>
           <Link
-            href="#pricing"
+            href="#apply"
             className="shrink-0 text-xs text-white/60 hover:text-white sm:text-sm"
           >
-            플랜 보기
+            신청하기
           </Link>
           <HeaderAuth />
         </nav>

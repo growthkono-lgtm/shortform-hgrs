@@ -3,58 +3,35 @@
 import Link from "next/link";
 import { useState } from "react";
 import { cn } from "@/lib/cn";
-import { formatKRW, PARTNERSHIP_URL } from "@/lib/constants";
-import {
-  DIAGNOSIS,
-  diagnose,
-  type DiagAnswers,
-} from "@/lib/diagnosis";
+import { DIAGNOSIS } from "@/lib/diagnosis";
+import { useDiagnosis } from "./diagnosis-context";
 
 /**
- * 플랜 진단 — 가격표 바로 앞.
+ * 플랜 진단 — 신청 폼 바로 앞.
  *
- * 가격을 먼저 던지면 "숏폼 한 편에 얼마"라는 비교로 끌려간다. 그 앞에서
- * 지금 브랜드가 어느 국면인지 먼저 짚어야 편수·구성이 근거를 갖는다.
- * 질문 다섯 개가 곧 제안서다 — 답을 고르는 동안 "이 사람들은 뭘 보는지"가 읽혀야 한다.
+ * 홈페이지에 가격을 걸지 않기로 했으므로(2026-08-10), 이 섹션이
+ * "무엇이 필요한지"를 잡아 주는 유일한 자리다. 질문 다섯 개가 곧 제안서다 —
+ * 답을 고르는 동안 "이 사람들은 뭘 보는지"가 읽혀야 한다.
  *
- * 마지막 판단은 헤드 상담으로 넘긴다(사장님 역할). 결과 카드의 두 번째 CTA가 그 문이다.
+ * 결과는 **구성만** 말한다. 금액도, 상담 유도도 넣지 않는다.
+ * 다음 행동은 하나뿐이다 — 아래 신청 폼.
  */
 export function Diagnosis() {
+  const { answers, setAnswers, result } = useDiagnosis();
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<DiagAnswers>({});
 
   const total = DIAGNOSIS.length;
   const done = step >= total;
   const question = DIAGNOSIS[Math.min(step, total - 1)];
-  const result = done ? diagnose(answers) : null;
 
   const choose = (value: string) => {
-    setAnswers((prev) => ({ ...prev, [question.id]: value }));
+    setAnswers({ ...answers, [question.id]: value });
     setStep((s) => s + 1);
   };
 
   const reset = () => {
     setAnswers({});
     setStep(0);
-  };
-
-  /** 헤드 상담 — 진단 결과를 그대로 들고 채널톡을 연다 */
-  const askHead = () => {
-    if (!result) return;
-    const message = [
-      "[플랜 진단 결과]",
-      `추천 구성: ${result.plan.label} (${result.plan.composition})`,
-      `진단: ${result.headline}`,
-      ...result.notes.map((n) => `· ${n}`),
-      "",
-      "이 구성이 저희 브랜드에 맞는지 봐주실 수 있을까요?",
-    ].join("\n");
-
-    if (typeof window !== "undefined" && window.ChannelIO) {
-      window.ChannelIO("openChat", undefined, message);
-      return;
-    }
-    window.open(PARTNERSHIP_URL, "_blank", "noreferrer");
   };
 
   return (
@@ -76,13 +53,11 @@ export function Diagnosis() {
             달라집니다. 다섯 가지만 짚으면 필요한 구성이 나옵니다.
           </p>
           <p className="mt-6 text-xs leading-[1.7] text-white/40">
-            30초 · 답변은 저장되지 않습니다
+            30초 · 답변은 신청하실 때만 함께 전달됩니다
           </p>
         </div>
 
-        {/* ── 진단 카드 ── */}
         <div className="min-w-0 rounded-3xl border border-white/10 bg-white/[0.04] p-6 sm:p-8">
-          {/* 진행 바 */}
           <div className="flex gap-1.5">
             {DIAGNOSIS.map((q, i) => (
               <span
@@ -144,37 +119,27 @@ export function Diagnosis() {
                   {result.headline}
                 </h3>
 
-                {/* 추천 구성 */}
+                {/* 금액은 적지 않는다 — 구성까지만 말하고 나머지는 소개서로 보낸다 */}
                 <div className="mt-6 rounded-2xl border border-gold/30 bg-gold/[0.07] p-5 sm:p-6">
-                  <p className="text-xs text-white/50">추천 구성</p>
+                  <p className="text-xs text-white/50">필요한 구성</p>
                   <p className="mt-2 text-lg font-bold text-gold">
                     {result.plan.label}
                   </p>
                   <p className="mt-1 text-sm text-white/60">
                     {result.plan.composition}
                   </p>
-                  <p className="stat-figure mt-4 text-2xl">
-                    {formatKRW(result.plan.betaPrice)}
-                  </p>
-                  {result.plan.shortsPrice != null &&
-                    result.plan.seedingPrice != null && (
-                      <p className="mt-2 text-xs text-white/45">
-                        숏폼 {result.plan.shortsCount}편{" "}
-                        {formatKRW(result.plan.shortsPrice)} + 인플루언서 시딩{" "}
-                        {result.plan.influencerCount}명{" "}
-                        {formatKRW(result.plan.seedingPrice)}
-                      </p>
-                    )}
                 </div>
 
-                {/* 진단 근거 */}
                 <ul className="mt-6 space-y-2.5">
                   {result.notes.map((n) => (
                     <li
                       key={n}
                       className="flex gap-2.5 text-[0.8125rem] leading-[1.8] text-white/65"
                     >
-                      <span aria-hidden className="mt-2 size-1 shrink-0 rounded-full bg-gold" />
+                      <span
+                        aria-hidden
+                        className="mt-2 size-1 shrink-0 rounded-full bg-gold"
+                      />
                       {n}
                     </li>
                   ))}
@@ -186,38 +151,23 @@ export function Diagnosis() {
                   </p>
                 )}
 
-                {/* 마지막 판단은 헤드가 받는다 */}
-                <div className="mt-7 flex flex-col gap-2.5 sm:flex-row">
-                  <Link
-                    href={`/checkout/${result.plan.code}-${result.plan.tier}`}
-                    className="flex-1 rounded-full bg-white px-6 py-3.5 text-center text-sm font-bold text-ink transition-colors duration-200 hover:bg-white/85"
-                  >
-                    이 구성으로 시작하기
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={askHead}
-                    className="flex-1 rounded-full border border-white/25 px-6 py-3.5 text-center text-sm font-bold text-white transition-colors duration-200 hover:border-white hover:bg-white/[0.08]"
-                  >
-                    헤드에게 직접 확인받기
-                  </button>
-                </div>
+                <Link
+                  href="#apply"
+                  className="mt-7 block rounded-full bg-white px-6 py-3.5 text-center text-sm font-bold text-ink transition-colors duration-200 hover:bg-white/85"
+                >
+                  이 구성으로 소개서 받기
+                </Link>
+                <p className="mt-3 text-center text-xs text-white/40">
+                  구성·편수별 금액은 소개서로 보내드립니다
+                </p>
 
-                <div className="mt-5 flex items-center justify-between text-xs">
-                  <button
-                    type="button"
-                    onClick={reset}
-                    className="text-white/40 underline underline-offset-2 hover:text-white"
-                  >
-                    다시 진단하기
-                  </button>
-                  <Link
-                    href="#pricing"
-                    className="text-white/40 underline underline-offset-2 hover:text-white"
-                  >
-                    전체 플랜 보기
-                  </Link>
-                </div>
+                <button
+                  type="button"
+                  onClick={reset}
+                  className="mt-5 block w-full text-center text-xs text-white/40 underline underline-offset-2 hover:text-white"
+                >
+                  다시 진단하기
+                </button>
               </>
             )
           )}

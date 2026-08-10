@@ -33,8 +33,8 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[pla
 
   return (
     <div className="mx-auto w-full max-w-5xl px-5 py-12 sm:px-8">
-      <Link href="/#pricing" className="text-sm text-muted hover:text-ink">
-        ← 플랜 다시 고르기
+      <Link href="/" className="text-sm text-muted hover:text-ink">
+        ← 처음으로
       </Link>
 
       <p className="eyebrow mt-8">Checkout</p>

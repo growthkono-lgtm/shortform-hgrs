@@ -102,10 +102,10 @@ export function DashboardView({
               </p>
               {!readOnly && (
                 <Link
-                  href="/#pricing"
+                  href="/#apply"
                   className="mt-4 inline-flex rounded-full border border-ink/20 px-4 py-2 text-xs font-bold hover:border-ink"
                 >
-                  플랜 보기
+                  신청하기
                 </Link>
               )}
             </>
@@ -146,10 +146,10 @@ export function DashboardView({
             <p className="text-sm text-muted">진행중인 캠페인이 없습니다.</p>
             {!readOnly && (
               <Link
-                href="/#pricing"
+                href="/#apply"
                 className="mt-5 inline-flex rounded-full border border-ink/20 px-5 py-2.5 text-sm font-bold hover:border-ink"
               >
-                플랜 보기
+                신청하기
               </Link>
             )}
           </div>

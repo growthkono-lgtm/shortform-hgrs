@@ -229,6 +229,66 @@ export type Database = {
           },
         ]
       }
+      inquiries: {
+        Row: {
+          brand_url: string | null
+          brochure_sent_at: string | null
+          company_name: string
+          consent_version: string
+          contact_name: string
+          created_at: string
+          diagnosis: Json | null
+          email: string
+          id: string
+          interest: string
+          ip_address: unknown
+          marketing_agreed: boolean
+          message: string | null
+          phone: string | null
+          status: string
+          user_agent: string | null
+          volume: string
+        }
+        Insert: {
+          brand_url?: string | null
+          brochure_sent_at?: string | null
+          company_name: string
+          consent_version: string
+          contact_name: string
+          created_at?: string
+          diagnosis?: Json | null
+          email: string
+          id?: string
+          interest: string
+          ip_address?: unknown
+          marketing_agreed?: boolean
+          message?: string | null
+          phone?: string | null
+          status?: string
+          user_agent?: string | null
+          volume: string
+        }
+        Update: {
+          brand_url?: string | null
+          brochure_sent_at?: string | null
+          company_name?: string
+          consent_version?: string
+          contact_name?: string
+          created_at?: string
+          diagnosis?: Json | null
+          email?: string
+          id?: string
+          interest?: string
+          ip_address?: unknown
+          marketing_agreed?: boolean
+          message?: string | null
+          phone?: string | null
+          status?: string
+          user_agent?: string | null
+          volume?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           amount: number
