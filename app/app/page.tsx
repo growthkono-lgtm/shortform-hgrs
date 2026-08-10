@@ -96,18 +96,18 @@ export default async function PortalHome() {
     candidates: candidates ?? [],
     deliverables: (deliverables ?? [])
       // 아직 아무것도 안 올라온 칸은 감춘다 — 빈 카드가 줄줄이 보이면 진행이 멈춘 것처럼 읽힌다
-      .filter((d) => d.preview_url || d.final_drive_link || d.status !== "producing")
+      .filter((d) => d.preview_url || d.status !== "producing")
       .map((d) => ({
         id: d.id,
         seq: d.seq,
         title: d.title,
         preview_url: d.preview_url,
-        final_drive_link: d.final_drive_link,
         status: d.status,
         revised: (d.revision_requests?.length ?? 0) > 0,
       })),
     seedingDriveLink:
       grants?.find((g) => g.kind === "seeding")?.drive_link ?? null,
+    finalDriveLink: grants?.find((g) => g.kind === "final")?.drive_link ?? null,
     history: (projects ?? []).map((p) => ({
       id: p.id,
       label: p.plans?.label ?? (p.type === "full" ? "패키지 플랜" : "싱글 플랜"),

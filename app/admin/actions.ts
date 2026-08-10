@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/supabase/auth";
 import { createAdminClient } from "@/lib/supabase/server";
 import { brochureMail, projectStartMail, sendMail } from "@/lib/mail";
 import { FIRST_SEEDING_STAGE, FIRST_SHORTS_STAGE } from "@/lib/stages";
+import { parseChannelUrl } from "@/lib/channel-url";
 
 export type ActionState = { ok: boolean; message: string | null };
 
@@ -172,18 +173,25 @@ export async function setStage(
   return done("단계를 변경했습니다.");
 }
 
-/** 인플루언서 후보 등록 — 지표는 외부 플랫폼 기준으로 어드민이 직접 넣는다 */
+/**
+ * 인플루언서 후보 등록 — **채널 링크 한 줄이면 된다.**
+ * 플랫폼과 채널명은 URL에서 뽑아 채운다(사람이 다시 칠 이유가 없다).
+ * 지표는 URL로 알 수 없어 비워 둔다 — 수집 소스를 붙이기 전까지 화면에 "—"로 나온다.
+ */
 export async function addCandidate(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
   await requireAdmin();
   const projectId = String(formData.get("project_id") ?? "");
-  const channelUrl = String(formData.get("channel_url") ?? "").trim();
-  const channelName = String(formData.get("channel_name") ?? "").trim();
-  if (!projectId || !channelUrl || !channelName) {
-    return fail("채널명과 링크는 필수입니다.");
-  }
+  const rawUrl = String(formData.get("channel_url") ?? "").trim();
+  if (!projectId || !rawUrl) return fail("채널 링크를 입력해 주세요.");
+
+  const parsed = parseChannelUrl(rawUrl);
+  if (!parsed) return fail("채널 링크 형식을 확인해 주세요.");
+
+  const typedName = String(formData.get("channel_name") ?? "").trim();
+  const channelName = typedName || parsed.handle || parsed.url;
 
   const num = (key: string) => {
     const raw = String(formData.get(key) ?? "").replace(/[^\d]/g, "");
@@ -193,9 +201,9 @@ export async function addCandidate(
   const admin = createAdminClient();
   const { error } = await admin.from("influencer_candidates").insert({
     project_id: projectId,
-    channel_url: channelUrl,
+    channel_url: parsed.url,
     channel_name: channelName,
-    platform: String(formData.get("platform") ?? "instagram"),
+    platform: parsed.platform,
     follower_count: num("follower_count"),
     content_count: num("content_count"),
     avg_views: num("avg_views"),
@@ -241,7 +249,6 @@ export async function upsertDeliverable(
       seq,
       title: String(formData.get("title") ?? "").trim() || null,
       preview_url: String(formData.get("preview_url") ?? "").trim() || null,
-      final_drive_link: String(formData.get("final_drive_link") ?? "").trim() || null,
       status: String(formData.get("status") ?? "producing"),
     },
     { onConflict: "project_id,seq" },

@@ -241,7 +241,6 @@ export type Deliverable = {
   seq: number;
   title: string | null;
   preview_url: string | null;
-  final_drive_link: string | null;
   status: string;
   revised: boolean;
 };
@@ -257,9 +256,12 @@ const STATUS_LABEL: Record<string, string> = {
 export function DeliverablePanel({
   projectId,
   deliverables,
+  finalDriveLink,
 }: {
   projectId: string;
   deliverables: Deliverable[];
+  /** 최종본은 편마다 주지 않는다 — 프로젝트 폴더 하나로 통째로 넘긴다 */
+  finalDriveLink: string | null;
 }) {
   const [state, formAction] = useActionState(requestRevision, INITIAL);
 
@@ -295,17 +297,6 @@ export function DeliverablePanel({
               </div>
             )}
 
-            {d.final_drive_link && (
-              <a
-                href={d.final_drive_link}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-4 inline-flex rounded-full bg-ink px-5 py-2.5 text-xs font-bold text-paper"
-              >
-                최종본 다운로드
-              </a>
-            )}
-
             {d.preview_url && !d.revised && d.status !== "approved" && (
               <form action={formAction} className="mt-4 space-y-3">
                 <input type="hidden" name="project_id" value={projectId} />
@@ -329,6 +320,29 @@ export function DeliverablePanel({
           </li>
         ))}
       </ul>
+      {finalDriveLink && (
+        <a
+          href={finalDriveLink}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-5 inline-flex rounded-full bg-ink px-6 py-3 text-sm font-bold text-paper transition-colors hover:bg-ink-soft"
+        >
+          최종본 전체 다운로드
+        </a>
+      )}
+
+      {/* 최종본은 편마다가 아니라 프로젝트 폴더 하나로 넘긴다 */}
+      {finalDriveLink && (
+        <a
+          href={finalDriveLink}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-5 inline-flex rounded-full bg-ink px-6 py-3 text-sm font-bold text-paper transition-colors hover:bg-ink-soft"
+        >
+          최종본 전체 다운로드
+        </a>
+      )}
+
       <div className="mt-4">
         <Result state={state} />
       </div>

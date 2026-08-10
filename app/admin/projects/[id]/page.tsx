@@ -62,6 +62,38 @@ export default async function AdminProjectPage({
         {project.plans?.composition}
       </p>
 
+      {/* ── 드라이브 링크 ── */}
+      {/* 드라이브는 프로젝트당 하나씩만 둔다 — 여러 개면 어느 게 최신인지 클라이언트가 모른다 */}
+      <section className="mt-8 grid gap-4 md:grid-cols-2">
+        <div className="rounded-2xl border border-line bg-paper p-5">
+          <h2 className="text-sm font-bold">인플루언서 결과물 드라이브</h2>
+          <ActionForm action={setDriveLink} label="저장" className="mt-4">
+            <input type="hidden" name="project_id" value={project.id} />
+            <input type="hidden" name="kind" value="seeding" />
+            <input
+              name="drive_link"
+              defaultValue={seedingLink?.drive_link ?? ""}
+              placeholder="https://drive.google.com/..."
+              className={input}
+            />
+          </ActionForm>
+        </div>
+
+        <div className="rounded-2xl border border-line bg-paper p-5">
+          <h2 className="text-sm font-bold">최종 납품 드라이브</h2>
+          <ActionForm action={setDriveLink} label="저장" className="mt-4">
+            <input type="hidden" name="project_id" value={project.id} />
+            <input type="hidden" name="kind" value="final" />
+            <input
+              name="drive_link"
+              defaultValue={finalLink?.drive_link ?? ""}
+              placeholder="https://drive.google.com/..."
+              className={input}
+            />
+          </ActionForm>
+        </div>
+      </section>
+
       {/* ── 단계 전이 ── */}
       <section className="mt-10 grid gap-4 md:grid-cols-2">
         {project.type === "full" && (
@@ -186,19 +218,33 @@ export default async function AdminProjectPage({
 
           <ActionForm action={addCandidate} label="후보 추가" className="mt-5">
             <input type="hidden" name="project_id" value={project.id} />
-            <div className="grid gap-2 sm:grid-cols-2">
-              <input name="channel_name" placeholder="채널명 *" required className={input} />
-              <input name="channel_url" placeholder="채널 링크 *" required className={input} />
-            </div>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-              <input name="follower_count" placeholder="팔로워" className={input} />
-              <input name="content_count" placeholder="컨텐츠수" className={input} />
-              <input name="avg_views" placeholder="평균 조회" className={input} />
-              <input name="avg_likes" placeholder="평균 좋아요" className={input} />
-              <input name="avg_comments" placeholder="평균 댓글" className={input} />
-              <input name="avg_cpv" placeholder="평균 CPV(원)" className={input} />
-            </div>
-            <input name="note" placeholder="메모 (선택)" className={input} />
+            <input
+              name="channel_url"
+              required
+              placeholder="채널 링크만 붙여넣으세요 — 예) https://instagram.com/aamoonlog"
+              className={input}
+            />
+            <p className="text-[0.6875rem] leading-[1.7] text-muted">
+              플랫폼과 채널명은 링크에서 자동으로 읽습니다. 아래는 <strong>덮어쓰고
+              싶을 때만</strong> 채우세요 — 비워 두면 화면에 &ldquo;—&rdquo;로 나옵니다.
+            </p>
+            <details className="rounded-lg border border-line">
+              <summary className="cursor-pointer px-3 py-2 text-[0.6875rem] text-muted">
+                직접 입력 (채널명 · 지표)
+              </summary>
+              <div className="space-y-2 border-t border-line p-3">
+                <input name="channel_name" placeholder="채널명 (비우면 자동)" className={input} />
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+                  <input name="follower_count" placeholder="팔로워" className={input} />
+                  <input name="content_count" placeholder="컨텐츠수" className={input} />
+                  <input name="avg_views" placeholder="평균 조회" className={input} />
+                  <input name="avg_likes" placeholder="평균 좋아요" className={input} />
+                  <input name="avg_comments" placeholder="평균 댓글" className={input} />
+                  <input name="avg_cpv" placeholder="평균 CPV(원)" className={input} />
+                </div>
+                <input name="note" placeholder="메모" className={input} />
+              </div>
+            </details>
           </ActionForm>
         </section>
       )}
@@ -207,8 +253,8 @@ export default async function AdminProjectPage({
       <section className="mt-10 rounded-2xl border border-line bg-paper p-5 sm:p-6">
         <h2 className="text-sm font-bold">숏폼 산출물 {shortsCount}편</h2>
         <p className="mt-2 text-xs text-muted">
-          미리보기 URL을 넣으면 클라이언트 화면에 임베드로 뜹니다. 최종 드라이브 링크는
-          다운로드 단계에서 열립니다.
+          미리보기 URL을 넣으면 클라이언트 화면에 임베드로 뜹니다. <strong>최종 결과물은
+          위의 &ldquo;최종 납품 드라이브&rdquo; 링크 하나로</strong> 전달됩니다.
         </p>
 
         <div className="mt-5 space-y-4">
@@ -249,48 +295,12 @@ export default async function AdminProjectPage({
                     <option value="approved">최종 승인</option>
                   </select>
                 </div>
-                <input
-                  name="final_drive_link"
-                  defaultValue={d?.final_drive_link ?? ""}
-                  placeholder="최종 드라이브 링크 (선택)"
-                  className={input}
-                />
               </ActionForm>
             );
           })}
         </div>
       </section>
 
-      {/* ── 드라이브 링크 ── */}
-      <section className="mt-10 grid gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-line bg-paper p-5">
-          <h2 className="text-sm font-bold">인플루언서 결과물 드라이브</h2>
-          <ActionForm action={setDriveLink} label="저장" className="mt-4">
-            <input type="hidden" name="project_id" value={project.id} />
-            <input type="hidden" name="kind" value="seeding" />
-            <input
-              name="drive_link"
-              defaultValue={seedingLink?.drive_link ?? ""}
-              placeholder="https://drive.google.com/..."
-              className={input}
-            />
-          </ActionForm>
-        </div>
-
-        <div className="rounded-2xl border border-line bg-paper p-5">
-          <h2 className="text-sm font-bold">최종 납품 드라이브</h2>
-          <ActionForm action={setDriveLink} label="저장" className="mt-4">
-            <input type="hidden" name="project_id" value={project.id} />
-            <input type="hidden" name="kind" value="final" />
-            <input
-              name="drive_link"
-              defaultValue={finalLink?.drive_link ?? ""}
-              placeholder="https://drive.google.com/..."
-              className={input}
-            />
-          </ActionForm>
-        </div>
-      </section>
     </>
   );
 }

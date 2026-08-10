@@ -41,6 +41,7 @@ const DEMO: DashboardData = {
   candidates: [],
   deliverables: [],
   seedingDriveLink: null,
+  finalDriveLink: null,
   history: [
     { id: "1", label: "그로스 패키지", startedAt: "2026-08-01", done: false },
     { id: "2", label: "스타터", startedAt: "2026-06-12", done: true },

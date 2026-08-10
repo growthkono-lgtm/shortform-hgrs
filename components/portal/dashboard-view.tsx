@@ -39,6 +39,7 @@ export type DashboardData = {
   candidates: Candidate[];
   deliverables: Deliverable[];
   seedingDriveLink: string | null;
+  finalDriveLink: string | null;
   history: { id: string; label: string; startedAt: string; done: boolean }[];
 };
 
@@ -78,6 +79,7 @@ export function DashboardView({
     candidates,
     deliverables,
     seedingDriveLink,
+    finalDriveLink,
     history,
   } = data;
   const due = dueInfo(campaign?.startedAt ?? null);
@@ -273,11 +275,12 @@ export function DashboardView({
                 <StageSteps stages={SHORTS_STAGES} stage={campaign.stageB} />
               </div>
 
-              {deliverables.length > 0 && (
+              {(deliverables.length > 0 || finalDriveLink) && (
                 <div className="mt-4">
                   <DeliverablePanel
                     projectId={campaign.projectId}
                     deliverables={deliverables}
+                    finalDriveLink={finalDriveLink}
                   />
                 </div>
               )}
