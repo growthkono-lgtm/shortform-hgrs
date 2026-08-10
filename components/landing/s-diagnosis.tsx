@@ -115,13 +115,11 @@ export function Diagnosis() {
           ) : (
             result && (
               <>
+                {/* "OO 국면" 같은 헤드라인은 붙이지 않는다 — 지어낸 문장처럼 읽힌다.
+                    결과는 구성·설명·금액과 답변에서 나온 근거만으로 말한다 */}
                 <p className="font-display mt-6 text-xs tracking-[0.14em] text-white/40 uppercase">
                   Result
                 </p>
-                <h3 className="mt-3 text-xl leading-[1.4] font-bold sm:text-2xl">
-                  {result.headline}
-                </h3>
-
                 {/* 지목한 구성은 이름만으로는 안 읽힌다 — 무엇을 하는 구성인지와 금액까지 이 박스에서 끝낸다.
                     가격표를 화면에서 내린 건 "무차별 노출"을 막으려는 것이지,
                     진단을 끝낸 사람에게 금액을 숨기려는 게 아니다. */}

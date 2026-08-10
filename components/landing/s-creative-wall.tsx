@@ -13,37 +13,65 @@ import {
   type WallItem,
 } from "@/lib/wall";
 import {
-  INSTAGRAM_LINKS,
   WALL_CLIPS,
   YOUTUBE_LINKS,
-  type Clip,
   clipPoster,
   clipVideo,
-  igUrl,
   ytThumbFallback,
   ytThumbMax,
   ytWatch,
 } from "@/lib/clips";
 
 /**
- * 숏폼 한 칸 — 칸 전체가 재생 버튼이다.
+ * 영상 한 칸 — 칸 전체가 재생 버튼이다.
  *
  * 흘러가는 칸을 눌러 보라는 건 애초에 말이 안 됐다. 여기서는 멈춰 있고,
  * 재생 버튼이 hover 와 무관하게 항상 떠 있다. 캡션·브랜드명은 붙이지 않는다.
  */
-function ClipCard({ clip, onOpen }: { clip: Clip; onOpen: () => void }) {
+type GridTile = { video: string; poster: string; ratio: "9/16" | "1/1" };
+
+/**
+ * 그리드에 깔리는 영상 전부 — 숏폼 + 움직이는 배너.
+ * 2026-08-10: 배너 영상을 아래 흐르는 밴드에서 끌어올렸다. 소재 수량이 둘로 갈릴 만큼
+ * 많지 않아 나눠 두면 양쪽 다 빈약해 보인다. 영상은 여기 한 덩어리로 모은다.
+ */
+const GRID: GridTile[] = (() => {
+  const clips: GridTile[] = WALL_CLIPS.map((c) => ({
+    video: clipVideo(c.slug),
+    poster: clipPoster(c.slug),
+    ratio: c.ratio,
+  }));
+  const motion: GridTile[] = WALL_MOTION.map((m) => ({
+    video: m.video!,
+    poster: m.src,
+    ratio: "1/1",
+  }));
+
+  // 배너를 숏폼 사이에 고르게 끼운다 — 뒤에 몰면 그리드 끝이 배너 벽이 된다
+  const gap = Math.ceil(clips.length / (motion.length + 1));
+  const out: GridTile[] = [];
+  let m = 0;
+  clips.forEach((c, i) => {
+    out.push(c);
+    if ((i + 1) % gap === 0 && m < motion.length) out.push(motion[m++]);
+  });
+  while (m < motion.length) out.push(motion[m++]);
+  return out;
+})();
+
+function ClipCard({ tile, onOpen }: { tile: GridTile; onOpen: () => void }) {
   return (
     <button
       type="button"
       onClick={onOpen}
-      aria-label="숏폼 재생"
+      aria-label="영상 재생"
       className="group relative aspect-[9/16] w-full overflow-hidden rounded-2xl bg-ink-soft"
     >
       <LoopVideo
-        src={clipVideo(clip.slug)}
-        poster={clipPoster(clip.slug)}
+        src={tile.video}
+        poster={tile.poster}
         // 정사각 소재를 세로 칸에 우겨 넣으면 좌우가 잘려 카피가 날아간다
-        fit={clip.ratio === "1/1" ? "contain" : "cover"}
+        fit={tile.ratio === "1/1" ? "contain" : "cover"}
       />
       {/* 칸이 좁아진 모바일에서 버튼이 소재를 다 덮지 않게 크기를 줄인다 */}
       <span className="pointer-events-none absolute inset-0 grid place-items-center bg-ink/0 transition-colors duration-300 group-hover:bg-ink/25">
@@ -68,12 +96,8 @@ type BandTile =
   | { kind: "yt"; id: string; label: string }
   | { kind: "img"; item: WallItem };
 
-const BAND_IMAGES: WallItem[] = [
-  ...WALL_MOTION,
-  ...WALL_SQUARE,
-  ...WALL_MISC,
-  ...WALL_SITE,
-];
+// 영상(WALL_MOTION)은 위 그리드로 올라갔다. 밴드에는 이미지만 흐른다
+const BAND_IMAGES: WallItem[] = [...WALL_SQUARE, ...WALL_MISC, ...WALL_SITE];
 
 /** 롱폼을 이미지 사이에 고르게 끼운다 — 한쪽에 몰리면 흐름이 두 덩어리로 갈린다 */
 const BAND: BandTile[] = (() => {
@@ -171,13 +195,13 @@ function BandRow({ row, ...rest }: { row: BandTile[]; durationSec: number; rever
  * 크리에이티브 월 — 피그마 "업종별 브랜드-컨텐츠 전략을 이끈 프로젝트 인사이트를
  * 숏폼으로 압축합니다" 자리.
  *
- * 구조는 **숏폼 그리드 + 롱폼·이미지 밴드** 두 덩어리다. 역할이 다르므로 취급도 다르다.
+ * 구조는 **영상 그리드 + 이미지 밴드** 두 덩어리다.
  *
- *  · 숏폼 — 클라이언트가 실제로 보고 판단하는 소재다. 그래서 흐르지 않는다.
+ *  · 영상(숏폼 + 움직이는 배너) — 클라이언트가 실제로 보고 판단하는 소재다. 그래서 흐르지 않는다.
  *    PC 3열 / 모바일 2열 그리드에 세워 두고, 칸 자체가 재생 버튼이다.
  *    가로로 흘리면 한 화면에 여러 개를 욱여넣게 되고, 흘러가는 칸은 누를 수가 없다.
- *  · 롱폼·이미지 — "이게 다가 아니다"를 깔아주는 배경이다. 여기만 가로로 흐른다.
- *    롱폼을 이미지 사이사이에 끼워 물량감이 끊기지 않게 했다.
+ *  · 이미지 + 유튜브 롱폼 — "이게 다가 아니다"를 깔아주는 배경이다. 여기만 가로로 흐른다.
+ *    소제목 없이 그리드에 바로 이어 붙인다 — 이름표를 달아 나누면 양쪽 다 빈약해 보인다.
  *
  * 캡션·브랜드명은 어느 쪽에도 붙이지 않는다 (사장님 지시).
  */
@@ -186,7 +210,7 @@ export function CreativeWall() {
 
   const step = useCallback((delta: number) => {
     setOpen((i) =>
-      i === null ? i : (i + delta + WALL_CLIPS.length) % WALL_CLIPS.length,
+      i === null ? i : (i + delta + GRID.length) % GRID.length,
     );
   }, []);
   const close = useCallback(() => setOpen(null), []);
@@ -211,50 +235,25 @@ export function CreativeWall() {
 
       {/* 숏폼 — PC 3열, 모바일 2열. 한 편씩 세로로 쭉 내리면 스크롤이 말이 안 되게 길어진다 */}
       <div className="mx-auto mt-10 grid w-full max-w-6xl grid-cols-2 gap-2 px-5 sm:gap-4 sm:px-8 lg:grid-cols-3 md:mt-14">
-        {WALL_CLIPS.map((clip, i) => (
-          <ClipCard key={clip.slug} clip={clip} onOpen={() => setOpen(i)} />
+        {GRID.map((tile, i) => (
+          <ClipCard key={tile.video} tile={tile} onOpen={() => setOpen(i)} />
         ))}
       </div>
 
-      {/* 롱폼 + 이미지 소재 — 여기는 흘려도 된다. 물량 자체가 메시지인 자리다 */}
-      <div className="mx-auto mt-20 w-full max-w-6xl px-5 sm:px-8">
-        <h3 className="text-lg font-bold">유튜브 롱폼 · 광고 소재</h3>
-        <p className="mt-2 text-sm text-muted">
-          같은 캠페인에서 함께 나간 롱폼·배너·상세컷입니다. 롱폼은 눌러서 볼 수
-          있습니다.
-        </p>
-      </div>
-
-      <div className="mt-8 space-y-3">
+      {/* 이미지 소재 + 유튜브 롱폼 — 소제목 없이 그리드에 바로 이어 붙인다.
+          따로 떼어 "유튜브 롱폼" 이라고 이름표를 달면 소재가 둘로 갈려 각각 빈약해 보인다. */}
+      <div className="mt-4 space-y-3 sm:mt-6">
         <BandRow row={BAND_ROW_A} durationSec={150} />
         <BandRow row={BAND_ROW_B} durationSec={170} reverse />
       </div>
 
-      <div className="mx-auto mt-10 w-full max-w-6xl px-5 sm:px-8">
-        <p className="text-xs text-muted">
-          인스타그램 릴스로도 이어집니다 —{" "}
-          {INSTAGRAM_LINKS.map((ig, i) => (
-            <span key={ig.code}>
-              {i > 0 && " · "}
-              <a
-                href={igUrl(ig.code)}
-                target="_blank"
-                rel="noreferrer"
-                className="font-bold text-accent underline underline-offset-4"
-              >
-                {ig.label}
-              </a>
-            </span>
-          ))}
-        </p>
-      </div>
 
       {open !== null && (
         <ClipPlayer
-          src={clipVideo(WALL_CLIPS[open].slug)}
-          poster={clipPoster(WALL_CLIPS[open].slug)}
+          src={GRID[open].video}
+          poster={GRID[open].poster}
           position={open + 1}
-          total={WALL_CLIPS.length}
+          total={GRID.length}
           onClose={close}
           onStep={step}
         />

@@ -96,13 +96,16 @@ export const WALL_SITE: WallItem[] = [
   { src: "/portfolio/wall/site-7.webp" },
 ];
 
-/** 움직이는 배너 (원본 GIF -> mp4) */
+/**
+ * 움직이는 배너 (원본 GIF -> mp4).
+ * 2026-08-10 gif-4 를 뺐다 — gif-0 과 같은 소재다(문구·할인가까지 동일).
+ * 이 넷은 크리에이티브 월의 **숏폼 그리드**에 함께 깔린다. 흐르는 밴드에는 이미지만 남긴다.
+ */
 export const WALL_MOTION: WallItem[] = [
   { src: "/portfolio/wall/gif-0.jpg", video: "/portfolio/wall/gif-0.mp4" },
   { src: "/portfolio/wall/gif-1.jpg", video: "/portfolio/wall/gif-1.mp4" },
   { src: "/portfolio/wall/gif-2.jpg", video: "/portfolio/wall/gif-2.mp4" },
   { src: "/portfolio/wall/gif-3.jpg", video: "/portfolio/wall/gif-3.mp4" },
-  { src: "/portfolio/wall/gif-4.jpg", video: "/portfolio/wall/gif-4.mp4" },
 ];
 
 /** 히어로 세로 컬럼용 — 전 자산 셔플 */

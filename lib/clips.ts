@@ -30,17 +30,18 @@ export const CASE_CLIPS = [
  *  · riiid-toefl-junior  — riiid-momcafe 와 프레임이 완전히 같다. 자막 카피만 다르다
  *  · krafton-pnc-salute  — krafton-pnc-inonix 와 같은 하이라이트 템플릿. 선수만 다르다
  *  · riiid-trial-reviews — riiid-self-study 와 같은 "아이+태블릿" 구도
+ * 2026-08-10 추가로 두 편 더 뺐다(사장님 지목): pet-dangterview-3 / krafton-pnc-inonix.
+ * 대신 zeroblock-interview(제로블럭 정리수납 인터뷰) 한 편을 새로 넣었다.
  * 파일은 지우지 않았다. 다시 살릴 땐 아래 배열에 넣으면 된다.
  *
  * 순서도 손댔다 — 같은 브랜드가 이웃하지 않게 흩는다.
  */
 export const WALL_CLIPS: Clip[] = [
   { slug: "riiid-momcafe", ratio: "9/16" },
-  { slug: "pet-dangterview-3", ratio: "9/16" },
-  { slug: "krafton-pnc-inonix", ratio: "9/16" },
+  { slug: "pet-portion", ratio: "9/16" },
   { slug: "moen-shampoo-ppl", ratio: "9/16" },
   { slug: "bone-w40s", ratio: "9/16" },
-  { slug: "pet-portion", ratio: "9/16" },
+  { slug: "zeroblock-interview", ratio: "9/16" },
   { slug: "riiid-self-study", ratio: "9/16" },
   { slug: "seeding-patty", ratio: "9/16" },
   { slug: "pet-vet-pancreas", ratio: "9/16" },

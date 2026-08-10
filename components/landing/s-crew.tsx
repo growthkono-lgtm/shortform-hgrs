@@ -82,7 +82,7 @@ export function Crew() {
         {/* 역할표 — 한 사람이 다 하는 게 아니라는 걸 10칸으로 보여준다 */}
         <h3 className="mt-16 text-lg font-bold">숏폼 한 편에 붙는 역할</h3>
         <p className="mt-2 text-sm text-white/50">
-          편수와 상관없이 아래 역할이 같은 순서로 붙습니다.
+          필요한 인프라가 정해진 프로세스로 움직입니다.
         </p>
 
         <ul className="mt-7 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">

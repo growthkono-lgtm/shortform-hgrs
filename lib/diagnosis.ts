@@ -11,7 +11,7 @@ import { PLANS, type Plan, type PlanCode } from "@/lib/constants";
  *  · 질문은 5개. 4개면 얕고 6개부터는 이탈이 난다
  *  · 보기는 3~4개. 반드시 **현재 상태를 있는 그대로 고르게** 한다(이상적인 답을 유도하지 않는다)
  *  · 질문마다 왜 묻는지 한 줄을 붙인다. 이 한 줄이 전문성의 대부분이다
- *  · 결과는 플랜 하나를 지목하되, 마지막 판단은 헤드 상담으로 넘긴다
+ *  · 결과는 플랜 하나를 지목하고 구성·금액까지 말한다. 상담·문의 유도 장치는 두지 않는다
  */
 
 export type DiagOption = { value: string; label: string };
@@ -84,7 +84,7 @@ export type DiagAnswers = Partial<Record<DiagQuestion["id"], string>>;
 
 export type DiagResult = {
   plan: Plan;
-  /** 결과 카드 헤드라인 — 진단 한 줄 */
+  /** 내부 분류용 한 줄. 화면에는 렌더하지 않는다(지어낸 문장처럼 읽혀 뺐다) */
   headline: string;
   /** 지목한 구성이 무엇인지 — 구성 설명 2줄(무엇을 하는 구성인가 / 이 편수가 갖는 의미) */
   blurbs: string[];

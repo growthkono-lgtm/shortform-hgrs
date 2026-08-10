@@ -78,7 +78,7 @@ export const REELS: Reel[] = [
   },
 ];
 
-/** S6 2행 — 유튜브. 해그로시 헤드가 기획·총괄한 실제 채널 컨텐츠 */
+/** S6 2행 — 유튜브. 해그로시가 기획·제작한 실제 채널 컨텐츠 */
 export type YoutubeItem = {
   id: string;
   channel: string;
