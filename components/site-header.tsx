@@ -24,25 +24,16 @@ export function SiteHeader() {
           </a>
         </div>
 
-        {/* 모바일에서도 "신청하기"는 남긴다. 숨겼더니 우상단이 로그인·가입만 남아
-            사이트가 뭘 파는지 모르는 화면이 됐다.
-
-            2026-08-10: "파트너십"을 헤더에서 뺐다. 첫 화면 우상단에 밖으로 나가는
-            링크를 두면, 이 랜딩이 뭘 파는지 읽고 고민하기도 전에 본사로 이탈한다.
-            같은 링크는 제작팀(Crew) 섹션과 푸터가 이미 받고 있다 —
-            아래까지 읽고도 종합 대행이 필요한 사람은 거기서 넘어가면 된다. */}
-        <nav className="flex items-center gap-4 text-sm sm:gap-5">
+        {/* 메뉴는 셋으로 고정한다 — 컨텐츠 진단 / 로그인 / 내 프로젝트.
+            PC·모바일 동일. 랜딩의 전환 경로는 진단 → 신청 하나뿐이라
+            그 입구(진단)만 헤더에 남기고 나머지 섹션 링크는 뺐다.
+            "파트너십"처럼 밖으로 나가는 링크도 두지 않는다 — 읽기 전에 이탈한다. */}
+        <nav className="flex items-center gap-3 text-sm sm:gap-5">
           <Link
-            href="#crew"
-            className="hidden shrink-0 text-white/60 hover:text-white lg:block"
+            href="#diagnosis"
+            className="shrink-0 text-xs whitespace-nowrap text-white/60 hover:text-white sm:text-sm"
           >
-            제작팀
-          </Link>
-          <Link
-            href="#apply"
-            className="shrink-0 text-xs text-white/60 hover:text-white sm:text-sm"
-          >
-            신청하기
+            컨텐츠 진단
           </Link>
           <HeaderAuth />
         </nav>

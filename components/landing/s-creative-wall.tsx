@@ -134,16 +134,12 @@ function ClipCard({
 
 const BAND_TILE = "h-[132px] sm:h-[176px]";
 
-type BandTile =
-  | { kind: "yt"; id: string; label: string }
-  | { kind: "img"; item: WallItem };
-
 /**
  * 밴드에 흐르는 이미지.
  *
  * 정사각 배너 영상(WALL_MOTION)은 여기가 제 자리다 — 칸이 정사각이라 잘리지 않는다.
- * 나머지 이미지는 **절반만** 쓴다. 작은 칸을 빽빽하게 채우면 롱폼이 묻혀
- * "이미지만 잔뜩"으로 읽힌다. 수를 줄여 롱폼이 더 자주 오게 만든다.
+ * 롱폼은 2026-08-10부터 위 그리드로 올라갔다. 여기 남는 건 눌러 볼 것이 아닌,
+ * "이게 다가 아니다"를 깔아주는 이미지뿐이다. 나머지 이미지는 절반만 쓴다.
  */
 const BAND_IMAGES: WallItem[] = [
   ...WALL_MOTION,
@@ -152,27 +148,8 @@ const BAND_IMAGES: WallItem[] = [
   ...WALL_SITE.filter((_, i) => i % 2 === 0),
 ];
 
-/** 롱폼을 이미지 사이에 고르게 끼운다 — 한쪽에 몰리면 흐름이 두 덩어리로 갈린다 */
-const BAND: BandTile[] = (() => {
-  const gap = Math.ceil(BAND_IMAGES.length / YOUTUBE_LINKS.length);
-  const out: BandTile[] = [];
-  let y = 0;
-  BAND_IMAGES.forEach((item, i) => {
-    out.push({ kind: "img", item });
-    if ((i + 1) % gap === 0 && y < YOUTUBE_LINKS.length) {
-      const v = YOUTUBE_LINKS[y++];
-      out.push({ kind: "yt", id: v.id, label: v.label });
-    }
-  });
-  while (y < YOUTUBE_LINKS.length) {
-    const v = YOUTUBE_LINKS[y++];
-    out.push({ kind: "yt", id: v.id, label: v.label });
-  }
-  return out;
-})();
-
-const BAND_ROW_A = BAND.filter((_, i) => i % 2 === 0);
-const BAND_ROW_B = BAND.filter((_, i) => i % 2 === 1);
+const BAND_ROW_A = BAND_IMAGES.filter((_, i) => i % 2 === 0);
+const BAND_ROW_B = BAND_IMAGES.filter((_, i) => i % 2 === 1);
 
 /** 이미지 소재 한 칸 — 정사각으로 잘라 흘린다. 캡션은 붙이지 않는다 */
 function ImageTile({ item }: { item: WallItem }) {
@@ -198,8 +175,11 @@ function ImageTile({ item }: { item: WallItem }) {
   );
 }
 
-/** 밴드 안의 롱폼 칸 — 16:9 라 이미지 사이에서 가로로 튀어 리듬을 만든다 */
-function BandYoutubeTile({ id, label }: { id: string; label: string }) {
+/**
+ * 롱폼 한 칸 — 숏폼과 똑같이 "누르면 본다".
+ * 흐르는 밴드에 섞어 두면 눌러 볼 수 있는 소재라는 게 읽히지 않아 그리드로 세웠다.
+ */
+function LongformCard({ id, label }: { id: string; label: string }) {
   const [src, setSrc] = useState(ytThumbMax(id));
 
   return (
@@ -208,7 +188,7 @@ function BandYoutubeTile({ id, label }: { id: string; label: string }) {
       target="_blank"
       rel="noreferrer"
       aria-label={label}
-      className={`group relative aspect-video shrink-0 overflow-hidden rounded-xl bg-ink-soft ${BAND_TILE}`}
+      className="group relative aspect-video w-full overflow-hidden rounded-2xl bg-ink-soft"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -219,9 +199,9 @@ function BandYoutubeTile({ id, label }: { id: string; label: string }) {
         onError={() => setSrc(ytThumbFallback(id))}
         className="absolute inset-0 size-full object-cover"
       />
-      <span className="absolute inset-0 grid place-items-center">
-        <span className="grid size-10 place-items-center rounded-full bg-paper/85 backdrop-blur-sm sm:size-12">
-          <svg viewBox="0 0 24 24" className="ml-0.5 size-4 fill-ink sm:size-5">
+      <span className="pointer-events-none absolute inset-0 grid place-items-center bg-ink/0 transition-colors duration-300 group-hover:bg-ink/25">
+        <span className="grid size-11 place-items-center rounded-full bg-paper/90 shadow-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-110 sm:size-14">
+          <svg viewBox="0 0 24 24" className="ml-0.5 size-5 fill-ink sm:ml-1 sm:size-6">
             <path d="M8 5v14l11-7z" />
           </svg>
         </span>
@@ -230,16 +210,19 @@ function BandYoutubeTile({ id, label }: { id: string; label: string }) {
   );
 }
 
-function BandRow({ row, ...rest }: { row: BandTile[]; durationSec: number; reverse?: boolean }) {
+function BandRow({
+  row,
+  ...rest
+}: {
+  row: WallItem[];
+  durationSec: number;
+  reverse?: boolean;
+}) {
   return (
     <Marquee copies={2} {...rest}>
-      {row.map((t, i) =>
-        t.kind === "yt" ? (
-          <BandYoutubeTile key={`yt-${t.id}-${i}`} id={t.id} label={t.label} />
-        ) : (
-          <ImageTile key={`img-${t.item.src}`} item={t.item} />
-        ),
-      )}
+      {row.map((item) => (
+        <ImageTile key={item.src} item={item} />
+      ))}
     </Marquee>
   );
 }
@@ -280,9 +263,10 @@ export function CreativeWall() {
           <br />
           <strong className="font-bold">위너 숏폼 포트폴리오</strong>
         </SectionHeading>
-        <p className="mt-5 text-sm text-muted">
-          최근 진행한 캠페인 중 <strong className="font-bold text-ink">주요 위너
-          소재만</strong> 추렸습니다.
+        <p className="mt-5 max-w-2xl text-sm leading-[1.8] text-muted sm:text-[0.9375rem]">
+          기획과 서사, 마케팅과 세일즈를 아는 팀이 만드는{" "}
+          <strong className="font-bold text-ink">광고형 숏폼</strong> 전문입니다.
+          최근 진행한 캠페인 중 주요 위너 소재만 추렸습니다.
         </p>
       </div>
 
@@ -301,9 +285,15 @@ export function CreativeWall() {
         )}
       </div>
 
-      {/* 이미지 소재 + 유튜브 롱폼 — 소제목 없이 그리드에 바로 이어 붙인다.
-          따로 떼어 "유튜브 롱폼" 이라고 이름표를 달면 소재가 둘로 갈려 각각 빈약해 보인다. */}
-      <div className="mt-4 space-y-3 sm:mt-6">
+      {/* 롱폼 — 숏폼 그리드 바로 아래. 같은 규칙으로 "누르면 본다" */}
+      <div className="mx-auto mt-2 grid w-full max-w-6xl grid-cols-1 gap-2 px-5 sm:mt-4 sm:grid-cols-2 sm:gap-4 sm:px-8 lg:grid-cols-3">
+        {YOUTUBE_LINKS.map((v) => (
+          <LongformCard key={v.id} id={v.id} label={v.label} />
+        ))}
+      </div>
+
+      {/* 이미지 소재 — 여기만 흐른다. 눌러 볼 것이 아니라 물량 자체가 메시지인 자리다 */}
+      <div className="mt-6 space-y-3 sm:mt-10">
         <BandRow row={BAND_ROW_A} durationSec={150} />
         <BandRow row={BAND_ROW_B} durationSec={170} reverse />
       </div>

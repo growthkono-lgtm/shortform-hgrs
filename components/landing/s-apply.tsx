@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Section, SectionHeading } from "@/components/ui/section";
 import { Field, SubmitError } from "@/components/auth/field";
 import { cn } from "@/lib/cn";
@@ -26,14 +26,20 @@ const VOLUMES = [
   { value: "unknown", label: "미정" },
 ];
 
+/**
+ * 제어형 라디오 — 진단에서 고른 값이 그대로 눌려 있어야 한다.
+ * defaultChecked 로 두면 진단을 뒤늦게 마쳤을 때 폼이 이미 마운트돼 있어 반영되지 않는다.
+ */
 function Radios({
   name,
   options,
-  defaultValue,
+  value,
+  onChange,
 }: {
   name: string;
   options: { value: string; label: string }[];
-  defaultValue?: string;
+  value: string;
+  onChange: (next: string) => void;
 }) {
   return (
     <div className="mt-2 flex flex-wrap gap-2">
@@ -46,7 +52,8 @@ function Radios({
             type="radio"
             name={name}
             value={o.value}
-            defaultChecked={defaultValue === o.value}
+            checked={value === o.value}
+            onChange={() => onChange(o.value)}
             className="sr-only"
           />
           {o.label}
@@ -69,12 +76,24 @@ export function Apply() {
   const [state, formAction] = useActionState(submitInquiry, INITIAL);
   const { answers, result } = useDiagnosis();
 
-  const interestDefault = result
-    ? result.plan.code
-    : answers.source
-      ? undefined
-      : undefined;
-  const volumeDefault = answers.volume === "unknown" ? "unknown" : answers.volume;
+  const [interest, setInterest] = useState("unsure");
+  const [volume, setVolume] = useState("unknown");
+
+  // 진단을 마치면(또는 다시 진단하면) 그 결과로 갈아 끼운다.
+  // 사용자가 직접 바꾼 값은 다음 진단 전까지 유지된다
+  useEffect(() => {
+    if (!result) return;
+    setInterest(result.plan.code);
+    setVolume(
+      result.plan.shortsCount >= 20
+        ? "v20"
+        : result.plan.shortsCount >= 10
+          ? "v10"
+          : result.plan.shortsCount >= 5
+            ? "v5"
+            : "v1",
+    );
+  }, [result]);
 
   if (state.ok) {
     return (
@@ -88,7 +107,7 @@ export function Apply() {
           </span>
           <h2 className="mt-6 text-2xl font-bold">신청이 접수되었습니다</h2>
           <p className="mt-4 text-sm leading-[1.9] text-muted">
-            입력하신 이메일로 브랜드 상황에 맞는 구성과 금액이 담긴 소개서를
+            입력하신 이메일로 브랜드 상황에 맞는 구성과 금액을 정리해
             보내드립니다. 확인에 영업일 기준 하루 정도 걸립니다.
           </p>
           <p className="mt-6 text-xs leading-[1.7] text-muted">
@@ -104,10 +123,10 @@ export function Apply() {
       <SectionHeading>
         브랜드 상황에 맞는 구성으로
         <br />
-        <strong className="font-bold">소개서를 보내드립니다</strong>
+        <strong className="font-bold">플랜을 안내해 드립니다</strong>
       </SectionHeading>
 
-      <p className="mt-6 max-w-2xl text-base leading-[1.75] text-muted sm:text-lg">
+      <p className="mt-6 max-w-2xl text-[0.9375rem] leading-[1.8] text-muted sm:text-lg">
         같은 편수라도 소스 보유 여부와 소재 상태에 따라 구성이 달라집니다. 아래
         정보만 남겨 주시면 편수별 구성과 금액을 정리해 이메일로 보내드립니다.
       </p>
@@ -131,6 +150,7 @@ export function Apply() {
                       composition: result.plan.composition,
                     },
                     headline: result.headline,
+                    blurbs: result.blurbs,
                   })
                 : ""
             }
@@ -167,7 +187,7 @@ export function Apply() {
               required
               autoComplete="email"
               placeholder="you@company.com"
-              hint="이 주소로 소개서를 보내드립니다"
+              hint="이 주소로 플랜 안내를 보내드립니다"
             />
             <Field
               label="연락처"
@@ -183,7 +203,7 @@ export function Apply() {
             name="brand_url"
             type="url"
             placeholder="https://"
-            hint="있으면 소개서에 브랜드 맞춤 예시를 담아 드립니다"
+            hint="있으면 브랜드에 맞춘 예시를 담아 드립니다"
           />
 
           <div>
@@ -193,7 +213,8 @@ export function Apply() {
             <Radios
               name="interest"
               options={INTERESTS}
-              defaultValue={interestDefault ?? "unsure"}
+              value={interest}
+              onChange={setInterest}
             />
           </div>
 
@@ -204,15 +225,8 @@ export function Apply() {
             <Radios
               name="volume"
               options={VOLUMES}
-              defaultValue={
-                volumeDefault === "v1"
-                  ? "v1"
-                  : volumeDefault === "v5"
-                    ? "v5"
-                    : volumeDefault === "v10"
-                      ? "v10"
-                      : "unknown"
-              }
+              value={volume}
+              onChange={setVolume}
             />
           </div>
 
@@ -269,14 +283,14 @@ export function Apply() {
             type="submit"
             className="w-full rounded-full bg-ink px-6 py-3.5 text-sm font-bold text-paper transition-colors duration-200 hover:bg-ink-soft"
           >
-            소개서 받기
+            플랜 안내 받기
           </button>
         </form>
 
         {/* 신청 전에 알아야 할 것들 — 폼 옆에 붙여 둔다 */}
         <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
           <div className="rounded-2xl border border-line bg-paper p-6">
-            <p className="eyebrow">What you get</p>
+            <p className="eyebrow">플랜 안내에 담기는 것</p>
             <ul className="mt-5 space-y-4 text-sm">
               {[
                 ["브랜드 맞춤 구성 제안", "소스 보유 상황과 소재 상태에 맞춘 편수·구성"],

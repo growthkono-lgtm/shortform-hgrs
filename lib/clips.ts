@@ -34,6 +34,9 @@ export const CASE_CLIPS = [
  * 대신 zeroblock-interview(제로블럭 정리수납 인터뷰) 한 편을 새로 넣었다.
  * 파일은 지우지 않았다. 다시 살릴 땐 아래 배열에 넣으면 된다.
  *
+ * 2026-08-10 pet-custom-meal 도 뺐다(사장님 지목). 유튜브 쇼츠 2편과 합쳐 15칸 —
+ * 3열 기준으로 딱 5행이 떨어진다.
+ *
  * 순서도 손댔다 — 같은 브랜드가 이웃하지 않게 흩는다.
  */
 export const WALL_CLIPS: Clip[] = [
@@ -50,14 +53,15 @@ export const WALL_CLIPS: Clip[] = [
   { slug: "pet-treats-plea", ratio: "9/16" },
   { slug: "riiid-parent-itv", ratio: "9/16" },
   { slug: "seeding-garnish", ratio: "9/16" },
-  { slug: "pet-custom-meal", ratio: "9/16" },
 ];
 
 export const clipVideo = (slug: string) => `${P}/${slug}.mp4`;
 export const clipPoster = (slug: string) => `${P}/${slug}.jpg`;
 
 /**
- * 유튜브·인스타 링크 (사장님 `영상링크.docx` 전량).
+ * 유튜브 롱폼 — 2026-08-10부터 **숏폼 그리드 바로 아래 그리드**로 세운다.
+ * 흐르는 밴드에 섞어 두면 눌러 볼 수 있는 소재라는 게 읽히지 않는다.
+ * 3열 3행으로 떨어지게 9편만 건다(PWS 스케치·하이라이트 2편 제외).
  *
  * 썸네일은 i.ytimg.com 을 그대로 건다 — 파일로 내려받아 두면 원본 영상을
  * 교체할 때마다 같이 갈아야 해서 어긋난다. maxres 가 없는 영상이 있어
@@ -90,16 +94,15 @@ export const YOUTUBE_SHORTS: { id: string; poster: string; label: string }[] = [
 
 // 위 두 편은 그리드로 올라갔으므로 아래 롱폼 목록에서는 뺀다 (같은 화면에 두 번 나오지 않게)
 export const YOUTUBE_LINKS: VideoLink[] = [
-  { id: "Yy9K61hUC3Y", label: "핏플렉스 브랜드 캠페인", kind: "long" },
-  { id: "Bsp_HBS8ckM", label: "크래프톤 · 배그 극장", kind: "long" },
-  { id: "aEbmZ3H5EWo", label: "크래프톤 · 배그 극장", kind: "long" },
-  { id: "_h3PLQlhs1s", label: "크래프톤 · PNC", kind: "long" },
-  { id: "f5QK9Hik2C8", label: "크래프톤 · PNC", kind: "long" },
-  { id: "yNsu5XfTN1E", label: "크래프톤 · 스케치", kind: "long" },
-  { id: "kN57OTVMSD0", label: "크래프톤 · 하이라이트", kind: "long" },
-  { id: "XmX0iYOTUGE", label: "열다 · 옷장정리", kind: "long" },
-  { id: "EU26OQv6ATE", label: "열다 · 옷장정리", kind: "long" },
-  { id: "6gfORrmxY2Q", label: "열다 · 옷장정리", kind: "long" },
+  { id: "jVBusZBaCA8", label: "크래프톤 · PNC 2024 식사 데이트", kind: "long" },
+  { id: "Yy9K61hUC3Y", label: "핏플렉스 브랜드 영상", kind: "long" },
+  { id: "Bsp_HBS8ckM", label: "크래프톤 · 배그 극장 EP2", kind: "long" },
+  { id: "aEbmZ3H5EWo", label: "크래프톤 · 배그 극장 EP1", kind: "long" },
+  { id: "_h3PLQlhs1s", label: "크래프톤 · PNC 2024 EP2", kind: "long" },
+  { id: "f5QK9Hik2C8", label: "크래프톤 · PNC 2024 EP1", kind: "long" },
+  { id: "XmX0iYOTUGE", label: "열다 · 주방 정리 노하우", kind: "long" },
+  { id: "EU26OQv6ATE", label: "열다 · 이사 전 정리정돈", kind: "long" },
+  { id: "6gfORrmxY2Q", label: "열다 · 신발장 정리", kind: "long" },
 ];
 
 export const INSTAGRAM_LINKS = [

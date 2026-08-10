@@ -1,6 +1,5 @@
 import { cn } from "@/lib/cn";
 import { CREW_FACTS, CREW_ROLES, CREW_SHOTS } from "@/lib/crew";
-import { PARTNERSHIP_URL } from "@/lib/constants";
 
 /**
  * "누가 만드나" — FAQ 한 줄로 묻혀 있던 문항을 섹션으로 꺼낸 자리.
@@ -113,19 +112,6 @@ export function Crew() {
         </ul>
       </div>
 
-      <div className="mx-auto mt-12 w-full max-w-6xl px-5 sm:px-8">
-        <a
-          href={PARTNERSHIP_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-white hover:text-ink"
-        >
-          팀·회사 소개 자세히 보기
-          <svg viewBox="0 0 24 24" aria-hidden className="size-4 fill-none stroke-current stroke-2">
-            <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </a>
-      </div>
     </section>
   );
 }

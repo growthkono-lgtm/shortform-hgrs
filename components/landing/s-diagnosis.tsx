@@ -132,14 +132,6 @@ export function Diagnosis() {
                     {result.plan.composition}
                   </p>
 
-                  <div className="mt-4 space-y-2 border-t border-white/10 pt-4">
-                    {result.blurbs.map((b) => (
-                      <p key={b} className="text-[0.8125rem] leading-[1.8] text-white/70">
-                        {b}
-                      </p>
-                    ))}
-                  </div>
-
                   <div className="mt-5 border-t border-white/10 pt-4">
                     <p className="stat-figure text-3xl">
                       {formatKRW(result.plan.betaPrice)}
@@ -193,11 +185,8 @@ export function Diagnosis() {
                   href="#apply"
                   className="mt-7 block rounded-full bg-white px-6 py-3.5 text-center text-sm font-bold text-ink transition-colors duration-200 hover:bg-white/85"
                 >
-                  이 구성으로 소개서 받기
+                  플랜 안내 바로 받기
                 </Link>
-                <p className="mt-3 text-center text-xs text-white/40">
-                  다른 편수 구성과 상세 안내는 소개서로 보내드립니다
-                </p>
 
                 <button
                   type="button"
