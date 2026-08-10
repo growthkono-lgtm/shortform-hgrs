@@ -3,6 +3,7 @@ import { LoopVideo } from "@/components/ui/loop-video";
 import { Marquee } from "@/components/ui/marquee";
 import { VerticalMarquee } from "@/components/ui/vertical-marquee";
 import { WALL_CLIPS, clipPoster, clipVideo } from "@/lib/clips";
+import { SERVICE } from "@/lib/constants";
 
 /**
  * S1. 히어로 — 2026-08-06 피그마 개편안 + hgrs.io 히어로 톤 계승.
@@ -40,7 +41,7 @@ export function Hero() {
             트랙보다 넓어지면(성과 숫자 줄이 그렇다) 열 전체가 밀려 나가고,
             섹션의 overflow-hidden 에 문장 끝이 잘린다. 모바일에서 서브카피가 잘리던 원인. */}
         <div className="min-w-0">
-          <p className="eyebrow">Scaleup Shortform Studio</p>
+          <p className="eyebrow">{SERVICE.nameEn}</p>
 
           <h1 className="mt-5 text-[1.75rem] leading-[1.3] font-bold text-balance sm:mt-6 sm:text-[2.75rem] sm:leading-[1.24] lg:text-[3.375rem]">
             대기업부터 스타트업까지
