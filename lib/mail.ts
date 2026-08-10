@@ -1,5 +1,10 @@
 import { createAdminClient } from "@/lib/supabase/server";
 import { SERVICE } from "@/lib/constants";
+import {
+  buildBrochure,
+  type BrochureInquiry,
+  type BrochureRow,
+} from "@/lib/brochure";
 
 /**
  * 자동 메일 발송.
@@ -95,26 +100,82 @@ ${body}
 </div>`;
 }
 
+/** 메일 안의 플랜 표 — 클라이언트마다 CSS 지원이 달라 인라인 스타일 테이블로만 쓴다 */
+function planTable(caption: string, tagline: string, rows: BrochureRow[]) {
+  const tr = (r: BrochureRow) => `
+<tr>
+  <td style="padding:10px 8px 10px 0;border-bottom:1px solid #efefef;font-size:13px;font-weight:700;white-space:nowrap">${r.label}</td>
+  <td style="padding:10px 8px;border-bottom:1px solid #efefef;font-size:12px;color:#8a8a8a">${r.composition}</td>
+  <td style="padding:10px 0 10px 8px;border-bottom:1px solid #efefef;font-size:13px;font-weight:700;text-align:right;white-space:nowrap">${r.price}${
+    r.perUnit
+      ? `<br><span style="font-size:11px;font-weight:400;color:#8a8a8a">${r.perUnit}</span>`
+      : ""
+  }</td>
+</tr>`;
+
+  return `
+<p style="font-size:15px;font-weight:700;margin:28px 0 4px">${caption}</p>
+<p style="font-size:12px;color:#8a8a8a;margin:0 0 8px;line-height:1.7">${tagline}</p>
+<table style="width:100%;border-collapse:collapse">${rows.map(tr).join("")}</table>`;
+}
+
 /**
- * ① 소개서(플랜 안내) — 신청 접수 직후.
- * 본문 문구는 사장님이 확정 예정. 지금은 자리를 잡아 두고 발송 경로만 살려 둔다.
+ * ① 소개서(플랜 안내) — 어드민이 신청 건에서 [소개서 발송]을 누를 때.
+ *
+ * 랜딩에서 가격을 내렸으니 **이 메일이 가격을 말하는 유일한 자리**다.
+ * "정리해서 보내드리겠습니다" 같은 예고편을 보내면 안 된다 — 받는 순간 판단이 되게
+ * 권장 구성과 전체 표를 본문에 그대로 싣고, 자세한 건 소개서 페이지로 넘긴다.
  */
-export function brochureMail(name: string) {
+export function brochureMail(inquiry: BrochureInquiry) {
+  const b = buildBrochure(inquiry, SERVICE.url);
+
+  const recommendation =
+    b.result && b.price
+      ? `
+<table style="width:100%;border-collapse:collapse;background:#f7f7f5;border-radius:12px;margin:0 0 8px">
+  <tr>
+    <td style="padding:20px 22px">
+      <p style="font-size:12px;color:#8a8a8a;margin:0 0 6px">남겨주신 진단 기준 권장 구성</p>
+      <p style="font-size:18px;font-weight:700;margin:0">${b.result.plan.label}</p>
+      <p style="font-size:12px;color:#8a8a8a;margin:4px 0 12px">${b.result.plan.composition}</p>
+      <p style="font-size:22px;font-weight:700;margin:0">${b.price}</p>
+    </td>
+  </tr>
+</table>
+${b.result.blurbs
+  .map(
+    (t) =>
+      `<p style="font-size:13px;color:#5c5c5c;line-height:1.8;margin:12px 0 0">${t}</p>`,
+  )
+  .join("")}`
+      : `<p style="font-size:14px;margin:0 0 16px">브랜드에 맞는 구성을 고르실 수 있도록 전체 플랜을 정리해 보내드립니다.</p>`;
+
   return {
-    subject: `[${SERVICE.name}] 요청하신 플랜 안내를 보내드립니다`,
+    subject: `[${SERVICE.name}] ${b.greeting}께 드리는 플랜 안내`,
     html: mailShell(`
-<h2 style="font-size:20px;margin:0 0 16px">${name}님, 안녕하세요.</h2>
-<p style="font-size:14px;margin:0 0 16px">
-  ${SERVICE.name}에 문의해 주셔서 감사합니다.<br>
-  남겨주신 내용을 바탕으로 브랜드에 맞는 구성과 편수별 금액을 정리해 보내드립니다.
+<h2 style="font-size:20px;margin:0 0 16px">${b.greeting}, 안녕하세요.</h2>
+<p style="font-size:14px;margin:0 0 20px;line-height:1.8">
+  ${SERVICE.name}에 신청해 주셔서 감사합니다.<br>
+  남겨주신 진단 답변을 기준으로 지금 필요한 구성과 금액을 정리했습니다.
 </p>
-<p style="font-size:14px;margin:0 0 24px">
-  회신이 필요하시면 이 메일에 그대로 답장해 주세요.
+
+${recommendation}
+
+${planTable("싱글 · 숏폼 기획제작", "브랜드가 보유한 소스로 바로 시작합니다", b.singles)}
+${planTable("패키지 · 숏폼 + 인플루언서 시딩", "소스컷 확보부터 함께 진행합니다", b.packages)}
+
+<p style="font-size:12px;color:#8a8a8a;line-height:1.9;margin:20px 0 0">
+  ${b.policies.map((p) => `· ${p}`).join("<br>")}
 </p>
-<p style="margin:0">
-  <a href="${SERVICE.url}" style="display:inline-block;background:#030303;color:#fff;text-decoration:none;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:700">
-    스튜디오 둘러보기
+
+<p style="margin:28px 0 0">
+  <a href="${b.url}" style="display:inline-block;background:#030303;color:#fff;text-decoration:none;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:700">
+    플랜 안내 전체 보기
   </a>
+</p>
+<p style="font-size:13px;color:#5c5c5c;margin:16px 0 0;line-height:1.8">
+  진행 단계와 조건까지 정리된 안내는 위 버튼에서 보실 수 있습니다.<br>
+  회신이 필요하시면 이 메일에 그대로 답장해 주세요.
 </p>`),
   };
 }

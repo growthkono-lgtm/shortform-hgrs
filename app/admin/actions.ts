@@ -25,12 +25,12 @@ export async function sendBrochure(
   const admin = createAdminClient();
   const { data: inquiry } = await admin
     .from("inquiries")
-    .select("id, email, contact_name")
+    .select("id, email, contact_name, company_name, diagnosis")
     .eq("id", id)
     .maybeSingle();
   if (!inquiry) return fail("신청 정보를 찾지 못했습니다.");
 
-  const mail = brochureMail(inquiry.contact_name);
+  const mail = brochureMail(inquiry);
   const res = await sendMail({
     kind: "brochure",
     to: inquiry.email,
