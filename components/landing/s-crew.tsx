@@ -49,12 +49,12 @@ export function Crew() {
               )}
             >
               {/* 이미 webp 로 압축해 넣었다. next/image 로 돌리면 8장이 전부 런타임 최적화 요청이 된다.
-                  앞 네 장은 lazy 를 걸지 않는다 — 걸었더니 스크롤 도착 시점에 빈 회색 칸만 보였다 */}
+                  여덟 장 다 lazy 를 걸지 않는다 — 걸었더니 스크롤 도착 시점에 빈 회색 칸만 보여
+                  "팀 사진이 없다"로 읽혔다. 전부 합쳐 470KB 남짓이라 이쪽이 낫다 */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={shot.src}
                 alt={shot.alt}
-                loading={i < 4 ? "eager" : "lazy"}
                 decoding="async"
                 className="absolute inset-0 size-full object-cover"
               />
