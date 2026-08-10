@@ -27,6 +27,9 @@ export async function requireProfile(): Promise<Profile> {
   // 트리거가 아직 행을 못 만든 극히 드문 경우 — 재로그인 유도
   if (!profile) redirect("/login?error=profile_missing");
 
+  // 이메일 인증만 하고 이탈한 반쪽 계정 — 가입 마무리로 돌려보낸다
+  if (!profile.signup_completed) redirect("/signup");
+
   return profile;
 }
 
@@ -51,5 +54,6 @@ export async function getOptionalProfile(): Promise<Profile | null> {
     .eq("id", userId)
     .single();
 
-  return profile ?? null;
+  // 가입을 마치지 않은 계정은 로그인하지 않은 것으로 본다
+  return profile?.signup_completed ? profile : null;
 }

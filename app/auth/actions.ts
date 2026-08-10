@@ -9,12 +9,24 @@ import { CONSENT_VERSION } from "@/lib/consents";
 export type AuthState = { error: string | null };
 
 /**
- * 인증 방식: **이메일 + 비밀번호**. 소셜 로그인은 열지 않는다 —
- * 회원 DB를 우리가 직접 들고 가야 이메일 마케팅·CRM이 가능하다.
- * 가입 마지막에 이메일로 6자리 인증번호를 보내 주소 소유만 한 번 확인한다.
+ * 가입은 3단계다 — **이메일 인증을 먼저 끝내고** 나머지를 채운다.
  *
- * ※ 인증번호가 메일에 찍히려면 Supabase Auth 템플릿에 `{{ .Token }}`이 있어야 한다(적용 완료).
+ *   1) 이메일 입력 → 6자리 인증번호 발송
+ *   2) 인증번호 확인 → 여기서 계정과 profiles 행이 먼저 생긴다(회사 정보는 빈 값)
+ *   3) 비밀번호·회사명·담당자·직책·동의 입력 → [가입 완료] → 대시보드 또는 고르던 결제 화면
+ *
+ * 2)에서 이탈하면 `profiles.signup_completed = false`인 반쪽 계정이 남는다.
+ * 같은 이메일로 다시 들어오면 1)~2)를 거쳐 3)부터 이어서 마칠 수 있다.
+ *
+ * 로그인은 이메일 + 비밀번호. 소셜 로그인은 열지 않는다 —
+ * 회원 DB를 우리가 직접 들고 가야 이메일 마케팅·CRM이 가능하다.
  */
+export type SignUpState = {
+  step: 1 | 2 | 3;
+  email: string;
+  error: string | null;
+  notice: string | null;
+};
 
 /** 개인 메일 도메인 — 회사 이메일로만 받는다 */
 const CONSUMER_DOMAINS = new Set([
@@ -42,9 +54,7 @@ const CONSUMER_DOMAINS = new Set([
   "tutanota.com",
 ]);
 
-function emailDomain(email: string) {
-  return email.split("@")[1]?.toLowerCase() ?? "";
-}
+const emailDomain = (email: string) => email.split("@")[1]?.toLowerCase() ?? "";
 
 /** Supabase가 돌려주는 영문 메시지를 그대로 노출하지 않는다 */
 function toKoreanMessage(message: string): string {
@@ -52,7 +62,7 @@ function toKoreanMessage(message: string): string {
   if (m.includes("invalid login credentials"))
     return "이메일 또는 비밀번호가 올바르지 않습니다.";
   if (m.includes("email not confirmed"))
-    return "이메일 인증이 완료되지 않았습니다. 가입 시 받으신 인증번호로 인증을 마쳐 주세요.";
+    return "이메일 인증이 완료되지 않았습니다.";
   if (m.includes("user already registered") || m.includes("already been registered"))
     return "이미 가입된 이메일입니다. 로그인해 주세요.";
   if (m.includes("password should be at least"))
@@ -75,9 +85,8 @@ function safeNext(next: unknown): string {
 }
 
 /**
- * 동의 이력 기록. 가입 폼에서 받은 값을 user_metadata로 넘겨 두었다가
- * 인증이 끝나 사용자 행이 확정된 시점에 IP·UA와 함께 남긴다.
- * 같은 버전 재기록은 unique 제약이 막는다.
+ * 동의 이력 기록. 같은 버전 재기록은 unique 제약이 막는다.
+ * 전문 원본은 lib/consents.ts가 버전별로 들고 있다.
  */
 async function recordConsents(userId: string, marketingAgreed: boolean) {
   const head = await headers();
@@ -85,6 +94,7 @@ async function recordConsents(userId: string, marketingAgreed: boolean) {
     head.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     head.get("x-real-ip") ??
     null;
+  const userAgent = head.get("user-agent");
 
   const admin = createAdminClient();
   await admin.from("user_consents").upsert(
@@ -95,7 +105,7 @@ async function recordConsents(userId: string, marketingAgreed: boolean) {
         version: CONSENT_VERSION,
         agreed: true,
         ip_address: ip,
-        user_agent: head.get("user-agent"),
+        user_agent: userAgent,
       },
       {
         user_id: userId,
@@ -103,54 +113,144 @@ async function recordConsents(userId: string, marketingAgreed: boolean) {
         version: CONSENT_VERSION,
         agreed: marketingAgreed,
         ip_address: ip,
-        user_agent: head.get("user-agent"),
+        user_agent: userAgent,
       },
     ],
     { onConflict: "user_id,kind,version", ignoreDuplicates: true },
   );
 }
 
-/** 가입 — 이메일·비밀번호·회사 정보·동의를 받고 인증번호를 보낸다 */
-export async function signUp(
-  _prev: AuthState,
-  formData: FormData,
-): Promise<AuthState> {
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
-  const password = String(formData.get("password") ?? "");
-  const passwordConfirm = String(formData.get("password_confirm") ?? "");
-  const companyName = String(formData.get("company_name") ?? "").trim();
-  const contactName = String(formData.get("contact_name") ?? "").trim();
-  const jobTitle = String(formData.get("job_title") ?? "").trim();
-  const consentRequired = formData.get("consent_required") === "on";
-  const consentMarketing = formData.get("consent_marketing") === "on";
-  const next = safeNext(formData.get("next"));
+async function sendCode(email: string): Promise<string | null> {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: { shouldCreateUser: true },
+  });
+  return error ? toKoreanMessage(error.message) : null;
+}
 
-  if (!email || !password || !companyName || !contactName || !jobTitle) {
-    return { error: "필수 항목을 모두 입력해 주세요." };
+/**
+ * 가입 폼 단일 액션. formData의 `intent`로 단계를 옮긴다 —
+ * 단계를 클라이언트 상태로만 들고 있으면 새로고침 한 번에 인증이 날아간다.
+ */
+export async function signUpStep(
+  prev: SignUpState,
+  formData: FormData,
+): Promise<SignUpState> {
+  const intent = String(formData.get("intent") ?? "");
+  const keep = { ...prev, error: null, notice: null };
+
+  // ── 이메일 다시 입력 ──
+  if (intent === "edit_email") {
+    return { step: 1, email: "", error: null, notice: null };
   }
-  if (password.length < 8) {
-    return { error: "비밀번호는 8자 이상이어야 합니다." };
-  }
-  if (password !== passwordConfirm) {
-    return { error: "비밀번호가 서로 다릅니다." };
-  }
-  if (CONSUMER_DOMAINS.has(emailDomain(email))) {
+
+  // ── 1단계: 인증번호 발송 ──
+  if (intent === "send" || intent === "resend") {
+    const email =
+      intent === "resend"
+        ? prev.email
+        : String(formData.get("email") ?? "").trim().toLowerCase();
+
+    if (!email) return { ...keep, step: 1, error: "이메일을 입력해 주세요." };
+    if (CONSUMER_DOMAINS.has(emailDomain(email))) {
+      return {
+        ...keep,
+        step: 1,
+        error:
+          "회사 이메일로 가입해 주세요. 개인 메일(gmail·naver 등)은 사용할 수 없습니다.",
+      };
+    }
+
+    // 이미 가입을 마친 이메일이면 인증번호를 보내지 않고 로그인으로 안내한다
+    const admin = createAdminClient();
+    const { data: existing } = await admin
+      .from("profiles")
+      .select("signup_completed")
+      .eq("email", email)
+      .maybeSingle();
+    if (existing?.signup_completed) {
+      return {
+        ...keep,
+        step: 1,
+        error: "이미 가입된 이메일입니다. 로그인해 주세요.",
+      };
+    }
+
+    const error = await sendCode(email);
+    if (error) return { ...keep, step: 1, email, error };
+
     return {
-      error:
-        "회사 이메일로 가입해 주세요. 개인 메일(gmail·naver 등)은 사용할 수 없습니다.",
+      step: 2,
+      email,
+      error: null,
+      notice:
+        intent === "resend" ? "인증번호를 다시 보냈습니다." : null,
     };
   }
-  if (!consentRequired) {
-    return { error: "필수 동의 항목에 동의해 주셔야 가입이 가능합니다." };
+
+  // ── 2단계: 인증번호 확인 ──
+  if (intent === "verify") {
+    const token = String(formData.get("token") ?? "").replace(/\D/g, "");
+    if (!prev.email)
+      return { ...keep, step: 1, error: "이메일부터 입력해 주세요." };
+    if (token.length !== 6)
+      return { ...keep, step: 2, error: "6자리 인증번호를 입력해 주세요." };
+
+    const supabase = await createClient();
+    const { error } = await supabase.auth.verifyOtp({
+      email: prev.email,
+      token,
+      type: "email",
+    });
+    if (error) return { ...keep, step: 2, error: toKoreanMessage(error.message) };
+
+    return { step: 3, email: prev.email, error: null, notice: null };
   }
 
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      // profiles 행은 on_auth_user_created 트리거가 이 값들로 만든다.
-      // 인가 판단에는 절대 쓰지 않는다 — user_metadata는 사용자가 수정 가능하다
+  // ── 3단계: 나머지 정보 + 동의 → 가입 완료 ──
+  if (intent === "complete") {
+    const password = String(formData.get("password") ?? "");
+    const passwordConfirm = String(formData.get("password_confirm") ?? "");
+    const companyName = String(formData.get("company_name") ?? "").trim();
+    const contactName = String(formData.get("contact_name") ?? "").trim();
+    const jobTitle = String(formData.get("job_title") ?? "").trim();
+    const consentRequired = formData.get("consent_required") === "on";
+    const consentMarketing = formData.get("consent_marketing") === "on";
+    const next = safeNext(formData.get("next"));
+
+    if (!password || !companyName || !contactName || !jobTitle) {
+      return { ...keep, step: 3, error: "필수 항목을 모두 입력해 주세요." };
+    }
+    if (password.length < 8) {
+      return { ...keep, step: 3, error: "비밀번호는 8자 이상이어야 합니다." };
+    }
+    if (password !== passwordConfirm) {
+      return { ...keep, step: 3, error: "비밀번호가 서로 다릅니다." };
+    }
+    if (!consentRequired) {
+      return {
+        ...keep,
+        step: 3,
+        error: "필수 동의 항목에 동의해 주셔야 가입이 완료됩니다.",
+      };
+    }
+
+    // 인증 단계에서 만들어진 세션이 있어야 한다
+    const supabase = await createClient();
+    const { data: claimsData } = await supabase.auth.getClaims();
+    const userId = claimsData?.claims?.sub as string | undefined;
+    if (!userId) {
+      return {
+        ...keep,
+        step: 1,
+        email: "",
+        error: "인증이 만료되었습니다. 이메일 인증부터 다시 진행해 주세요.",
+      };
+    }
+
+    const { error: updateError } = await supabase.auth.updateUser({
+      password,
       data: {
         company_name: companyName,
         contact_name: contactName,
@@ -158,21 +258,32 @@ export async function signUp(
         marketing_opt_in: consentMarketing,
         consent_version: CONSENT_VERSION,
       },
-    },
-  });
+    });
+    if (updateError)
+      return { ...keep, step: 3, error: toKoreanMessage(updateError.message) };
 
-  if (error) return { error: toKoreanMessage(error.message) };
+    // profiles 행은 인증 시점에 빈 값으로 만들어져 있다 → 여기서 채운다
+    const admin = createAdminClient();
+    const { error: profileError } = await admin
+      .from("profiles")
+      .update({
+        company_name: companyName,
+        contact_name: contactName,
+        job_title: jobTitle,
+        marketing_opt_in: consentMarketing,
+        signup_completed: true,
+      })
+      .eq("id", userId);
+    if (profileError)
+      return { ...keep, step: 3, error: "가입 정보를 저장하지 못했습니다." };
 
-  // 이메일 인증이 꺼져 있으면 바로 세션이 온다
-  if (data.session && data.user) {
-    await recordConsents(data.user.id, consentMarketing);
+    await recordConsents(userId, consentMarketing);
+
     revalidatePath("/", "layout");
     redirect(next);
   }
 
-  redirect(
-    `/verify?email=${encodeURIComponent(email)}&next=${encodeURIComponent(next)}`,
-  );
+  return keep;
 }
 
 /** 로그인 — 이메일 + 비밀번호 */
@@ -195,51 +306,6 @@ export async function signIn(
 
   revalidatePath("/", "layout");
   redirect(next);
-}
-
-/** 가입 마지막 단계 — 이메일로 받은 6자리 인증번호 확인 */
-export async function verifyCode(
-  _prev: AuthState,
-  formData: FormData,
-): Promise<AuthState> {
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
-  const token = String(formData.get("token") ?? "").replace(/\D/g, "");
-  const next = safeNext(formData.get("next"));
-
-  if (!email) return { error: "이메일 정보가 없습니다. 처음부터 다시 진행해 주세요." };
-  if (token.length !== 6) return { error: "6자리 인증번호를 입력해 주세요." };
-
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.verifyOtp({
-    email,
-    token,
-    type: "signup",
-  });
-
-  if (error) return { error: toKoreanMessage(error.message) };
-
-  if (data.user) {
-    const marketing = data.user.user_metadata?.marketing_opt_in === true;
-    await recordConsents(data.user.id, marketing);
-  }
-
-  revalidatePath("/", "layout");
-  redirect(next);
-}
-
-/** 인증번호 재발송 */
-export async function resendCode(
-  _prev: AuthState,
-  formData: FormData,
-): Promise<AuthState> {
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
-  if (!email) return { error: "이메일 정보가 없습니다." };
-
-  const supabase = await createClient();
-  const { error } = await supabase.auth.resend({ type: "signup", email });
-
-  if (error) return { error: toKoreanMessage(error.message) };
-  return { error: null };
 }
 
 export async function signOut() {

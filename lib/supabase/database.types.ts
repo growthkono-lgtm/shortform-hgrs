@@ -355,33 +355,39 @@ export type Database = {
           company_name: string
           contact_name: string
           created_at: string
+          email: string | null
           id: string
           job_title: string | null
           marketing_opt_in: boolean
           phone: string | null
           role: string
+          signup_completed: boolean
           updated_at: string
         }
         Insert: {
           company_name: string
           contact_name: string
           created_at?: string
+          email?: string | null
           id: string
           job_title?: string | null
           marketing_opt_in?: boolean
           phone?: string | null
           role?: string
+          signup_completed?: boolean
           updated_at?: string
         }
         Update: {
           company_name?: string
           contact_name?: string
           created_at?: string
+          email?: string | null
           id?: string
           job_title?: string | null
           marketing_opt_in?: boolean
           phone?: string | null
           role?: string
+          signup_completed?: boolean
           updated_at?: string
         }
         Relationships: []
