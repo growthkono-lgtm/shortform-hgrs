@@ -253,11 +253,14 @@ export type Database = {
           confirmed: boolean
           content_count: number | null
           created_at: string
+          fetch_error: string | null
+          fetched_at: string | null
           follower_count: number | null
           id: string
           note: string | null
           platform: string
           project_id: string
+          reward: number | null
           selected: boolean
           selected_at: string | null
           snapshot_at: string
@@ -274,11 +277,14 @@ export type Database = {
           confirmed?: boolean
           content_count?: number | null
           created_at?: string
+          fetch_error?: string | null
+          fetched_at?: string | null
           follower_count?: number | null
           id?: string
           note?: string | null
           platform?: string
           project_id: string
+          reward?: number | null
           selected?: boolean
           selected_at?: string | null
           snapshot_at?: string
@@ -295,11 +301,14 @@ export type Database = {
           confirmed?: boolean
           content_count?: number | null
           created_at?: string
+          fetch_error?: string | null
+          fetched_at?: string | null
           follower_count?: number | null
           id?: string
           note?: string | null
           platform?: string
           project_id?: string
+          reward?: number | null
           selected?: boolean
           selected_at?: string | null
           snapshot_at?: string

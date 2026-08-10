@@ -132,6 +132,7 @@ export type Candidate = {
   channel_name: string;
   channel_url: string;
   platform: string;
+  thumbnail_url: string | null;
   follower_count: number | null;
   content_count: number | null;
   avg_views: number | null;
@@ -186,7 +187,17 @@ export function CandidatePanel({
             )}
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0">
+              <div className="flex min-w-0 items-center gap-2.5">
+                {c.thumbnail_url && (
+                  // 벤더가 준 프로필 이미지 — next/image 로 돌리면 외부 도메인 설정이 필요하다
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={c.thumbnail_url}
+                    alt=""
+                    loading="lazy"
+                    className="size-9 shrink-0 rounded-full object-cover"
+                  />
+                )}
                 <a
                   href={c.channel_url}
                   target="_blank"

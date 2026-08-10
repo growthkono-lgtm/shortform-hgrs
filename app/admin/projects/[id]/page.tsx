@@ -5,7 +5,9 @@ import { ActionForm } from "@/components/admin/action-form";
 import { SEEDING_STAGES, SHORTS_STAGES, TRACK_LABEL } from "@/lib/stages";
 import {
   addCandidate,
+  refreshCandidate,
   removeCandidate,
+  setCandidateReward,
   setDriveLink,
   setStage,
   upsertDeliverable,
@@ -188,28 +190,70 @@ export default async function AdminProjectPage({
           {candidates && candidates.length > 0 && (
             <ul className="mt-4 space-y-2">
               {candidates.map((c) => (
-                <li
-                  key={c.id}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line px-4 py-3 text-xs"
-                >
-                  <span className="min-w-0">
-                    <span className="font-bold">
-                      {c.channel_name}
+                <li key={c.id} className="rounded-xl border border-line p-4 text-xs">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <span className="min-w-0">
+                      <a
+                        href={c.channel_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-bold underline underline-offset-2"
+                      >
+                        {c.channel_name}
+                      </a>
+                      <span className="ml-2 rounded bg-paper-alt px-1.5 py-0.5 text-[0.625rem] text-muted">
+                        {c.platform}
+                      </span>
                       {c.selected && (
                         <span className="ml-2 rounded-full bg-accent px-2 py-0.5 text-[0.625rem] text-white">
                           클라이언트 선택
                         </span>
                       )}
+                      <span className="mt-1.5 block text-muted">
+                        팔로워 {num(c.follower_count)} · 게시물 {num(c.content_count)} ·
+                        평균 조회 {num(c.avg_views)} · 좋아요 {num(c.avg_likes)} · 댓글{" "}
+                        {num(c.avg_comments)} · CPV {num(c.avg_cpv)}
+                      </span>
+                      {c.fetch_error && (
+                        <span className="mt-1.5 block text-red-600">
+                          수집 실패 — {c.fetch_error}
+                        </span>
+                      )}
                     </span>
-                    <span className="mt-1 block text-muted">
-                      팔로워 {num(c.follower_count)} · 게시물 {num(c.content_count)} ·
-                      평균 조회 {num(c.avg_views)} · 좋아요 {num(c.avg_likes)} · 댓글{" "}
-                      {num(c.avg_comments)} · CPV {num(c.avg_cpv)}
+
+                    <span className="flex shrink-0 items-center gap-2">
+                      <ActionForm
+                        action={refreshCandidate}
+                        label="지표 새로고침"
+                        variant="outline"
+                        inline
+                      >
+                        <input type="hidden" name="candidate_id" value={c.id} />
+                        <input type="hidden" name="project_id" value={project.id} />
+                      </ActionForm>
+                      <ActionForm action={removeCandidate} label="삭제" variant="ghost" inline>
+                        <input type="hidden" name="candidate_id" value={c.id} />
+                        <input type="hidden" name="project_id" value={project.id} />
+                      </ActionForm>
                     </span>
-                  </span>
-                  <ActionForm action={removeCandidate} label="삭제" variant="ghost" inline>
+                  </div>
+
+                  {/* 단가는 벤더가 주지 않는다 — 협상값을 넣으면 CPV가 계산된다 */}
+                  <ActionForm
+                    action={setCandidateReward}
+                    label="단가 저장"
+                    variant="outline"
+                    inline
+                    className="mt-3"
+                  >
                     <input type="hidden" name="candidate_id" value={c.id} />
                     <input type="hidden" name="project_id" value={project.id} />
+                    <input
+                      name="reward"
+                      defaultValue={c.reward ?? ""}
+                      placeholder="제안 단가(원)"
+                      className="w-36 rounded-lg border border-line bg-paper px-3 py-2 text-xs"
+                    />
                   </ActionForm>
                 </li>
               ))}
@@ -218,33 +262,21 @@ export default async function AdminProjectPage({
 
           <ActionForm action={addCandidate} label="후보 추가" className="mt-5">
             <input type="hidden" name="project_id" value={project.id} />
-            <input
-              name="channel_url"
-              required
-              placeholder="채널 링크만 붙여넣으세요 — 예) https://instagram.com/aamoonlog"
-              className={input}
-            />
+            <div className="grid gap-2 sm:grid-cols-[1fr_180px]">
+              <input
+                name="channel_url"
+                required
+                placeholder="채널 링크만 붙여넣으세요 — https://instagram.com/aamoonlog"
+                className={input}
+              />
+              <input name="reward" placeholder="제안 단가(원, 선택)" className={input} />
+            </div>
+            <input name="note" placeholder="메모 (선택)" className={input} />
             <p className="text-[0.6875rem] leading-[1.7] text-muted">
-              플랫폼과 채널명은 링크에서 자동으로 읽습니다. 아래는 <strong>덮어쓰고
-              싶을 때만</strong> 채우세요 — 비워 두면 화면에 &ldquo;—&rdquo;로 나옵니다.
+              링크를 넣으면 채널명·팔로워·게시물수·평균 조회/좋아요/댓글을{" "}
+              <strong>자동으로 수집</strong>합니다. CPV는 제안 단가 ÷ 평균 조회수로
+              계산됩니다. 수집이 실패해도 후보는 저장되고, 사유가 목록에 표시됩니다.
             </p>
-            <details className="rounded-lg border border-line">
-              <summary className="cursor-pointer px-3 py-2 text-[0.6875rem] text-muted">
-                직접 입력 (채널명 · 지표)
-              </summary>
-              <div className="space-y-2 border-t border-line p-3">
-                <input name="channel_name" placeholder="채널명 (비우면 자동)" className={input} />
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-                  <input name="follower_count" placeholder="팔로워" className={input} />
-                  <input name="content_count" placeholder="컨텐츠수" className={input} />
-                  <input name="avg_views" placeholder="평균 조회" className={input} />
-                  <input name="avg_likes" placeholder="평균 좋아요" className={input} />
-                  <input name="avg_comments" placeholder="평균 댓글" className={input} />
-                  <input name="avg_cpv" placeholder="평균 CPV(원)" className={input} />
-                </div>
-                <input name="note" placeholder="메모" className={input} />
-              </div>
-            </details>
           </ActionForm>
         </section>
       )}

@@ -6,6 +6,7 @@ import { createAdminClient } from "@/lib/supabase/server";
 import { brochureMail, projectStartMail, sendMail } from "@/lib/mail";
 import { FIRST_SEEDING_STAGE, FIRST_SHORTS_STAGE } from "@/lib/stages";
 import { parseChannelUrl } from "@/lib/channel-url";
+import { computeCpv, fetchChannelMetrics } from "@/lib/channel-metrics";
 
 export type ActionState = { ok: boolean; message: string | null };
 
@@ -175,8 +176,10 @@ export async function setStage(
 
 /**
  * 인플루언서 후보 등록 — **채널 링크 한 줄이면 된다.**
- * 플랫폼과 채널명은 URL에서 뽑아 채운다(사람이 다시 칠 이유가 없다).
- * 지표는 URL로 알 수 없어 비워 둔다 — 수집 소스를 붙이기 전까지 화면에 "—"로 나온다.
+ *
+ * 플랫폼·채널명은 URL에서 뽑고, 팔로워·조회수 등 지표는 Apify 로 바로 수집한다.
+ * 수집이 실패해도 후보는 저장한다 — 링크는 남기고 사유를 적어 둔 뒤 다시 시도하면 된다.
+ * 실패를 이유로 저장을 막으면 벤더가 흔들릴 때마다 작업이 통째로 멈춘다.
  */
 export async function addCandidate(
   _prev: ActionState,
@@ -190,33 +193,119 @@ export async function addCandidate(
   const parsed = parseChannelUrl(rawUrl);
   if (!parsed) return fail("채널 링크 형식을 확인해 주세요.");
 
-  const typedName = String(formData.get("channel_name") ?? "").trim();
-  const channelName = typedName || parsed.handle || parsed.url;
+  const rewardRaw = String(formData.get("reward") ?? "").replace(/[^\d]/g, "");
+  const reward = rewardRaw ? Number(rewardRaw) : null;
 
-  const num = (key: string) => {
-    const raw = String(formData.get(key) ?? "").replace(/[^\d]/g, "");
-    return raw ? Number(raw) : null;
-  };
+  const result = await fetchChannelMetrics(parsed.url);
+  const m = result.ok ? result.metrics : null;
 
   const admin = createAdminClient();
   const { error } = await admin.from("influencer_candidates").insert({
     project_id: projectId,
     channel_url: parsed.url,
-    channel_name: channelName,
+    channel_name: m?.displayName || parsed.handle || parsed.url,
     platform: parsed.platform,
-    follower_count: num("follower_count"),
-    content_count: num("content_count"),
-    avg_views: num("avg_views"),
-    avg_comments: num("avg_comments"),
-    avg_likes: num("avg_likes"),
-    avg_cpv: num("avg_cpv"),
+    thumbnail_url: m?.thumbnailUrl ?? null,
+    follower_count: m?.followerCount ?? null,
+    content_count: m?.contentCount ?? null,
+    avg_views: m?.avgViews ?? null,
+    avg_likes: m?.avgLikes ?? null,
+    avg_comments: m?.avgComments ?? null,
+    avg_cpv: computeCpv(reward, m?.avgViews ?? null),
+    reward,
     note: String(formData.get("note") ?? "").trim() || null,
+    fetch_error: result.ok ? null : result.error,
+    fetched_at: result.ok ? new Date().toISOString() : null,
+    snapshot_at: new Date().toISOString(),
   });
 
   if (error) return fail("후보를 저장하지 못했습니다.");
   revalidatePath(`/admin/projects/${projectId}`);
   revalidatePath("/app");
-  return done("후보를 추가했습니다.");
+  return result.ok
+    ? done("후보를 추가하고 지표를 수집했습니다.")
+    : fail(`후보는 저장했습니다. 지표 수집은 실패 — ${result.error}`);
+}
+
+/** 지표 다시 수집 — 벤더가 흔들렸거나 시간이 지나 값이 낡았을 때 */
+export async function refreshCandidate(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const id = String(formData.get("candidate_id") ?? "");
+  const projectId = String(formData.get("project_id") ?? "");
+  if (!id) return fail("후보를 찾지 못했습니다.");
+
+  const admin = createAdminClient();
+  const { data: candidate } = await admin
+    .from("influencer_candidates")
+    .select("channel_url, reward")
+    .eq("id", id)
+    .maybeSingle();
+  if (!candidate) return fail("후보를 찾지 못했습니다.");
+
+  const result = await fetchChannelMetrics(candidate.channel_url);
+  if (!result.ok) {
+    await admin
+      .from("influencer_candidates")
+      .update({ fetch_error: result.error })
+      .eq("id", id);
+    revalidatePath(`/admin/projects/${projectId}`);
+    return fail(`수집 실패 — ${result.error}`);
+  }
+
+  const m = result.metrics;
+  await admin
+    .from("influencer_candidates")
+    .update({
+      channel_name: m.displayName ?? undefined,
+      thumbnail_url: m.thumbnailUrl,
+      follower_count: m.followerCount,
+      content_count: m.contentCount,
+      avg_views: m.avgViews,
+      avg_likes: m.avgLikes,
+      avg_comments: m.avgComments,
+      avg_cpv: computeCpv(candidate.reward, m.avgViews),
+      fetch_error: null,
+      fetched_at: new Date().toISOString(),
+      snapshot_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+
+  revalidatePath(`/admin/projects/${projectId}`);
+  revalidatePath("/app");
+  return done("지표를 새로 수집했습니다.");
+}
+
+/** 제안 단가 입력 — CPV 는 여기서 다시 계산된다 */
+export async function setCandidateReward(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const id = String(formData.get("candidate_id") ?? "");
+  const projectId = String(formData.get("project_id") ?? "");
+  const raw = String(formData.get("reward") ?? "").replace(/[^\d]/g, "");
+  const reward = raw ? Number(raw) : null;
+
+  const admin = createAdminClient();
+  const { data: candidate } = await admin
+    .from("influencer_candidates")
+    .select("avg_views")
+    .eq("id", id)
+    .maybeSingle();
+  if (!candidate) return fail("후보를 찾지 못했습니다.");
+
+  const { error } = await admin
+    .from("influencer_candidates")
+    .update({ reward, avg_cpv: computeCpv(reward, candidate.avg_views) })
+    .eq("id", id);
+
+  if (error) return fail("단가를 저장하지 못했습니다.");
+  revalidatePath(`/admin/projects/${projectId}`);
+  revalidatePath("/app");
+  return done("단가를 저장했습니다.");
 }
 
 export async function removeCandidate(
