@@ -307,6 +307,14 @@ export async function codeLogin(
     };
   }
 
+  // 이미 번호를 받아 둔 경우 — 코드를 다시 보내지 않고 입력 칸으로만 넘어간다.
+  // (메일은 받았는데 탭을 닫은 경우가 흔하고, 재발송은 시간당 한도를 깎는다)
+  if (intent === "have_code") {
+    const email = String(formData.get("email") ?? "").trim().toLowerCase();
+    if (!email) return { ...keep, step: 1, error: "이메일을 입력해 주세요." };
+    return { step: 2, email, error: null, notice: null };
+  }
+
   if (intent === "verify") {
     const token = String(formData.get("token") ?? "").replace(/\D/g, "");
     if (!prev.email) return { ...keep, step: 1, error: "이메일부터 입력해 주세요." };

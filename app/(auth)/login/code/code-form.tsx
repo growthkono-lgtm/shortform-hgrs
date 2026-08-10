@@ -44,6 +44,14 @@ export function CodeLoginForm() {
             <SubmitButton name="intent" value="send">
               인증번호 받기
             </SubmitButton>
+            <button
+              type="submit"
+              name="intent"
+              value="have_code"
+              className="block w-full text-center text-xs text-muted underline underline-offset-2 hover:text-ink"
+            >
+              이미 인증번호를 받았어요
+            </button>
           </>
         ) : (
           <>
