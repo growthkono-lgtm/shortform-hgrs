@@ -25,7 +25,7 @@ export function SiteFooter() {
           <Link href="/refund-policy" className="text-muted hover:text-ink">
             환불규정
           </Link>
-          {/* 헤더의 파트너십 버튼이 sm 미만에서는 숨겨진다 — 모바일 방문자는 여기서 받는다 */}
+          {/* 헤더에서 뺀 링크다 — 끝까지 읽고도 종합 대행이 필요한 사람만 여기서 넘어간다 */}
           <a
             href={PARTNERSHIP_URL}
             target="_blank"

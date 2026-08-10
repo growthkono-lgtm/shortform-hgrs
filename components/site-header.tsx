@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PARTNERSHIP_URL, SERVICE } from "@/lib/constants";
+import { SERVICE } from "@/lib/constants";
 import { HeaderAuth } from "@/components/auth/header-auth";
 
 /**
@@ -27,11 +27,10 @@ export function SiteHeader() {
         {/* 모바일에서도 "플랜 보기"는 남긴다. 숨겼더니 우상단이 로그인·가입만 남아
             사이트가 뭘 파는지 모르는 화면이 됐다.
 
-            "파트너십"은 상단에 둔다 — 이 랜딩은 숏폼 편수를 파는 화면이라
-            브랜드 종합 대행·장기 파트너십을 보러 온 방문자는 아래로 내려가 봐야
-            답이 없다. 나가는 링크라 색은 주지 않고 테두리만 준다 (CTA는 가입 하나로 유지).
-            폭이 좁은 화면에선 CTA와 붙어 버리므로 sm 이상에서만 띄우고,
-            모바일은 팀 섹션·푸터의 같은 링크가 받는다. */}
+            2026-08-10: "파트너십"을 헤더에서 뺐다. 첫 화면 우상단에 밖으로 나가는
+            링크를 두면, 이 랜딩이 뭘 파는지 읽고 고민하기도 전에 본사로 이탈한다.
+            같은 링크는 제작팀(Crew) 섹션과 푸터가 이미 받고 있다 —
+            아래까지 읽고도 종합 대행이 필요한 사람은 거기서 넘어가면 된다. */}
         <nav className="flex items-center gap-4 text-sm sm:gap-5">
           <Link
             href="#crew"
@@ -45,14 +44,6 @@ export function SiteHeader() {
           >
             플랜 보기
           </Link>
-          <a
-            href={PARTNERSHIP_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="hidden shrink-0 rounded-full border border-white/25 px-3.5 py-1.5 text-xs font-bold whitespace-nowrap text-white/85 transition-colors hover:border-white hover:text-white sm:block"
-          >
-            파트너십
-          </a>
           <HeaderAuth />
         </nav>
       </div>

@@ -53,15 +53,20 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[pla
               {plan.label} · {plan.composition}
             </p>
 
+            {/* 2026-08-10 가격 확정 이후 정가 = 판매가다. 할인 0%짜리 줄을 그리지 않는다 */}
             <dl className="mt-6 space-y-2 border-t border-line pt-5 text-sm">
-              <div className="flex justify-between text-muted">
-                <dt>정가</dt>
-                <dd className="line-through">{formatKRW(plan.list_price)}</dd>
-              </div>
-              <div className="flex justify-between text-accent-deep">
-                <dt>베타 오픈 할인</dt>
-                <dd>−{discount}%</dd>
-              </div>
+              {discount > 0 && (
+                <>
+                  <div className="flex justify-between text-muted">
+                    <dt>정가</dt>
+                    <dd className="line-through">{formatKRW(plan.list_price)}</dd>
+                  </div>
+                  <div className="flex justify-between text-accent-deep">
+                    <dt>베타 오픈 할인</dt>
+                    <dd>−{discount}%</dd>
+                  </div>
+                </>
+              )}
               <div className="flex justify-between border-t border-line pt-3 text-base font-bold">
                 <dt>결제 금액</dt>
                 <dd className="stat-figure text-xl">{formatKRW(plan.beta_price)}</dd>

@@ -96,10 +96,17 @@ export function Pricing() {
         {copy.rationale}
       </p>
 
-      {/* 수량 라디오 카드 */}
+      {/* 수량 라디오 카드 — 숏폼 단독은 1/5/10/20 네 장이라 한 줄에 넷을 깐다 */}
       <fieldset className="mt-8">
         <legend className="sr-only">티어 선택</legend>
-        <div className="grid gap-5 lg:grid-cols-3">
+        <div
+          className={cn(
+            "grid gap-5",
+            tiersForCode.length > 3
+              ? "sm:grid-cols-2 lg:grid-cols-4"
+              : "lg:grid-cols-3",
+          )}
+        >
           {tiersForCode.map((plan) => {
             const active = plan.tier === tier;
             return (
@@ -126,12 +133,53 @@ export function Pricing() {
                       추천
                     </span>
                   )}
+                  {plan.trial && (
+                    <span className="rounded-full border border-accent/50 px-2.5 py-0.5 text-[0.6875rem] font-bold text-accent-deep">
+                      first
+                    </span>
+                  )}
                 </div>
                 <span className="mt-1 text-sm text-muted">{plan.composition}</span>
 
-                <span className="stat-figure mt-6 block text-3xl text-accent-deep">
+                <span
+                  className={cn(
+                    "stat-figure mt-6 block text-accent-deep",
+                    // 4장이 한 줄에 들어가면 lg에서 카드 폭이 좁아 ₩2,400,000이 줄을 깬다
+                    tiersForCode.length > 3
+                      ? "text-3xl lg:text-[1.625rem] xl:text-3xl"
+                      : "text-3xl",
+                  )}
+                >
                   {formatKRW(plan.betaPrice)}
                 </span>
+
+                {/* 시딩 포함 플랜은 총액만 보여주면 숏폼 편당 값이 가려진다 — 내역을 쪼개 적는다 */}
+                {plan.shortsPrice != null && plan.seedingPrice != null && (
+                  <span className="mt-3 block space-y-1 text-xs leading-[1.7] text-muted">
+                    <span className="flex justify-between gap-3">
+                      <span>숏폼 기획제작 {plan.shortsCount}편</span>
+                      <span className="stat-figure">
+                        {formatKRW(plan.shortsPrice)}
+                      </span>
+                    </span>
+                    <span className="flex justify-between gap-3">
+                      <span>인플루언서 시딩 {plan.influencerCount}명</span>
+                      <span className="stat-figure">
+                        {formatKRW(plan.seedingPrice)}
+                      </span>
+                    </span>
+                  </span>
+                )}
+
+                {/* 1편은 "먼저 한 편만 맡겨보는" 자리 — 시딩이 안 붙는다는 걸 카드에서 말한다 */}
+                {plan.trial && (
+                  <span className="mt-3 block text-xs leading-[1.7] text-muted">
+                    먼저 1편만 받아보고 판단하세요.
+                    <span className="mt-0.5 block">
+                      인플루언서 시딩은 포함되지 않습니다.
+                    </span>
+                  </span>
+                )}
 
                 {/* 헤드 전략 리뷰 배지 — 스케일 / 20편 한정 (A2) */}
                 {plan.headReview && (
@@ -174,14 +222,22 @@ export function Pricing() {
         <SwitchNote
           onClick={() => switchCode("shorts_only")}
           title="이미 소스가 있으신가요?"
-          body="브랜드 보유 소스(촬영본·UGC·제품컷)로 전환 숏폼만 따로 받으실 수 있습니다."
+          body="브랜드 보유 소스(촬영본·UGC·제품컷)로 전환 숏폼만 따로 받으실 수 있습니다. 1편부터 맡겨보실 수 있습니다."
           cta="숏폼 단독 가격 보기"
         />
       )}
 
-      {/* 정책 노출 ②③④ — 카드 하단 고정 3줄 (PART E4) */}
+      {/* 정책 노출 ②③④ — 카드 하단 고정 (PART E4). 탭에 따라 해당되는 줄만 남긴다 */}
       <ul className="mt-8 space-y-2 text-xs leading-[1.7] text-muted">
-        {[POLICY.revisionOnce, POLICY.usagePeriod, POLICY.sourceRequired].map(
+        {(code === "shorts_only"
+          ? [
+              POLICY.revisionOnce,
+              POLICY.usagePeriod,
+              POLICY.sourceRequired,
+              POLICY.trialSingle,
+            ]
+          : [POLICY.revisionOnce, POLICY.usagePeriod, POLICY.seedingBundleOnly]
+        ).map(
           (line) => (
             <li key={line} className="flex gap-2">
               <span aria-hidden className="text-accent">

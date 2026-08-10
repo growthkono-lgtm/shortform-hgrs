@@ -56,7 +56,7 @@ export const PLAN_COPY = {
     label: "숏폼 기획제작",
     sub: "브랜드 보유 소스로 바로",
     rationale:
-      "구매 전환형 숏폼을 기획부터 제작까지 편수 단위로 진행합니다. 브랜드가 보유한 소스(촬영본·UGC·제품컷)로 바로 시작합니다.",
+      "구매 전환형 숏폼을 기획부터 제작까지 편수 단위로 진행합니다. 처음이라면 1편만 먼저 맡겨 결과를 보고 판단하셔도 됩니다. 브랜드가 보유한 소스(촬영본·UGC·제품컷)로 바로 시작합니다.",
   },
   full: {
     label: "숏폼 + 인플루언서 시딩",
@@ -81,6 +81,11 @@ export const POLICY = {
     "위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.",
   headReviewScope:
     "해그로시 헤드가 캠페인 구조와 USP를 직접 리뷰하는 60분 세션.",
+  // 1편은 "믿고 거래를 트는" 자리다. 시딩은 크리에이터 모집·배포 단위라 1편에 붙일 수 없다
+  trialSingle:
+    "1편 단품은 결과를 먼저 보고 판단하시라고 여는 자리입니다 — 인플루언서 시딩은 포함되지 않습니다",
+  seedingBundleOnly:
+    "인플루언서 시딩은 숏폼 5편 이상 묶음부터 함께 진행됩니다",
 } as const;
 
 export type PlanCode = "full" | "shorts_only";
@@ -92,10 +97,22 @@ export type Plan = {
   composition: string;
   influencerCount: number;
   shortsCount: number;
-  /** PART G: 정가 6개 확정 전 임시 제안값 */
+  /**
+   * 2026-08-10 확정가. 정가/베타가 이원화는 걷어냈다 —
+   * 화면에 뜨는 값은 betaPrice 하나뿐이었고, 지어낸 정가로 할인율을 만들 이유가 없다.
+   * listPrice는 DB 컬럼(NOT NULL) 호환용으로만 남기고 betaPrice와 같은 값을 넣는다.
+   */
   listPrice: number;
   betaPrice: number;
+  /**
+   * 시딩 포함 플랜(full)의 내역 분리 — 총액만 보여주면 숏폼 편당 값이 가려진다.
+   * shortsPrice는 같은 편수의 숏폼 단독가와 정확히 같은 값이어야 한다.
+   */
+  shortsPrice?: number;
+  seedingPrice?: number;
   headReview: boolean;
+  /** 첫 거래용 소량 티어 — 시딩을 붙일 수 없다 */
+  trial?: boolean;
   recommended?: boolean;
 };
 
@@ -112,8 +129,10 @@ export const PLANS: Plan[] = [
     composition: "인플루언서 10 + 숏폼 5",
     influencerCount: 10,
     shortsCount: 5,
-    listPrice: 1_900_000,
-    betaPrice: 1_350_000,
+    listPrice: 1_250_000,
+    betaPrice: 1_250_000,
+    shortsPrice: 950_000,
+    seedingPrice: 300_000,
     headReview: false,
   },
   {
@@ -123,8 +142,10 @@ export const PLANS: Plan[] = [
     composition: "인플루언서 20 + 숏폼 10",
     influencerCount: 20,
     shortsCount: 10,
-    listPrice: 3_100_000,
-    betaPrice: 2_200_000,
+    listPrice: 2_250_000,
+    betaPrice: 2_250_000,
+    shortsPrice: 1_800_000,
+    seedingPrice: 450_000,
     headReview: false,
     recommended: true,
   },
@@ -135,9 +156,24 @@ export const PLANS: Plan[] = [
     composition: "인플루언서 30 + 숏폼 20",
     influencerCount: 30,
     shortsCount: 20,
-    listPrice: 4_000_000,
-    betaPrice: 2_840_000,
+    listPrice: 3_050_000,
+    betaPrice: 3_050_000,
+    shortsPrice: 2_400_000,
+    seedingPrice: 650_000,
     headReview: true,
+  },
+  {
+    // 첫 거래를 트기 위한 단품. 시딩은 붙지 않는다 (5편 묶음부터)
+    code: "shorts_only",
+    tier: "1",
+    label: "1편",
+    composition: "전환 숏폼 1편",
+    influencerCount: 0,
+    shortsCount: 1,
+    listPrice: 210_000,
+    betaPrice: 210_000,
+    headReview: false,
+    trial: true,
   },
   {
     code: "shorts_only",
@@ -146,8 +182,8 @@ export const PLANS: Plan[] = [
     composition: "전환 숏폼 5편",
     influencerCount: 0,
     shortsCount: 5,
-    listPrice: 1_250_000,
-    betaPrice: 1_100_000,
+    listPrice: 950_000,
+    betaPrice: 950_000,
     headReview: false,
   },
   {
@@ -157,7 +193,7 @@ export const PLANS: Plan[] = [
     composition: "전환 숏폼 10편",
     influencerCount: 0,
     shortsCount: 10,
-    listPrice: 2_100_000,
+    listPrice: 1_800_000,
     betaPrice: 1_800_000,
     headReview: false,
     recommended: true,
@@ -169,7 +205,7 @@ export const PLANS: Plan[] = [
     composition: "전환 숏폼 20편",
     influencerCount: 0,
     shortsCount: 20,
-    listPrice: 2_800_000,
+    listPrice: 2_400_000,
     betaPrice: 2_400_000,
     headReview: true,
   },
