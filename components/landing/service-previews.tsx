@@ -8,6 +8,73 @@ import { clipPoster } from "@/lib/clips";
  * `A브랜드_그로스플랜_7월1차` 처럼 **플랜명(스타터·그로스·스케일)이 들어간 규칙**으로 쓴다.
  */
 
+/** 0 — 브랜드 AI 기본 분석. 상세페이지 URL 한 줄이 구조화된 항목으로 떨어진다 */
+export function BrandAiPreview() {
+  const rows = [
+    ["브랜드", "반려견 영양처방식 D2C"],
+    ["핵심 타겟", "3040 보호자 · 노령견 · 식이 민감"],
+    ["USP", "수의사 처방 기준 · 저지방 배합"],
+    ["객단가", "3.9만원대 · 재구매 42%"],
+    ["금지 표현", "치료·완치 등 효능 단정"],
+  ];
+
+  return (
+    <div className="flex h-full flex-col p-4">
+      <div className="flex items-center gap-2 rounded-lg border border-line bg-paper px-3 py-2">
+        <span className="size-3.5 shrink-0 rounded-sm bg-accent/25" />
+        <span className="truncate text-[0.625rem] text-muted">
+          https://brand.co.kr/product/…
+        </span>
+        <span className="ml-auto shrink-0 rounded bg-accent px-1.5 py-0.5 text-[0.5625rem] font-bold text-white">
+          분석
+        </span>
+      </div>
+      <dl className="mt-2.5 divide-y divide-line overflow-hidden rounded-lg border border-line bg-paper">
+        {rows.map(([k, v]) => (
+          <div key={k} className="flex items-baseline gap-2 px-3 py-[0.4375rem]">
+            <dt className="w-14 shrink-0 text-[0.5625rem] text-muted">{k}</dt>
+            <dd className="truncate text-[0.625rem] font-bold">{v}</dd>
+          </div>
+        ))}
+      </dl>
+      <p className="mt-2 text-[0.5625rem] text-muted">AI 초안 · 담당자 검수 후 확정</p>
+    </div>
+  );
+}
+
+/** 0-1 — 컨텐츠 가이드라인 세부 기획. 편별로 포맷·후킹이 갈린다 */
+export function GuidelinePreview() {
+  const rows = [
+    { no: "01", format: "후기형", hook: "\"밥 먹어~\" 소리도 안 들려요", tag: "전환" },
+    { no: "02", format: "전문가형", hook: "췌장염 저지방 식이 성분", tag: "신뢰" },
+    { no: "03", format: "비교형", hook: "기존 레시피 그대로 괜찮을까", tag: "설득" },
+    { no: "04", format: "리얼리티", hook: "보호자가 더 신나는 이유", tag: "도달" },
+  ];
+
+  return (
+    <div className="flex h-full flex-col p-4">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-bold">컨텐츠 가이드라인</span>
+        <span className="rounded bg-accent/10 px-1.5 py-0.5 text-[0.5625rem] font-bold text-accent-deep">
+          10편 편성
+        </span>
+      </div>
+      <ul className="mt-2.5 divide-y divide-line overflow-hidden rounded-lg border border-line bg-paper">
+        {rows.map((r) => (
+          <li key={r.no} className="flex items-center gap-2 px-3 py-2">
+            <span className="stat-figure shrink-0 text-[0.5625rem] text-muted">{r.no}</span>
+            <span className="shrink-0 rounded bg-paper-alt px-1.5 py-0.5 text-[0.5625rem] font-bold">
+              {r.format}
+            </span>
+            <span className="truncate text-[0.625rem] text-muted">{r.hook}</span>
+            <span className="ml-auto shrink-0 text-[0.5625rem] text-accent-deep">{r.tag}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 /** 1 — 인플루언서 선정 보드 */
 export function SeedingPreview() {
   const rows = [
@@ -128,6 +195,46 @@ export function ShortformPreview() {
           최종 확인
         </span>
       </div>
+    </div>
+  );
+}
+
+/** 5 — 검수·납품. 미리보기로 확인하고 1회 수정 후 최종본을 받는다 */
+export function DeliveryPreview() {
+  const rows = [
+    { seq: "01편", state: "최종 승인", tone: "done" },
+    { seq: "02편", state: "수정 반영중", tone: "work" },
+    { seq: "03편", state: "확인 요청", tone: "ask" },
+    { seq: "04편", state: "제작중", tone: "idle" },
+  ];
+
+  return (
+    <div className="flex h-full flex-col p-4">
+      <div className="flex items-center justify-between">
+        <span className="truncate text-xs font-bold">A브랜드_그로스플랜_7월1차</span>
+        <span className="shrink-0 rounded bg-accent/10 px-1.5 py-0.5 text-[0.5625rem] font-bold text-accent-deep">
+          납품 완료
+        </span>
+      </div>
+      <ul className="mt-2.5 divide-y divide-line overflow-hidden rounded-lg border border-line bg-paper">
+        {rows.map((r) => (
+          <li key={r.seq} className="flex items-center gap-2 px-3 py-2 text-[0.625rem]">
+            <span className="font-bold">{r.seq}</span>
+            <span
+              className={
+                r.tone === "done"
+                  ? "ml-auto rounded bg-accent/10 px-1.5 py-0.5 text-[0.5625rem] font-bold text-accent-deep"
+                  : "ml-auto rounded bg-paper-alt px-1.5 py-0.5 text-[0.5625rem] text-muted"
+              }
+            >
+              {r.state}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-2 text-[0.5625rem] text-muted">
+        1회 무상 수정 후 최종본 다운로드
+      </p>
     </div>
   );
 }
