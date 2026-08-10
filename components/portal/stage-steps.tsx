@@ -18,7 +18,7 @@ export function StageSteps({
   const current = stageIndex(stages, stage);
 
   return (
-    <ol className="-mx-1 flex min-w-0 items-start gap-1 overflow-x-auto px-1 pb-2">
+    <ol className="-mx-1 flex min-w-0 items-start justify-start gap-0.5 overflow-x-auto px-1 pb-2 sm:gap-1">
       {stages.map((s, i) => {
         const done = i < current;
         const active = i === current;
@@ -26,7 +26,7 @@ export function StageSteps({
 
         return (
           <li key={s.key} className="flex shrink-0 items-start gap-1">
-            <div className="flex w-[84px] flex-col items-center gap-2 sm:w-[104px]">
+            <div className="flex w-[80px] flex-col items-center gap-2 sm:w-[96px]">
               <span
                 className={cn(
                   "grid size-12 shrink-0 place-items-center rounded-full border-2 text-base font-bold transition-colors sm:size-14 sm:text-lg",
