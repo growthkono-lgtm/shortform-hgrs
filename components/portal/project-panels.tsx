@@ -331,17 +331,6 @@ export function DeliverablePanel({
           </li>
         ))}
       </ul>
-      {finalDriveLink && (
-        <a
-          href={finalDriveLink}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-5 inline-flex rounded-full bg-ink px-6 py-3 text-sm font-bold text-paper transition-colors hover:bg-ink-soft"
-        >
-          최종본 전체 다운로드
-        </a>
-      )}
-
       {/* 최종본은 편마다가 아니라 프로젝트 폴더 하나로 넘긴다 */}
       {finalDriveLink && (
         <a
