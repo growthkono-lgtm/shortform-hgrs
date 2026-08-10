@@ -16,11 +16,15 @@ const BROCHURE_FILE = "hgrs-shortform-studio-brochure.pdf";
  * 발송이 안 됐는데 화면은 성공으로 보이는 게 제일 위험하므로, 어드민 목록에서
  * 발송 결과를 눈으로 확인할 수 있게 이력을 반드시 남긴다.
  *
- * 발신 주소는 ceo@h-grs.com 고정 — 회신이 사장님에게 바로 가야 한다.
- * (Resend에서 h-grs.com 도메인 인증이 끝나야 실제로 나간다)
+ * 회신은 contact@h-grs.com 으로 모은다.
  */
-const FROM = process.env.NOTIFY_FROM_EMAIL || "해그로시 숏폼 스튜디오 <ceo@h-grs.com>";
-const REPLY_TO = "ceo@h-grs.com";
+/**
+ * 발신은 **Resend에서 인증된 도메인**이어야 한다. h-grs.com 은 아직 미인증이라
+ * 발신 주소는 hgrs.io 를 쓰고, 회신은 contact@h-grs.com 으로 받는다.
+ * (h-grs.com 을 Resend에 인증해 두면 발신 주소도 그대로 옮길 수 있다)
+ */
+const FROM = process.env.NOTIFY_FROM_EMAIL || "해그로시 숏폼 스튜디오 <contact@hgrs.io>";
+const REPLY_TO = "contact@h-grs.com";
 
 export type MailKind = "brochure" | "project_start" | "stage" | "other";
 
@@ -103,7 +107,7 @@ export function mailShell(body: string) {
   return `<div style="font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Pretendard',sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;color:#030303;line-height:1.8">
 ${body}
 <p style="font-size:12px;color:#8a8a8a;margin:32px 0 0;border-top:1px solid #e6e6e6;padding-top:16px">
-  ${SERVICE.name} · 주식회사 해그로시<br>
+  ${SERVICE.name} · 주식회사 해그로시 · contact@h-grs.com<br>
   <a href="${SERVICE.url}" style="color:#8a8a8a">${SERVICE.url.replace("https://", "")}</a>
 </p>
 </div>`;
@@ -148,41 +152,40 @@ export function brochureMail(inquiry: BrochureInquiry) {
 <p style="font-size:15px;font-weight:700;margin:0 0 20px">안녕하세요. 해그로시 대표 디렉터 송건호입니다.</p>
 
 ${para(
-  "해그로시는 브랜드 전략과 그로스 마케팅 및 광고 컨텐츠 에이전시로서의 역할을 수행함과 동시에 유튜브 영상 프로덕션의 프로젝트를 동시 수행한 기간제 프로젝트 집단입니다.",
+  "인플루언서 시딩과 매출용 구매전환형 숏폼 소재. 마케팅 익숙하게 하는 팀은 당연히 2차 활용 소스컷들을 확보해서 브랜드 매출의 연속성을 만듭니다.",
 )}
 ${para(
-  "해그로시 숏폼 스튜디오는 기존의 숏폼 시장이 단순 납품, 단순 AI, 마케팅 이해가 없는 영상 기획, 영상 서사가 없는 저감도들의 현상을 바로잡기 위해 탄생했습니다. 클라이언트 여러분들에게 숏폼과 퍼포먼스마케팅 광고 크리에이티브가 본질적으로 유행하고 효과를 보기 시작하던 2018년경 때부터 꾸준히 그 업을 해 온 전문가 집단을 붙여 드립니다.",
+  "혹시 아직도 유행하는 인플루언서 바이럴 배포만 하고 단기적인 트래픽만 보고 계시진 않나요?",
+)}
+
+<img src="${PUBLIC_ORIGIN}/deck/mail-hero.jpg" alt="해그로시 촬영 현장" width="512" style="width:100%;max-width:512px;border-radius:12px;display:block;margin:4px 0 20px">
+
+${para(
+  "해그로시에서는 컨텐츠 가이드라인과 영상 소스 확보, 챔피언성 광고 숏폼 기획제작 시스템을 하나로 해결해 드립니다. 브랜드 담당자 분은 플랜 신청 후 ‘내 프로젝트’에서 진행 현황을 보고 한두 번 필요한 피드백만 전달하시면 됩니다.",
 )}
 ${para(
-  "우리는 세일즈, 매출, 전환율에 대한 이해를 기반으로 숏폼을 기획하고 제작하며, 인플루언서 시딩 시 필요로 하는 컨텐츠 가이드라인과 소스 컷 확보 등의 번거로운 작업을 모두 대신합니다.",
-)}
-${para(
-  "이제 챔피언성 소재 몇 종으로 매출이 스케일업되고, 광고 운영이 쉬워지고, 인플루언서 및 영상 소스 시딩의 어려움을 모두 해결하세요. 플랜 신청 후 내 프로젝트 대시보드를 통해 진행 단계를 확인하고 피드백을 일괄로 빠르게 반영시키며 결과물을 효과적으로 확보하실 수 있습니다.",
+  "AI 숏폼은 성과가 안 나오는 게 확인됐고, 비싼 모델 영상은 가성비가 안 좋은 걸 알았습니다. 이제 AI도 소스컷도 매출 만드는 기획제작력도 모두 합리적인 실력으로 확인하세요.",
 )}
 
 <table style="width:100%;border-collapse:collapse;background:#f7f5f3;border-radius:12px;margin:24px 0 20px">
   <tr><td style="padding:20px 22px">
-    <p style="font-size:12px;color:#8a8a8a;margin:0 0 8px">첨부된 소개서에 담긴 내용</p>
-    <p style="font-size:13px;color:#5c5c5c;line-height:1.9;margin:0">
-      왜 시딩과 숏폼을 하나의 라인으로 묶는가<br>
-      회사 개요 · 클라이언트 · 성장 사례<br>
-      서비스 진행 흐름 · 제작 시스템과 팀 구성<br>
-      <strong style="color:#030303">플랜 및 금액 (싱글 · 패키지 · 시딩 단가)</strong><br>
-      진행 단계 · 계약 및 결제 절차 · 진행 조건
+    <p style="font-size:15px;font-weight:700;margin:0 0 6px">1분 숏폼 소개서</p>
+    <p style="font-size:13px;color:#5c5c5c;line-height:1.8;margin:0">
+      법인 소개 · 진행 프로세스 · 플랜 안내 · 계약 절차까지 한 부에 담았습니다.<br>
+      <strong style="color:#030303">이 메일에 PDF로 첨부</strong>해 두었고, 아래 버튼으로도 바로 보실 수 있습니다.
     </p>
   </td></tr>
 </table>
 
 <p style="margin:0 0 8px">
   <a href="${brochureUrl}" style="display:inline-block;background:#030303;color:#fff;text-decoration:none;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:700">
-    소개서 내려받기 (PDF)
+    1분 숏폼 소개서 보기 (PDF)
   </a>
 </p>
 <p style="font-size:13px;color:#5c5c5c;margin:16px 0 0;line-height:1.9">
-  메일에 소개서 파일도 함께 첨부해 두었습니다.<br>
-  플랜 신청과 내 프로젝트 대시보드는 아래 주소에서 이용하실 수 있습니다.
+  플랜 신청과 ‘내 프로젝트’는 아래 주소에서 이용하실 수 있습니다.
 </p>
-<p style="font-size:15px;font-weight:700;margin:12px 0 0">
+<p style="font-size:15px;font-weight:700;margin:10px 0 0">
   <a href="${PUBLIC_ORIGIN}" style="color:#030303">${PUBLIC_ORIGIN.replace("https://", "")}</a>
 </p>
 <p style="font-size:13px;color:#5c5c5c;margin:16px 0 0;line-height:1.8">
