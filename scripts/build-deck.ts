@@ -172,6 +172,7 @@ const pages: string[] = [];
 
 
 
+
 pages.push(
   slide(
     `<div class="cover">
@@ -195,6 +196,7 @@ ${["riiid-momcafe", "moen-shampoo-ppl", "zeroblock-interview", "bone-w40s"].map(
 );
 
 // 02 브랜드 · 법인 소개
+
 
 
 
@@ -228,9 +230,10 @@ ${head("법인 소개", "브랜드 전략부터 광고 컨텐츠·영상 프로�
 
 
 
+
 pages.push(
   slide(`
-${head("시장 구조", "인플루언서 바이럴에 이어 매출 연속성을 확보하고 싶으신가요?")}
+${head("요즘 브랜드 업무", "인플루언서 바이럴에 이어 매출 연속성을 확보하고 싶으신가요?")}
 <div class="split">
   <div class="split-side">
     <div class="circle circle-indigo"><span>인플루언서<br>시딩</span></div>
@@ -238,7 +241,7 @@ ${head("시장 구조", "인플루언서 바이럴에 이어 매출 연속성을
     <p class="split-d">채널 배포 · 소스컷 일부</p>
   </div>
   <div class="split-gap">
-    <p class="gap-label">아무도 하지 않는 구간</p>
+    <p class="gap-label">내부 리소스가 많이 드는 구간</p>
     <ul class="gap-list"><li>컨텐츠 가이드라인</li><li>필요한 컷 설계</li><li>전환 소재 연결</li></ul>
   </div>
   <div class="split-side">
@@ -255,9 +258,10 @@ ${head("시장 구조", "인플루언서 바이럴에 이어 매출 연속성을
 
 
 
+
 pages.push(
   slide(`
-${head("포지션", "시딩과 2차 활용 영상 확보부터 구매전환 숏폼 기획제작까지 하나로 해결해 드립니다")}
+${head("해그로시 서비스 영역", "시딩과 2차 활용 영상 확보부터 구매전환 숏폼 기획제작까지 하나로 해결해 드립니다")}
 <div class="two vcenter">
   <div class="venn">
     <div class="venn-c venn-a"><span>인플루언서<br>시딩</span></div>
@@ -281,9 +285,10 @@ ${[
 
 
 
+
 pages.push(
   slide(`
-${head("진행 라인", "가이드라인부터 납품까지, 넘길 때마다 다시 설명하실 일이 없습니다")}
+${head("진행 프로세스", "가이드라인부터 납품까지, 넘길 때마다 다시 설명하실 일이 없습니다")}
 <div class="flow">
 ${FLOW.map(
   ([n, t, d]) => `<div class="flow-row">
@@ -296,6 +301,7 @@ ${FLOW.map(
 );
 
 // 06 기대 효과
+
 
 
 
@@ -321,14 +327,68 @@ ${[
 </div>`),
 );
 
-// 07 제작 조직 (현장)
+// 07 성과 사례
+
 
 
 
 
 pages.push(
   slide(`
-${head("제작 조직", "촬영 현장과 브랜드 현장에서 저희 팀이 직접 찍고 직접 만듭니다")}
+${head("주요 성과", "소재 제작과 캠페인 운영으로 이런 결과를 만들어 왔습니다")}
+<div class="cases">
+${CASES.map(
+  (c) => `<div class="case">
+  <img class="case-img" src="${asset(c.img)}" alt="">
+  <div class="case-head">
+    <span class="case-no">${c.no}</span>
+    <div><p class="case-brand">${esc(c.brand)}</p><p class="case-scale">${esc(c.scale)}</p></div>
+  </div>
+  <div class="case-stats">${c.stats.map(([v, l]) => `<div><strong>${v}</strong><span>${l}</span></div>`).join("")}</div>
+  <p class="case-role">${esc(c.role)}</p>
+</div>`,
+).join("")}
+</div>
+<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
+);
+
+// 08 포트폴리오
+
+
+
+
+
+pages.push(
+  slide(`
+${head("최근 주요 포트폴리오", "기획과 서사, 마케팅과 세일즈를 아는 팀이 만든 광고형 숏폼입니다")}
+<div class="wall">
+${WALL.map((s) => `<img src="${asset(`/portfolio/clips/${s}.jpg`)}" alt="">`).join("")}
+</div>`),
+);
+
+// 09 클라이언트
+
+
+
+
+
+pages.push(
+  slide(`
+${head("클라이언트 히스토리", "커머스부터 서비스, 플랫폼까지 30여 브랜드와 함께했습니다")}
+<div class="logos">
+${CLIENTS.map((c) => `<div><img src="${asset(`/logos/${c}.png`)}" alt=""></div>`).join("")}
+</div>`),
+);
+
+// 10 제작 조직 (현장)
+
+
+
+
+
+pages.push(
+  slide(`
+${head("스케일업 숏폼 기획제작 조직", "촬영 현장과 브랜드 현장에서 저희 팀이 직접 찍고 직접 만듭니다")}
 <div class="creds">
 ${CREDENTIALS.map((c) => `<span class="cred">${c}</span>`).join("")}
 </div>
@@ -337,7 +397,8 @@ ${Array.from({ length: 8 }, (_, i) => `<img src="${asset(`/portfolio/crew/crew-0
 </div>`),
 );
 
-// 08 역할 구성 · AI
+// 11 역할 구성 · AI
+
 
 
 
@@ -363,7 +424,8 @@ ${ROLES.map(([t, d]) => `<div class="role"><p class="role-t">${t}</p><p class="r
 </div>`),
 );
 
-// 09 제작 시스템
+// 12 제작 시스템
+
 
 
 
@@ -378,64 +440,15 @@ ${head("제작 시스템", "프로젝트에서 반복 검증한 위너 소재 �
 </div>`),
 );
 
-// 10 클라이언트
-
-
-
-
-pages.push(
-  slide(`
-${head("클라이언트 히스토리", "커머스부터 서비스, 플랫폼까지 30여 브랜드와 함께했습니다")}
-<div class="logos">
-${CLIENTS.map((c) => `<div><img src="${asset(`/logos/${c}.png`)}" alt=""></div>`).join("")}
-</div>`),
-);
-
-// 11 성과 사례
-
-
-
-
-pages.push(
-  slide(`
-${head("주요 성과", "소재 제작과 캠페인 운영으로 이런 결과를 만들어 왔습니다")}
-<div class="cases">
-${CASES.map(
-  (c) => `<div class="case">
-  <img class="case-img" src="${asset(c.img)}" alt="">
-  <div class="case-head">
-    <span class="case-no">${c.no}</span>
-    <div><p class="case-brand">${esc(c.brand)}</p><p class="case-scale">${esc(c.scale)}</p></div>
-  </div>
-  <div class="case-stats">${c.stats.map(([v, l]) => `<div><strong>${v}</strong><span>${l}</span></div>`).join("")}</div>
-  <p class="case-role">${esc(c.role)}</p>
-</div>`,
-).join("")}
-</div>
-<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
-);
-
-// 12 포트폴리오
-
-
-
-
-pages.push(
-  slide(`
-${head("최근 주요 포트폴리오", "기획과 서사, 마케팅과 세일즈를 아는 팀이 만든 광고형 숏폼입니다")}
-<div class="wall">
-${WALL.map((s) => `<img src="${asset(`/portfolio/clips/${s}.jpg`)}" alt="">`).join("")}
-</div>`),
-);
-
 // 13 진행 단계
 
 
 
 
+
 pages.push(
   slide(`
-${head("진행 프로세스", "지금 어디까지 왔는지 단계로 확인하실 수 있습니다")}
+${head("세부 업무 흐름", "두 트랙이 각자 단계를 밟아 나갑니다")}
 <div class="two">
   <div class="track track-indigo">
     <p class="track-t">인플루언서 시딩</p>
@@ -453,14 +466,11 @@ ${head("진행 프로세스", "지금 어디까지 왔는지 단계로 확인하
 // 14 이용 방법 (실제 화면)
 
 
+
 pages.push(
   slide(`
-${head("내 프로젝트", "초기 요청사항부터 컨텐츠 컨펌과 진행 단계까지 한번에 확인하세요")}
+${head("프로젝트 대시보드 확인", "초기 요청사항부터 컨텐츠 컨펌과 진행 단계까지 한번에 확인하세요")}
 <div class="board">
-  <div class="board-main">
-    <img src="${asset("/deck/ui-dashboard.png")}" alt="">
-    <p class="cap">진행 단계 · 플랜 · 기한을 한 화면에서</p>
-  </div>
   <div class="board-side">
     <div class="board-item">
       <img src="${asset("/deck/ui-cpv.png")}" alt="">
@@ -471,10 +481,15 @@ ${head("내 프로젝트", "초기 요청사항부터 컨텐츠 컨펌과 진행
       <p class="cap">브랜드 AI 기본 분석 — 타겟 · USP · 객단가 · 금지 표현 구조화</p>
     </div>
   </div>
+  <div class="board-main">
+    <img src="${asset("/deck/ui-dashboard.png")}" alt="">
+    <p class="cap">진행중인 캠페인 — 진행 단계 · 플랜 · 기한을 한 화면에서</p>
+  </div>
 </div>`),
 );
 
 // 15 PLAN
+
 
 
 
@@ -526,6 +541,7 @@ ${packages
 
 
 
+
 pages.push(
   slide(`
 ${head("계약 · 결제", "구성 확정부터 납품까지 여덟 단계로 진행해 드립니다")}
@@ -538,6 +554,7 @@ ${CONTRACT.map(
 );
 
 // 17 문의처
+
 
 
 
@@ -787,7 +804,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .spec p{font-size:7.5pt;color:var(--muted);margin-top:1mm}
 
 /* 내 프로젝트 보드 */
-.board{display:grid;grid-template-columns:1.5fr 1fr;gap:6mm;flex:1;min-height:0}
+.board{display:grid;grid-template-columns:1fr 1.6fr;gap:6mm;flex:1;min-height:0}
 .board-main{display:flex;flex-direction:column;min-height:0}
 .board-main img{width:100%;flex:1;min-height:0;object-fit:contain;object-position:top;border:1px solid var(--line);border-radius:3mm}
 .board-side{display:flex;flex-direction:column;gap:5mm;min-height:0}
