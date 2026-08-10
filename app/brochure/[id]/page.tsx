@@ -95,7 +95,7 @@ export default async function BrochurePage({
       </h1>
       <p className="mt-4 text-sm leading-[1.8] text-muted">
         남겨주신 진단 답변을 기준으로 지금 필요한 구성과 금액을 정리했습니다.
-        아래 내용은 {SERVICE.name}이 실제로 진행하는 방식 그대로입니다.
+        아래 내용은 저희가 실제로 진행하는 방식 그대로입니다.
       </p>
 
       {/* ── 지금 상태 ── */}

@@ -73,10 +73,15 @@ export type Brochure = {
 
 const price = (p: Plan) => formatKRW(p.betaPrice);
 
-const perUnit = (p: Plan) =>
-  p.shortsCount > 1
-    ? `편당 ${formatKRW(Math.round((p.shortsPrice ?? p.betaPrice) / p.shortsCount))}`
-    : null;
+/**
+ * 편당가. 패키지는 총액에 시딩이 섞여 있으므로 **숏폼 몫으로만** 나눈다 —
+ * 총액을 편수로 나누면 실제보다 비싸 보이고, 라벨도 "숏폼 편당"이라고 못 박는다.
+ */
+const perUnit = (p: Plan) => {
+  if (p.shortsCount < 2) return null;
+  const unit = formatKRW(Math.round((p.shortsPrice ?? p.betaPrice) / p.shortsCount));
+  return p.code === "full" ? `숏폼 편당 ${unit}` : `편당 ${unit}`;
+};
 
 const row = (p: Plan): BrochureRow => ({
   label: p.label,
