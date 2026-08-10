@@ -207,7 +207,7 @@ ${head("법인 소개", "브랜드 전략부터 광고 컨텐츠·영상 프로�
 <div class="two">
   <div class="panel panel-ink">
     <p class="pk">해그로시</p>
-    <p class="pt">브랜드 하나를 맡아<br>전략 · 마케팅 · 컨텐츠 · 영상까지<br>통으로 수행합니다</p>
+    <p class="pt">브랜드 하나를 맡아<br>전략 · 마케팅 · 컨텐츠 · 영상까지<br>턴 키로 진행해 왔습니다</p>
   </div>
   <div class="kv">
     <div><dt>상호</dt><dd>${COMPANY.name}</dd></div>

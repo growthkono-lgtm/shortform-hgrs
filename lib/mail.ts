@@ -135,7 +135,7 @@ export const brochureUrl = `${PUBLIC_ORIGIN}/${BROCHURE.file}`;
 /**
  * ① 소개서 발송 — 어드민이 신청 건에서 [소개서 발송]을 누를 때.
  *
- * 인사말은 **대표 디렉터가 직접 쓴 문안**이다. 임의로 줄이거나 다듬지 않는다.
+ * 본문은 **사장님이 직접 쓴 문안**이다. 임의로 줄이거나 다듬지 않는다.
  * PDF 는 첨부와 링크를 함께 건다 — 첨부를 막아 둔 메일 환경이 적지 않다.
  */
 export function brochureMail(inquiry: BrochureInquiry) {
@@ -149,7 +149,7 @@ export function brochureMail(inquiry: BrochureInquiry) {
   return {
     subject: `[${SERVICE.name}] ${name}께 드리는 소개서입니다`,
     html: mailShell(`
-<p style="font-size:15px;font-weight:700;margin:0 0 20px">안녕하세요. 해그로시 대표 디렉터 송건호입니다.</p>
+<p style="font-size:16px;font-weight:700;line-height:1.6;margin:0 0 20px">매출 높이는 구매전환형 숏폼부터<br>인플루언서 시딩 바이럴까지 한번에!<br>해그로시 숏폼 스튜디오를 소개합니다.</p>
 
 ${para(
   "인플루언서 시딩과 매출용 구매전환형 숏폼 소재. 마케팅 익숙하게 하는 팀은 당연히 2차 활용 소스컷들을 확보해서 브랜드 매출의 연속성을 만듭니다.",
