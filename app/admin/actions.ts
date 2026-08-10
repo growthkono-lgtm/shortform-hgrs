@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/supabase/auth";
 import { createAdminClient } from "@/lib/supabase/server";
-import { brochureMail, projectStartMail, sendMail } from "@/lib/mail";
+import { BROCHURE, brochureMail, brochureUrl, projectStartMail, sendMail } from "@/lib/mail";
 import { FIRST_SEEDING_STAGE, FIRST_SHORTS_STAGE } from "@/lib/stages";
 import { parseChannelUrl } from "@/lib/channel-url";
 import { computeCpv, fetchChannelMetrics } from "@/lib/channel-metrics";
@@ -37,6 +37,8 @@ export async function sendBrochure(
     subject: mail.subject,
     html: mail.html,
     inquiryId: inquiry.id,
+    // 소개서는 첨부와 링크를 함께 보낸다 — 첨부를 막아 둔 메일 환경이 적지 않다
+    attachments: [{ filename: BROCHURE.filename, path: brochureUrl }],
   });
 
   if (res.ok) {

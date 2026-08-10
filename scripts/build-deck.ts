@@ -112,7 +112,7 @@ const CONTRACT = [
   ["01", "플랜 문의", "홈페이지 신청 폼 또는 메일로 브랜드 상황을 남겨 주십니다. 컨텐츠 진단(5문항)을 함께 마치시면 구성 제안이 더 정확해집니다."],
   ["02", "소개서 · 구성 안내", "브랜드 상황에 맞는 구성과 편수별 금액을 정리해 이메일로 회신드립니다. 조정이 필요하면 이 단계에서 맞춥니다."],
   ["03", "구성 확정", "편수·시딩 인원·일정을 확정합니다. 확정된 내용은 견적서로 정리해 드립니다."],
-  ["04", "결제", "카드 결제가 기본입니다. 계좌 입금·세금계산서 발행이 필요하시면 함께 안내드립니다. 세금계산서는 결제 확인 후 발행됩니다."],
+  ["04", "결제", "세금계산서 발행 후 현금(계좌이체)이 기본이며, 카드 결제도 가능합니다. 금액은 모두 부가세 별도 기준입니다."],
   ["05", "계정 개설 · 프로젝트 시작", "담당자가 플랜을 적용하면 내 프로젝트에서 진행 단계가 열립니다. 시작 안내 메일이 자동 발송됩니다."],
   ["06", "컨텐츠 가이드라인 제출", "브랜드 소개·타겟·USP·금지 표현 등을 작성해 주십니다. 기획제작 요청 확정까지 D-7이 기준 일정입니다."],
   ["07", "진행 · 검수", "단계별 진행 상황을 대시보드에서 확인하시고, 1차 완성본에 대해 편당 1회 무상 수정을 요청하실 수 있습니다."],
@@ -126,7 +126,7 @@ const FAQ = [
   ["소스컷을 따로 받을 수 있나요?", "모두 대시보드에서 다운로드 가능하되, 별도의 소스컷이 아닌 인플루언서 편집본을 받아보실 수 있습니다."],
   ["숏폼 기획제작은 어떤 전문가가 하나요?", "블랭크 코퍼레이션 출신, 대형 라이브커머스 종합몰 컨텐츠 담당자 출신 등 소재와 마케팅 사이클을 함께 운영해 본 제작자들이 진행합니다."],
   ["기존 프로젝트와 이 패키지는 어떻게 다른가요?", "해그로시는 브랜드 하나를 맡아 기획부터 소재 제작, 캠페인 운영까지 수행하는 프로젝트 팀입니다(평균 프로젝트 단가 2,000만원대). 이 패키지는 그 프로젝트에서 검증된 소재 제작 시스템만 편수 단위로 잘라 연 것으로, 제작 품질과 팀 구성은 동일합니다."],
-  ["세금계산서 발행이 되나요?", "가능합니다. 결제 확인 후 발행해 드리며, 계좌 입금을 원하시는 경우에도 동일하게 안내드립니다."],
+  ["결제는 어떻게 하나요?", "세금계산서 발행 후 현금(계좌이체)이 기본이며, 카드 결제도 가능합니다."],
   ["소재의 광고 사용 기간에 제한이 있나요?", "인플루언서 출연 컷이 포함된 소재는 다운로드일로부터 5개월간 광고에 사용하실 수 있습니다. 출연자가 없는 소재는 기간 제한이 없습니다."],
 ];
 
@@ -214,7 +214,153 @@ ${["riiid-momcafe", "moen-shampoo-ppl", "zeroblock-interview", "bone-w40s", "see
   ),
 );
 
-// 2 — 회사 개요
+// 2 — 대표 인사말
+pages.push(
+  page(`
+${head("Director's Message", "왜 이 스튜디오를 열었는가")}
+
+<div class="msg">
+  <div class="msg-quote">
+    <p>“단순 납품, 단순 AI,<br>마케팅을 모르는 기획,<br>서사가 없는 저감도.”</p>
+    <span>지금 숏폼 시장을 바로잡기 위해 만들었습니다.</span>
+  </div>
+  <div class="msg-body">
+    <div><p class="msg-k">해그로시는</p><p>브랜드 전략과 그로스 마케팅, 광고 컨텐츠 에이전시의 역할을 수행하면서 유튜브 영상 프로덕션 프로젝트를 동시에 수행해 온 <b>기간제 프로젝트 집단</b>입니다.</p></div>
+    <div><p class="msg-k">붙는 사람</p><p>숏폼과 퍼포먼스 크리에이티브가 효과를 보기 시작한 <b>2018년경부터 그 업을 해 온 전문가 집단</b>이 그대로 투입됩니다.</p></div>
+    <div><p class="msg-k">일하는 기준</p><p><b>세일즈·매출·전환율에 대한 이해</b>를 기반으로 숏폼을 기획하고 제작합니다. 시딩에 필요한 컨텐츠 가이드라인과 소스컷 확보 같은 번거로운 작업은 저희가 대신합니다.</p></div>
+  </div>
+</div>
+
+<div class="sign">
+  <span>해그로시 대표 디렉터</span>
+  <strong>송건호</strong>
+</div>`),
+);
+
+// 3 — 시장의 문제
+pages.push(
+  page(`
+${head("Problem", "지금 시장은 이렇게 나뉘어 있습니다", "인플루언서 시딩과 구매 전환형 광고 컨텐츠를 서로 다른 곳에 따로 발주합니다. 그래서 둘 다 반쪽이 됩니다.")}
+
+<div class="vs">
+  <div class="vs-box">
+    <p class="vs-tag">따로 발주 A</p>
+    <p class="vs-t">인플루언서 시딩</p>
+    <p class="vs-d">각 잡은 컨텐츠로 채널 협업을 하지 않는 이상, 남는 건 결국 <b>소스컷 일부와 약간의 바이럴</b>입니다.</p>
+  </div>
+  <div class="vs-mid">＋</div>
+  <div class="vs-box">
+    <p class="vs-tag">따로 발주 B</p>
+    <p class="vs-t">광고 숏폼 제작</p>
+    <p class="vs-d">마케팅 의도를 모르는 채 받은 소스로 만듭니다. <b>전환을 못 만드는 납품물</b>이 쌓입니다.</p>
+  </div>
+</div>
+
+<div class="gaps">
+${[
+  ["단순 납품", "편수만 채우고 끝난다"],
+  ["단순 AI", "도구가 기획을 대신한다"],
+  ["마케팅 부재", "왜 그렇게 찍는지가 없다"],
+  ["서사 없는 저감도", "끝까지 보게 만들지 못한다"],
+]
+  .map(([t, d]) => `<div><p class="gap-t">${t}</p><p class="gap-d">${d}</p></div>`)
+  .join("")}
+</div>
+
+<p class="verdict">둘을 나눠 발주하는 순간, <b>가이드라인도 소스컷도 전환도 아무도 책임지지 않습니다.</b></p>`),
+);
+
+// 4 — 통합 구조
+pages.push(
+  page(`
+${head("Solution", "그래서 하나의 라인으로 묶었습니다", "컨텐츠 가이드라인을 먼저 잡아 필요한 컷을 효율적으로 확보하고, 그 소스로 구매 전환형 숏폼 부스팅까지 이어서 진행합니다.")}
+
+<div class="chain">
+${[
+  ["01", "컨텐츠 가이드라인", "무엇을 왜 찍을지 먼저 정합니다. 여기서 필요한 컷이 정해집니다."],
+  ["02", "인플루언서 시딩", "가이드라인대로 배포하고, 바이럴과 소스컷을 동시에 가져옵니다."],
+  ["03", "소스컷 확보", "배포로 끝내지 않고 원본에서 광고용 컷을 다시 뽑습니다."],
+  ["04", "전환형 숏폼 부스팅", "확보한 소스로 구매 전환 소재를 만들어 광고 계정에 태웁니다."],
+]
+  .map(
+    ([n, t, d], i, a) => `<div class="chain-node">
+  <span class="chain-no">${n}</span>
+  <p class="chain-t">${t}</p>
+  <p class="chain-d">${d}</p>
+</div>${i < a.length - 1 ? '<div class="chain-arrow">→</div>' : ""}`,
+  )
+  .join("")}
+</div>
+
+<div class="outcome">
+${[
+  ["바이럴 도달", "실제 채널에 배포된 리뷰"],
+  ["광고용 소스 자산", "원본에서 회수한 컷"],
+  ["전환 소재", "광고 계정에 바로 태우는 숏폼"],
+]
+  .map(([t, d]) => `<div><p class="oc-t">${t}</p><p class="oc-d">${d}</p></div>`)
+  .join("")}
+</div>
+
+<div class="one-line">
+  <p class="one-t">한 번의 발주 · 하나의 담당 · 하나의 대시보드</p>
+  <p class="one-d">가이드라인을 쓴 사람이 소스컷을 뽑고, 그 소스로 숏폼을 만듭니다. 넘길 때마다 새로 설명할 일이 없습니다.</p>
+</div>`),
+);
+
+// 5 — 클라이언트가 얻는 것
+pages.push(
+  page(`
+${head("Impact", "묶으면 이렇게 달라집니다")}
+
+<div class="impact">
+${[
+  ["챔피언 소재", "몇 종의 위너 소재로 매출이 스케일업됩니다. 이긴 소재에 예산을 몰고 파생본을 계속 갈아 끼웁니다."],
+  ["쉬워지는 운영", "소재가 마르지 않으니 예산을 올릴 때 CPA가 먼저 오르지 않습니다."],
+  ["사라지는 잡무", "크리에이터 선정, 가이드라인 작성, 배송, 소스컷 회수까지 저희가 대신합니다."],
+  ["빨라지는 피드백", "내 프로젝트 대시보드에서 진행 단계를 보고 피드백을 일괄로 넘깁니다."],
+]
+  .map(
+    ([t, d], i) => `<div class="imp">
+  <span class="imp-no">0${i + 1}</span>
+  <p class="imp-t">${t}</p>
+  <p class="imp-d">${d}</p>
+</div>`,
+  )
+  .join("")}
+</div>`),
+);
+
+// 6 — 왜 해그로시인가
+pages.push(
+  page(`
+${head("Why HGRS", "왜 해그로시여야 하는가")}
+
+<div class="why">
+  <div class="why-big">
+    <strong>100억</strong>
+    <span>디렉터 본인의 셀프 집행 규모</span>
+    <p>대행이 아니라 직접 태워 본 사람이 소재를 설계합니다. 무엇이 지출을 이어가게 하는지 계정 안에서 배웠습니다.</p>
+  </div>
+  <div class="why-big">
+    <strong>2018~</strong>
+    <span>숏폼·퍼포먼스 크리에이티브 업력</span>
+    <p>유행이 시작되던 시점부터 지금까지 같은 업을 해 왔습니다. 최근에 들어온 팀이 아닙니다.</p>
+  </div>
+</div>
+
+<div class="why-row">
+${[
+  ["고연차 검증된 크루", "블랭크 코퍼레이션 출신, 대형 라이브커머스 종합몰 컨텐츠 담당 출신, 구글·메타 코리아 우수 크리에이티브 출신이 각자 담당으로 붙습니다."],
+  ["AI는 수단으로만", "브랜드 분석처럼 손이 많이 가는 구간에만 씁니다. 마케팅 의도의 반영은 담당자가 감도 있게 핸들링합니다."],
+  ["현업 속도에 맞춘 제작", "클라이언트의 현업 일정을 전제로 프로세스를 짰습니다. 확인과 수정이 한 화면에서 일괄로 돕니다."],
+]
+  .map(([t, d]) => `<div class="why-c"><p class="why-t">${t}</p><p class="why-d">${d}</p></div>`)
+  .join("")}
+</div>`),
+);
+
+// 7 — 회사 개요
 pages.push(
   page(`
 ${head("About", "회사 개요", "저희는 원래 편당 단가로 소재를 파는 팀이 아니었습니다. 브랜드 하나를 맡아 기획부터 소재 제작, 캠페인 운영까지 통으로 수행해 온 프로젝트 팀입니다.")}
@@ -389,7 +535,7 @@ ${CONTRACT.map(
 </div>
 <div class="pay-note">
   <p class="card-t">결제 · 세금계산서</p>
-  <p>카드 결제가 기본이며, 계좌 입금도 가능합니다. 세금계산서는 결제 확인 후 발행해 드립니다. 금액은 모두 부가세 별도 기준입니다.</p>
+  <p><b>세금계산서 발행 후 현금(계좌이체)이 기본</b>이며, 카드 결제도 가능합니다. 발행에 필요한 사업자 정보는 확정 단계에서 요청드립니다. 금액은 모두 부가세 별도 기준입니다.</p>
 </div>`),
 );
 
@@ -616,6 +762,69 @@ h3{font-size:11pt;font-weight:700;margin-top:9mm;margin-bottom:3mm}
 .faq-row{padding:5.2mm 0;border-bottom:1px solid #f2f2f2}
 .faq-q{font-size:9.5pt;font-weight:700}
 .faq-a{font-size:8.5pt;line-height:1.8;color:#595959;margin-top:1.5mm}
+
+/* 대표 인사말 */
+.msg{display:grid;grid-template-columns:74mm 1fr;gap:9mm;margin-top:11mm}
+.msg-quote{background:#0a0a0c;color:#fff;border-radius:3mm;padding:8mm 7mm;display:flex;flex-direction:column;justify-content:space-between}
+.msg-quote p{font-size:17pt;font-weight:700;line-height:1.55;letter-spacing:-.01em}
+.msg-quote span{font-size:8pt;color:rgba(255,255,255,.55);line-height:1.7;margin-top:8mm}
+.msg-body>div{border-bottom:1px solid #f0f0f0;padding:11mm 0}
+.msg-body>div:first-child{padding-top:0}
+.msg-k{font-size:7.5pt;letter-spacing:.1em;color:#8e6b68;font-weight:700;margin-bottom:2mm}
+.msg-body p:last-child{font-size:10pt;line-height:1.95;color:#595959}
+.msg-body b{color:#030303}
+.sign{margin-top:10mm;padding-top:5mm;border-top:1px solid #e6e6e6;display:flex;align-items:baseline;gap:4mm}
+.sign span{font-size:8pt;color:#8a8a8a}
+.sign strong{font-size:13pt;font-weight:700}
+
+/* 문제 대비 */
+.vs{display:grid;grid-template-columns:1fr 12mm 1fr;align-items:stretch;margin-top:8mm}
+.vs-box{border:1px solid #e0e0e0;border-radius:3mm;padding:10mm;background:#faf9f8;min-height:86mm}
+.vs-mid{display:flex;align-items:center;justify-content:center;font-size:16pt;color:#c4c4c4;font-weight:700}
+.vs-tag{display:inline-block;font-size:7pt;letter-spacing:.1em;color:#8a8a8a;border:1px solid #dcdcdc;border-radius:99px;padding:1mm 3mm}
+.vs-t{font-size:13pt;font-weight:700;margin-top:4mm}
+.vs-d{font-size:9.5pt;line-height:1.95;color:#595959;margin-top:4mm}
+.vs-d b{color:#030303}
+.gaps{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm;margin-top:7mm}
+.gaps>div{border-top:2px solid #4d5fe8;padding-top:6mm;min-height:32mm}
+.gap-t{font-size:9.5pt;font-weight:700}
+.gap-d{font-size:7.5pt;color:#8a8a8a;margin-top:1.5mm;line-height:1.7}
+.verdict{margin-top:10mm;background:#0a0a0c;color:#fff;border-radius:3mm;padding:11mm 9mm;font-size:13pt;line-height:1.75;font-weight:400}
+.verdict b{color:#8ea2ff}
+
+/* 통합 체인 */
+.chain{display:grid;grid-template-columns:1fr 7mm 1fr 7mm 1fr 7mm 1fr;align-items:stretch;margin-top:9mm}
+.chain-node{border:1px solid #e0e0e0;border-top:3px solid #4d5fe8;border-radius:3mm;padding:8mm 5mm;min-height:80mm}
+.chain-no{font-size:8pt;font-weight:700;color:#4d5fe8}
+.chain-t{font-size:10.5pt;font-weight:700;margin-top:2.5mm;line-height:1.4}
+.chain-d{font-size:7.5pt;line-height:1.75;color:#8a8a8a;margin-top:3mm}
+.chain-arrow{display:flex;align-items:center;justify-content:center;color:#4d5fe8;font-size:13pt}
+.one-line{margin-top:8mm;border:1px solid #4d5fe8;background:rgba(77,95,232,.05);border-radius:3mm;padding:9mm}
+.one-t{font-size:13pt;font-weight:700;color:#3948b8}
+.one-d{font-size:9pt;line-height:1.85;color:#595959;margin-top:2.5mm}
+
+.outcome{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:8mm}
+.outcome>div{background:#f7f5f3;border-radius:3mm;padding:6mm;text-align:center}
+.oc-t{font-size:10.5pt;font-weight:700}
+.oc-d{font-size:8pt;color:#8a8a8a;margin-top:2mm;line-height:1.7}
+
+/* 효과 */
+.impact{display:grid;grid-template-columns:1fr 1fr;gap:5mm;margin-top:9mm}
+.imp{border:1px solid #e6e6e6;border-radius:3mm;padding:9mm;min-height:88mm}
+.imp-no{font-size:20pt;font-weight:700;color:#eceefb;line-height:1}
+.imp-t{font-size:13pt;font-weight:700;margin-top:3mm}
+.imp-d{font-size:9pt;line-height:1.9;color:#595959;margin-top:3mm}
+
+/* 차별점 */
+.why{display:grid;grid-template-columns:1fr 1fr;gap:5mm;margin-top:8mm}
+.why-big{background:#0a0a0c;color:#fff;border-radius:3mm;padding:10mm;min-height:96mm}
+.why-big strong{display:block;font-size:26pt;font-weight:700;letter-spacing:-.02em;color:#8ea2ff}
+.why-big span{display:block;font-size:8pt;color:rgba(255,255,255,.55);margin-top:1.5mm}
+.why-big p{font-size:8.5pt;line-height:1.85;color:rgba(255,255,255,.72);margin-top:5mm}
+.why-row{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:5mm}
+.why-c{border:1px solid #e6e6e6;border-radius:3mm;padding:8mm;min-height:76mm}
+.why-t{font-size:10pt;font-weight:700;padding-bottom:3mm;border-bottom:2px solid #b89b8d;display:inline-block}
+.why-d{font-size:8.5pt;line-height:1.85;color:#595959;margin-top:4mm}
 
 /* 후기 */
 .reviews{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-top:8mm;grid-auto-rows:1fr}
