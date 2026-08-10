@@ -164,6 +164,7 @@ const pages: string[] = [];
 
 // 01 표지
 
+
 pages.push(
   slide(
     `<div class="cover">
@@ -188,9 +189,10 @@ ${["riiid-momcafe", "moen-shampoo-ppl", "zeroblock-interview", "bone-w40s"].map(
 
 // 02 브랜드 · 법인 소개
 
+
 pages.push(
   slide(`
-${head("Company", "브랜드 · 법인 소개")}
+${head("브랜드 · 법인 소개", "브랜드의 매출 사이클을 함께 돌려 온 팀이 편수 단위로 붙어 드립니다")}
 <div class="two">
   <div class="panel panel-ink">
     <p class="pk">해그로시</p>
@@ -214,9 +216,10 @@ ${head("Company", "브랜드 · 법인 소개")}
 
 // 03 시장 구조
 
+
 pages.push(
   slide(`
-${head("Market", "시장 구조", "인플루언서 시딩과 구매 전환형 광고 컨텐츠를 서로 다른 곳에 발주하는 구조입니다.")}
+${head("시장 구조", "인플루언서 바이럴에 이어 매출 연속성을 확보하고 싶으신가요?", "시딩과 구매 전환형 광고 컨텐츠를 서로 다른 곳에 발주하면, 사이에 남는 일은 아무도 하지 않습니다.")}
 <div class="split">
   <div class="split-side">
     <div class="circle circle-indigo"><span>인플루언서<br>시딩</span></div>
@@ -238,9 +241,10 @@ ${head("Market", "시장 구조", "인플루언서 시딩과 구매 전환형 �
 
 // 04 포지션
 
+
 pages.push(
   slide(`
-${head("Position", "포지션")}
+${head("포지션", "인플루언서 시딩과 2차 활용 영상 확보부터 구매전환형 스케일업 숏폼 기획제작까지 하나의 프로세스로 해결해 드립니다")}
 <div class="two vcenter">
   <div class="venn">
     <div class="venn-c venn-a"><span>인플루언서<br>시딩</span></div>
@@ -261,9 +265,10 @@ ${[
 );
 
 // 05 진행 라인
+
 pages.push(
   slide(`
-${head("Line", "진행 라인", "가이드라인부터 납품까지 한 팀이 이어서 진행합니다.")}
+${head("진행 라인", "가이드라인부터 납품까지, 넘길 때마다 다시 설명하실 일이 없습니다")}
 <div class="flow">
 ${FLOW.map(
   ([n, t, d]) => `<div class="flow-row">
@@ -277,9 +282,10 @@ ${FLOW.map(
 
 // 06 기대 효과
 
+
 pages.push(
   slide(`
-${head("Impact", "기대 효과")}
+${head("기대 효과", "챔피언 소재 몇 종으로 매출을 늘려 드립니다")}
 <div class="impact">
 ${[
   ["매출 스케일업", "챔피언 소재 몇 종으로 예산을 몰고 파생본을 이어 갑니다"],
@@ -300,9 +306,10 @@ ${[
 
 // 07 제작 조직 (현장)
 
+
 pages.push(
   slide(`
-${head("Crew", "브랜드 컨텐츠 기획 제작 조직", "저희 팀이 촬영 현장과 브랜드 현장에서 직접 찍은 사진입니다. 스톡 이미지가 아닙니다.")}
+${head("브랜드 컨텐츠 기획 제작 조직", "현장에서 직접 찍고, 직접 만듭니다", "아래는 저희 팀이 촬영 현장과 브랜드 현장에서 직접 찍은 사진입니다. 스톡 이미지가 아닙니다.")}
 <div class="creds">
 ${CREDENTIALS.map((c) => `<span class="cred">${c}</span>`).join("")}
 </div>
@@ -313,9 +320,10 @@ ${Array.from({ length: 8 }, (_, i) => `<img src="${asset(`/portfolio/crew/crew-0
 
 // 08 역할 구성 · AI
 
+
 pages.push(
   slide(`
-${head("Team", "역할 구성")}
+${head("역할 구성", "숏폼 한 편에 이 역할이 모두 붙습니다")}
 <div class="two t-6040">
   <div class="roles">
 ${ROLES.map(([t, d]) => `<div class="role"><p class="role-t">${t}</p><p class="role-d">${d}</p></div>`).join("")}
@@ -336,9 +344,10 @@ ${ROLES.map(([t, d]) => `<div class="role"><p class="role-t">${t}</p><p class="r
 
 // 09 제작 시스템
 
+
 pages.push(
   slide(`
-${head("System", "제작 시스템", "브랜드 프로젝트 안에서 반복 검증한 위너 소재 제작 시스템을 편수 단위로 열었습니다.")}
+${head("제작 시스템", "프로젝트에서 검증한 위너 제작 시스템을 그대로 쓰실 수 있습니다", "브랜드 프로젝트 안에서 반복 검증한 사이클 중 기획 → 제작 구간을 편수 단위로 열었습니다.")}
 <div class="band3 tall">
   <div class="bd bd-indigo"><p class="bd-n">01</p><p class="bd-t">판독 기준</p><p class="bd-d">조회수가 아니라 구매 전환. 훅 유지율 · CPA · ROAS로 위너를 가립니다.</p></div>
   <div class="bd bd-gold"><p class="bd-n">02</p><p class="bd-t">제작 사이클</p><p class="bd-d">기획 → 제작 → 데이터 판독 → 변주. 프로젝트에서 수십 회 반복한 순서입니다.</p></div>
@@ -346,11 +355,23 @@ ${head("System", "제작 시스템", "브랜드 프로젝트 안에서 반복 �
 </div>`),
 );
 
-// 10 성과 사례
+// 10 클라이언트
+
 
 pages.push(
   slide(`
-${head("Results", "성과 사례", "소재 제작을 포함한 프로젝트 수행 결과입니다. 이 패키지는 같은 제작 시스템을 사용합니다.")}
+${head("클라이언트 히스토리", "커머스부터 서비스, 플랫폼까지 30여 브랜드와 함께했습니다")}
+<div class="logos">
+${CLIENTS.map((c) => `<div><img src="${asset(`/logos/${c}.png`)}" alt=""></div>`).join("")}
+</div>`),
+);
+
+// 11 성과 사례
+
+
+pages.push(
+  slide(`
+${head("주요 성과", "이런 결과를 만들어 왔습니다", "소재 제작을 포함한 프로젝트 수행 결과이며, 이 패키지는 같은 제작 시스템을 사용합니다.")}
 <div class="cases">
 ${CASES.map(
   (c) => `<div class="case">
@@ -367,31 +388,79 @@ ${CASES.map(
 <p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
 );
 
-// 11 포트폴리오
+// 12 포트폴리오
+
 
 pages.push(
   slide(`
-${head("Portfolio", "최근 주요 포트폴리오", "기획과 서사, 마케팅과 세일즈를 아는 팀이 만드는 광고형 숏폼입니다.")}
+${head("최근 주요 포트폴리오", "기획과 서사, 마케팅과 세일즈를 아는 팀이 만듭니다")}
 <div class="wall">
 ${WALL.map((s) => `<img src="${asset(`/portfolio/clips/${s}.jpg`)}" alt="">`).join("")}
 </div>`),
 );
 
-// 12 클라이언트
+// 13 PLAN
 
 pages.push(
   slide(`
-${head("Clients", "클라이언트 히스토리", "커머스부터 서비스, 플랫폼까지 30여 브랜드의 그로스·컨텐츠 프로젝트를 수행했습니다.")}
-<div class="logos">
-${CLIENTS.map((c) => `<div><img src="${asset(`/logos/${c}.png`)}" alt=""></div>`).join("")}
-</div>`),
+${head("플랜 안내", "브랜드 상황에 맞는 구성을 고르시면 됩니다", "싱글과 패키지는 함께 사는 구성이 아니라 둘 중 하나입니다.")}
+
+<div class="journey">
+${[
+  ["인플루언서 시딩", "가이드라인 · 배포", "j-gold"],
+  ["2차 활용 소스컷", "광고용 컷 회수", "j-gold2"],
+  ["구매전환 숏폼", "기획 · 제작", "j-indigo"],
+  ["광고 집행", "계정 투입 · 변주", "j-ink"],
+]
+  .map(
+    ([t, d, c], i, a) =>
+      `<div class="j ${c}"><p class="j-t">${t}</p><p class="j-d">${d}</p></div>${i < a.length - 1 ? '<span class="j-arrow">▶</span>' : ""}`,
+  )
+  .join("")}
+</div>
+
+<div class="two plans">
+  <div class="plan-col">
+    <p class="plan-k">싱글 플랜</p>
+    <p class="plan-h">보유 소스로 숏폼만</p>
+    <p class="plan-d">촬영본 · UGC · 제품컷이 있으실 때. 구매 전환형 숏폼 기획제작만 편수 단위로 진행합니다.</p>
+    <table class="tbl"><tbody>${planRows(singles, "single")}</tbody></table>
+  </div>
+  <div class="plan-col plan-col-pkg">
+    <p class="plan-k">패키지 플랜</p>
+    <p class="plan-h">시딩으로 소스부터 확보</p>
+    <p class="plan-d">찍을 소스부터 없으실 때. 인플루언서 시딩으로 소스컷을 확보하고 숏폼까지 이어서 만듭니다.</p>
+    <table class="tbl"><tbody>${planRows(packages, "package")}</tbody></table>
+    <div class="seed-in">
+${packages
+  .map(
+    (p) => `<div><span>시딩 ${p.influencerCount}명</span><strong>${formatKRW(p.seedingPrice ?? 0)}</strong></div>`,
+  )
+  .join("")}
+    </div>
+  </div>
+</div>
+
+<div class="spec">
+${[
+  ["9:16 세로형", "요청 시 1:1 파생"],
+  ["MP4 (H.264)", "광고 계정 업로드 사양"],
+  ["편당 1회 무상 수정", "추가는 별도 견적"],
+  ["폴더 전체 다운로드", "인플루언서 편집본 포함"],
+  ["광고 사용기간 5개월", "출연 컷 포함 소재 기준"],
+]
+  .map(([k, v]) => `<div><span>${k}</span><p>${v}</p></div>`)
+  .join("")}
+</div>
+<p class="vat">※ 부가세 별도 · ${esc(POLICY.seedingBundleOnly)}</p>`),
 );
 
-// 13 진행 단계
+// 14 진행 단계
+
 
 pages.push(
   slide(`
-${head("Process", "진행 프로세스", "기획제작 요청 확정까지 D-7이 기준 일정입니다.")}
+${head("진행 프로세스", "지금 어디까지 왔는지 단계로 확인하실 수 있습니다", "기획제작 요청 확정까지 D-7이 기준 일정입니다.")}
 <div class="two">
   <div class="track track-indigo">
     <p class="track-t">인플루언서 시딩</p>
@@ -406,89 +475,34 @@ ${head("Process", "진행 프로세스", "기획제작 요청 확정까지 D-7�
 </div>`),
 );
 
-// 14 이용 방법 (실제 화면)
-
+// 15 이용 방법 (실제 화면)
 pages.push(
   slide(`
-${head("Dashboard", "내 프로젝트 보드 이용 방법", "플랜 적용 후 아래 화면에서 진행 상황을 직접 확인하십니다.")}
-<div class="two t-4060">
-  <div class="usage">
-${USAGE.map(
-  ([n, t, d]) => `<div class="use"><span class="use-no">${n}</span><div><p class="use-t">${t}</p><p class="use-d">${d}</p></div></div>`,
-).join("")}
+${head("내 프로젝트", "‘내 프로젝트’에서 초기 요청사항부터 컨텐츠 컨펌 및 진행 단계까지 한번에 확인하세요")}
+<div class="board">
+  <div class="board-main">
+    <img src="${asset("/deck/ui-dashboard.png")}" alt="">
+    <p class="cap">진행 단계 · 플랜 · 기한을 한 화면에서</p>
   </div>
-  <div class="shots">
-    <img class="shot-main" src="${asset("/deck/ui-dashboard.png")}" alt="">
-    <img class="shot-sub" src="${asset("/deck/ui-signup.png")}" alt="">
+  <div class="board-side">
+    <div class="board-item">
+      <img src="${asset("/deck/ui-cpv.png")}" alt="">
+      <p class="cap">1차 선정 심사 — 팔로워 · 평균 조회 · CPV를 보고 직접 선택</p>
+    </div>
+    <div class="board-item">
+      <img src="${asset("/deck/ui-brandai.png")}" alt="">
+      <p class="cap">브랜드 AI 기본 분석 — 타겟 · USP · 객단가 · 금지 표현 구조화</p>
+    </div>
   </div>
 </div>`),
 );
 
-// 15 진행 조건 · 산출물
+// 16 계약 · 결제
+
 
 pages.push(
   slide(`
-${head("Delivery", "산출물 전달 스펙")}
-<div class="two">
-  <div class="terms">
-${[POLICY.revisionOnce, POLICY.usagePeriod, POLICY.sourceRequired, POLICY.noIndividualEdit, POLICY.downloadExpiry]
-  .map((p) => `<div class="term">${esc(p)}</div>`)
-  .join("")}
-  </div>
-  <div class="kv">
-    <div><dt>영상 비율</dt><dd>9:16 기본 · 요청 시 1:1 파생</dd></div>
-    <div><dt>납품 형식</dt><dd>MP4 (H.264) · 광고 계정 업로드 사양</dd></div>
-    <div><dt>전달 방식</dt><dd>프로젝트 폴더 전체 다운로드</dd></div>
-    <div><dt>인플루언서 결과물</dt><dd>배포 채널 링크 · 인플루언서 편집본</dd></div>
-    <div><dt>수정</dt><dd>편당 1회 무상 · 추가는 별도 견적</dd></div>
-  </div>
-</div>`),
-);
-
-// 16 플랜 · 금액
-
-pages.push(
-  slide(`
-${head("Plans", "플랜 안내", "브랜드 상황에 따라 아래 중 하나를 고르시면 됩니다. 싱글과 패키지는 택일입니다.")}
-<div class="two">
-  <div>
-    <p class="tbl-h">싱글 · 숏폼 기획제작</p>
-    <p class="tbl-lead">보유 소스(촬영본 · UGC · 제품컷)로 바로 시작</p>
-    <table class="tbl"><tbody>${planRows(singles, "single")}</tbody></table>
-  </div>
-  <div>
-    <p class="tbl-h">패키지 · 숏폼 + 인플루언서 시딩</p>
-    <p class="tbl-lead">소스컷 확보까지 함께 진행</p>
-    <table class="tbl"><tbody>${planRows(packages, "package")}</tbody></table>
-  </div>
-</div>
-<div class="seed-band">
-  <p class="seed-k">패키지 포함<br>시딩 단가</p>
-${packages
-  .map(
-    (p) => `<div class="seed-i"><span>${esc(p.label.replace(" 패키지", ""))} · ${p.influencerCount}명</span><strong>${formatKRW(p.seedingPrice ?? 0)}</strong></div>`,
-  )
-  .join("")}
-</div>
-<div class="pick">
-${[
-  ["1편", "결과물을 먼저 한 편 보고 판단하실 때"],
-  ["5편", "첫 세트로 반응을 확인하실 때"],
-  ["10편", "A/B 변주를 실제로 돌리실 때"],
-  ["20편", "이긴 소재에 예산을 몰 때"],
-  ["패키지", "찍을 소스부터 없으실 때"],
-]
-  .map(([k, v]) => `<div><span>${k}</span><p>${v}</p></div>`)
-  .join("")}
-</div>
-<p class="vat">※ 부가세 별도 · 싱글과 패키지는 택일 · ${esc(POLICY.seedingBundleOnly)}</p>`),
-);
-
-// 17 계약 · 결제
-
-pages.push(
-  slide(`
-${head("Contract", "계약 · 결제")}
+${head("계약 · 결제", "구성 확정부터 납품까지 이렇게 진행해 드립니다")}
 <div class="contract">
 ${CONTRACT.map(
   ([n, t, d]) => `<div class="ct"><span class="ct-no">${n}</span><p class="ct-t">${esc(t)}</p><p class="ct-d">${esc(d)}</p></div>`,
@@ -497,17 +511,19 @@ ${CONTRACT.map(
 <div class="pay-band">세금계산서 발행 후 현금(계좌이체)이 기본이며, 카드 결제도 가능합니다 · 부가세 별도</div>`),
 );
 
-// 18 후기
+// 17 후기
+
 
 pages.push(
   slide(`
-${head("Reviews", "클라이언트 후기", "평균 2천만원(최소 5백 ~ 최대 2억) 규모 프로젝트에서 받은 후기입니다.")}
+${head("클라이언트 후기", "함께한 분들이 남겨 주신 이야기입니다", "평균 2천만원(최소 5백 ~ 최대 2억) 규모 프로젝트에서 받은 후기입니다.")}
 <div class="reviews">
 ${REVIEWS.map(([t, who]) => `<div class="rv"><p>“${esc(t)}”</p><span>${esc(who)}</span></div>`).join("")}
 </div>`),
 );
 
-// 19 문의처
+// 18 문의처
+
 
 pages.push(
   slide(
@@ -558,11 +574,11 @@ body{font-family:Pyeojin,-apple-system,sans-serif;color:var(--ink);-webkit-print
 .page-foot{position:absolute;left:16mm;right:16mm;bottom:6mm;display:flex;justify-content:space-between;font-size:7pt;color:#a8a8a8}
 
 .shead{margin-bottom:8mm;flex-shrink:0}
-.eyebrow{font-size:7.5pt;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);font-weight:700}
+.eyebrow{font-size:8pt;letter-spacing:.06em;color:var(--gold-deep);font-weight:700}
 h1{font-size:34pt;line-height:1.24;font-weight:700;letter-spacing:-.02em}
 .chip-title{display:inline-block;background:var(--indigo);color:#fff;padding:0 4mm;border-radius:2mm}
-h2{font-size:22pt;line-height:1.3;font-weight:700;margin-top:2.5mm;letter-spacing:-.01em}
-.lead{font-size:9.5pt;line-height:1.8;color:var(--muted);margin-top:3mm;max-width:220mm}
+h2{font-size:19pt;line-height:1.35;font-weight:700;margin-top:2.5mm;letter-spacing:-.01em}
+.lead{font-size:9.5pt;line-height:1.8;color:var(--muted);margin-top:3mm;max-width:250mm}
 .foot-note{font-size:7.5pt;color:#9a9a9a;margin-top:auto;padding-top:4mm}
 
 /* 표지 · 문의처 */
@@ -714,7 +730,7 @@ h2{font-size:22pt;line-height:1.3;font-weight:700;margin-top:2.5mm;letter-spacin
 .tbl-h{font-size:12pt;font-weight:700}
 .tbl-lead{font-size:8pt;color:#8a8a8a;margin-top:1.5mm;margin-bottom:3mm}
 .tbl{width:100%;border-collapse:collapse;font-size:9pt}
-.tbl td{padding:3.4mm 0;border-bottom:1px solid #f0f0f0;vertical-align:top}
+.tbl td{padding:2.4mm 0;border-bottom:1px solid #f0f0f0;vertical-align:top}
 .t-name{font-weight:700;white-space:nowrap;width:34mm}
 .t-desc{font-size:8pt;color:#8a8a8a}
 .t-price{text-align:right;font-weight:700;white-space:nowrap}
@@ -729,6 +745,39 @@ h2{font-size:22pt;line-height:1.3;font-weight:700;margin-top:2.5mm;letter-spacin
 .pick>div{border-top:3px solid var(--indigo);padding-top:3.5mm}
 .pick span{font-size:9.5pt;font-weight:700}
 .pick p{font-size:8pt;color:var(--muted);margin-top:1.5mm;line-height:1.6}
+
+.journey{display:flex;align-items:stretch;gap:2mm;flex-shrink:0}
+.j{flex:1;border-radius:2mm;padding:4.4mm 6mm;color:#fff}
+.j-gold{background:var(--gold)}
+.j-gold2{background:var(--gold-deep)}
+.j-indigo{background:var(--indigo)}
+.j-ink{background:var(--night)}
+.j-t{font-size:10.5pt;font-weight:700}
+.j-d{font-size:8pt;opacity:.85;margin-top:1.5mm}
+.j-arrow{display:flex;align-items:center;color:var(--gold);font-size:9pt}
+.plans{margin-top:5mm;align-items:start}
+.plan-col{border:1px solid var(--line);border-radius:3mm;padding:6mm}
+.plan-col-pkg{border-color:var(--indigo);background:rgba(77,95,232,.04)}
+.plan-k{font-size:8pt;font-weight:700;color:var(--gold-deep)}
+.plan-h{font-size:13pt;font-weight:700;margin-top:1.5mm}
+.plan-d{font-size:8pt;color:var(--muted);line-height:1.65;margin-top:1.5mm;margin-bottom:2.5mm}
+.seed-in{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:3mm;background:var(--gold);color:#fff;border-radius:2mm;padding:4mm 5mm}
+.seed-in span{font-size:7.5pt;opacity:.85}
+.seed-in strong{display:block;font-size:10.5pt;margin-top:.5mm}
+.spec{display:grid;grid-template-columns:repeat(5,1fr);gap:4mm;margin-top:5mm;flex-shrink:0}
+.spec>div{border-top:2px solid var(--gold);padding-top:3mm}
+.spec span{font-size:9pt;font-weight:700}
+.spec p{font-size:7.5pt;color:var(--muted);margin-top:1mm}
+
+/* 내 프로젝트 보드 */
+.board{display:grid;grid-template-columns:1.5fr 1fr;gap:6mm;flex:1;min-height:0}
+.board-main{display:flex;flex-direction:column;min-height:0}
+.board-main img{width:100%;flex:1;min-height:0;object-fit:contain;object-position:top;border:1px solid var(--line);border-radius:3mm}
+.board-side{display:flex;flex-direction:column;gap:5mm;min-height:0}
+.board-item{display:flex;flex-direction:column;min-height:0}
+.board-item{flex:1}
+.board-item img{width:100%;flex:1;min-height:0;object-fit:contain;object-position:center;border:1px solid var(--line);border-radius:2mm;background:#fff}
+.cap{font-size:7.5pt;color:var(--muted);margin-top:2.5mm}
 
 /* 이용 방법 */
 .usage{display:flex;flex-direction:column;gap:2mm;justify-content:space-between}
