@@ -14,6 +14,7 @@ import {
 } from "@/lib/wall";
 import {
   WALL_CLIPS,
+  YOUTUBE_SHORTS,
   YOUTUBE_LINKS,
   clipPoster,
   clipVideo,
@@ -28,38 +29,79 @@ import {
  * 흘러가는 칸을 눌러 보라는 건 애초에 말이 안 됐다. 여기서는 멈춰 있고,
  * 재생 버튼이 hover 와 무관하게 항상 떠 있다. 캡션·브랜드명은 붙이지 않는다.
  */
-type GridTile = { video: string; poster: string; ratio: "9/16" | "1/1" };
+type GridTile =
+  | { kind: "clip"; video: string; poster: string; ratio: "9/16" | "1/1" }
+  | { kind: "short"; id: string; poster: string; label: string };
 
 /**
- * 그리드에 깔리는 영상 전부 — 숏폼 + 움직이는 배너.
- * 2026-08-10: 배너 영상을 아래 흐르는 밴드에서 끌어올렸다. 소재 수량이 둘로 갈릴 만큼
- * 많지 않아 나눠 두면 양쪽 다 빈약해 보인다. 영상은 여기 한 덩어리로 모은다.
+ * 그리드에 세우는 영상.
+ *
+ * 2026-08-10: 정사각 배너 영상을 여기서 도로 뺐다. 9:16 칸에 1:1을 넣으면
+ * 위아래가 검은 띠로 남아 소재가 아니라 여백이 먼저 보인다 — 배너는 아래 밴드가 제 자리다.
+ * 대신 유튜브 쇼츠 두 편(조나단 인터뷰 / 핏플렉스)을 세로 칸으로 세운다.
  */
 const GRID: GridTile[] = (() => {
   const clips: GridTile[] = WALL_CLIPS.map((c) => ({
+    kind: "clip",
     video: clipVideo(c.slug),
     poster: clipPoster(c.slug),
     ratio: c.ratio,
   }));
-  const motion: GridTile[] = WALL_MOTION.map((m) => ({
-    video: m.video!,
-    poster: m.src,
-    ratio: "1/1",
+  const shorts: GridTile[] = YOUTUBE_SHORTS.map((y) => ({
+    kind: "short",
+    id: y.id,
+    poster: y.poster,
+    label: y.label,
   }));
 
-  // 배너를 숏폼 사이에 고르게 끼운다 — 뒤에 몰면 그리드 끝이 배너 벽이 된다
-  const gap = Math.ceil(clips.length / (motion.length + 1));
-  const out: GridTile[] = [];
-  let m = 0;
-  clips.forEach((c, i) => {
-    out.push(c);
-    if ((i + 1) % gap === 0 && m < motion.length) out.push(motion[m++]);
-  });
-  while (m < motion.length) out.push(motion[m++]);
+  // 쇼츠를 앞·중간에 하나씩 꽂는다. 뒤에 몰면 유튜브로 나가는 칸만 모인 줄이 생긴다
+  const out = [...clips];
+  out.splice(2, 0, shorts[0]);
+  out.splice(9, 0, shorts[1]);
   return out;
 })();
 
-function ClipCard({ tile, onOpen }: { tile: GridTile; onOpen: () => void }) {
+/** 라이트박스로 재생되는 건 파일 소재뿐이다 — 쇼츠 칸은 유튜브로 나간다 */
+const PLAYABLE = GRID.filter(
+  (t): t is Extract<GridTile, { kind: "clip" }> => t.kind === "clip",
+);
+
+/** 유튜브 쇼츠 칸 — 파일이 아니라 유튜브에 있는 소재라 눌렀을 때 유튜브로 넘긴다 */
+function ShortCard({ id, poster, label }: { id: string; poster: string; label: string }) {
+  return (
+    <a
+      href={`https://www.youtube.com/shorts/${id}`}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={label}
+      className="group relative aspect-[9/16] w-full overflow-hidden rounded-2xl bg-ink-soft"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={poster}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        className="absolute inset-0 size-full object-cover"
+      />
+      <span className="pointer-events-none absolute inset-0 grid place-items-center bg-ink/0 transition-colors duration-300 group-hover:bg-ink/25">
+        <span className="grid size-11 place-items-center rounded-full bg-paper/90 shadow-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-110 sm:size-14">
+          <svg viewBox="0 0 24 24" className="ml-0.5 size-5 fill-ink sm:ml-1 sm:size-6">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </span>
+      </span>
+    </a>
+  );
+}
+
+function ClipCard({
+  tile,
+  onOpen,
+}: {
+  tile: Extract<GridTile, { kind: "clip" }>;
+  onOpen: () => void;
+}) {
   return (
     <button
       type="button"
@@ -96,8 +138,19 @@ type BandTile =
   | { kind: "yt"; id: string; label: string }
   | { kind: "img"; item: WallItem };
 
-// 영상(WALL_MOTION)은 위 그리드로 올라갔다. 밴드에는 이미지만 흐른다
-const BAND_IMAGES: WallItem[] = [...WALL_SQUARE, ...WALL_MISC, ...WALL_SITE];
+/**
+ * 밴드에 흐르는 이미지.
+ *
+ * 정사각 배너 영상(WALL_MOTION)은 여기가 제 자리다 — 칸이 정사각이라 잘리지 않는다.
+ * 나머지 이미지는 **절반만** 쓴다. 작은 칸을 빽빽하게 채우면 롱폼이 묻혀
+ * "이미지만 잔뜩"으로 읽힌다. 수를 줄여 롱폼이 더 자주 오게 만든다.
+ */
+const BAND_IMAGES: WallItem[] = [
+  ...WALL_MOTION,
+  ...WALL_SQUARE.filter((_, i) => i % 2 === 0),
+  ...WALL_MISC.filter((_, i) => i % 2 === 0),
+  ...WALL_SITE.filter((_, i) => i % 2 === 0),
+];
 
 /** 롱폼을 이미지 사이에 고르게 끼운다 — 한쪽에 몰리면 흐름이 두 덩어리로 갈린다 */
 const BAND: BandTile[] = (() => {
@@ -210,7 +263,7 @@ export function CreativeWall() {
 
   const step = useCallback((delta: number) => {
     setOpen((i) =>
-      i === null ? i : (i + delta + GRID.length) % GRID.length,
+      i === null ? i : (i + delta + PLAYABLE.length) % PLAYABLE.length,
     );
   }, []);
   const close = useCallback(() => setOpen(null), []);
@@ -235,9 +288,17 @@ export function CreativeWall() {
 
       {/* 숏폼 — PC 3열, 모바일 2열. 한 편씩 세로로 쭉 내리면 스크롤이 말이 안 되게 길어진다 */}
       <div className="mx-auto mt-10 grid w-full max-w-6xl grid-cols-2 gap-2 px-5 sm:gap-4 sm:px-8 lg:grid-cols-3 md:mt-14">
-        {GRID.map((tile, i) => (
-          <ClipCard key={tile.video} tile={tile} onOpen={() => setOpen(i)} />
-        ))}
+        {GRID.map((tile) =>
+          tile.kind === "short" ? (
+            <ShortCard key={tile.id} id={tile.id} poster={tile.poster} label={tile.label} />
+          ) : (
+            <ClipCard
+              key={tile.video}
+              tile={tile}
+              onOpen={() => setOpen(PLAYABLE.indexOf(tile))}
+            />
+          ),
+        )}
       </div>
 
       {/* 이미지 소재 + 유튜브 롱폼 — 소제목 없이 그리드에 바로 이어 붙인다.
@@ -250,10 +311,10 @@ export function CreativeWall() {
 
       {open !== null && (
         <ClipPlayer
-          src={GRID[open].video}
-          poster={GRID[open].poster}
+          src={PLAYABLE[open].video}
+          poster={PLAYABLE[open].poster}
           position={open + 1}
-          total={GRID.length}
+          total={PLAYABLE.length}
           onClose={close}
           onStep={step}
         />

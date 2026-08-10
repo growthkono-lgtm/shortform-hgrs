@@ -69,10 +69,28 @@ export type VideoLink = {
   kind: "long" | "short";
 };
 
+/**
+ * 유튜브 **쇼츠** — 크리에이티브 월 그리드에 세로 칸으로 세운다.
+ * 파일로 가진 소재가 아니라 유튜브에 올라간 것이라 눌렀을 때 유튜브로 넘긴다.
+ * 썸네일은 세로(oardefault/oar2)를 내려받아 `/portfolio/shorts-yt/` 에 두었다 —
+ * 기본 hqdefault 는 16:9라 세로 칸에서 위아래가 잘린다.
+ */
+export const YOUTUBE_SHORTS: { id: string; poster: string; label: string }[] = [
+  {
+    id: "BdGKoiPITZ0",
+    poster: "/portfolio/shorts-yt/BdGKoiPITZ0.jpg",
+    label: "크래프톤 · 조나단 인터뷰",
+  },
+  {
+    id: "TJGx4iZBgTI",
+    poster: "/portfolio/shorts-yt/TJGx4iZBgTI.jpg",
+    label: "핏플렉스 쇼츠 캠페인",
+  },
+];
+
+// 위 두 편은 그리드로 올라갔으므로 아래 롱폼 목록에서는 뺀다 (같은 화면에 두 번 나오지 않게)
 export const YOUTUBE_LINKS: VideoLink[] = [
-  { id: "TJGx4iZBgTI", label: "핏플렉스 쇼츠 캠페인", kind: "short" },
   { id: "Yy9K61hUC3Y", label: "핏플렉스 브랜드 캠페인", kind: "long" },
-  { id: "BdGKoiPITZ0", label: "크래프톤 · 조나단", kind: "short" },
   { id: "Bsp_HBS8ckM", label: "크래프톤 · 배그 극장", kind: "long" },
   { id: "aEbmZ3H5EWo", label: "크래프톤 · 배그 극장", kind: "long" },
   { id: "_h3PLQlhs1s", label: "크래프톤 · PNC", kind: "long" },
