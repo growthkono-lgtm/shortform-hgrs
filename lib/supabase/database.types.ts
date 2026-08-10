@@ -104,31 +104,40 @@ export type Database = {
         Row: {
           created_at: string
           final_drive_file_id: string | null
+          final_drive_link: string | null
           id: string
           preview_path: string | null
+          preview_url: string | null
           project_id: string
           seq: number
           status: string
+          title: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
           final_drive_file_id?: string | null
+          final_drive_link?: string | null
           id?: string
           preview_path?: string | null
+          preview_url?: string | null
           project_id: string
           seq: number
           status?: string
+          title?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
           final_drive_file_id?: string | null
+          final_drive_link?: string | null
           id?: string
           preview_path?: string | null
+          preview_url?: string | null
           project_id?: string
           seq?: number
           status?: string
+          title?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -145,33 +154,161 @@ export type Database = {
         Row: {
           drive_folder_id: string
           drive_link: string
-          expires_at: string
+          expires_at: string | null
           granted_at: string
           id: string
+          kind: string
           project_id: string
           revoked: boolean
         }
         Insert: {
           drive_folder_id: string
           drive_link: string
-          expires_at: string
+          expires_at?: string | null
           granted_at?: string
           id?: string
+          kind?: string
           project_id: string
           revoked?: boolean
         }
         Update: {
           drive_folder_id?: string
           drive_link?: string
-          expires_at?: string
+          expires_at?: string | null
           granted_at?: string
           id?: string
+          kind?: string
           project_id?: string
           revoked?: boolean
         }
         Relationships: [
           {
             foreignKeyName: "drive_grants_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_log: {
+        Row: {
+          created_at: string
+          error: string | null
+          id: string
+          inquiry_id: string | null
+          kind: string
+          project_id: string | null
+          status: string
+          subject: string
+          to_email: string
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          id?: string
+          inquiry_id?: string | null
+          kind: string
+          project_id?: string | null
+          status?: string
+          subject: string
+          to_email: string
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          id?: string
+          inquiry_id?: string | null
+          kind?: string
+          project_id?: string | null
+          status?: string
+          subject?: string
+          to_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_log_inquiry_id_fkey"
+            columns: ["inquiry_id"]
+            isOneToOne: false
+            referencedRelation: "inquiries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      influencer_candidates: {
+        Row: {
+          avg_comments: number | null
+          avg_cpv: number | null
+          avg_likes: number | null
+          avg_views: number | null
+          channel_name: string
+          channel_url: string
+          confirmed: boolean
+          content_count: number | null
+          created_at: string
+          follower_count: number | null
+          id: string
+          note: string | null
+          platform: string
+          project_id: string
+          selected: boolean
+          selected_at: string | null
+          snapshot_at: string
+          sort_order: number
+          thumbnail_url: string | null
+        }
+        Insert: {
+          avg_comments?: number | null
+          avg_cpv?: number | null
+          avg_likes?: number | null
+          avg_views?: number | null
+          channel_name: string
+          channel_url: string
+          confirmed?: boolean
+          content_count?: number | null
+          created_at?: string
+          follower_count?: number | null
+          id?: string
+          note?: string | null
+          platform?: string
+          project_id: string
+          selected?: boolean
+          selected_at?: string | null
+          snapshot_at?: string
+          sort_order?: number
+          thumbnail_url?: string | null
+        }
+        Update: {
+          avg_comments?: number | null
+          avg_cpv?: number | null
+          avg_likes?: number | null
+          avg_views?: number | null
+          channel_name?: string
+          channel_url?: string
+          confirmed?: boolean
+          content_count?: number | null
+          created_at?: string
+          follower_count?: number | null
+          id?: string
+          note?: string | null
+          platform?: string
+          project_id?: string
+          selected?: boolean
+          selected_at?: string | null
+          snapshot_at?: string
+          sort_order?: number
+          thumbnail_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "influencer_candidates_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
@@ -231,6 +368,7 @@ export type Database = {
       }
       inquiries: {
         Row: {
+          applied_at: string | null
           brand_url: string | null
           brochure_sent_at: string | null
           company_name: string
@@ -245,11 +383,13 @@ export type Database = {
           marketing_agreed: boolean
           message: string | null
           phone: string | null
+          project_id: string | null
           status: string
           user_agent: string | null
           volume: string
         }
         Insert: {
+          applied_at?: string | null
           brand_url?: string | null
           brochure_sent_at?: string | null
           company_name: string
@@ -264,11 +404,13 @@ export type Database = {
           marketing_agreed?: boolean
           message?: string | null
           phone?: string | null
+          project_id?: string | null
           status?: string
           user_agent?: string | null
           volume: string
         }
         Update: {
+          applied_at?: string | null
           brand_url?: string | null
           brochure_sent_at?: string | null
           company_name?: string
@@ -283,11 +425,20 @@ export type Database = {
           marketing_agreed?: boolean
           message?: string | null
           phone?: string | null
+          project_id?: string | null
           status?: string
           user_agent?: string | null
           volume?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "inquiries_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       orders: {
         Row: {
@@ -452,6 +603,59 @@ export type Database = {
         }
         Relationships: []
       }
+      project_guidelines: {
+        Row: {
+          brand_intro: string | null
+          extra: string | null
+          forbidden: string | null
+          id: string
+          price_range: string | null
+          project_id: string
+          reference_urls: string | null
+          submitted_at: string | null
+          target: string | null
+          tone: string | null
+          updated_at: string
+          usp: string | null
+        }
+        Insert: {
+          brand_intro?: string | null
+          extra?: string | null
+          forbidden?: string | null
+          id?: string
+          price_range?: string | null
+          project_id: string
+          reference_urls?: string | null
+          submitted_at?: string | null
+          target?: string | null
+          tone?: string | null
+          updated_at?: string
+          usp?: string | null
+        }
+        Update: {
+          brand_intro?: string | null
+          extra?: string | null
+          forbidden?: string | null
+          id?: string
+          price_range?: string | null
+          project_id?: string
+          reference_urls?: string | null
+          submitted_at?: string | null
+          target?: string | null
+          tone?: string | null
+          updated_at?: string
+          usp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_guidelines_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           brand_profile_id: string | null
@@ -461,10 +665,13 @@ export type Database = {
           guideline_confirmed_at: string | null
           head_review_status: string | null
           id: string
-          order_id: string
+          inquiry_id: string | null
+          order_id: string | null
+          plan_id: string | null
           recruit_deadline: string | null
           stage_a: string | null
           stage_b: string
+          started_at: string | null
           type: string
           updated_at: string
           user_id: string
@@ -477,10 +684,13 @@ export type Database = {
           guideline_confirmed_at?: string | null
           head_review_status?: string | null
           id?: string
-          order_id: string
+          inquiry_id?: string | null
+          order_id?: string | null
+          plan_id?: string | null
           recruit_deadline?: string | null
           stage_a?: string | null
           stage_b?: string
+          started_at?: string | null
           type: string
           updated_at?: string
           user_id: string
@@ -493,10 +703,13 @@ export type Database = {
           guideline_confirmed_at?: string | null
           head_review_status?: string | null
           id?: string
-          order_id?: string
+          inquiry_id?: string | null
+          order_id?: string | null
+          plan_id?: string | null
           recruit_deadline?: string | null
           stage_a?: string | null
           stage_b?: string
+          started_at?: string | null
           type?: string
           updated_at?: string
           user_id?: string
@@ -510,10 +723,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "projects_inquiry_id_fkey"
+            columns: ["inquiry_id"]
+            isOneToOne: false
+            referencedRelation: "inquiries"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "projects_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: true
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
             referencedColumns: ["id"]
           },
           {

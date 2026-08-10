@@ -272,6 +272,62 @@ export async function signIn(
   redirect(next);
 }
 
+/**
+ * 인증번호 로그인 — 비밀번호가 기억나지 않을 때의 우회로이자,
+ * 비밀번호 없이 만들어진 계정(어드민 등)의 유일한 입구다.
+ * 단계는 가입 폼과 같은 방식으로 한 액션 안에서 넘긴다.
+ */
+export async function codeLogin(
+  prev: SignUpState,
+  formData: FormData,
+): Promise<SignUpState> {
+  const intent = String(formData.get("intent") ?? "");
+  const keep = { ...prev, error: null, notice: null };
+  const next = safeNext(formData.get("next"));
+
+  if (intent === "send" || intent === "resend") {
+    const email =
+      intent === "resend"
+        ? prev.email
+        : String(formData.get("email") ?? "").trim().toLowerCase();
+    if (!email) return { ...keep, step: 1, error: "이메일을 입력해 주세요." };
+
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: false },
+    });
+    if (error) return { ...keep, step: 1, email, error: toKoreanMessage(error.message) };
+
+    return {
+      step: 2,
+      email,
+      error: null,
+      notice: intent === "resend" ? "인증번호를 다시 보냈습니다." : null,
+    };
+  }
+
+  if (intent === "verify") {
+    const token = String(formData.get("token") ?? "").replace(/\D/g, "");
+    if (!prev.email) return { ...keep, step: 1, error: "이메일부터 입력해 주세요." };
+    if (token.length !== 6)
+      return { ...keep, step: 2, error: "6자리 인증번호를 입력해 주세요." };
+
+    const supabase = await createClient();
+    const { error } = await supabase.auth.verifyOtp({
+      email: prev.email,
+      token,
+      type: "email",
+    });
+    if (error) return { ...keep, step: 2, error: toKoreanMessage(error.message) };
+
+    revalidatePath("/", "layout");
+    redirect(next);
+  }
+
+  return keep;
+}
+
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
