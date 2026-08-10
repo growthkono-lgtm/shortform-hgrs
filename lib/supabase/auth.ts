@@ -10,11 +10,15 @@ export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
  * getClaims()를 쓴다 — getSession()은 저장된 토큰을 검증 없이 돌려주므로
  * 서버 인가 판단에 쓰면 안 된다.
  */
-export async function requireProfile(): Promise<Profile> {
+export async function requireProfile(next?: string): Promise<Profile> {
   const supabase = await createClient();
 
+  // 어디로 가려다 막혔는지를 로그인 화면에 넘긴다.
+  // 안 넘기면 로그인 후 무조건 /app 으로 떨어져 "어드민이 안 열린다"가 된다
+  const login = next ? `/login?next=${encodeURIComponent(next)}` : "/login";
+
   const { data: claimsData, error: claimsError } = await supabase.auth.getClaims();
-  if (claimsError || !claimsData?.claims) redirect("/login");
+  if (claimsError || !claimsData?.claims) redirect(login);
 
   const userId = claimsData.claims.sub as string;
 
@@ -34,8 +38,8 @@ export async function requireProfile(): Promise<Profile> {
 }
 
 /** admin 롤 전용 화면 가드 */
-export async function requireAdmin(): Promise<Profile> {
-  const profile = await requireProfile();
+export async function requireAdmin(next = "/admin"): Promise<Profile> {
+  const profile = await requireProfile(next);
   if (profile.role !== "admin") redirect("/app");
   return profile;
 }

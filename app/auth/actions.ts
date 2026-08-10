@@ -264,12 +264,25 @@ export async function signIn(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) return { error: toKoreanMessage(error.message) };
 
+  // 어드민이 그냥 로그인 화면으로 들어온 경우엔 어드민 보드로 보낸다.
+  // 갈 곳을 지정해 온 경우(next)는 그 뜻을 존중한다
+  let target = next;
+  if (target === "/app" && data.user) {
+    const admin = createAdminClient();
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("role")
+      .eq("id", data.user.id)
+      .maybeSingle();
+    if (profile?.role === "admin") target = "/admin";
+  }
+
   revalidatePath("/", "layout");
-  redirect(next);
+  redirect(target);
 }
 
 /**
