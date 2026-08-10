@@ -36,7 +36,10 @@ export function Hero() {
   return (
     <section className="hero-night on-dark relative overflow-hidden pt-24 pb-16 text-white sm:pt-28 sm:pb-20 md:pt-32 md:pb-28">
       <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-[1fr_minmax(0,480px)] lg:gap-16">
-        <div>
+        {/* min-w-0 필수 — 그리드 아이템 기본값(min-width:auto)이라 안쪽에서 한 칸이라도
+            트랙보다 넓어지면(성과 숫자 줄이 그렇다) 열 전체가 밀려 나가고,
+            섹션의 overflow-hidden 에 문장 끝이 잘린다. 모바일에서 서브카피가 잘리던 원인. */}
+        <div className="min-w-0">
           <p className="eyebrow">Scaleup Shortform Studio</p>
 
           <h1 className="mt-5 text-[1.75rem] leading-[1.3] font-bold text-balance sm:mt-6 sm:text-[2.75rem] sm:leading-[1.24] lg:text-[3.375rem]">
@@ -52,10 +55,11 @@ export function Hero() {
             열었습니다.
           </p>
 
-          <p className="mt-4 max-w-xl text-[0.9375rem] leading-[1.75] font-bold text-white/70 sm:mt-5 sm:text-xl sm:leading-[1.7]">
-            {/* 줄바꿈은 모바일에서도 살린다 — 안 그러면 한 줄로 길게 흘러 안 읽힌다 */}
-            인플루언서 시딩과 채널 바이럴
-            <br /> 그리고 구매 전환형 광고 소재를 한번에!
+          {/* 두 줄 고정 — 한 줄로 흘리면 모바일에서 끝이 잘린다.
+              <br> 대신 블록 두 개로 두어야 폭이 좁아져도 줄이 섞이지 않는다. */}
+          <p className="mt-4 max-w-xl text-[0.9375rem] leading-[1.75] font-bold text-balance text-white/70 sm:mt-5 sm:text-xl sm:leading-[1.7]">
+            <span className="block">인플루언서 시딩과 채널 바이럴</span>
+            <span className="block">그리고 구매 전환형 광고 소재를 한번에!</span>
           </p>
 
           <HeroStats />

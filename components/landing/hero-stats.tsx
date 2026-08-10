@@ -28,8 +28,9 @@ export function HeroStats() {
       ref={ref}
       className="mt-7 grid max-w-xl grid-cols-[1fr_1fr_1.4fr] gap-px overflow-hidden rounded-2xl bg-white/12 sm:mt-8 sm:grid-cols-3"
     >
+      {/* min-w-0 — nowrap 숫자가 트랙 최소폭을 밀어올려 열 전체가 넓어지던 걸 막는다 */}
       {CHIPS.map((c) => (
-        <div key={c.label} className="bg-night/70 px-3 py-4 backdrop-blur-sm sm:px-5 sm:py-5">
+        <div key={c.label} className="min-w-0 bg-night/70 px-3 py-4 backdrop-blur-sm sm:px-5 sm:py-5">
           <dt className="stat-figure text-gold text-lg whitespace-nowrap tabular-nums sm:text-3xl">
             {countUpText(p, c)}
           </dt>

@@ -1,4 +1,4 @@
-import { Marquee } from "@/components/ui/marquee";
+import { cn } from "@/lib/cn";
 import { CREW_FACTS, CREW_ROLES, CREW_SHOTS } from "@/lib/crew";
 import { PARTNERSHIP_URL } from "@/lib/constants";
 
@@ -7,9 +7,12 @@ import { PARTNERSHIP_URL } from "@/lib/constants";
  *
  * 똑같아 보이는 숏폼 외주처 여럿을 놓고 고를 때 실제로 갈리는 건 소재 퀄리티가 아니라
  * **뒤에 회사와 시스템이 있느냐**다. 그래서 이 섹션은 세 덩어리로만 간다:
- *   1) 숫자 — 30여 브랜드 / 역할 10 / 자체 촬영 오피스
- *   2) 역할표 — 한 사람이 다 하는 게 아니라는 걸 눈으로 보여준다
- *   3) 현장 사진 — 스톡이 아니라 실제로 나가서 찍은 사진. 이게 이 섹션의 핵심 근거다.
+ *   1) 현장 사진 — 스톡이 아니라 우리 사람이 장비를 들고 찍은 사진. 이 섹션의 첫 근거다
+ *   2) 숫자 — 30여 브랜드 / 역할 10 / 평균 프로젝트 단가
+ *   3) 역할표 — 한 사람이 다 하는 게 아니라는 걸 눈으로 보여준다
+ *
+ * 2026-08-10: 사진을 맨 위로 올렸다. 섹션 맨 아래 얇은 띠로 흘려보냈더니
+ * 장식으로 읽혀 "팀 사진이 없다"는 말을 들었다. 크게, 먼저 보여야 한다.
  *
  * 배경은 다크로 깐다. 앞의 크리에이티브 월이 흰 바탕에 소재로 가득 찬 화면이라
  * 여기까지 밝게 두면 두 섹션이 한 덩어리로 뭉쳐 "회사 이야기"가 안 읽힌다.
@@ -31,7 +34,39 @@ export function Crew() {
           안정적으로 진행</strong>되고, 담당 한 명이 빠져도 일정이 멈추지 않습니다.
         </p>
 
-        {/* 숫자 3개 — 회사가 있다는 근거를 문장보다 먼저 읽히게 */}
+        {/* 사진이 이 섹션의 첫 근거다 — 역할표·숫자보다 먼저 온다.
+            아래로 흘려보내는 얇은 띠로 두면 장식으로 읽히고, 실제로 "팀 사진이 없다"는
+            말을 들었다. 크게, 위에, 한 화면에 담기게 놓는다. */}
+        <div className="mt-12 grid auto-rows-[96px] grid-cols-2 gap-2.5 sm:auto-rows-[150px] sm:grid-cols-3 lg:auto-rows-[170px] lg:grid-cols-4">
+          {CREW_SHOTS.map((shot, i) => (
+            <div
+              key={shot.src}
+              className={cn(
+                "relative overflow-hidden rounded-xl bg-white/[0.06]",
+                // 맨 앞 한 장은 크게, 맨 뒤 한 장은 가로로 — 남는 칸 없이 딱 떨어진다
+                i === 0 && "col-span-2 row-span-2",
+                i === CREW_SHOTS.length - 1 && "col-span-2",
+              )}
+            >
+              {/* 이미 webp 로 압축해 넣었다. next/image 로 돌리면 8장이 전부 런타임 최적화 요청이 된다.
+                  앞 네 장은 lazy 를 걸지 않는다 — 걸었더니 스크롤 도착 시점에 빈 회색 칸만 보였다 */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={shot.src}
+                alt={shot.alt}
+                loading={i < 4 ? "eager" : "lazy"}
+                decoding="async"
+                className="absolute inset-0 size-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
+        <p className="mt-4 text-xs leading-[1.7] text-white/45">
+          스톡 이미지가 아니라 저희 팀이 브랜드 현장과 촬영 현장에서 직접 찍은
+          사진입니다.
+        </p>
+
+        {/* 숫자 3개 — 사진 다음에 근거를 숫자로 굳힌다 */}
         <dl className="mt-12 grid gap-px overflow-hidden rounded-2xl bg-white/10 sm:grid-cols-3">
           {CREW_FACTS.map((f) => (
             <div key={f.label} className="bg-night px-6 py-7">
@@ -76,37 +111,6 @@ export function Crew() {
             </li>
           ))}
         </ul>
-
-        <h3 className="mt-16 text-lg font-bold">실제 촬영 현장</h3>
-        <p className="mt-2 max-w-2xl text-sm text-white/50">
-          스톡 이미지가 아니라 저희 팀이 나가서 찍은 사진입니다. 김포 촬영 오피스와
-          브랜드 현장에서 진행합니다.
-        </p>
-      </div>
-
-      {/* 현장 사진 — 물량 자체가 메시지인 자리라 흘려도 된다.
-          세로 사진이 섞여 있어 높이만 고정하고 폭은 원본 비율대로 둔다. */}
-      <div className="mt-8">
-        <Marquee copies={3} durationSec={90}>
-          {CREW_SHOTS.map((shot) => (
-            <div
-              key={shot.src}
-              className="relative h-[168px] shrink-0 overflow-hidden rounded-xl bg-white/[0.06] sm:h-[240px]"
-              style={{ aspectRatio: shot.ratio }}
-            >
-              {/* 이미 webp 로 압축해 넣었다. next/image 로 돌리면 트랙 3벌 × 8장이
-                  전부 런타임 최적화 요청이 된다 (크리에이티브 월과 같은 이유). */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={shot.src}
-                alt={shot.alt}
-                loading="lazy"
-                decoding="async"
-                className="absolute inset-0 size-full object-cover"
-              />
-            </div>
-          ))}
-        </Marquee>
       </div>
 
       <div className="mx-auto mt-12 w-full max-w-6xl px-5 sm:px-8">

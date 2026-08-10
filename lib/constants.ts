@@ -31,7 +31,8 @@ export const COMPANY = {
   bizRegNumber: "187-87-02820",
   /** 삼성동 주소는 미사용 — 김포 단독 (스펙 S15) */
   address: "경기 김포시 김포한강10로 133번 127",
-  addressLabel: "김포 촬영 오피스",
+  /** 사업자등록상 소재지. 상주 오피스·촬영 스튜디오로 홍보하지 않는다 */
+  addressLabel: "사업자 소재지",
 
   // ── PART G 미확정. PG 심사 전 필수 ──
   ceoName: null as string | null,
