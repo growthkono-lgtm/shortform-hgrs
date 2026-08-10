@@ -86,10 +86,32 @@ export type DiagResult = {
   plan: Plan;
   /** 결과 카드 헤드라인 — 진단 한 줄 */
   headline: string;
+  /** 지목한 구성이 무엇인지 — 구성 설명 2줄(무엇을 하는 구성인가 / 이 편수가 갖는 의미) */
+  blurbs: string[];
   /** 왜 이 플랜인지 — 답변에서 뽑은 근거 4줄 */
   notes: string[];
   /** 시딩이 안 붙는 조합 등, 결과에 붙는 단서 */
   caveat?: string;
+};
+
+/** 구성이 무엇을 하는 것인지 — 이름만 던지면 무슨 뜻인지 모른다 */
+const CODE_BLURB: Record<PlanCode, string> = {
+  shorts_only:
+    "브랜드가 보유한 소스(촬영본·UGC·제품컷)로 구매 전환형 숏폼을 기획부터 제작까지 진행하는 구성입니다.",
+  full: "인플루언서 시딩으로 광고에 쓸 소스컷을 먼저 확보하고, 그 소스로 구매 전환형 숏폼을 만드는 구성입니다.",
+};
+
+/** 이 편수가 갖는 의미 — 숫자만 보면 많고 적음밖에 안 읽힌다 */
+const TIER_BLURB: Record<string, string> = {
+  "1": "결과물을 먼저 한 편 받아보고 판단하는 자리입니다. 인플루언서 시딩은 포함되지 않습니다.",
+  "5": "첫 세트로 반응을 확인하는 편수입니다. 포맷을 나눠 무엇이 먹히는지부터 봅니다.",
+  "10": "A/B 변주가 실제로 도는 편수입니다. 이긴 소재를 골라 예산을 붙일 수 있습니다.",
+  "20": "승자 소재에 예산을 몰면서 파생본까지 계속 갈아 끼울 수 있는 편수입니다.",
+  starter: "첫 세트로 반응을 확인하는 규모입니다. 시딩으로 소스를 만들고 숏폼 5편으로 이어갑니다.",
+  growth:
+    "A/B 변주가 실제로 도는 규모입니다. 시딩 20명으로 소스 폭을 넓히고 숏폼 10편으로 테스트합니다.",
+  scale:
+    "승자 소재에 예산을 몰 수 있는 규모입니다. 시딩 30명 소스로 숏폼 20편까지 파생을 이어갑니다.",
 };
 
 const NOTE: Record<string, Record<string, string>> = {
@@ -172,8 +194,11 @@ export function diagnose(answers: DiagAnswers): DiagResult {
     stock && NOTE.stock[stock],
   ].filter(Boolean) as string[];
 
+  const plan = findPlan(code, tier);
+
   return {
-    plan: findPlan(code, tier),
+    plan,
+    blurbs: [CODE_BLURB[code], TIER_BLURB[tier]].filter(Boolean),
     headline:
       (source === "none" ? HEADLINE.none : stock && HEADLINE[stock]) ??
       "지금 필요한 구성",

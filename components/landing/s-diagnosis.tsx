@@ -3,18 +3,21 @@
 import Link from "next/link";
 import { useState } from "react";
 import { cn } from "@/lib/cn";
+import { formatKRW, POLICY } from "@/lib/constants";
 import { DIAGNOSIS } from "@/lib/diagnosis";
 import { useDiagnosis } from "./diagnosis-context";
 
 /**
  * 플랜 진단 — 신청 폼 바로 앞.
  *
- * 홈페이지에 가격을 걸지 않기로 했으므로(2026-08-10), 이 섹션이
- * "무엇이 필요한지"를 잡아 주는 유일한 자리다. 질문 다섯 개가 곧 제안서다 —
- * 답을 고르는 동안 "이 사람들은 뭘 보는지"가 읽혀야 한다.
+ * 가격표를 화면에서 내렸으므로(2026-08-10) 이 섹션이 "무엇이 얼마인지"를 잡아 주는
+ * 유일한 자리다. 질문 다섯 개가 곧 제안서다 — 답을 고르는 동안
+ * "이 사람들은 뭘 보는지"가 읽혀야 한다.
  *
- * 결과는 **구성만** 말한다. 금액도, 상담 유도도 넣지 않는다.
- * 다음 행동은 하나뿐이다 — 아래 신청 폼.
+ * 결과 박스는 **구성 이름 + 설명 + 금액**까지 이 안에서 끝낸다.
+ * 가격을 랜딩에서 내린 건 무차별 노출을 막으려는 것이지, 진단을 끝낸 사람에게
+ * 숨기려는 게 아니다. 다른 편수 구성과 상세 안내만 소개서로 넘긴다.
+ * 상담·문의 유도 장치는 두지 않는다 — 다음 행동은 신청 폼 하나뿐이다.
  */
 export function Diagnosis() {
   const { answers, setAnswers, result } = useDiagnosis();
@@ -43,14 +46,14 @@ export function Diagnosis() {
         <div className="min-w-0 lg:sticky lg:top-24 lg:self-start">
           <p className="eyebrow">Diagnosis</p>
           <h2 className="mt-5 text-[1.5rem] leading-[1.35] font-bold sm:text-[2.125rem] sm:leading-[1.3] lg:text-[2.75rem]">
-            편수를 고르기 전에,
+            매출용 컨텐츠
             <br />
-            <strong className="font-bold">지금 어느 국면인지</strong>부터
-            봅니다
+            <strong className="font-bold">컨디션 체크</strong>
           </h2>
           <p className="mt-5 max-w-lg text-[0.9375rem] leading-[1.8] text-white/60 sm:text-base">
-            같은 10편이라도 소스가 있느냐, 소재가 말랐느냐에 따라 만들어야 할 것이
-            달라집니다. 다섯 가지만 짚으면 필요한 구성이 나옵니다.
+            인플루언서 시딩과 함께 소스컷을 확보해 광고 전환용 숏폼을
+            기획제작하거나, 소스가 충분할 경우 후자만 진행합니다. 단, 브랜드마다
+            상황이 다양하므로 상세 안내를 꼭 받아보세요.
           </p>
           <p className="mt-6 text-xs leading-[1.7] text-white/40">
             30초 · 답변은 신청하실 때만 함께 전달됩니다
@@ -119,7 +122,9 @@ export function Diagnosis() {
                   {result.headline}
                 </h3>
 
-                {/* 금액은 적지 않는다 — 구성까지만 말하고 나머지는 소개서로 보낸다 */}
+                {/* 지목한 구성은 이름만으로는 안 읽힌다 — 무엇을 하는 구성인지와 금액까지 이 박스에서 끝낸다.
+                    가격표를 화면에서 내린 건 "무차별 노출"을 막으려는 것이지,
+                    진단을 끝낸 사람에게 금액을 숨기려는 게 아니다. */}
                 <div className="mt-6 rounded-2xl border border-gold/30 bg-gold/[0.07] p-5 sm:p-6">
                   <p className="text-xs text-white/50">필요한 구성</p>
                   <p className="mt-2 text-lg font-bold text-gold">
@@ -128,6 +133,41 @@ export function Diagnosis() {
                   <p className="mt-1 text-sm text-white/60">
                     {result.plan.composition}
                   </p>
+
+                  <div className="mt-4 space-y-2 border-t border-white/10 pt-4">
+                    {result.blurbs.map((b) => (
+                      <p key={b} className="text-[0.8125rem] leading-[1.8] text-white/70">
+                        {b}
+                      </p>
+                    ))}
+                  </div>
+
+                  <div className="mt-5 border-t border-white/10 pt-4">
+                    <p className="stat-figure text-3xl">
+                      {formatKRW(result.plan.betaPrice)}
+                    </p>
+                    {result.plan.shortsPrice != null &&
+                    result.plan.seedingPrice != null ? (
+                      <p className="mt-2 text-xs leading-[1.7] text-white/50">
+                        숏폼 기획제작 {result.plan.shortsCount}편{" "}
+                        {formatKRW(result.plan.shortsPrice)} + 인플루언서 시딩{" "}
+                        {result.plan.influencerCount}명{" "}
+                        {formatKRW(result.plan.seedingPrice)}
+                      </p>
+                    ) : (
+                      <p className="mt-2 text-xs text-white/50">
+                        전환 숏폼 {result.plan.shortsCount}편 · 편당{" "}
+                        {formatKRW(
+                          Math.round(
+                            result.plan.betaPrice / result.plan.shortsCount,
+                          ),
+                        )}
+                      </p>
+                    )}
+                    <p className="mt-2 text-[0.6875rem] text-white/35">
+                      {POLICY.revisionOnce}
+                    </p>
+                  </div>
                 </div>
 
                 <ul className="mt-6 space-y-2.5">
@@ -158,7 +198,7 @@ export function Diagnosis() {
                   이 구성으로 소개서 받기
                 </Link>
                 <p className="mt-3 text-center text-xs text-white/40">
-                  구성·편수별 금액은 소개서로 보내드립니다
+                  다른 편수 구성과 상세 안내는 소개서로 보내드립니다
                 </p>
 
                 <button
