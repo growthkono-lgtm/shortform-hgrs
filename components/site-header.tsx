@@ -10,19 +10,9 @@ export function SiteHeader() {
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-night/70 text-white backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5 sm:px-8">
-        <div className="flex min-w-0 flex-col leading-none">
-          <Link href="/" className="truncate text-[0.8125rem] font-bold sm:text-sm">
-            {SERVICE.name}
-          </Link>
-          <a
-            href={SERVICE.parentUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="font-display mt-1 w-fit text-[0.625rem] tracking-[0.02em] text-white/45 uppercase hover:text-white"
-          >
-            by {SERVICE.parentName}
-          </a>
-        </div>
+        <Link href="/" className="min-w-0 truncate text-[0.8125rem] font-bold sm:text-sm">
+          {SERVICE.name}
+        </Link>
 
         {/* 메뉴는 셋으로 고정한다 — 컨텐츠 진단 / 로그인 / 내 프로젝트.
             PC·모바일 동일. 랜딩의 전환 경로는 진단 → 신청 하나뿐이라

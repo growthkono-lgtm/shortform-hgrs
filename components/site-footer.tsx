@@ -22,17 +22,14 @@ export function SiteFooter() {
           <Link href="/privacy" className="font-bold text-ink-soft hover:text-ink">
             개인정보처리방침
           </Link>
-          <Link href="/refund-policy" className="text-muted hover:text-ink">
-            환불규정
-          </Link>
-          {/* 헤더에서 뺀 링크다 — 끝까지 읽고도 종합 대행이 필요한 사람만 여기서 넘어간다 */}
+          {/* 브랜드 단위로 붙어야 하는 사람만 여기서 본진으로 넘어간다 */}
           <a
             href={PARTNERSHIP_URL}
             target="_blank"
             rel="noreferrer"
             className="font-bold text-ink-soft hover:text-ink"
           >
-            파트너십 문의
+            IMC 프로젝트
           </a>
           <a
             href={SERVICE.parentUrl}
@@ -41,14 +38,6 @@ export function SiteFooter() {
             className="text-muted hover:text-ink"
           >
             hgrs.io
-          </a>
-          <a
-            href={SERVICE.instagram}
-            target="_blank"
-            rel="noreferrer"
-            className="text-muted hover:text-ink"
-          >
-            @hgrs.io
           </a>
         </div>
 

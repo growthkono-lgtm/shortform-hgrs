@@ -38,7 +38,12 @@ export const CREW_ROLES: CrewRole[] = [
     from: "대형 라이브커머스 종합몰 컨텐츠 담당 출신",
     scope: "상세·판매 흐름 설계",
   },
-  { tag: "PF", role: "퍼포먼스 미디어바이어", scope: "소재별 CPA·ROAS 판독" },
+  {
+    tag: "PF",
+    role: "퍼포먼스 미디어바이어",
+    from: "구글·메타 코리아 우수 크리에이티브 리얼클래스 출신",
+    scope: "소재별 CPA·ROAS 판독",
+  },
   { tag: "DP", role: "촬영", scope: "현장 디렉팅·촬영" },
   { tag: "ED", role: "편집", scope: "컷 편집·리텐션 설계" },
   { tag: "ED", role: "숏폼 에디터", scope: "변주본·A/B 파생" },

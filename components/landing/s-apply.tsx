@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { Section, SectionHeading } from "@/components/ui/section";
 import { Field, SubmitError } from "@/components/auth/field";
 import { cn } from "@/lib/cn";
@@ -76,24 +76,34 @@ export function Apply() {
   const [state, formAction] = useActionState(submitInquiry, INITIAL);
   const { answers, result } = useDiagnosis();
 
-  const [interest, setInterest] = useState("unsure");
-  const [volume, setVolume] = useState("unknown");
+  /**
+   * 관심 구성·편수는 **마지막 진단값이 기본**이고, 사용자가 직접 고르면 그 값이 이긴다.
+   * 진단을 다시 하면 직접 고른 값은 버린다 — 렌더 중 상태 조정(React 공식 패턴)으로 처리한다.
+   * useEffect 로 동기화하면 한 프레임 늦게 반영되고 연쇄 렌더가 난다.
+   */
+  const fromDiagnosis = result
+    ? {
+        interest: result.plan.code as string,
+        volume:
+          result.plan.shortsCount >= 20
+            ? "v20"
+            : result.plan.shortsCount >= 10
+              ? "v10"
+              : result.plan.shortsCount >= 5
+                ? "v5"
+                : "v1",
+      }
+    : null;
 
-  // 진단을 마치면(또는 다시 진단하면) 그 결과로 갈아 끼운다.
-  // 사용자가 직접 바꾼 값은 다음 진단 전까지 유지된다
-  useEffect(() => {
-    if (!result) return;
-    setInterest(result.plan.code);
-    setVolume(
-      result.plan.shortsCount >= 20
-        ? "v20"
-        : result.plan.shortsCount >= 10
-          ? "v10"
-          : result.plan.shortsCount >= 5
-            ? "v5"
-            : "v1",
-    );
-  }, [result]);
+  const [seenResult, setSeenResult] = useState(result);
+  const [picked, setPicked] = useState<{ interest?: string; volume?: string }>({});
+  if (seenResult !== result) {
+    setSeenResult(result);
+    setPicked({});
+  }
+
+  const interest = picked.interest ?? fromDiagnosis?.interest ?? "unsure";
+  const volume = picked.volume ?? fromDiagnosis?.volume ?? "unknown";
 
   if (state.ok) {
     return (
@@ -214,7 +224,7 @@ export function Apply() {
               name="interest"
               options={INTERESTS}
               value={interest}
-              onChange={setInterest}
+              onChange={(v) => setPicked((p) => ({ ...p, interest: v }))}
             />
           </div>
 
@@ -226,7 +236,7 @@ export function Apply() {
               name="volume"
               options={VOLUMES}
               value={volume}
-              onChange={setVolume}
+              onChange={(v) => setPicked((p) => ({ ...p, volume: v }))}
             />
           </div>
 

@@ -9,9 +9,6 @@ export default function AuthLayout({ children }: LayoutProps<"/">) {
         <Link href="/" className="text-sm font-bold">
           {SERVICE.name}
         </Link>
-        <p className="font-display mt-1 text-[0.625rem] tracking-[0.02em] text-muted uppercase">
-          by {SERVICE.parentName}
-        </p>
       </header>
 
       <main className="flex flex-1 items-center justify-center py-12">

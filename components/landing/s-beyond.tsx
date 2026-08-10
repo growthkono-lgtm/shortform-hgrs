@@ -30,7 +30,7 @@ export function Beyond() {
           rel="noreferrer"
           className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-full border border-ink/25 px-5 py-3 text-sm font-bold whitespace-nowrap transition-colors duration-200 hover:border-ink hover:bg-ink hover:text-paper md:self-auto"
         >
-          해그로시 프로젝트 문의
+          IMC 프로젝트 문의
           <svg
             viewBox="0 0 24 24"
             aria-hidden

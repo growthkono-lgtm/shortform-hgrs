@@ -5,29 +5,26 @@
  */
 
 /**
- * 서비스명 확정 (2026-08-06 피그마 개편안).
- * 헤더 브랜드명이 "스케일업 숏폼 스튜디오"로 바뀌었다. 서브도메인은 shortform 고정 —
- * 폴더명(hgrs-boost)이 boost라 헷갈리지만 boost는 쓰지 않는다.
+ * 서비스명 (2026-08-10 확정).
+ * "해그로시 숏폼 스튜디오" 한 이름으로 간다 — 헤더에 "by 해그로시"를 따로 달지 않는다.
+ * 서브도메인은 shortform 고정. 폴더명(hgrs-boost)이 boost라 헷갈리지만 boost는 쓰지 않는다.
  */
 export const SERVICE = {
-  name: "스케일업 숏폼 스튜디오",
-  nameEn: "Scaleup Shortform Studio",
+  name: "해그로시 숏폼 스튜디오",
+  nameEn: "HGRS Shortform Studio",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://shortform.hgrs.io",
-  parentName: "해그로시 해킹마케팅랩",
   parentUrl: "https://hgrs.io",
-  instagram: "https://www.instagram.com/hgrs.io/",
 } as const;
 
 /**
- * 본사 파트너십 페이지. 이 랜딩은 "숏폼 편수"를 파는 화면이라
- * 브랜드 종합 대행·장기 파트너십을 찾는 방문자는 여기서 답을 못 찾는다.
- * 헤더(상시 노출)와 팀 섹션·푸터 세 곳에서 넘긴다.
+ * 본사 IMC 프로젝트 페이지. 이 랜딩은 "숏폼 편수"를 파는 화면이라
+ * 브랜드 단위 IMC 프로젝트를 찾는 방문자는 여기서 답을 못 찾는다.
  */
 export const PARTNERSHIP_URL = "https://hgrs.io/partnership";
 
 /** S15 푸터 — hgrs.io 게시 실데이터 + PG 심사 요건 */
 export const COMPANY = {
-  name: "(주)해그로시(해킹마케팅랩)",
+  name: "주식회사 해그로시",
   bizRegNumber: "187-87-02820",
   /** 삼성동 주소는 미사용 — 김포 단독 (스펙 S15) */
   address: "경기 김포시 김포한강10로 133번 127, 438 E180호",
