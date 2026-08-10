@@ -109,7 +109,10 @@ export function Hero() {
         {/* 모바일 — 가로로 계속 흐른다.
             예전엔 overflow-x-auto 라 손으로 밀어야 소재가 보였다. 히어로는
             "영상이 많다"를 암시하는 자리라 가만히 있어도 흘러야 한다. */}
-        <div aria-hidden className="-mx-5 lg:hidden">
+        {/* min-w-0 필수 — 이 안의 마퀴 트랙은 3천 px가 넘는다. 그리드 아이템 기본값
+            (min-width:auto)이면 트랙이 그 폭까지 벌어지고, 왼쪽 텍스트 열까지 같이
+            끌려 나가 섹션 overflow-hidden 에 문장 끝이 잘린다. 모바일 잘림의 진짜 원인. */}
+        <div aria-hidden className="-mx-5 min-w-0 overflow-hidden lg:hidden">
           <Marquee durationSec={28}>
             <div className="flex gap-3 pr-3">
               {WALL_CLIPS.map((c) => (

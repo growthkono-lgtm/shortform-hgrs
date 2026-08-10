@@ -266,7 +266,7 @@ export function Apply() {
                     전문
                   </span>
                 </summary>
-                <pre className="max-h-48 overflow-y-auto border-t border-line px-4 py-4 text-[0.6875rem] leading-[1.9] whitespace-pre-wrap text-muted">
+                <pre className="max-h-48 overflow-y-auto border-t border-line px-4 py-4 text-[0.6875rem] leading-[1.9] break-words whitespace-pre-wrap text-muted">
                   {consent.body}
                 </pre>
               </details>

@@ -41,14 +41,14 @@ export function HeaderAuth() {
       {signedIn === false && (
         <Link
           href="/login"
-          className="shrink-0 text-xs whitespace-nowrap text-white/60 hover:text-white sm:text-sm"
+          className="shrink-0 text-[0.6875rem] whitespace-nowrap text-white/60 hover:text-white sm:text-sm"
         >
           로그인
         </Link>
       )}
       <Link
         href="/app"
-        className="shrink-0 rounded-full bg-accent px-3.5 py-2 text-xs font-bold whitespace-nowrap text-white transition-colors duration-200 hover:bg-accent-deep sm:px-4"
+        className="shrink-0 rounded-full bg-accent px-3 py-1.5 text-[0.6875rem] font-bold whitespace-nowrap text-white transition-colors duration-200 hover:bg-accent-deep sm:px-4 sm:py-2 sm:text-xs"
       >
         내 프로젝트
       </Link>
