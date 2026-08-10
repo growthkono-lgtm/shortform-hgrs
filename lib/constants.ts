@@ -107,6 +107,9 @@ export const POLICY = {
     "1편 단품은 결과를 먼저 보고 판단하시라고 여는 자리입니다 — 인플루언서 시딩은 포함되지 않습니다",
   seedingBundleOnly:
     "인플루언서 시딩은 숏폼 5편 이상 묶음부터 함께 진행됩니다",
+  // 싱글과 패키지를 세로로 묶어 뒀더니 같이 사는 구성으로 읽혔다 — 택일임을 문장으로도 못 박는다
+  singleOrPackage:
+    "싱글과 패키지는 함께 구매하는 구성이 아닙니다 — 둘 중 하나를 고르시면 됩니다",
 } as const;
 
 export type PlanCode = "full" | "shorts_only";

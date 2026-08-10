@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/server";
+import { FIRST_SEEDING_STAGE, FIRST_SHORTS_STAGE } from "@/lib/stages";
 
 /**
  * 결제 완료 주문에 프로젝트를 만든다. 이미 있으면 그대로 둔다.
@@ -31,9 +32,9 @@ export async function createProjectForOrder(orderId: string): Promise<string | n
       user_id: order.user_id,
       brand_profile_id: order.brand_profile_id,
       type: order.plans.code,
-      // 플랜1은 A단계부터, 플랜2는 A 없이 B만 (PART E2)
-      stage_a: isFull ? "waiting" : null,
-      stage_b: "guideline",
+      // 패키지는 시딩 트랙부터, 싱글은 시딩 없이 숏폼 트랙만 (PART E2)
+      stage_a: isFull ? FIRST_SEEDING_STAGE : null,
+      stage_b: FIRST_SHORTS_STAGE,
       head_review_status: order.plans.head_review ? "available" : null,
     })
     .select("id")

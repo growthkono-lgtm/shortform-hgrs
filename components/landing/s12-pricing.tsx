@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Section, SectionHeading } from "@/components/ui/section";
 import { cn } from "@/lib/cn";
 import {
@@ -18,7 +19,7 @@ const findPlan = (code: PlanCode, tier: string) =>
 
 const TRIAL = PLANS.find((plan) => plan.trial)!;
 
-/** 선택 상태를 알려주는 라디오 점 — 박스 안에 고를 칸이 둘이라 표식이 없으면 뭘 골랐는지 안 보인다 */
+/** 선택 상태 표식 — 카드가 여섯 장이라 표식이 없으면 뭘 골랐는지 안 보인다 */
 function Dot({ active }: { active: boolean }) {
   return (
     <span
@@ -33,95 +34,123 @@ function Dot({ active }: { active: boolean }) {
   );
 }
 
-/**
- * 박스 안의 한 칸. 위 칸은 숏폼 단독, 아래 칸은 시딩까지 묶은 패키지다.
- * 아래 칸은 배경을 한 톤 눌러 "붙이는 쪽"으로 읽히게 한다.
- */
-function Option({
+function PlanCard({
   plan,
   tagline,
   active,
   onSelect,
-  alt,
+  recommended,
 }: {
   plan: Plan;
   tagline: string;
   active: boolean;
   onSelect: () => void;
-  alt?: boolean;
+  recommended?: boolean;
 }) {
   return (
-    <label
+    <div
       className={cn(
-        "flex cursor-pointer flex-col p-6 transition-colors duration-200",
-        // 아래 칸이 남는 높이를 흡수한다 — 세 박스 높이가 다르면(스케일만 리뷰 배지) 위 칸 줄이 어긋난다
-        alt ? "flex-1 border-t border-line bg-paper-alt" : "bg-paper",
-        active && "bg-accent/[0.06]",
+        "flex h-full flex-col rounded-2xl border bg-paper transition-colors duration-200",
+        active
+          ? "border-ink bg-accent/[0.05]"
+          : "border-line hover:border-ink/40",
       )}
     >
-      <input
-        type="radio"
-        name="plan"
-        value={`${plan.code}-${plan.tier}`}
-        checked={active}
-        onChange={onSelect}
-        className="sr-only"
-      />
+      {/* 카드 본문은 선택(라디오), CTA는 그 밖의 링크다 —
+          label 안에 링크를 넣으면 링크를 눌러도 라디오가 같이 토글된다 */}
+      <label className="flex flex-1 cursor-pointer flex-col p-6 pb-0">
+        <input
+          type="radio"
+          name="plan"
+          value={`${plan.code}-${plan.tier}`}
+          checked={active}
+          onChange={onSelect}
+          className="sr-only"
+        />
 
-      <span className="flex items-start justify-between gap-3">
-        <span className="min-w-0">
-          <span className="flex items-center gap-2">
-            <Dot active={active} />
-            <span className="text-base font-bold">{plan.label}</span>
-          </span>
-          <span className="mt-1 block pl-6 text-xs text-muted">
-            {plan.composition}
-          </span>
+        <span className="flex items-center gap-2">
+          <Dot active={active} />
+          <span className="text-base font-bold">{plan.label}</span>
+          {recommended && (
+            <span className="rounded-full bg-ink px-2.5 py-0.5 text-[0.6875rem] font-bold text-paper">
+              추천
+            </span>
+          )}
         </span>
-        <span className="stat-figure shrink-0 text-xl text-accent-deep">
+        <span className="mt-1.5 block pl-6 text-xs text-muted">
+          {plan.composition}
+        </span>
+
+        <span className="stat-figure mt-5 block text-3xl text-accent-deep">
           {formatKRW(plan.betaPrice)}
         </span>
-      </span>
 
-      <span className="mt-3 block pl-6 text-xs leading-[1.7] text-muted">
-        {tagline}
-      </span>
-
-      {/* 총액만 보여주면 숏폼 편당 값이 가려진다 — 시딩 단가를 쪼개 적는다 */}
-      {plan.shortsPrice != null && plan.seedingPrice != null && (
-        <span className="mt-4 ml-6 block space-y-1.5 rounded-xl border border-line bg-paper px-3.5 py-3 text-xs text-muted">
-          <span className="flex justify-between gap-3">
-            <span>숏폼 기획제작 {plan.shortsCount}편</span>
-            <span className="stat-figure">{formatKRW(plan.shortsPrice)}</span>
-          </span>
-          <span className="flex justify-between gap-3">
-            <span>인플루언서 시딩 {plan.influencerCount}명</span>
-            <span className="stat-figure">{formatKRW(plan.seedingPrice)}</span>
-          </span>
+        <span className="mt-3 block text-xs leading-[1.7] text-muted">
+          {tagline}
         </span>
-      )}
 
-      <span className="mt-5 block lg:mt-auto lg:pt-5">
-        <span
+        {/* 총액만 보여주면 숏폼 편당 값이 가려진다 — 시딩 단가를 쪼개 적는다 */}
+        {plan.shortsPrice != null && plan.seedingPrice != null && (
+          <span className="mt-4 block space-y-1.5 rounded-xl border border-line bg-paper-alt px-3.5 py-3 text-xs text-muted">
+            <span className="flex justify-between gap-3">
+              <span>숏폼 기획제작 {plan.shortsCount}편</span>
+              <span className="stat-figure">{formatKRW(plan.shortsPrice)}</span>
+            </span>
+            <span className="flex justify-between gap-3">
+              <span>인플루언서 시딩 {plan.influencerCount}명</span>
+              <span className="stat-figure">
+                {formatKRW(plan.seedingPrice)}
+              </span>
+            </span>
+          </span>
+        )}
+
+        {plan.headReview && (
+          <span
+            title={POLICY.headReviewScope}
+            className="mt-4 block rounded-xl border border-accent/40 bg-accent/[0.06] px-3.5 py-3 text-xs leading-[1.7] font-bold text-accent-deep"
+          >
+            + 헤드 전략 리뷰 1회
+            <span className="mt-1 block font-normal text-muted">
+              {POLICY.headReviewScope}
+            </span>
+          </span>
+        )}
+      </label>
+
+      <div className="p-6 pt-5">
+        <Link
+          href={`/checkout/${plan.code}-${plan.tier}`}
           className={cn(
-            "block rounded-full px-5 py-2.5 text-center text-xs font-bold transition-colors duration-200",
-            active ? "bg-ink text-paper" : "border border-ink/20 text-ink",
+            "block rounded-full px-5 py-3 text-center text-xs font-bold transition-colors duration-200",
+            active
+              ? "bg-ink text-paper hover:bg-ink-soft"
+              : "border border-ink/20 text-ink hover:border-ink",
           )}
         >
-          {active ? "이 구성으로 시작하기" : "선택"}
-        </span>
-      </span>
-    </label>
+          이 플랜으로 시작하기
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function RowHeading({ title, note }: { title: string; note: string }) {
+  return (
+    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+      <h3 className="text-lg font-bold">{title}</h3>
+      <p className="text-xs text-muted sm:text-sm">{note}</p>
+    </div>
   );
 }
 
 /**
  * S12. 가격 — Pricing
  *
- * 2026-08-10: 플랜 코드 탭을 걷어냈다. 스타터·그로스·스케일 한 박스 안에
- * 숏폼 단독(스타터)과 시딩 패키지(스타터 패키지)를 위아래로 같이 놓는다 —
- * 탭으로 갈라 두면 둘 중 하나만 보고 판단하게 되고, 시딩을 붙이는 차액이 안 보인다.
- * 1편 단품은 그리드 위에 가로 한 줄로 따로 뺐다 (규모 비교 대상이 아니라 "먼저 한 편"이다).
+ * 2026-08-10: 싱글과 패키지를 **가로 두 줄**로 나눈다.
+ * 한 박스 안에 위아래로 묶어 뒀더니 같이 사는 구성처럼 읽혔다 —
+ * 둘은 택일이다. 같은 줄에 놓인 셋(스타터·그로스·스케일)만 규모 비교 대상이다.
+ * 1편 단품은 싱글 줄 위에 가로 한 줄로 따로 둔다.
  */
 export function Pricing() {
   const { code, tier, select } = usePlanSelection();
@@ -134,31 +163,37 @@ export function Pricing() {
       </SectionHeading>
 
       <p className="mt-6 max-w-2xl text-base leading-[1.75] text-muted sm:text-lg">
-        스타터·그로스·스케일 세 규모입니다. 각 박스에서 숏폼 기획제작만 받으실지,
-        인플루언서 시딩까지 묶으실지 고르시면 됩니다.
+        스타터·그로스·스케일 세 규모입니다. 숏폼 기획제작만 받는 싱글과,
+        인플루언서 시딩까지 묶은 패키지 중 하나를 고르시면 됩니다.
       </p>
 
-      <fieldset className="mt-8">
+      <fieldset className="mt-10">
         <legend className="sr-only">플랜 선택</legend>
 
-        {/* 첫 거래를 트는 자리 — 규모 비교에 끼우지 않고 위에 한 줄로 둔다 */}
-        <label
+        {/* ── 싱글 플랜 ── */}
+        <RowHeading
+          title={`싱글 플랜 · ${PLAN_COPY.shorts_only.label}`}
+          note="브랜드 보유 소스(촬영본·UGC·제품컷)로 바로 시작합니다."
+        />
+
+        {/* 첫 거래를 트는 자리 — 규모 비교에 끼우지 않고 줄 위에 따로 둔다 */}
+        <div
           className={cn(
-            "flex cursor-pointer flex-col gap-4 rounded-2xl border bg-paper p-6 transition-colors duration-200 sm:flex-row sm:items-center sm:justify-between",
+            "mt-5 flex flex-col gap-4 rounded-2xl border bg-paper transition-colors duration-200 sm:flex-row sm:items-center sm:justify-between",
             isActive(TRIAL)
-              ? "border-ink bg-accent/[0.06]"
+              ? "border-ink bg-accent/[0.05]"
               : "border-line hover:border-ink/40",
           )}
         >
-          <input
-            type="radio"
-            name="plan"
-            value={`${TRIAL.code}-${TRIAL.tier}`}
-            checked={isActive(TRIAL)}
-            onChange={() => select(TRIAL.code, TRIAL.tier)}
-            className="sr-only"
-          />
-          <span className="min-w-0">
+          <label className="min-w-0 flex-1 cursor-pointer p-6 pb-0 sm:pb-6">
+            <input
+              type="radio"
+              name="plan"
+              value={`${TRIAL.code}-${TRIAL.tier}`}
+              checked={isActive(TRIAL)}
+              onChange={() => select(TRIAL.code, TRIAL.tier)}
+              className="sr-only"
+            />
             <span className="flex items-center gap-2">
               <Dot active={isActive(TRIAL)} />
               <span className="text-base font-bold">먼저 1편만</span>
@@ -169,86 +204,70 @@ export function Pricing() {
             <span className="mt-2 block pl-6 text-xs leading-[1.7] text-muted">
               한 편 받아보고 판단하세요. 인플루언서 시딩은 포함되지 않습니다.
             </span>
-          </span>
-          <span className="flex shrink-0 items-center gap-4 pl-6 sm:pl-0">
+          </label>
+          <div className="flex shrink-0 items-center gap-4 p-6 pt-0 sm:pt-6">
             <span className="stat-figure text-xl text-accent-deep">
               {formatKRW(TRIAL.betaPrice)}
             </span>
-            <span
+            <Link
+              href={`/checkout/${TRIAL.code}-${TRIAL.tier}`}
               className={cn(
-                "rounded-full px-5 py-2.5 text-xs font-bold transition-colors duration-200",
+                "rounded-full px-5 py-3 text-xs font-bold whitespace-nowrap transition-colors duration-200",
                 isActive(TRIAL)
-                  ? "bg-ink text-paper"
-                  : "border border-ink/20 text-ink",
+                  ? "bg-ink text-paper hover:bg-ink-soft"
+                  : "border border-ink/20 text-ink hover:border-ink",
               )}
             >
-              {isActive(TRIAL) ? "이 구성으로 시작하기" : "선택"}
-            </span>
-          </span>
-        </label>
+              이 플랜으로 시작하기
+            </Link>
+          </div>
+        </div>
 
-        <div className="mt-5 grid gap-5 lg:grid-cols-3">
+        <div className="mt-5 grid gap-5 sm:grid-cols-3">
           {PLAN_GROUPS.map((group) => {
-            const shorts = findPlan("shorts_only", group.shortsTier);
-            const full = findPlan("full", group.fullTier);
-            const boxActive = isActive(shorts) || isActive(full);
-            const headReview = shorts.headReview || full.headReview;
-
+            const plan = findPlan("shorts_only", group.shortsTier);
             return (
-              <div
+              <PlanCard
                 key={group.key}
-                className={cn(
-                  "flex h-full flex-col overflow-hidden rounded-2xl border transition-colors duration-200",
-                  boxActive ? "border-ink" : "border-line",
-                )}
-              >
-                {/* 높이 고정 — 추천 배지가 붙은 박스만 헤더가 커지면 세 박스의 가격 줄이 어긋난다 */}
-                <div className="flex h-14 items-center gap-2 border-b border-line bg-paper px-6">
-                  <span className="font-display text-xs tracking-[0.14em] text-muted uppercase">
-                    {group.key}
-                  </span>
-                  {"recommended" in group && group.recommended && (
-                    <span className="rounded-full bg-ink px-2.5 py-0.5 text-[0.6875rem] font-bold text-paper">
-                      추천
-                    </span>
-                  )}
-                </div>
-
-                <Option
-                  plan={shorts}
-                  tagline={PLAN_COPY.shorts_only.tagline}
-                  active={isActive(shorts)}
-                  onSelect={() => select(shorts.code, shorts.tier)}
-                />
-                <Option
-                  plan={full}
-                  tagline={PLAN_COPY.full.tagline}
-                  active={isActive(full)}
-                  onSelect={() => select(full.code, full.tier)}
-                  alt
-                />
-
-                {/* 헤드 전략 리뷰는 스케일 박스의 두 칸 모두에 붙는다 — 박스 바닥에 한 번만 적는다 */}
-                {headReview && (
-                  <p
-                    title={POLICY.headReviewScope}
-                    className="mt-auto border-t border-line bg-accent/[0.06] px-6 py-4 text-xs leading-[1.7] font-bold text-accent-deep"
-                  >
-                    + 헤드 전략 리뷰 1회
-                    <span className="mt-1 block font-normal text-muted">
-                      {POLICY.headReviewScope}
-                    </span>
-                  </p>
-                )}
-              </div>
+                plan={plan}
+                tagline={PLAN_COPY.shorts_only.tagline}
+                active={isActive(plan)}
+                onSelect={() => select(plan.code, plan.tier)}
+                recommended={"recommended" in group && group.recommended}
+              />
             );
           })}
+        </div>
+
+        {/* ── 패키지 플랜 ── */}
+        <div className="mt-14">
+          <RowHeading
+            title={`패키지 플랜 · ${PLAN_COPY.full.label}`}
+            note="찍을 소스부터 없다면 인플루언서 시딩을 함께 붙입니다."
+          />
+
+          <div className="mt-5 grid gap-5 sm:grid-cols-3">
+            {PLAN_GROUPS.map((group) => {
+              const plan = findPlan("full", group.fullTier);
+              return (
+                <PlanCard
+                  key={group.key}
+                  plan={plan}
+                  tagline={PLAN_COPY.full.tagline}
+                  active={isActive(plan)}
+                  onSelect={() => select(plan.code, plan.tier)}
+                  recommended={"recommended" in group && group.recommended}
+                />
+              );
+            })}
+          </div>
         </div>
       </fieldset>
 
       {/* 정책 노출 ②③④ — 두 구성이 한 화면에 있으니 해당 줄을 모두 남긴다 (PART E4) */}
-      <ul className="mt-8 space-y-2 text-xs leading-[1.7] text-muted">
+      <ul className="mt-10 space-y-2 text-xs leading-[1.7] text-muted">
         {[
+          POLICY.singleOrPackage,
           POLICY.revisionOnce,
           POLICY.usagePeriod,
           POLICY.sourceRequired,

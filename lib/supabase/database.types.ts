@@ -356,6 +356,7 @@ export type Database = {
           contact_name: string
           created_at: string
           id: string
+          job_title: string | null
           marketing_opt_in: boolean
           phone: string | null
           role: string
@@ -366,6 +367,7 @@ export type Database = {
           contact_name: string
           created_at?: string
           id: string
+          job_title?: string | null
           marketing_opt_in?: boolean
           phone?: string | null
           role?: string
@@ -376,6 +378,7 @@ export type Database = {
           contact_name?: string
           created_at?: string
           id?: string
+          job_title?: string | null
           marketing_opt_in?: boolean
           phone?: string | null
           role?: string

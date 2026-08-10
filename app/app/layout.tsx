@@ -4,6 +4,7 @@ import { requireProfile } from "@/lib/supabase/auth";
 import { createClient } from "@/lib/supabase/server";
 import { ChannelTalkIdentify } from "@/components/channel-talk-identify";
 import { SERVICE } from "@/lib/constants";
+import { LAST_SHORTS_STAGE, stageLabel } from "@/lib/stages";
 
 /** 포털은 검색 노출 금지 (PART F13) */
 export const metadata: Metadata = {
@@ -18,7 +19,7 @@ export default async function PortalLayout({ children }: LayoutProps<"/app">) {
   const { data: activeProject } = await supabase
     .from("projects")
     .select("id, stage_a, stage_b")
-    .neq("stage_b", "done")
+    .neq("stage_b", LAST_SHORTS_STAGE)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -26,7 +27,7 @@ export default async function PortalLayout({ children }: LayoutProps<"/app">) {
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="border-b border-line">
-        <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-5 sm:px-8">
+        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5 sm:px-8">
           <Link href="/app" className="text-sm font-bold">
             {SERVICE.name}
           </Link>
@@ -52,7 +53,8 @@ export default async function PortalLayout({ children }: LayoutProps<"/app">) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-5 py-12 sm:px-8">
+      {/* 대시보드가 좌(계정·플랜) + 우(캠페인) 두 열이라 5xl로는 좁다 */}
+      <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-12 sm:px-8">
         {children}
       </main>
 
@@ -63,8 +65,9 @@ export default async function PortalLayout({ children }: LayoutProps<"/app">) {
           name: profile.contact_name,
           companyName: profile.company_name,
           activeProjectId: activeProject?.id,
+          // 상담원이 읽는 값이라 내부 키가 아니라 화면과 같은 한글 단계명으로 넘긴다
           activeStage: activeProject
-            ? (activeProject.stage_a ?? activeProject.stage_b)
+            ? stageLabel(activeProject.stage_a ?? activeProject.stage_b)
             : undefined,
         }}
       />

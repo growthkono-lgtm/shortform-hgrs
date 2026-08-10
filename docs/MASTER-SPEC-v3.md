@@ -232,18 +232,32 @@ hgrs.io 톤 계승. CCFM 랜딩은 **섹션 구조 벤치마크로만** 사용, 
 
 ## E2. 진행 파이프라인 (상태 머신)
 
-**플랜 1 (full): A → B 연속**
+**2026-08-10 단계 어휘 확정.** 고객 화면에 그대로 노출되는 문구다. 내부 용어(waiting/reviewing/…)는 폐기했다.
+단일 출처는 `lib/stages.ts`이며 DB check 제약과 1:1이다.
 
 ```
-[A] waiting(진행 대기) → reviewing(담당자 확인중) → recruiting(인플루언서 모집중, D-day) → distributed(배포완료)
-[B] guideline(가이드라인·USP/컨셉 기획중) → targeting(광고 타겟 체크) → producing(숏폼 제작중)
-    → review(완성본 확인: 워터마크 미리보기 + 1회 수정요청) → final(최종 확인: 약관동의 → 드라이브 생성) → done
+[인플루언서 시딩 · stage_a] 패키지 플랜 전용. 싱글 플랜은 null = "해당없음"
+  guideline(컨텐츠 가이드라인 작업중) → recruiting(모집중) → confirmed(확정)
+  → shipping(제품 및 서비스 배송중) → producing(컨텐츠 제작중) → live(채널 라이브 확인)
+
+[숏폼 기획제작 · stage_b] 전 플랜 공통
+  source(소스컷 확인중) → planning(기획중) → produced(제작완료)
+  → revising(최종수정 반영중) → download(다운로드하기)
 ```
 
-- A `distributed` 시 B `guideline` 자동 시작. **A에 검수 단계 없음** (정책으로 갈음)
-- **플랜 2 (shorts_only)**: B만, `stage_a=null`
-- 전이는 전부 admin 액션. 예외 2개만 brand 액션: ① review 단계 [수정 요청 1회 | 최종 승인] ② final 단계 약관 동의→승인
+- 두 트랙은 화면에서 **나란히** 보인다. 싱글 플랜은 시딩 트랙 자리에 "해당없음"만 적는다.
+- `download`에 도달하면 그 캠페인은 완료로 본다.
+- 전이는 전부 admin 액션. 예외 2개만 brand 액션: ① 완성본 확인 [수정 요청 1회 | 최종 승인] ② 최종 확인 약관 동의→승인
 - 전이 시 Resend 이메일 알림 (단계별 템플릿)
+
+## E2-1. 포털 홈 (`/app`) — 광고주 대시보드
+
+2단 구성. 고객이 여기서 확인하려는 건 하나다 — **지금 어디까지 왔나**.
+
+- **좌열(고정)**: ① 계정 — 담당자 이름 + 로그인 아이디(이메일), 회사명·직책 ② 구매한 플랜 — 플랜명·구성·**진행 시작일**·결제 금액 ③ 등록 브랜드
+- **우열(본칸)**: "진행중인 캠페인" → 플랜명 → **두 트랙의 단계 목록**(위 E2 어휘). 지난 단계는 체크, 현재 단계는 굵게 + "진행중", 남은 단계는 옅게
+- 캠페인이 둘 이상이면 아래에 전체 캠페인 목록(진행중/완료)
+- 로그인 아이디는 `profiles`가 아니라 토큰 클레임에서 읽는다
 
 ## E3. 대시보드 (`/app/projects/[id]`)
 
@@ -355,11 +369,20 @@ drive_grants (id, project_id FK, drive_folder_id, drive_link,
           revoked bool default false)
 ```
 
+### 인증 — 이메일 인증번호(OTP) 단일 (2026-08-10 확정)
+
+- **비밀번호를 만들지 않는다.** 가입·로그인 모두 이메일 6자리 인증번호로 끝낸다.
+- 진입점은 요금표의 "이 플랜으로 시작하기" → `/checkout/<slug>`. 비로그인이면 `/signup?next=/checkout/<slug>`로 보내고, 인증이 끝나면 고르던 결제 화면으로 되돌린다.
+- 가입 입력: **회사 이메일 · 회사명 · 담당자 이름 · 직책** (+뉴스레터 선택). 개인 메일 도메인(gmail·naver·daum·nate·kakao 등)은 폼에서 막는다.
+- 흐름: `signInWithOtp` → `/verify`에서 6자리 입력 → `verifyOtp` → next로 이동. 직책은 `profiles.job_title`.
+- Supabase 설정 의존: `mailer_otp_length=6`, magic link·confirm signup 템플릿에 `{{ .Token }}` 포함(둘 다 적용 완료). **내장 SMTP는 시간당 2건 제한** — 실사용 전 Resend SMTP 연결 필수(PART H).
+
 RLS: brand는 자기 `user_id` 행만 select. 쓰기·전이는 전부 server route 경유. **결제 금액은 서버에서 `plans` 기준 재검증**(클라이언트 금액 불신).
 
 ## F4. 결제 (확정: 결제 시점 위젯)
 
-- 플랜·수량 선택 → 주문 생성(pending) → **토스 결제위젯** 렌더(카드/간편/가상계좌) → 인증 리다이렉트 → `/api/payments/confirm`에서 시크릿 키 승인 → paid + `projects` 자동 생성 (+brand_profile 연결, head_review 티어면 `head_review_status='available'`)
+- **카드 결제가 기본이다.** 그 외 수단(간편·가상계좌·빌링)은 앞 단계(가입→결제 진입)를 실제로 확인한 뒤 열지 결정한다.
+- 플랜·수량 선택 → 주문 생성(pending) → **토스 결제위젯** 렌더(카드 우선) → 인증 리다이렉트 → `/api/payments/confirm`에서 시크릿 키 승인 → paid + `projects` 자동 생성 (+brand_profile 연결, head_review 티어면 `head_review_status='available'`)
 - `/api/payments/webhook`: 가상계좌 입금 통지
 - 주문요약 화면 체크박스 2개: A수정불가 정책 / 환불규정
 - 세금계산서: 결제 폼에서 사업자번호·발행 이메일 수집 → 어드민 수동 발행 (자동화 Phase 2)

@@ -1,7 +1,7 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { requireProfile } from "@/lib/supabase/auth";
+import { getOptionalProfile } from "@/lib/supabase/auth";
 import { createClient } from "@/lib/supabase/server";
 import { getPlanBySlug, formatKRW } from "@/lib/plans";
 import { POLICY } from "@/lib/constants";
@@ -12,9 +12,16 @@ export const metadata: Metadata = { robots: { index: false, follow: false } };
 export default async function CheckoutPage({ params }: PageProps<"/checkout/[planSlug]">) {
   const { planSlug } = await params;
 
-  const profile = await requireProfile();
   const plan = await getPlanBySlug(planSlug);
   if (!plan) notFound();
+
+  // 랜딩의 "이 플랜으로 시작하기"가 곧장 이 화면으로 온다.
+  // 로그인 전이면 로그인이 아니라 **가입**으로 보낸다 — 처음 오는 사람이 대부분이고,
+  // 가입을 마치면 고르던 플랜 결제로 그대로 돌아온다.
+  const profile = await getOptionalProfile();
+  if (!profile) {
+    redirect(`/signup?next=${encodeURIComponent(`/checkout/${planSlug}`)}`);
+  }
 
   const supabase = await createClient();
   const { data: brands } = await supabase
