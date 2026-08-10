@@ -75,39 +75,71 @@ export function GuidelinePreview() {
   );
 }
 
-/** 1 — 인플루언서 선정 보드 */
+/**
+ * 1 — 1차 선정 심사 보드.
+ * **클라이언트가 실제로 보는 화면 그대로다** (components/portal/project-panels.tsx).
+ * 지표는 Apify로 수집한 실값이 들어가고, 클라이언트가 여기서 직접 고른다.
+ * 임의로 예쁜 화면을 그리지 말 것 — 실제와 어긋나면 신청 후에 배신감이 된다.
+ */
 export function SeedingPreview() {
   const rows = [
-    { handle: "aamoonlog", cat: "먹방", score: "상위 47.4%", reward: "20,000원", followers: "2.6천" },
-    { handle: "guccim71", cat: "뷰티", score: "상위 25.5%", reward: "50,000원", followers: "17.5천" },
-    { handle: "hi_bol_25", cat: "주부/육아", score: "상위 81.0%", reward: "20,000원", followers: "1.5천" },
+    {
+      name: "맛집투어l핫플공유",
+      handle: "instagram",
+      picked: true,
+      m: ["2,541", "56", "8,249", "153", "23", "2원"],
+    },
+    {
+      name: "guccim71",
+      handle: "instagram",
+      picked: false,
+      m: ["17.5천", "302", "24,100", "890", "41", "3원"],
+    },
   ];
+  const labels = ["팔로워", "컨텐츠수", "평균 조회", "좋아요", "댓글", "CPV"];
 
   return (
-    <div className="flex h-full flex-col gap-2 p-4">
-      {rows.map((r) => (
-        <div key={r.handle} className="rounded-lg border border-line bg-paper px-3 py-2.5">
-          <div className="flex items-center gap-2">
-            <span className="size-5 shrink-0 rounded-full bg-accent/20" />
-            <span className="truncate text-[0.6875rem] font-bold">{r.handle}</span>
-            <span className="rounded bg-paper-alt px-1.5 py-0.5 text-[0.5625rem] text-muted">
-              {r.cat}
-            </span>
-            <span className="ml-auto rounded bg-accent/10 px-1.5 py-0.5 text-[0.5625rem] font-bold text-accent-deep">
-              선정 완료
-            </span>
+    <div className="flex h-full flex-col p-4">
+      <div className="flex items-baseline justify-between">
+        <span className="text-xs font-bold">
+          1차 선정 심사 <span className="text-muted">12명</span>
+        </span>
+        <span className="text-[0.5625rem] text-muted">선택 4명 · 08/10 기준</span>
+      </div>
+
+      <div className="mt-2.5 space-y-1.5">
+        {rows.map((r) => (
+          <div
+            key={r.name}
+            className={`rounded-lg border px-3 py-2.5 ${
+              r.picked ? "border-ink bg-accent/[0.05]" : "border-line bg-paper"
+            }`}
+          >
+            <div className="flex items-center gap-1.5">
+              <span className="size-4 shrink-0 rounded-full bg-accent/20" />
+              <span className="truncate text-[0.625rem] font-bold">{r.name}</span>
+              <span className="rounded bg-paper-alt px-1 py-0.5 text-[0.5rem] text-muted">
+                {r.handle}
+              </span>
+              <span
+                className={`ml-auto rounded-full px-2 py-0.5 text-[0.5rem] font-bold ${
+                  r.picked ? "bg-ink text-paper" : "border border-ink/20"
+                }`}
+              >
+                {r.picked ? "선택 해제" : "선택"}
+              </span>
+            </div>
+            <dl className="mt-2 grid grid-cols-6 gap-1">
+              {labels.map((l, k) => (
+                <div key={l}>
+                  <dt className="text-[0.4375rem] text-muted">{l}</dt>
+                  <dd className="stat-figure text-[0.5625rem]">{r.m[k]}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
-          <div className="mt-2 flex items-center justify-between text-[0.625rem] text-muted">
-            <span>
-              채널 스코어 <span className="font-bold text-ink">{r.score}</span>
-            </span>
-            <span>
-              팔로워 <span className="font-bold text-ink">{r.followers}</span>
-            </span>
-            <span className="font-bold text-accent-deep">{r.reward}</span>
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
@@ -199,32 +231,59 @@ export function ShortformPreview() {
   );
 }
 
-/** 5 — 검수·납품. 미리보기로 확인하고 1회 수정 후 최종본을 받는다 */
+/**
+ * 5 — 검수·납품. 클라이언트 보드의 **진행 단계 원형 스텝퍼**를 그대로 축소한 것이다.
+ */
 export function DeliveryPreview() {
+  const steps = ["소스컷 확인", "기획", "제작완료", "수정 반영", "다운로드"];
+  const current = 2;
   const rows = [
-    { seq: "01편", state: "최종 승인", tone: "done" },
-    { seq: "02편", state: "수정 반영중", tone: "work" },
-    { seq: "03편", state: "확인 요청", tone: "ask" },
-    { seq: "04편", state: "제작중", tone: "idle" },
+    { seq: "01편", state: "최종 승인", done: true },
+    { seq: "02편", state: "수정 반영중", done: false },
+    { seq: "03편", state: "확인 요청", done: false },
   ];
 
   return (
     <div className="flex h-full flex-col p-4">
-      <div className="flex items-center justify-between">
-        <span className="truncate text-xs font-bold">A브랜드_그로스플랜_7월1차</span>
-        <span className="shrink-0 rounded bg-accent/10 px-1.5 py-0.5 text-[0.5625rem] font-bold text-accent-deep">
-          납품 완료
-        </span>
-      </div>
-      <ul className="mt-2.5 divide-y divide-line overflow-hidden rounded-lg border border-line bg-paper">
+      {/* 원형 스텝퍼 — 실제 화면과 같은 규칙(지난 칸 체크 / 현재 칸 채움) */}
+      <ol className="flex items-start justify-between">
+        {steps.map((label, i) => {
+          const done = i < current;
+          const active = i === current;
+          return (
+            <li key={label} className="flex flex-1 flex-col items-center gap-1">
+              <span
+                className={`grid size-6 place-items-center rounded-full border text-[0.5rem] font-bold ${
+                  active
+                    ? "border-accent bg-accent text-white"
+                    : done
+                      ? "border-accent/35 bg-accent/10 text-accent-deep"
+                      : "border-line bg-paper text-muted/50"
+                }`}
+              >
+                {done ? "✓" : i + 1}
+              </span>
+              <span
+                className={`text-center text-[0.4375rem] leading-tight ${
+                  active ? "font-bold" : "text-muted/60"
+                }`}
+              >
+                {label}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+
+      <ul className="mt-3 divide-y divide-line overflow-hidden rounded-lg border border-line bg-paper">
         {rows.map((r) => (
-          <li key={r.seq} className="flex items-center gap-2 px-3 py-2 text-[0.625rem]">
+          <li key={r.seq} className="flex items-center gap-2 px-3 py-2 text-[0.5625rem]">
             <span className="font-bold">{r.seq}</span>
             <span
               className={
-                r.tone === "done"
-                  ? "ml-auto rounded bg-accent/10 px-1.5 py-0.5 text-[0.5625rem] font-bold text-accent-deep"
-                  : "ml-auto rounded bg-paper-alt px-1.5 py-0.5 text-[0.5625rem] text-muted"
+                r.done
+                  ? "ml-auto rounded bg-accent/10 px-1.5 py-0.5 font-bold text-accent-deep"
+                  : "ml-auto rounded bg-paper-alt px-1.5 py-0.5 text-muted"
               }
             >
               {r.state}
@@ -232,8 +291,8 @@ export function DeliveryPreview() {
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-[0.5625rem] text-muted">
-        1회 무상 수정 후 최종본 다운로드
+      <p className="mt-2 text-[0.5rem] text-muted">
+        1회 무상 수정 후 최종본 전체 다운로드
       </p>
     </div>
   );
