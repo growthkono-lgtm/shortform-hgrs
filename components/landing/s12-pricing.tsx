@@ -54,7 +54,8 @@ function Option({
     <label
       className={cn(
         "flex cursor-pointer flex-col p-6 transition-colors duration-200",
-        alt ? "border-t border-line bg-paper-alt" : "bg-paper",
+        // 아래 칸이 남는 높이를 흡수한다 — 세 박스 높이가 다르면(스케일만 리뷰 배지) 위 칸 줄이 어긋난다
+        alt ? "flex-1 border-t border-line bg-paper-alt" : "bg-paper",
         active && "bg-accent/[0.06]",
       )}
     >
@@ -100,13 +101,15 @@ function Option({
         </span>
       )}
 
-      <span
-        className={cn(
-          "mt-5 block rounded-full px-5 py-2.5 text-center text-xs font-bold transition-colors duration-200",
-          active ? "bg-ink text-paper" : "border border-ink/20 text-ink",
-        )}
-      >
-        {active ? "이 구성으로 시작하기" : "선택"}
+      <span className="mt-5 block lg:mt-auto lg:pt-5">
+        <span
+          className={cn(
+            "block rounded-full px-5 py-2.5 text-center text-xs font-bold transition-colors duration-200",
+            active ? "bg-ink text-paper" : "border border-ink/20 text-ink",
+          )}
+        >
+          {active ? "이 구성으로 시작하기" : "선택"}
+        </span>
       </span>
     </label>
   );
@@ -199,7 +202,8 @@ export function Pricing() {
                   boxActive ? "border-ink" : "border-line",
                 )}
               >
-                <div className="flex items-center gap-2 border-b border-line bg-paper px-6 pt-5 pb-4">
+                {/* 높이 고정 — 추천 배지가 붙은 박스만 헤더가 커지면 세 박스의 가격 줄이 어긋난다 */}
+                <div className="flex h-14 items-center gap-2 border-b border-line bg-paper px-6">
                   <span className="font-display text-xs tracking-[0.14em] text-muted uppercase">
                     {group.key}
                   </span>
