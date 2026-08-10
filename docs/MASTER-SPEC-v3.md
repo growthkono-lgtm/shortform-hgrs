@@ -514,7 +514,7 @@ Supabase 프로젝트 `shortform-hgrs` (ref `vtgkqpccscctyaolyeuu`) 기준.
 | **Site URL / Redirect 허용목록** | `http://localhost:3000`, 허용목록 비어 있음 | 배포 후 인증 메일 링크가 localhost로 간다 | 도메인 확정 시 Site URL과 `/auth/callback` 허용목록 갱신 |
 | **비밀번호 최소 길이** | Supabase 6자 / 가입 폼 8자 | 폼만 막고 있어 API 직접 호출 시 6자 통과 | Auth 설정에서 8자로 상향 |
 | **리전** | `ap-southeast-1` (싱가포르) | 국내 사용자 기준 왕복 지연 60~80ms 추가 | 데이터 없는 지금이 이전 비용 최저. 유지/이전 판단 필요 |
-| **테스트 계정** | `dev-test@`, `dev-test2@hgrs-boost.local` | 실서비스에 남으면 안 됨 | 런칭 전 삭제 |
+| **테스트 계정** | `dev-test@`, `dev-test2@hgrs-boost.local`, `demo@hgrs.io`(주문·프로젝트 시드 포함) | 실서비스에 남으면 안 됨 | 런칭 전 삭제 |
 
 # PART I. 오픈 이슈 (건호 확정 필요)
 
