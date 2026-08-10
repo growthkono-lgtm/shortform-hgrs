@@ -10,6 +10,7 @@ import { GrowthCases } from "@/components/landing/s-growth-cases";
 import { CreativeWall } from "@/components/landing/s-creative-wall";
 import { Crew } from "@/components/landing/s-crew";
 import { Reviews } from "@/components/landing/s11-reviews";
+import { Diagnosis } from "@/components/landing/s-diagnosis";
 import { Pricing } from "@/components/landing/s12-pricing";
 import { Beyond } from "@/components/landing/s-beyond";
 import { Faq } from "@/components/landing/s13-faq";
@@ -36,6 +37,10 @@ import { FinalCta } from "@/components/landing/s14-final-cta";
  * 2026-08-07 랜딩 보강 — "풀 프로젝트를 하던 팀이 숏폼만 린하게 열었다"를 축으로 두 곳을 열었다:
  *  · System (Service ↔ Clients 사이) — 왜 이 가격에 이 퀄리티가 나오는가
  *  · Beyond (Pricing ↔ FAQ 사이)     — 브랜드 단위 프로젝트가 필요한 사람을 본진으로 보내는 갈림길
+ *
+ * 2026-08-10 Diagnosis (Reviews ↔ Pricing 사이) — 가격 허들을 낮추는 자리.
+ * 가격을 먼저 던지면 "한 편에 얼마" 비교로 끌려간다. 진단 다섯 문항으로 국면을 짚고
+ * 편수·구성에 근거를 준 뒤 가격표로 넘긴다. 마지막 판단은 헤드 상담이 받는다.
  * Clients 로고월은 System을 끼우기 위해 s-services.tsx에서 s-clients.tsx로 분리했다.
  */
 export default function LandingPage() {
@@ -52,6 +57,7 @@ export default function LandingPage() {
         <CreativeWall />
         <Crew />
         <Reviews />
+        <Diagnosis />
         <Pricing />
         <Beyond />
         <Faq />

@@ -156,6 +156,17 @@ export function Pricing() {
         인플루언서 시딩까지 묶은 패키지 중 하나를 고르시면 됩니다.
       </p>
 
+      {/* 가격부터 보면 "한 편에 얼마" 비교로 끌려간다 — 진단으로 되돌아갈 문을 열어 둔다 */}
+      <Link
+        href="#diagnosis"
+        className="mt-5 inline-flex items-center gap-2 rounded-full border border-line bg-paper px-4 py-2.5 text-xs font-bold transition-colors duration-200 hover:border-ink"
+      >
+        어떤 구성이 맞을지 모르겠다면 · 30초 진단
+        <svg viewBox="0 0 24 24" aria-hidden className="size-3.5 fill-none stroke-current stroke-2">
+          <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </Link>
+
       <fieldset className="mt-10">
         <legend className="sr-only">플랜 선택</legend>
 

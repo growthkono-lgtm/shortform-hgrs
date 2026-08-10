@@ -22,26 +22,34 @@ export const CASE_CLIPS = [
   "riiid-parent-empathy",
 ] as const;
 
-/** 크리에이티브 월에 흐르는 세로/정사각 실사 소재 15편 */
+/**
+ * 크리에이티브 월·히어로에 흐르는 세로/정사각 실사 소재.
+ *
+ * 2026-08-10 세 편을 덜어냈다. 원본이 같은 배리에이션을 나란히 깔면
+ * 소재가 많아 보이는 게 아니라 **밑천이 얕아 보인다**(사장님 지적).
+ *  · riiid-toefl-junior  — riiid-momcafe 와 프레임이 완전히 같다. 자막 카피만 다르다
+ *  · krafton-pnc-salute  — krafton-pnc-inonix 와 같은 하이라이트 템플릿. 선수만 다르다
+ *  · riiid-trial-reviews — riiid-self-study 와 같은 "아이+태블릿" 구도
+ * 파일은 지우지 않았다. 다시 살릴 땐 아래 배열에 넣으면 된다.
+ *
+ * 순서도 손댔다 — 같은 브랜드가 이웃하지 않게 흩는다.
+ */
 export const WALL_CLIPS: Clip[] = [
   { slug: "riiid-momcafe", ratio: "9/16" },
   { slug: "pet-dangterview-3", ratio: "9/16" },
   { slug: "krafton-pnc-inonix", ratio: "9/16" },
   { slug: "moen-shampoo-ppl", ratio: "9/16" },
-  { slug: "riiid-toefl-junior", ratio: "9/16" },
   { slug: "bone-w40s", ratio: "9/16" },
   { slug: "pet-portion", ratio: "9/16" },
   { slug: "riiid-self-study", ratio: "9/16" },
-  { slug: "krafton-pnc-salute", ratio: "9/16" },
   { slug: "seeding-patty", ratio: "9/16" },
   { slug: "pet-vet-pancreas", ratio: "9/16" },
   { slug: "bone-m50s", ratio: "9/16" },
-  { slug: "riiid-trial-reviews", ratio: "9/16" },
+  { slug: "gaehogang-square", ratio: "1/1" },
   { slug: "pet-treats-plea", ratio: "9/16" },
   { slug: "riiid-parent-itv", ratio: "9/16" },
-  { slug: "pet-custom-meal", ratio: "9/16" },
   { slug: "seeding-garnish", ratio: "9/16" },
-  { slug: "gaehogang-square", ratio: "1/1" },
+  { slug: "pet-custom-meal", ratio: "9/16" },
 ];
 
 export const clipVideo = (slug: string) => `${P}/${slug}.mp4`;

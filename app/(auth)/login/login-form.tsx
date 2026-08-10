@@ -26,7 +26,7 @@ export function LoginForm() {
         <input type="hidden" name="next" value={next} />
 
         <Field
-          label="회사 이메일"
+          label="이메일"
           name="email"
           type="email"
           required

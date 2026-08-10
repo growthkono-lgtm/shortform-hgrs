@@ -60,7 +60,7 @@ export function SignUpForm() {
       <p className="eyebrow">Sign Up</p>
       <h1 className="mt-4 text-3xl font-bold">가입하고 시작하기</h1>
       <p className="mt-3 text-sm leading-[1.7] text-muted">
-        회사 이메일 인증을 먼저 마친 뒤 정보를 입력하시면 가입이 완료됩니다.
+        이메일 인증을 먼저 마친 뒤 정보를 입력하시면 가입이 완료됩니다.
       </p>
 
       <Steps current={state.step} />
@@ -78,13 +78,13 @@ export function SignUpForm() {
         {state.step === 1 && (
           <>
             <Field
-              label="회사 이메일"
+              label="이메일"
               name="email"
               type="email"
               required
               autoComplete="email"
               placeholder="you@company.com"
-              hint="개인 메일(gmail·naver 등)은 사용할 수 없습니다"
+              hint="업무용 이메일을 권장합니다. 이 주소로 진행 상황을 안내드립니다"
             />
             <SubmitButton name="intent" value="send">
               인증번호 받기

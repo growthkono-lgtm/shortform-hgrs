@@ -28,33 +28,6 @@ export type SignUpState = {
   notice: string | null;
 };
 
-/** 개인 메일 도메인 — 회사 이메일로만 받는다 */
-const CONSUMER_DOMAINS = new Set([
-  "gmail.com",
-  "naver.com",
-  "daum.net",
-  "hanmail.net",
-  "nate.com",
-  "kakao.com",
-  "hotmail.com",
-  "outlook.com",
-  "outlook.kr",
-  "yahoo.com",
-  "yahoo.co.kr",
-  "icloud.com",
-  "me.com",
-  "live.com",
-  "msn.com",
-  "proton.me",
-  "protonmail.com",
-  "korea.com",
-  "empas.com",
-  "hanmir.com",
-  "dreamwiz.com",
-  "tutanota.com",
-]);
-
-const emailDomain = (email: string) => email.split("@")[1]?.toLowerCase() ?? "";
 
 /** Supabase가 돌려주는 영문 메시지를 그대로 노출하지 않는다 */
 function toKoreanMessage(message: string): string {
@@ -153,15 +126,6 @@ export async function signUpStep(
         : String(formData.get("email") ?? "").trim().toLowerCase();
 
     if (!email) return { ...keep, step: 1, error: "이메일을 입력해 주세요." };
-    if (CONSUMER_DOMAINS.has(emailDomain(email))) {
-      return {
-        ...keep,
-        step: 1,
-        error:
-          "회사 이메일로 가입해 주세요. 개인 메일(gmail·naver 등)은 사용할 수 없습니다.",
-      };
-    }
-
     // 이미 가입을 마친 이메일이면 인증번호를 보내지 않고 로그인으로 안내한다
     const admin = createAdminClient();
     const { data: existing } = await admin
