@@ -147,8 +147,12 @@ h2{font-size:22pt;line-height:1.3;font-weight:700;margin-top:2.5mm;letter-spacin
 
 /* 사례 */
 .cases{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;flex:1}
-.case{border:1px solid var(--line);border-radius:3mm;padding:7mm;display:flex;flex-direction:column}
-.case-head{display:flex;gap:3.5mm;align-items:flex-start}
+.case{border:1px solid var(--line);border-radius:3mm;padding:0 0 6mm;display:flex;flex-direction:column;overflow:hidden}
+.case-img{width:100%;height:68mm;object-fit:cover;background:#f2f2f2}
+.case-head{padding:6mm 6mm 0}
+.case-stats{padding:0 6mm}
+.case-role{margin:0 6mm}
+.case-head{display:flex;gap:3.5mm;align-items:flex-start;padding:6mm 6mm 0}
 .case-no{font-size:7.5pt;font-weight:700;color:#fff;background:var(--indigo);border-radius:50%;width:7mm;height:7mm;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .case-brand{font-size:11pt;font-weight:700;line-height:1.35}
 .case-scale{font-size:7.5pt;color:#8a8a8a;margin-top:1mm}
@@ -158,9 +162,9 @@ h2{font-size:22pt;line-height:1.3;font-weight:700;margin-top:2.5mm;letter-spacin
 .case-role{font-size:7pt;color:#9a9a9a;margin-top:4mm;border-top:1px solid #f0f0f0;padding-top:3mm}
 
 /* 로고 */
-.logos{display:grid;grid-template-columns:repeat(10,1fr);gap:3.5mm;flex:1;align-content:center}
-.logos div{height:23mm;border:1px solid #eee;border-radius:2mm;display:flex;align-items:center;justify-content:center;padding:3mm}
-.logos img{max-width:100%;max-height:100%;object-fit:contain;filter:grayscale(1);opacity:.72}
+.logos{display:grid;grid-template-columns:repeat(6,1fr);gap:7mm 10mm;flex:1;align-content:center}
+.logos div{display:flex;align-items:center;justify-content:center}
+.logos img{max-width:100%;max-height:20mm;object-fit:contain;filter:grayscale(1);opacity:.8}
 
 /* 흐름 */
 .flow{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm;flex:1}
@@ -187,6 +191,11 @@ h2{font-size:22pt;line-height:1.3;font-weight:700;margin-top:2.5mm;letter-spacin
 .seed-i span{font-size:8pt;opacity:.85}
 .seed-i strong{display:block;font-size:12pt;margin-top:1mm}
 .vat{font-size:7.5pt;color:#8a8a8a;margin-top:4mm}
+
+.pick{display:grid;grid-template-columns:repeat(5,1fr);gap:4mm;margin-top:5mm;flex-shrink:0}
+.pick>div{border-top:3px solid var(--indigo);padding-top:3.5mm}
+.pick span{font-size:9.5pt;font-weight:700}
+.pick p{font-size:8pt;color:var(--muted);margin-top:1.5mm;line-height:1.6}
 
 /* 이용 방법 */
 .usage{display:flex;flex-direction:column;gap:2mm;justify-content:space-between}
@@ -329,31 +338,28 @@ h2{font-size:22pt;line-height:1.3;font-weight:700;margin-top:2.5mm;letter-spacin
 <div class="shead">
   <p class="eyebrow">Line</p>
   <h2>진행 라인</h2>
-  
+  <p class="lead">가이드라인부터 납품까지 한 팀이 이어서 진행합니다.</p>
 </div>
-<div class="chain">
-<div class="chain-node">
-  <span class="chain-no">01</span>
-  <p class="chain-t">컨텐츠 가이드라인</p>
-  <p class="chain-d">필요한 컷 확정</p>
-</div><div class="chain-arrow">▶</div><div class="chain-node">
-  <span class="chain-no">02</span>
-  <p class="chain-t">인플루언서 시딩</p>
-  <p class="chain-d">배포 · 소스컷 확보</p>
-</div><div class="chain-arrow">▶</div><div class="chain-node">
-  <span class="chain-no">03</span>
-  <p class="chain-t">소스컷 회수</p>
-  <p class="chain-d">광고용 컷 추출</p>
-</div><div class="chain-arrow">▶</div><div class="chain-node">
-  <span class="chain-no">04</span>
-  <p class="chain-t">전환형 숏폼</p>
-  <p class="chain-d">계정 투입 소재 제작</p>
+<div class="flow">
+<div class="flow-row">
+  <span class="flow-no">01</span>
+  <div><p class="flow-t">브랜드 AI 기본 분석</p><p class="flow-d">상세페이지 URL로 타겟·USP·객단가·금지 표현 구조화</p></div>
+</div><div class="flow-row">
+  <span class="flow-no">02</span>
+  <div><p class="flow-t">컨텐츠 가이드라인 기획</p><p class="flow-d">편별 포맷과 후킹 편성 — 무엇을 왜 찍을지 확정</p></div>
+</div><div class="flow-row">
+  <span class="flow-no">03</span>
+  <div><p class="flow-t">인플루언서 시딩 · 바이럴</p><p class="flow-d">크리에이터 선정 후 실제 채널 배포</p></div>
+</div><div class="flow-row">
+  <span class="flow-no">04</span>
+  <div><p class="flow-t">2차 활용 소스컷 확보</p><p class="flow-d">원본에서 광고용 컷 회수, 자산화</p></div>
+</div><div class="flow-row">
+  <span class="flow-no">05</span>
+  <div><p class="flow-t">매출형 숏폼 기획제작</p><p class="flow-d">확보 소스로 구매 전환 소재 제작</p></div>
+</div><div class="flow-row">
+  <span class="flow-no">06</span>
+  <div><p class="flow-t">검수 · 납품</p><p class="flow-d">미리보기 확인 · 1회 무상 수정 · 전체 다운로드</p></div>
 </div>
-</div>
-<div class="band3">
-  <div class="bd bd-gold"><p class="bd-t">바이럴 도달</p><p class="bd-d">실제 채널 배포</p></div>
-  <div class="bd bd-gold"><p class="bd-t">소스 자산</p><p class="bd-d">회수한 광고용 컷</p></div>
-  <div class="bd bd-gold"><p class="bd-t">전환 소재</p><p class="bd-d">계정에 태우는 숏폼</p></div>
 </div>
 <div class="oneline">한 번의 발주 · 하나의 담당 · 하나의 대시보드</div></div>
   <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>05</span></footer>
@@ -392,7 +398,7 @@ h2{font-size:22pt;line-height:1.3;font-weight:700;margin-top:2.5mm;letter-spacin
 
 <div class="shead">
   <p class="eyebrow">Crew</p>
-  <h2>제작 조직</h2>
+  <h2>브랜드 컨텐츠 기획 제작 조직</h2>
   <p class="lead">저희 팀이 촬영 현장과 브랜드 현장에서 직접 찍은 사진입니다. 스톡 이미지가 아닙니다.</p>
 </div>
 <div class="creds">
@@ -433,92 +439,6 @@ h2{font-size:22pt;line-height:1.3;font-weight:700;margin-top:2.5mm;letter-spacin
   <div class="page-body">
 
 <div class="shead">
-  <p class="eyebrow">Results</p>
-  <h2>성과 사례</h2>
-  <p class="lead">소재 제작을 포함한 프로젝트 수행 결과입니다. 이 패키지는 같은 제작 시스템을 사용합니다.</p>
-</div>
-<div class="cases">
-<div class="case">
-  <div class="case-head">
-    <span class="case-no">01</span>
-    <div><p class="case-brand">뤼이드 리얼 아카데미</p><p class="case-scale">투자 2,000억</p></div>
-  </div>
-  <div class="case-stats"><div><strong>3주</strong><span>연속 고지출</span></div><div><strong>1위</strong><span>CPA 단가</span></div></div>
-  <p class="case-role">소재 제작 + 캠페인 운영</p>
-</div><div class="case">
-  <div class="case-head">
-    <span class="case-no">02</span>
-    <div><p class="case-brand">파크론 제로블럭</p><p class="case-scale">매출 200억대</p></div>
-  </div>
-  <div class="case-stats"><div><strong>5배</strong><span>메타 예산 증액</span></div><div><strong>9만원</strong><span>CPA 절감</span></div></div>
-  <p class="case-role">소재 제작 + 캠페인 운영</p>
-</div><div class="case">
-  <div class="case-head">
-    <span class="case-no">03</span>
-    <div><p class="case-brand">이노바인코리아 모에브</p><p class="case-scale">매출 300억대</p></div>
-  </div>
-  <div class="case-stats"><div><strong>₩4,000만</strong><span>3개월 매출</span></div><div><strong>3배</strong><span>ROAS</span></div></div>
-  <p class="case-role">출시 고투마켓 소재 부스팅</p>
-</div><div class="case">
-  <div class="case-head">
-    <span class="case-no">04</span>
-    <div><p class="case-brand">크래프톤 배틀그라운드</p><p class="case-scale">글로벌</p></div>
-  </div>
-  <div class="case-stats"><div><strong>연간</strong><span>공식 프로젝트</span></div><div><strong>대표이사·연예인</strong><span>출연 기획</span></div></div>
-  <p class="case-role">연간 공식 바이럴 쇼츠 기획·제작</p>
-</div>
-</div>
-<p class="foot-note">위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>09</span></footer>
-</section>
-<section id="pg10" class="page">
-  <div class="page-body">
-
-<div class="shead">
-  <p class="eyebrow">Clients</p>
-  <h2>클라이언트</h2>
-  <p class="lead">커머스부터 서비스, 플랫폼까지 30여 브랜드의 그로스·컨텐츠 프로젝트를 수행했습니다.</p>
-</div>
-<div class="logos">
-<div><img src="http://localhost:8909/public/logos/krafton.png" alt=""></div><div><img src="http://localhost:8909/public/logos/riiid.png" alt=""></div><div><img src="http://localhost:8909/public/logos/lotte-rental.png" alt=""></div><div><img src="http://localhost:8909/public/logos/parklon.png" alt=""></div><div><img src="http://localhost:8909/public/logos/moev.png" alt=""></div><div><img src="http://localhost:8909/public/logos/greencar.png" alt=""></div><div><img src="http://localhost:8909/public/logos/purum-wellness.png" alt=""></div><div><img src="http://localhost:8909/public/logos/modu-training.png" alt=""></div><div><img src="http://localhost:8909/public/logos/sambunui-il.png" alt=""></div><div><img src="http://localhost:8909/public/logos/yeonae-jagyeok.png" alt=""></div><div><img src="http://localhost:8909/public/logos/gochodaejol.png" alt=""></div><div><img src="http://localhost:8909/public/logos/juwangsan.png" alt=""></div><div><img src="http://localhost:8909/public/logos/zeroblock.png" alt=""></div><div><img src="http://localhost:8909/public/logos/naechinso.png" alt=""></div><div><img src="http://localhost:8909/public/logos/real-class.png" alt=""></div><div><img src="http://localhost:8909/public/logos/curas.png" alt=""></div><div><img src="http://localhost:8909/public/logos/dmand.png" alt=""></div><div><img src="http://localhost:8909/public/logos/walla.png" alt=""></div><div><img src="http://localhost:8909/public/logos/posh.png" alt=""></div><div><img src="http://localhost:8909/public/logos/resq.png" alt=""></div><div><img src="http://localhost:8909/public/logos/natura-health.png" alt=""></div><div><img src="http://localhost:8909/public/logos/banaco.png" alt=""></div><div><img src="http://localhost:8909/public/logos/irvinelab.png" alt=""></div><div><img src="http://localhost:8909/public/logos/cyberdigm.png" alt=""></div><div><img src="http://localhost:8909/public/logos/code-i.png" alt=""></div><div><img src="http://localhost:8909/public/logos/fitflex.png" alt=""></div><div><img src="http://localhost:8909/public/logos/luvd.png" alt=""></div><div><img src="http://localhost:8909/public/logos/mudit.png" alt=""></div><div><img src="http://localhost:8909/public/logos/yeolda.png" alt=""></div><div><img src="http://localhost:8909/public/logos/bluehouse-seoul.png" alt=""></div>
-</div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>10</span></footer>
-</section>
-<section id="pg11" class="page">
-  <div class="page-body">
-
-<div class="shead">
-  <p class="eyebrow">Process</p>
-  <h2>진행 프로세스</h2>
-  
-</div>
-<div class="flow">
-<div class="flow-row">
-  <span class="flow-no">01</span>
-  <div><p class="flow-t">브랜드 AI 기본 분석</p><p class="flow-d">상세페이지 URL로 타겟·USP·객단가·금지 표현 구조화</p></div>
-</div><div class="flow-row">
-  <span class="flow-no">02</span>
-  <div><p class="flow-t">컨텐츠 가이드라인 기획</p><p class="flow-d">편별 포맷과 후킹 편성 — 무엇을 왜 찍을지 확정</p></div>
-</div><div class="flow-row">
-  <span class="flow-no">03</span>
-  <div><p class="flow-t">인플루언서 시딩 · 바이럴</p><p class="flow-d">크리에이터 선정 후 실제 채널 배포</p></div>
-</div><div class="flow-row">
-  <span class="flow-no">04</span>
-  <div><p class="flow-t">2차 활용 소스컷 확보</p><p class="flow-d">원본에서 광고용 컷 회수, 자산화</p></div>
-</div><div class="flow-row">
-  <span class="flow-no">05</span>
-  <div><p class="flow-t">매출형 숏폼 기획제작</p><p class="flow-d">확보 소스로 구매 전환 소재 제작</p></div>
-</div><div class="flow-row">
-  <span class="flow-no">06</span>
-  <div><p class="flow-t">검수 · 납품</p><p class="flow-d">미리보기 확인 · 1회 무상 수정 · 전체 다운로드</p></div>
-</div>
-</div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>11</span></footer>
-</section>
-<section id="pg12" class="page">
-  <div class="page-body">
-
-<div class="shead">
   <p class="eyebrow">System</p>
   <h2>제작 시스템</h2>
   <p class="lead">브랜드 프로젝트 안에서 반복 검증한 위너 소재 제작 시스템을 편수 단위로 열었습니다.</p>
@@ -528,18 +448,99 @@ h2{font-size:22pt;line-height:1.3;font-weight:700;margin-top:2.5mm;letter-spacin
   <div class="bd bd-gold"><p class="bd-n">02</p><p class="bd-t">제작 사이클</p><p class="bd-d">기획 → 제작 → 데이터 판독 → 변주. 프로젝트에서 수십 회 반복한 순서입니다.</p></div>
   <div class="bd bd-alt"><p class="bd-n">03</p><p class="bd-t">팀 구조</p><p class="bd-d">담당이 나뉘어 붙습니다. 한 명이 빠져도 일정이 멈추지 않습니다.</p></div>
 </div></div>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>09</span></footer>
+</section>
+<section id="pg10" class="page">
+  <div class="page-body">
+
+<div class="shead">
+  <p class="eyebrow">Results</p>
+  <h2>성과 사례</h2>
+  <p class="lead">소재 제작을 포함한 프로젝트 수행 결과입니다. 이 패키지는 같은 제작 시스템을 사용합니다.</p>
+</div>
+<div class="cases">
+<div class="case">
+  <img class="case-img" src="http://localhost:8909/public/portfolio/clips/riiid-report.jpg" alt="">
+  <div class="case-head">
+    <span class="case-no">01</span>
+    <div><p class="case-brand">뤼이드 리얼 아카데미</p><p class="case-scale">투자 2,000억</p></div>
+  </div>
+  <div class="case-stats"><div><strong>3주</strong><span>연속 고지출</span></div><div><strong>1위</strong><span>CPA 단가</span></div></div>
+  <p class="case-role">소재 제작 + 캠페인 운영</p>
+</div><div class="case">
+  <img class="case-img" src="http://localhost:8909/public/portfolio/clips/parkron-tpu.jpg" alt="">
+  <div class="case-head">
+    <span class="case-no">02</span>
+    <div><p class="case-brand">파크론 제로블럭</p><p class="case-scale">매출 200억대</p></div>
+  </div>
+  <div class="case-stats"><div><strong>5배</strong><span>메타 예산 증액</span></div><div><strong>9만원</strong><span>CPA 절감</span></div></div>
+  <p class="case-role">소재 제작 + 캠페인 운영</p>
+</div><div class="case">
+  <img class="case-img" src="http://localhost:8909/public/portfolio/cases/inovine-moev.jpg" alt="">
+  <div class="case-head">
+    <span class="case-no">03</span>
+    <div><p class="case-brand">이노바인코리아 모에브</p><p class="case-scale">매출 300억대</p></div>
+  </div>
+  <div class="case-stats"><div><strong>₩4,000만</strong><span>3개월 매출</span></div><div><strong>3배</strong><span>ROAS</span></div></div>
+  <p class="case-role">출시 고투마켓 소재 부스팅</p>
+</div><div class="case">
+  <img class="case-img" src="http://localhost:8909/public/portfolio/cases/krafton-jonathan.jpg" alt="">
+  <div class="case-head">
+    <span class="case-no">04</span>
+    <div><p class="case-brand">크래프톤 배틀그라운드</p><p class="case-scale">글로벌</p></div>
+  </div>
+  <div class="case-stats"><div><strong>연간</strong><span>공식 프로젝트</span></div><div><strong>팬덤</strong><span>바이럴</span></div></div>
+  <p class="case-role">연간 공식 바이럴 쇼츠 기획·제작</p>
+</div>
+</div>
+<p class="foot-note">위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>10</span></footer>
+</section>
+<section id="pg11" class="page">
+  <div class="page-body">
+
+<div class="shead">
+  <p class="eyebrow">Portfolio</p>
+  <h2>최근 주요 포트폴리오</h2>
+  <p class="lead">기획과 서사, 마케팅과 세일즈를 아는 팀이 만드는 광고형 숏폼입니다.</p>
+</div>
+<div class="wall">
+<img src="http://localhost:8909/public/portfolio/clips/riiid-momcafe.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/pet-portion.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/moen-shampoo-ppl.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/bone-w40s.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/zeroblock-interview.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/riiid-self-study.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/seeding-patty.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/pet-vet-pancreas.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/bone-m50s.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/riiid-parent-itv.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/seeding-garnish.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/pet-treats-plea.jpg" alt="">
+</div></div>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>11</span></footer>
+</section>
+<section id="pg12" class="page">
+  <div class="page-body">
+
+<div class="shead">
+  <p class="eyebrow">Clients</p>
+  <h2>클라이언트 히스토리</h2>
+  <p class="lead">커머스부터 서비스, 플랫폼까지 30여 브랜드의 그로스·컨텐츠 프로젝트를 수행했습니다.</p>
+</div>
+<div class="logos">
+<div><img src="http://localhost:8909/public/logos/krafton.png" alt=""></div><div><img src="http://localhost:8909/public/logos/riiid.png" alt=""></div><div><img src="http://localhost:8909/public/logos/lotte-rental.png" alt=""></div><div><img src="http://localhost:8909/public/logos/parklon.png" alt=""></div><div><img src="http://localhost:8909/public/logos/moev.png" alt=""></div><div><img src="http://localhost:8909/public/logos/greencar.png" alt=""></div><div><img src="http://localhost:8909/public/logos/purum-wellness.png" alt=""></div><div><img src="http://localhost:8909/public/logos/modu-training.png" alt=""></div><div><img src="http://localhost:8909/public/logos/sambunui-il.png" alt=""></div><div><img src="http://localhost:8909/public/logos/yeonae-jagyeok.png" alt=""></div><div><img src="http://localhost:8909/public/logos/gochodaejol.png" alt=""></div><div><img src="http://localhost:8909/public/logos/juwangsan.png" alt=""></div><div><img src="http://localhost:8909/public/logos/zeroblock.png" alt=""></div><div><img src="http://localhost:8909/public/logos/naechinso.png" alt=""></div><div><img src="http://localhost:8909/public/logos/real-class.png" alt=""></div><div><img src="http://localhost:8909/public/logos/curas.png" alt=""></div><div><img src="http://localhost:8909/public/logos/dmand.png" alt=""></div><div><img src="http://localhost:8909/public/logos/walla.png" alt=""></div><div><img src="http://localhost:8909/public/logos/posh.png" alt=""></div><div><img src="http://localhost:8909/public/logos/resq.png" alt=""></div><div><img src="http://localhost:8909/public/logos/natura-health.png" alt=""></div><div><img src="http://localhost:8909/public/logos/banaco.png" alt=""></div><div><img src="http://localhost:8909/public/logos/irvinelab.png" alt=""></div><div><img src="http://localhost:8909/public/logos/cyberdigm.png" alt=""></div><div><img src="http://localhost:8909/public/logos/code-i.png" alt=""></div><div><img src="http://localhost:8909/public/logos/fitflex.png" alt=""></div><div><img src="http://localhost:8909/public/logos/luvd.png" alt=""></div><div><img src="http://localhost:8909/public/logos/mudit.png" alt=""></div><div><img src="http://localhost:8909/public/logos/yeolda.png" alt=""></div><div><img src="http://localhost:8909/public/logos/bluehouse-seoul.png" alt=""></div>
+</div></div>
   <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>12</span></footer>
 </section>
 <section id="pg13" class="page">
   <div class="page-body">
 
 <div class="shead">
-  <p class="eyebrow">Portfolio</p>
-  <h2>포트폴리오</h2>
-  <p class="lead">기획과 서사, 마케팅과 세일즈를 아는 팀이 만드는 광고형 숏폼입니다.</p>
+  <p class="eyebrow">Process</p>
+  <h2>진행 프로세스</h2>
+  <p class="lead">기획제작 요청 확정까지 D-7이 기준 일정입니다.</p>
 </div>
-<div class="wall">
-<img src="http://localhost:8909/public/portfolio/clips/riiid-momcafe.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/pet-portion.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/moen-shampoo-ppl.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/bone-w40s.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/zeroblock-interview.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/riiid-self-study.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/seeding-patty.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/pet-vet-pancreas.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/bone-m50s.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/riiid-parent-itv.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/seeding-garnish.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/pet-treats-plea.jpg" alt="">
+<div class="two">
+  <div class="track track-indigo">
+    <p class="track-t">인플루언서 시딩</p>
+    <p class="track-d">패키지 플랜</p>
+    <ol><li>컨텐츠 가이드라인 작업중</li><li>모집중</li><li>확정</li><li>제품 및 서비스 배송중</li><li>컨텐츠 제작중</li><li>채널 라이브 확인</li></ol>
+  </div>
+  <div class="track track-gold">
+    <p class="track-t">숏폼 기획제작</p>
+    <p class="track-d">모든 플랜</p>
+    <ol><li>소스컷 확인중</li><li>기획중</li><li>제작완료</li><li>최종수정 반영중</li><li>다운로드하기</li></ol>
+  </div>
 </div></div>
   <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>13</span></footer>
 </section>
@@ -547,9 +548,50 @@ h2{font-size:22pt;line-height:1.3;font-weight:700;margin-top:2.5mm;letter-spacin
   <div class="page-body">
 
 <div class="shead">
-  <p class="eyebrow">Plans</p>
-  <h2>플랜 · 금액</h2>
+  <p class="eyebrow">Dashboard</p>
+  <h2>내 프로젝트 보드 이용 방법</h2>
+  <p class="lead">플랜 적용 후 아래 화면에서 진행 상황을 직접 확인하십니다.</p>
+</div>
+<div class="two t-4060">
+  <div class="usage">
+<div class="use"><span class="use-no">01</span><div><p class="use-t">컨텐츠 진단</p><p class="use-d">5문항으로 현재 소재 컨디션 확인</p></div></div><div class="use"><span class="use-no">02</span><div><p class="use-t">플랜 문의</p><p class="use-d">브랜드 상황 입력 후 구성 제안 수신</p></div></div><div class="use"><span class="use-no">03</span><div><p class="use-t">상담 · 결제</p><p class="use-d">구성 확정 후 세금계산서 발행</p></div></div><div class="use"><span class="use-no">04</span><div><p class="use-t">가입 · 로그인</p><p class="use-d">이메일 인증 3단계</p></div></div><div class="use"><span class="use-no">05</span><div><p class="use-t">내 프로젝트 확인</p><p class="use-d">계정 · 플랜 · 기한 한 화면</p></div></div><div class="use"><span class="use-no">06</span><div><p class="use-t">진행 단계 확인</p><p class="use-d">시딩 6단계 · 숏폼 5단계 실시간</p></div></div><div class="use"><span class="use-no">07</span><div><p class="use-t">입력 · 피드백</p><p class="use-d">브랜드 소개 입력, 1차본 확인 후 수정 요청</p></div></div>
+  </div>
+  <div class="shots">
+    <img class="shot-main" src="http://localhost:8909/public/deck/ui-dashboard.png" alt="">
+    <img class="shot-sub" src="http://localhost:8909/public/deck/ui-signup.png" alt="">
+  </div>
+</div></div>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>14</span></footer>
+</section>
+<section id="pg15" class="page">
+  <div class="page-body">
+
+<div class="shead">
+  <p class="eyebrow">Delivery</p>
+  <h2>산출물 전달 스펙</h2>
   
+</div>
+<div class="two">
+  <div class="terms">
+<div class="term">1회 무상 수정 포함 · 추가 수정은 편당 별도 견적</div><div class="term">인플루언서 출연 컷 포함 소재의 광고 사용기간은 다운로드일로부터 5개월</div><div class="term">숏폼 기획제작 단독은 브랜드 보유 소스(촬영본·UGC·제품컷) 제공 조건</div><div class="term">배포 콘텐츠는 크리에이터 고유 콘텐츠로 개별 수정 불가 — 사전 가이드라인으로 방향을 맞춥니다</div><div class="term">다운로드 링크는 발급 후 14일간 유효합니다</div>
+  </div>
+  <div class="kv">
+    <div><dt>영상 비율</dt><dd>9:16 기본 · 요청 시 1:1 파생</dd></div>
+    <div><dt>납품 형식</dt><dd>MP4 (H.264) · 광고 계정 업로드 사양</dd></div>
+    <div><dt>전달 방식</dt><dd>프로젝트 폴더 전체 다운로드</dd></div>
+    <div><dt>인플루언서 결과물</dt><dd>배포 채널 링크 · 인플루언서 편집본</dd></div>
+    <div><dt>수정</dt><dd>편당 1회 무상 · 추가는 별도 견적</dd></div>
+  </div>
+</div></div>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>15</span></footer>
+</section>
+<section id="pg16" class="page">
+  <div class="page-body">
+
+<div class="shead">
+  <p class="eyebrow">Plans</p>
+  <h2>플랜 안내</h2>
+  <p class="lead">브랜드 상황에 따라 아래 중 하나를 고르시면 됩니다. 싱글과 패키지는 택일입니다.</p>
 </div>
 <div class="two">
   <div>
@@ -595,48 +637,10 @@ h2{font-size:22pt;line-height:1.3;font-weight:700;margin-top:2.5mm;letter-spacin
   <p class="seed-k">패키지 포함<br>시딩 단가</p>
 <div class="seed-i"><span>스타터 · 10명</span><strong>₩550,000</strong></div><div class="seed-i"><span>그로스 · 20명</span><strong>₩990,000</strong></div><div class="seed-i"><span>스케일 · 30명</span><strong>₩1,380,000</strong></div>
 </div>
+<div class="pick">
+<div><span>1편</span><p>결과물을 먼저 한 편 보고 판단하실 때</p></div><div><span>5편</span><p>첫 세트로 반응을 확인하실 때</p></div><div><span>10편</span><p>A/B 변주를 실제로 돌리실 때</p></div><div><span>20편</span><p>이긴 소재에 예산을 몰 때</p></div><div><span>패키지</span><p>찍을 소스부터 없으실 때</p></div>
+</div>
 <p class="vat">※ 부가세 별도 · 싱글과 패키지는 택일 · 인플루언서 시딩은 숏폼 5편 이상 묶음부터 함께 진행됩니다</p></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>14</span></footer>
-</section>
-<section id="pg15" class="page">
-  <div class="page-body">
-
-<div class="shead">
-  <p class="eyebrow">How to use</p>
-  <h2>이용 방법</h2>
-  <p class="lead">플랜 적용 후 아래 화면에서 진행 상황을 직접 확인하십니다.</p>
-</div>
-<div class="two t-4060">
-  <div class="usage">
-<div class="use"><span class="use-no">01</span><div><p class="use-t">컨텐츠 진단</p><p class="use-d">5문항으로 현재 소재 컨디션 확인</p></div></div><div class="use"><span class="use-no">02</span><div><p class="use-t">플랜 문의</p><p class="use-d">브랜드 상황 입력 후 구성 제안 수신</p></div></div><div class="use"><span class="use-no">03</span><div><p class="use-t">상담 · 결제</p><p class="use-d">구성 확정 후 세금계산서 발행</p></div></div><div class="use"><span class="use-no">04</span><div><p class="use-t">가입 · 로그인</p><p class="use-d">이메일 인증 3단계</p></div></div><div class="use"><span class="use-no">05</span><div><p class="use-t">내 프로젝트 확인</p><p class="use-d">계정 · 플랜 · 기한 한 화면</p></div></div><div class="use"><span class="use-no">06</span><div><p class="use-t">진행 단계 확인</p><p class="use-d">시딩 6단계 · 숏폼 5단계 실시간</p></div></div><div class="use"><span class="use-no">07</span><div><p class="use-t">입력 · 피드백</p><p class="use-d">브랜드 소개 입력, 1차본 확인 후 수정 요청</p></div></div>
-  </div>
-  <div class="shots">
-    <img class="shot-main" src="http://localhost:8909/public/deck/ui-dashboard.png" alt="">
-    <img class="shot-sub" src="http://localhost:8909/public/deck/ui-signup.png" alt="">
-  </div>
-</div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>15</span></footer>
-</section>
-<section id="pg16" class="page">
-  <div class="page-body">
-
-<div class="shead">
-  <p class="eyebrow">Stages</p>
-  <h2>진행 단계</h2>
-  <p class="lead">기획제작 요청 확정까지 D-7이 기준 일정입니다.</p>
-</div>
-<div class="two">
-  <div class="track track-indigo">
-    <p class="track-t">인플루언서 시딩</p>
-    <p class="track-d">패키지 플랜</p>
-    <ol><li>컨텐츠 가이드라인 작업중</li><li>모집중</li><li>확정</li><li>제품 및 서비스 배송중</li><li>컨텐츠 제작중</li><li>채널 라이브 확인</li></ol>
-  </div>
-  <div class="track track-gold">
-    <p class="track-t">숏폼 기획제작</p>
-    <p class="track-d">모든 플랜</p>
-    <ol><li>소스컷 확인중</li><li>기획중</li><li>제작완료</li><li>최종수정 반영중</li><li>다운로드하기</li></ol>
-  </div>
-</div></div>
   <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>16</span></footer>
 </section>
 <section id="pg17" class="page">
@@ -657,28 +661,6 @@ h2{font-size:22pt;line-height:1.3;font-weight:700;margin-top:2.5mm;letter-spacin
   <div class="page-body">
 
 <div class="shead">
-  <p class="eyebrow">Terms</p>
-  <h2>진행 조건 · 산출물</h2>
-  
-</div>
-<div class="two">
-  <div class="terms">
-<div class="term">1회 무상 수정 포함 · 추가 수정은 편당 별도 견적</div><div class="term">인플루언서 출연 컷 포함 소재의 광고 사용기간은 다운로드일로부터 5개월</div><div class="term">숏폼 기획제작 단독은 브랜드 보유 소스(촬영본·UGC·제품컷) 제공 조건</div><div class="term">배포 콘텐츠는 크리에이터 고유 콘텐츠로 개별 수정 불가 — 사전 가이드라인으로 방향을 맞춥니다</div><div class="term">다운로드 링크는 발급 후 14일간 유효합니다</div>
-  </div>
-  <div class="kv">
-    <div><dt>영상 비율</dt><dd>9:16 기본 · 요청 시 1:1 파생</dd></div>
-    <div><dt>납품 형식</dt><dd>MP4 (H.264) · 광고 계정 업로드 사양</dd></div>
-    <div><dt>전달 방식</dt><dd>프로젝트 폴더 전체 다운로드</dd></div>
-    <div><dt>인플루언서 결과물</dt><dd>배포 채널 링크 · 인플루언서 편집본</dd></div>
-    <div><dt>수정</dt><dd>편당 1회 무상 · 추가는 별도 견적</dd></div>
-  </div>
-</div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>18</span></footer>
-</section>
-<section id="pg19" class="page">
-  <div class="page-body">
-
-<div class="shead">
   <p class="eyebrow">Reviews</p>
   <h2>클라이언트 후기</h2>
   <p class="lead">평균 2천만원(최소 5백 ~ 최대 2억) 규모 프로젝트에서 받은 후기입니다.</p>
@@ -686,9 +668,9 @@ h2{font-size:22pt;line-height:1.3;font-weight:700;margin-top:2.5mm;letter-spacin
 <div class="reviews">
 <div class="rv"><p>“3년 내 최고 ROAS 달성했고, 가입 단가 CPA도 40% 절감했어요.”</p><span>G 대기업 실장</span></div><div class="rv"><p>“조직이 고민하던 KPI 지표를 홀로 600% 달성. 오가닉 매출 2배 증대.”</p><span>Y 상담 스타트업 대표</span></div><div class="rv"><p>“월 3백으로 시작한 신규 라인을 5개월 안에 2천까지 씁니다.”</p><span>M 헤어뷰티 커머스</span></div><div class="rv"><p>“채용보다 저렴한 프로젝트 비용으로 DAU를 대폭 늘렸습니다.”</p><span>D HR 스타트업 공동대표</span></div><div class="rv"><p>“브랜드 쿼리수를 올리는 방향으로 포지셔닝을 다시 잡아 주셨습니다.”</p><span>B 스포츠 커머스 이사</span></div><div class="rv"><p>“리브랜딩부터 실질적인 마케팅까지 3개월에 끊어주시더군요.”</p><span>F 건기식 커머스 대표</span></div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>19</span></footer>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>18</span></footer>
 </section>
-<section id="pg20" class="page dark">
+<section id="pg19" class="page dark">
   <div class="page-body"><div class="cover end">
   <div class="cover-l">
     <p class="cover-en">CONTACT</p>
