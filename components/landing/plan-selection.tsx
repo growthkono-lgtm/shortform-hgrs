@@ -5,12 +5,11 @@ import { PLANS, type Plan, type PlanCode } from "@/lib/constants";
 
 type PlanSelectionValue = {
   code: PlanCode;
-  setCode: (code: PlanCode) => void;
   tier: string;
-  setTier: (tier: string) => void;
+  /** 요금 박스의 두 칸(단독/패키지) 중 하나를 고른다 */
+  select: (code: PlanCode, tier: string) => void;
   /** 현재 선택된 플랜 — 스티키 CTA 라벨이 이 값을 따라간다 (PART B) */
   selected: Plan;
-  tiersForCode: Plan[];
 };
 
 const PlanSelectionContext = createContext<PlanSelectionValue | null>(null);
@@ -20,18 +19,25 @@ export function PlanSelectionProvider({
 }: {
   children: React.ReactNode;
 }) {
-  // 숏폼 기획제작 단독이 기본이다. 시딩까지 묶인 금액을 먼저 보여주면
+  // 기본은 그로스 숏폼 단독이다. 시딩까지 묶인 금액을 먼저 선택해 두면
   // 실제로 파는 것(숏폼 편수)보다 총액이 앞서 읽혀 무조건 비싸 보인다.
-  const [code, setCode] = useState<PlanCode>("shorts_only");
-  const [tier, setTier] = useState<string>("10");
+  const [{ code, tier }, setSelection] = useState<{
+    code: PlanCode;
+    tier: string;
+  }>({ code: "shorts_only", tier: "10" });
 
   const value = useMemo<PlanSelectionValue>(() => {
-    const tiersForCode = PLANS.filter((plan) => plan.code === code);
     const selected =
-      tiersForCode.find((plan) => plan.tier === tier) ??
-      tiersForCode.find((plan) => plan.recommended) ??
-      tiersForCode[0];
-    return { code, setCode, tier, setTier, selected, tiersForCode };
+      PLANS.find((plan) => plan.code === code && plan.tier === tier) ??
+      PLANS.find((plan) => plan.recommended) ??
+      PLANS[0];
+    return {
+      code,
+      tier,
+      select: (nextCode, nextTier) =>
+        setSelection({ code: nextCode, tier: nextTier }),
+      selected,
+    };
   }, [code, tier]);
 
   return (
@@ -45,16 +51,4 @@ export function usePlanSelection() {
     throw new Error("usePlanSelection must be used within PlanSelectionProvider");
   }
   return context;
-}
-
-/** 플랜 코드를 바꿀 때 해당 플랜의 추천 티어로 초기화 */
-export function useSwitchPlanCode() {
-  const { setCode, setTier } = usePlanSelection();
-  return (next: PlanCode) => {
-    setCode(next);
-    const fallback =
-      PLANS.find((plan) => plan.code === next && plan.recommended) ??
-      PLANS.find((plan) => plan.code === next)!;
-    setTier(fallback.tier);
-  };
 }

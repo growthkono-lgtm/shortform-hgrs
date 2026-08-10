@@ -55,16 +55,37 @@ export const PLAN_COPY = {
   shorts_only: {
     label: "숏폼 기획제작",
     sub: "브랜드 보유 소스로 바로",
+    /** 한 박스 안에서 위 칸(단독)을 한 줄로 설명하는 문장 */
+    tagline: "국내 유수 라이브커머스·브랜드 숏폼 기획제작자 집단의 시스템",
     rationale:
       "구매 전환형 숏폼을 기획부터 제작까지 편수 단위로 진행합니다. 처음이라면 1편만 먼저 맡겨 결과를 보고 판단하셔도 됩니다. 브랜드가 보유한 소스(촬영본·UGC·제품컷)로 바로 시작합니다.",
   },
   full: {
     label: "숏폼 + 인플루언서 시딩",
     sub: "소스 확보부터 함께",
+    /** 아래 칸(패키지)을 한 줄로 설명하는 문장 */
+    tagline: "인플루언서 컨텐츠 가이드라인 및 소스컷 확보와 구매전환 광고를 한번에",
     rationale:
       "찍을 소스부터 없다면 인플루언서 시딩을 함께 붙입니다. 컨텐츠 가이드라인 → 광고용 소스컷 확보 → 부스팅 숏폼 기획제작이 논스톱으로 진행됩니다.",
   },
 } as const;
+
+/**
+ * 요금 섹션의 박스 단위. 이름은 스타터·그로스·스케일 셋으로 통일하고,
+ * 한 박스 안에 같은 규모의 **숏폼 단독**과 **시딩 패키지**를 위아래로 같이 놓는다.
+ * 탭으로 갈라 두면 둘 중 하나만 보고 판단하게 된다 — 차액이 한눈에 보여야 한다.
+ */
+export const PLAN_GROUPS = [
+  { key: "starter", label: "스타터", shortsTier: "5", fullTier: "starter" },
+  {
+    key: "growth",
+    label: "그로스",
+    shortsTier: "10",
+    fullTier: "growth",
+    recommended: true,
+  },
+  { key: "scale", label: "스케일", shortsTier: "20", fullTier: "scale" },
+] as const;
 
 /** PART E4 정책 문구 — 노출 위치마다 같은 문장을 재사용 */
 export const POLICY = {
@@ -125,7 +146,7 @@ export const PLANS: Plan[] = [
   {
     code: "full",
     tier: "starter",
-    label: "스타터",
+    label: "스타터 패키지",
     composition: "인플루언서 10 + 숏폼 5",
     influencerCount: 10,
     shortsCount: 5,
@@ -138,7 +159,7 @@ export const PLANS: Plan[] = [
   {
     code: "full",
     tier: "growth",
-    label: "그로스",
+    label: "그로스 패키지",
     composition: "인플루언서 20 + 숏폼 10",
     influencerCount: 20,
     shortsCount: 10,
@@ -152,7 +173,7 @@ export const PLANS: Plan[] = [
   {
     code: "full",
     tier: "scale",
-    label: "스케일",
+    label: "스케일 패키지",
     composition: "인플루언서 30 + 숏폼 20",
     influencerCount: 30,
     shortsCount: 20,
@@ -178,7 +199,7 @@ export const PLANS: Plan[] = [
   {
     code: "shorts_only",
     tier: "5",
-    label: "5편",
+    label: "스타터",
     composition: "전환 숏폼 5편",
     influencerCount: 0,
     shortsCount: 5,
@@ -189,7 +210,7 @@ export const PLANS: Plan[] = [
   {
     code: "shorts_only",
     tier: "10",
-    label: "10편",
+    label: "그로스",
     composition: "전환 숏폼 10편",
     influencerCount: 0,
     shortsCount: 10,
@@ -201,7 +222,7 @@ export const PLANS: Plan[] = [
   {
     code: "shorts_only",
     tier: "20",
-    label: "20편",
+    label: "스케일",
     composition: "전환 숏폼 20편",
     influencerCount: 0,
     shortsCount: 20,
