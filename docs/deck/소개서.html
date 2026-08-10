@@ -24,12 +24,12 @@ body{font-family:Pyeojin,-apple-system,sans-serif;color:var(--ink);-webkit-print
 .page-body{height:100%;display:flex;flex-direction:column}
 .page-foot{position:absolute;left:16mm;right:16mm;bottom:6mm;display:flex;justify-content:space-between;font-size:7pt;color:#a8a8a8}
 
-.shead{margin-bottom:9mm;flex-shrink:0}
+.shead{margin-bottom:8mm;flex-shrink:0}
 .eyebrow{font-size:8pt;letter-spacing:.06em;color:var(--gold-deep);font-weight:700}
 h1{font-size:34pt;line-height:1.24;font-weight:700;letter-spacing:-.02em}
 .chip-title{display:inline-block;background:var(--indigo);color:#fff;padding:0 4mm;border-radius:2mm}
 h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
-.subline{font-size:12pt;line-height:1.6;color:var(--muted);margin-top:3.5mm}
+.subline{font-size:15pt;line-height:1.55;color:#3a3a3a;margin-top:4mm;font-weight:400}
 .foot-note{font-size:7.5pt;color:#9a9a9a;margin-top:auto;padding-top:4mm}
 
 /* 표지 · 문의처 */
@@ -180,12 +180,12 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 /* 플랜 */
 .tbl-h{font-size:12pt;font-weight:700}
 .tbl-lead{font-size:8pt;color:#8a8a8a;margin-top:1.5mm;margin-bottom:3mm}
-.tbl{width:100%;border-collapse:collapse;font-size:9pt}
-.tbl td{padding:2.4mm 0;border-bottom:1px solid #f0f0f0;vertical-align:top}
-.t-name{font-weight:700;white-space:nowrap;width:34mm}
-.t-desc{font-size:8pt;color:#8a8a8a}
+.tbl{width:100%;border-collapse:collapse;font-size:11pt}
+.tbl td{padding:3.4mm 0;border-bottom:1px solid #f0f0f0;vertical-align:top}
+.t-name{font-weight:700;white-space:nowrap;width:38mm;font-size:12pt}
+.t-desc{font-size:9.5pt;color:var(--muted)}
 .t-price{text-align:right;font-weight:700;white-space:nowrap}
-.t-price span{display:block;font-size:7.5pt;font-weight:400;color:#9a9a9a;margin-top:.5mm}
+.t-price span{display:block;font-size:8.5pt;font-weight:400;color:#8a8a8a;margin-top:.8mm}
 .seed-band{display:grid;grid-template-columns:auto repeat(3,1fr);gap:8mm;align-items:center;background:var(--gold);color:#fff;border-radius:3mm;padding:6mm 8mm;margin-top:6mm;flex-shrink:0}
 .seed-k{font-size:9pt;font-weight:700;line-height:1.5}
 .seed-i span{font-size:8pt;opacity:.85}
@@ -198,7 +198,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .pick p{font-size:8pt;color:var(--muted);margin-top:1.5mm;line-height:1.6}
 
 .journey{display:flex;align-items:stretch;gap:2mm;flex-shrink:0}
-.j{flex:1;border-radius:2mm;padding:4.4mm 6mm;color:#fff}
+.j{flex:1;border-radius:2mm;padding:4mm 6mm;color:#fff}
 .j-gold{background:var(--gold)}
 .j-gold2{background:var(--gold-deep)}
 .j-indigo{background:var(--indigo)}
@@ -206,15 +206,15 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .j-t{font-size:10.5pt;font-weight:700}
 .j-d{font-size:8pt;opacity:.85;margin-top:1.5mm}
 .j-arrow{display:flex;align-items:center;color:var(--gold);font-size:9pt}
-.plans{margin-top:5mm;align-items:start}
-.plan-col{border:1px solid var(--line);border-radius:3mm;padding:6mm}
+.plans{margin-top:6mm;align-items:start;flex:1}
+.plan-col{border:1px solid var(--line);border-radius:3mm;padding:7mm}
 .plan-col-pkg{border-color:var(--indigo);background:rgba(77,95,232,.04)}
-.plan-k{font-size:8pt;font-weight:700;color:var(--gold-deep)}
-.plan-h{font-size:13pt;font-weight:700;margin-top:1.5mm}
-.plan-d{font-size:8pt;color:var(--muted);line-height:1.65;margin-top:1.5mm;margin-bottom:2.5mm}
-.seed-in{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:3mm;background:var(--gold);color:#fff;border-radius:2mm;padding:4mm 5mm}
-.seed-in span{font-size:7.5pt;opacity:.85}
-.seed-in strong{display:block;font-size:10.5pt;margin-top:.5mm}
+.plan-k{font-size:9pt;font-weight:700;color:var(--gold-deep)}
+.plan-h{font-size:15pt;font-weight:700;margin-top:2mm}
+.plan-d{font-size:9.5pt;color:var(--muted);line-height:1.7;margin-top:2mm;margin-bottom:4mm}
+.seed-in{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:4mm;background:var(--gold);color:#fff;border-radius:2mm;padding:5mm 6mm}
+.seed-in span{font-size:8.5pt;opacity:.9}
+.seed-in strong{display:block;font-size:12pt;margin-top:1mm}
 .spec{display:grid;grid-template-columns:repeat(5,1fr);gap:4mm;margin-top:5mm;flex-shrink:0}
 .spec>div{border-top:2px solid var(--gold);padding-top:3mm}
 .spec span{font-size:9pt;font-weight:700}
@@ -306,7 +306,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     <div><dt>사업자 소재지</dt><dd>경기 김포시 김포한강10로 133번 127, 438 E180호</dd></div>
     <div><dt>서비스</dt><dd>해그로시 숏폼 스튜디오</dd></div>
     <div><dt>사업 영역</dt><dd>브랜드 그로스 · 인플루언서 시딩 · 광고 숏폼 기획제작 · AI 기획제작</dd></div>
-    <div><dt>문의</dt><dd>ceo@h-grs.com</dd></div>
+    <div><dt>문의</dt><dd>contact@h-grs.com</dd></div>
   </div>
 </div>
 <div class="band3">
@@ -594,7 +594,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   <div class="page-body">
 
 <div class="shead">
-  <h2>플랜 결제 안내</h2>
+  <h2>플랜 안내</h2>
   <p class="subline">브랜드 상황에 맞는 구성을 고르시면 됩니다 — 싱글과 패키지는 택일입니다</p>
 </div>
 
@@ -648,9 +648,6 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   </div>
 </div>
 
-<div class="spec">
-<div><span>9:16 세로형</span><p>요청 시 1:1 파생</p></div><div><span>MP4 (H.264)</span><p>광고 계정 업로드 사양</p></div><div><span>편당 1회 무상 수정</span><p>추가는 별도 견적</p></div><div><span>폴더 전체 다운로드</span><p>인플루언서 편집본 포함</p></div><div><span>광고 사용기간 5개월</span><p>출연 컷 포함 소재 기준</p></div>
-</div>
 <p class="vat">※ 부가세 별도 · 인플루언서 시딩은 숏폼 5편 이상 묶음부터 함께 진행됩니다</p></div>
   <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>15</span></footer>
 </section>
@@ -667,19 +664,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 <div class="pay-band">세금계산서 발행 후 현금(계좌이체)이 기본이며, 카드 결제도 가능합니다 · 부가세 별도</div></div>
   <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>16</span></footer>
 </section>
-<section id="pg17" class="page">
-  <div class="page-body">
-
-<div class="shead">
-  <h2>클라이언트 실제 리뷰</h2>
-  <p class="subline">평균 2천만원 규모 프로젝트를 함께한 분들이 남겨 주신 이야기입니다</p>
-</div>
-<div class="reviews">
-<div class="rv"><p>“3년 내 최고 ROAS 달성했고, 가입 단가 CPA도 40% 절감했어요.”</p><span>G 대기업 실장</span></div><div class="rv"><p>“조직이 고민하던 KPI 지표를 홀로 600% 달성. 오가닉 매출 2배 증대.”</p><span>Y 상담 스타트업 대표</span></div><div class="rv"><p>“월 3백으로 시작한 신규 라인을 5개월 안에 2천까지 씁니다.”</p><span>M 헤어뷰티 커머스</span></div><div class="rv"><p>“채용보다 저렴한 프로젝트 비용으로 DAU를 대폭 늘렸습니다.”</p><span>D HR 스타트업 공동대표</span></div><div class="rv"><p>“브랜드 쿼리수를 올리는 방향으로 포지셔닝을 다시 잡아 주셨습니다.”</p><span>B 스포츠 커머스 이사</span></div><div class="rv"><p>“리브랜딩부터 실질적인 마케팅까지 3개월에 끊어주시더군요.”</p><span>F 건기식 커머스 대표</span></div>
-</div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>17</span></footer>
-</section>
-<section id="pg18" class="page dark">
+<section id="pg17" class="page dark">
   <div class="page-body"><div class="cover end">
   <div class="cover-l">
     <p class="cover-en">CONTACT</p>
@@ -689,7 +674,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   </div>
   <div class="contact-grid">
     <div><p class="ck">플랜 신청 · 내 프로젝트</p><p class="cv">shortform.hgrs.io</p></div>
-    <div><p class="ck">문의 메일</p><p class="cv">ceo@h-grs.com</p></div>
+    <div><p class="ck">문의 메일</p><p class="cv">contact@h-grs.com</p></div>
     <div><p class="ck">브랜드 단위 프로젝트</p><p class="cv">hgrs.io/partnership</p></div>
     <div><p class="ck">응대 시간</p><p class="cv">평일 10:00 – 19:00</p></div>
   </div>

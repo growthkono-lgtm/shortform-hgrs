@@ -171,6 +171,7 @@ const pages: string[] = [];
 
 
 
+
 pages.push(
   slide(
     `<div class="cover">
@@ -197,6 +198,7 @@ ${["riiid-momcafe", "moen-shampoo-ppl", "zeroblock-interview", "bone-w40s"].map(
 
 
 
+
 pages.push(
   slide(`
 ${head("법인 소개", "브랜드 전략부터 광고 컨텐츠·영상 프로덕션까지 함께 수행해 온 프로젝트 집단입니다")}
@@ -211,7 +213,7 @@ ${head("법인 소개", "브랜드 전략부터 광고 컨텐츠·영상 프로�
     <div><dt>${COMPANY.addressLabel}</dt><dd>${COMPANY.address}</dd></div>
     <div><dt>서비스</dt><dd>${SERVICE.name}</dd></div>
     <div><dt>사업 영역</dt><dd>브랜드 그로스 · 인플루언서 시딩 · 광고 숏폼 기획제작 · AI 기획제작</dd></div>
-    <div><dt>문의</dt><dd>ceo@h-grs.com</dd></div>
+    <div><dt>문의</dt><dd>contact@h-grs.com</dd></div>
   </div>
 </div>
 <div class="band3">
@@ -222,6 +224,7 @@ ${head("법인 소개", "브랜드 전략부터 광고 컨텐츠·영상 프로�
 );
 
 // 03 시장 구조
+
 
 
 
@@ -251,6 +254,7 @@ ${head("시장 구조", "인플루언서 바이럴에 이어 매출 연속성을
 
 
 
+
 pages.push(
   slide(`
 ${head("포지션", "시딩과 2차 활용 영상 확보부터 구매전환 숏폼 기획제작까지 하나로 해결해 드립니다")}
@@ -276,6 +280,7 @@ ${[
 // 05 진행 라인
 
 
+
 pages.push(
   slide(`
 ${head("진행 라인", "가이드라인부터 납품까지, 넘길 때마다 다시 설명하실 일이 없습니다")}
@@ -291,6 +296,7 @@ ${FLOW.map(
 );
 
 // 06 기대 효과
+
 
 
 
@@ -319,6 +325,7 @@ ${[
 
 
 
+
 pages.push(
   slide(`
 ${head("제작 조직", "촬영 현장과 브랜드 현장에서 저희 팀이 직접 찍고 직접 만듭니다")}
@@ -331,6 +338,7 @@ ${Array.from({ length: 8 }, (_, i) => `<img src="${asset(`/portfolio/crew/crew-0
 );
 
 // 08 역할 구성 · AI
+
 
 
 
@@ -359,6 +367,7 @@ ${ROLES.map(([t, d]) => `<div class="role"><p class="role-t">${t}</p><p class="r
 
 
 
+
 pages.push(
   slide(`
 ${head("제작 시스템", "프로젝트에서 반복 검증한 위너 소재 제작 시스템을 그대로 쓰실 수 있습니다")}
@@ -373,6 +382,7 @@ ${head("제작 시스템", "프로젝트에서 반복 검증한 위너 소재 �
 
 
 
+
 pages.push(
   slide(`
 ${head("클라이언트 히스토리", "커머스부터 서비스, 플랫폼까지 30여 브랜드와 함께했습니다")}
@@ -382,6 +392,7 @@ ${CLIENTS.map((c) => `<div><img src="${asset(`/logos/${c}.png`)}" alt=""></div>`
 );
 
 // 11 성과 사례
+
 
 
 
@@ -408,6 +419,7 @@ ${CASES.map(
 
 
 
+
 pages.push(
   slide(`
 ${head("최근 주요 포트폴리오", "기획과 서사, 마케팅과 세일즈를 아는 팀이 만든 광고형 숏폼입니다")}
@@ -417,6 +429,7 @@ ${WALL.map((s) => `<img src="${asset(`/portfolio/clips/${s}.jpg`)}" alt="">`).jo
 );
 
 // 13 진행 단계
+
 
 
 
@@ -438,6 +451,7 @@ ${head("진행 프로세스", "지금 어디까지 왔는지 단계로 확인하
 );
 
 // 14 이용 방법 (실제 화면)
+
 
 pages.push(
   slide(`
@@ -463,9 +477,10 @@ ${head("내 프로젝트", "초기 요청사항부터 컨텐츠 컨펌과 진행
 // 15 PLAN
 
 
+
 pages.push(
   slide(`
-${head("플랜 결제 안내", "브랜드 상황에 맞는 구성을 고르시면 됩니다 — 싱글과 패키지는 택일입니다")}
+${head("플랜 안내", "브랜드 상황에 맞는 구성을 고르시면 됩니다 — 싱글과 패키지는 택일입니다")}
 
 <div class="journey">
 ${[
@@ -503,21 +518,11 @@ ${packages
   </div>
 </div>
 
-<div class="spec">
-${[
-  ["9:16 세로형", "요청 시 1:1 파생"],
-  ["MP4 (H.264)", "광고 계정 업로드 사양"],
-  ["편당 1회 무상 수정", "추가는 별도 견적"],
-  ["폴더 전체 다운로드", "인플루언서 편집본 포함"],
-  ["광고 사용기간 5개월", "출연 컷 포함 소재 기준"],
-]
-  .map(([k, v]) => `<div><span>${k}</span><p>${v}</p></div>`)
-  .join("")}
-</div>
 <p class="vat">※ 부가세 별도 · ${esc(POLICY.seedingBundleOnly)}</p>`),
 );
 
 // 16 계약 · 결제
+
 
 
 
@@ -532,19 +537,8 @@ ${CONTRACT.map(
 <div class="pay-band">세금계산서 발행 후 현금(계좌이체)이 기본이며, 카드 결제도 가능합니다 · 부가세 별도</div>`),
 );
 
-// 17 후기
+// 17 문의처
 
-
-
-pages.push(
-  slide(`
-${head("클라이언트 실제 리뷰", "평균 2천만원 규모 프로젝트를 함께한 분들이 남겨 주신 이야기입니다")}
-<div class="reviews">
-${REVIEWS.map(([t, who]) => `<div class="rv"><p>“${esc(t)}”</p><span>${esc(who)}</span></div>`).join("")}
-</div>`),
-);
-
-// 18 문의처
 
 
 
@@ -559,7 +553,7 @@ pages.push(
   </div>
   <div class="contact-grid">
     <div><p class="ck">플랜 신청 · 내 프로젝트</p><p class="cv">${SERVICE.url.replace("https://", "")}</p></div>
-    <div><p class="ck">문의 메일</p><p class="cv">ceo@h-grs.com</p></div>
+    <div><p class="ck">문의 메일</p><p class="cv">contact@h-grs.com</p></div>
     <div><p class="ck">브랜드 단위 프로젝트</p><p class="cv">${SERVICE.parentUrl.replace("https://", "")}/partnership</p></div>
     <div><p class="ck">응대 시간</p><p class="cv">평일 10:00 – 19:00</p></div>
   </div>
@@ -596,12 +590,12 @@ body{font-family:Pyeojin,-apple-system,sans-serif;color:var(--ink);-webkit-print
 .page-body{height:100%;display:flex;flex-direction:column}
 .page-foot{position:absolute;left:16mm;right:16mm;bottom:6mm;display:flex;justify-content:space-between;font-size:7pt;color:#a8a8a8}
 
-.shead{margin-bottom:9mm;flex-shrink:0}
+.shead{margin-bottom:8mm;flex-shrink:0}
 .eyebrow{font-size:8pt;letter-spacing:.06em;color:var(--gold-deep);font-weight:700}
 h1{font-size:34pt;line-height:1.24;font-weight:700;letter-spacing:-.02em}
 .chip-title{display:inline-block;background:var(--indigo);color:#fff;padding:0 4mm;border-radius:2mm}
 h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
-.subline{font-size:12pt;line-height:1.6;color:var(--muted);margin-top:3.5mm}
+.subline{font-size:15pt;line-height:1.55;color:#3a3a3a;margin-top:4mm;font-weight:400}
 .foot-note{font-size:7.5pt;color:#9a9a9a;margin-top:auto;padding-top:4mm}
 
 /* 표지 · 문의처 */
@@ -752,12 +746,12 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 /* 플랜 */
 .tbl-h{font-size:12pt;font-weight:700}
 .tbl-lead{font-size:8pt;color:#8a8a8a;margin-top:1.5mm;margin-bottom:3mm}
-.tbl{width:100%;border-collapse:collapse;font-size:9pt}
-.tbl td{padding:2.4mm 0;border-bottom:1px solid #f0f0f0;vertical-align:top}
-.t-name{font-weight:700;white-space:nowrap;width:34mm}
-.t-desc{font-size:8pt;color:#8a8a8a}
+.tbl{width:100%;border-collapse:collapse;font-size:11pt}
+.tbl td{padding:3.4mm 0;border-bottom:1px solid #f0f0f0;vertical-align:top}
+.t-name{font-weight:700;white-space:nowrap;width:38mm;font-size:12pt}
+.t-desc{font-size:9.5pt;color:var(--muted)}
 .t-price{text-align:right;font-weight:700;white-space:nowrap}
-.t-price span{display:block;font-size:7.5pt;font-weight:400;color:#9a9a9a;margin-top:.5mm}
+.t-price span{display:block;font-size:8.5pt;font-weight:400;color:#8a8a8a;margin-top:.8mm}
 .seed-band{display:grid;grid-template-columns:auto repeat(3,1fr);gap:8mm;align-items:center;background:var(--gold);color:#fff;border-radius:3mm;padding:6mm 8mm;margin-top:6mm;flex-shrink:0}
 .seed-k{font-size:9pt;font-weight:700;line-height:1.5}
 .seed-i span{font-size:8pt;opacity:.85}
@@ -770,7 +764,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .pick p{font-size:8pt;color:var(--muted);margin-top:1.5mm;line-height:1.6}
 
 .journey{display:flex;align-items:stretch;gap:2mm;flex-shrink:0}
-.j{flex:1;border-radius:2mm;padding:4.4mm 6mm;color:#fff}
+.j{flex:1;border-radius:2mm;padding:4mm 6mm;color:#fff}
 .j-gold{background:var(--gold)}
 .j-gold2{background:var(--gold-deep)}
 .j-indigo{background:var(--indigo)}
@@ -778,15 +772,15 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .j-t{font-size:10.5pt;font-weight:700}
 .j-d{font-size:8pt;opacity:.85;margin-top:1.5mm}
 .j-arrow{display:flex;align-items:center;color:var(--gold);font-size:9pt}
-.plans{margin-top:5mm;align-items:start}
-.plan-col{border:1px solid var(--line);border-radius:3mm;padding:6mm}
+.plans{margin-top:6mm;align-items:start;flex:1}
+.plan-col{border:1px solid var(--line);border-radius:3mm;padding:7mm}
 .plan-col-pkg{border-color:var(--indigo);background:rgba(77,95,232,.04)}
-.plan-k{font-size:8pt;font-weight:700;color:var(--gold-deep)}
-.plan-h{font-size:13pt;font-weight:700;margin-top:1.5mm}
-.plan-d{font-size:8pt;color:var(--muted);line-height:1.65;margin-top:1.5mm;margin-bottom:2.5mm}
-.seed-in{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:3mm;background:var(--gold);color:#fff;border-radius:2mm;padding:4mm 5mm}
-.seed-in span{font-size:7.5pt;opacity:.85}
-.seed-in strong{display:block;font-size:10.5pt;margin-top:.5mm}
+.plan-k{font-size:9pt;font-weight:700;color:var(--gold-deep)}
+.plan-h{font-size:15pt;font-weight:700;margin-top:2mm}
+.plan-d{font-size:9.5pt;color:var(--muted);line-height:1.7;margin-top:2mm;margin-bottom:4mm}
+.seed-in{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:4mm;background:var(--gold);color:#fff;border-radius:2mm;padding:5mm 6mm}
+.seed-in span{font-size:8.5pt;opacity:.9}
+.seed-in strong{display:block;font-size:12pt;margin-top:1mm}
 .spec{display:grid;grid-template-columns:repeat(5,1fr);gap:4mm;margin-top:5mm;flex-shrink:0}
 .spec>div{border-top:2px solid var(--gold);padding-top:3mm}
 .spec span{font-size:9pt;font-weight:700}
