@@ -6,8 +6,8 @@
 @font-face{font-family:Pyeojin;src:url("http://localhost:8909/app/fonts/PyeojinGothic-Regular.woff2") format("woff2");font-weight:400}
 @font-face{font-family:Pyeojin;src:url("http://localhost:8909/app/fonts/PyeojinGothic-Bold.woff2") format("woff2");font-weight:700}
 
-@page{size:A4;margin:0}
-/* #pg7 처럼 지목하면 그 장만 띄운다 — 조판 확인용. 인쇄에는 영향 없다 */
+/* 16:9 — 13.333in × 7.5in */
+@page{size:338.67mm 190.5mm;margin:0}
 body:has(.page:target) .page:not(:target){display:none}
 
 :root{
@@ -18,239 +18,230 @@ body:has(.page:target) .page:not(:target){display:none}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Pyeojin,-apple-system,sans-serif;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
 
-.page{width:210mm;height:297mm;padding:20mm 18mm 14mm;position:relative;page-break-after:always;overflow:hidden;background:#fff}
+.page{width:338.67mm;height:190.5mm;padding:15mm 16mm 12mm;position:relative;page-break-after:always;overflow:hidden;background:#fff}
 .page:last-child{page-break-after:auto}
 .page.dark{background:var(--night);color:#fff}
-.page-body{height:100%}
-.page-foot{position:absolute;left:18mm;right:18mm;bottom:9mm;display:flex;justify-content:space-between;font-size:7.5pt;color:#9a9a9a;border-top:1px solid #ececec;padding-top:3mm}
+.page-body{height:100%;display:flex;flex-direction:column}
+.page-foot{position:absolute;left:16mm;right:16mm;bottom:6mm;display:flex;justify-content:space-between;font-size:7pt;color:#a8a8a8}
 
-.eyebrow{font-size:8pt;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);font-weight:700}
-h1{font-size:31pt;line-height:1.3;font-weight:700;letter-spacing:-.02em}
-h1 span{color:var(--indigo)}
-h2{font-size:20pt;line-height:1.35;font-weight:700;margin-top:3mm;letter-spacing:-.01em}
-h3{font-size:11pt;font-weight:700;margin-top:9mm;margin-bottom:2.5mm}
-.lead{font-size:9.5pt;line-height:1.85;color:var(--muted);margin-top:4mm;max-width:152mm}
-.foot-note{font-size:7.5pt;line-height:1.8;color:#8a8a8a;margin-top:6mm}
+.shead{margin-bottom:8mm;flex-shrink:0}
+.eyebrow{font-size:7.5pt;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);font-weight:700}
+h1{font-size:34pt;line-height:1.24;font-weight:700;letter-spacing:-.02em}
+.chip-title{display:inline-block;background:var(--indigo);color:#fff;padding:0 4mm;border-radius:2mm}
+h2{font-size:22pt;line-height:1.3;font-weight:700;margin-top:2.5mm;letter-spacing:-.01em}
+.lead{font-size:9.5pt;line-height:1.8;color:var(--muted);margin-top:3mm;max-width:220mm}
+.foot-note{font-size:7.5pt;color:#9a9a9a;margin-top:auto;padding-top:4mm}
 
-/* 표지 · 마지막 */
-.cover{height:100%;display:flex;flex-direction:column;justify-content:space-between}
-.cover-en{font-size:8pt;letter-spacing:.3em;color:var(--gold);font-weight:700;margin-bottom:9mm}
-.cover-sub{font-size:11pt;line-height:1.9;color:rgba(255,255,255,.6);margin-top:8mm}
-.cover-sub b{color:#fff;font-weight:700}
-.cover-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:3mm}
-.cover-strip img{width:100%;height:56mm;object-fit:cover;border-radius:2mm}
-.cover-foot{border-top:1px solid rgba(255,255,255,.16);padding-top:7mm}
-.cover-stats{display:flex;gap:14mm;margin-bottom:7mm}
-.cover-stats strong{display:block;font-size:17pt;font-weight:700;color:var(--indigo)}
-.cover-stats span{font-size:8pt;color:rgba(255,255,255,.55)}
-.cover-org{font-size:7.5pt;color:rgba(255,255,255,.42);line-height:1.9}
-.end h1{font-size:27pt}
-.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:7mm}
+/* 표지 · 문의처 */
+.cover{height:100%;display:grid;grid-template-columns:1fr 118mm;gap:14mm;align-items:center}
+.cover-l{display:flex;flex-direction:column;justify-content:center;height:100%}
+.cover-en{font-size:7.5pt;letter-spacing:.3em;color:var(--gold);font-weight:700;margin-bottom:7mm}
+.cover-sub{font-size:10.5pt;line-height:1.9;color:rgba(255,255,255,.62);margin-top:7mm}
+.cover-stats{display:flex;gap:12mm;margin-top:auto;padding-top:9mm;border-top:1px solid rgba(255,255,255,.16)}
+.cover-stats strong{display:block;font-size:16pt;font-weight:700}
+.cover-stats span{font-size:7.5pt;color:rgba(255,255,255,.5)}
+.cover-org{font-size:7pt;color:rgba(255,255,255,.42);line-height:1.8;margin-top:6mm}
+.cover-r{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.cover-r img{width:100%;height:72mm;object-fit:cover;border-radius:2mm}
+.end .cover{grid-template-columns:1fr 130mm}
+.end h1{font-size:28pt}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:8mm}
 .contact-grid>div{border-top:2px solid var(--indigo);padding-top:4mm}
-.ck{font-size:8pt;color:rgba(255,255,255,.5)}
-.cv{font-size:13pt;font-weight:700;margin-top:2mm}
+.ck{font-size:7.5pt;color:rgba(255,255,255,.5)}
+.cv{font-size:12pt;font-weight:700;margin-top:2mm}
 
-/* 인사말 */
-.greet{display:flex;gap:8mm;align-items:flex-start;margin-top:11mm;background:var(--alt);border-radius:3mm;padding:10mm}
-.greet-mark{display:flex;flex-shrink:0;padding-top:2mm}
-.dot{width:11mm;height:11mm;border-radius:50%}
-.dot-indigo{background:var(--indigo)}
-.dot-gold{background:var(--gold);margin-left:-4mm}
-.greet-lead{font-size:14pt;line-height:1.75}
-.greet-lead b{font-weight:700;color:var(--indigo-deep)}
-.greet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm;margin-top:9mm}
-.gq{border:1px solid var(--line);border-radius:3mm;padding:7mm;min-height:64mm}
-.gq-no{font-size:9pt;font-weight:700;color:var(--gold)}
-.gq-q{font-size:10.5pt;font-weight:700;margin-top:3mm;line-height:1.5}
-.gq-a{font-size:9pt;line-height:1.85;color:var(--muted);margin-top:4mm}
-.greet-sign{margin-top:9mm;background:var(--night);color:#fff;border-radius:3mm;padding:9mm;display:flex;justify-content:space-between;align-items:flex-end;gap:6mm}
-.greet-sign p{font-size:12pt;line-height:1.7}
-.greet-sign b{color:#8ea2ff}
-.greet-sign span{font-size:8pt;color:rgba(255,255,255,.5);white-space:nowrap}
+/* 공통 레이아웃 */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8mm;flex:1;min-height:0}
+.two.t-6040{grid-template-columns:1.5fr 1fr}
+.two.t-4060{grid-template-columns:1fr 1.35fr}
+.two.vcenter{align-items:center}
+
+.panel{border-radius:3mm;padding:9mm;display:flex;flex-direction:column;justify-content:center}
+.panel-ink{background:var(--night);color:#fff}
+.panel-indigo{background:var(--indigo);color:#fff}
+.pk{font-size:7.5pt;letter-spacing:.14em;color:var(--gold)}
+.pk.light{color:rgba(255,255,255,.75)}
+.pt{font-size:15pt;font-weight:700;line-height:1.6;margin-top:4mm}
+.pt2{font-size:13pt;font-weight:700;line-height:1.55;margin-top:3mm}
+.pt3{font-size:9pt;line-height:1.85;margin-top:3mm;color:rgba(255,255,255,.9)}
+.fig{margin-top:6mm;padding-top:5mm;border-top:1px solid rgba(255,255,255,.18)}
+.fig strong{display:block;font-size:22pt;font-weight:700}
+.fig span{font-size:7.5pt;color:rgba(255,255,255,.55)}
+
+.kv{align-self:center;width:100%}
+.kv>div{display:flex;gap:6mm;padding:3.4mm 0;border-bottom:1px solid #f0f0f0;font-size:9pt}
+.kv dt{width:34mm;flex-shrink:0;color:#8a8a8a}
+.kv dd{line-height:1.6}
+
+.band3{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:7mm;flex-shrink:0}
+.band3.tall{flex:1;margin-top:0}
+.bd{border-radius:3mm;padding:7mm}
+.bd-indigo{background:var(--indigo);color:#fff}
+.bd-gold{background:var(--gold);color:#fff}
+.bd-alt{background:var(--alt)}
+.bd-n{font-size:8pt;font-weight:700;opacity:.7}
+.bd-t{font-size:11.5pt;font-weight:700;margin-top:2mm}
+.bd-d{font-size:8.5pt;line-height:1.8;margin-top:2.5mm;opacity:.85}
 
 /* 시장 구조 */
-.split{display:grid;grid-template-columns:1fr 46mm 1fr;gap:5mm;margin-top:18mm;align-items:start}
+.split{display:grid;grid-template-columns:1fr 62mm 1fr;gap:8mm;align-items:center;flex:1}
 .split-side{text-align:center}
-.circle{width:58mm;height:58mm;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:11pt;font-weight:700;line-height:1.5;color:#fff}
+.circle{width:56mm;height:56mm;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:11pt;font-weight:700;line-height:1.5;color:#fff}
 .circle-indigo{background:var(--indigo)}
 .circle-gold{background:var(--gold)}
-.split-t{font-size:9pt;color:#8a8a8a;margin-top:5mm}
-.split-l{list-style:none;margin-top:3mm}
-.split-l li{font-size:9.5pt;color:var(--muted);padding:3.2mm 0}
-.split-gap{border:1.5px dashed var(--gold);border-radius:3mm;padding:9mm 5mm;text-align:center;background:var(--gold-tint);margin-top:10mm}
+.split-t{font-size:8.5pt;color:#8a8a8a;margin-top:4mm}
+.split-d{font-size:9.5pt;color:var(--muted);margin-top:1.5mm}
+.split-gap{border:1.5px dashed var(--gold);border-radius:3mm;padding:7mm 5mm;text-align:center;background:var(--gold-tint)}
 .gap-label{font-size:9.5pt;font-weight:700;color:var(--gold-deep)}
 .gap-list{list-style:none;margin-top:3mm}
-.gap-list li{font-size:9pt;color:var(--gold-deep);padding:3.4mm 0;border-top:1px solid rgba(142,107,104,.25)}
-.verdict{margin-top:22mm;background:var(--night);color:#fff;border-radius:3mm;padding:16mm 10mm;font-size:13pt;line-height:1.9}
-.verdict b{color:#8ea2ff}
+.gap-list li{font-size:9pt;color:var(--gold-deep);padding:2.6mm 0;border-top:1px solid rgba(142,107,104,.25)}
+.verdict{background:var(--night);color:#fff;border-radius:3mm;padding:7mm 8mm;font-size:10.5pt;line-height:1.8;margin-top:6mm;flex-shrink:0}
 
-/* 벤 다이어그램 */
-.venn{position:relative;height:112mm;margin-top:11mm}
-.venn-c{position:absolute;top:0;width:112mm;height:112mm;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11pt;font-weight:700;line-height:1.5;text-align:center}
-.venn-a{left:6mm;background:rgba(77,95,232,.16);border:1.5px solid var(--indigo);color:var(--indigo-deep)}
-.venn-a span{margin-right:40mm}
-.venn-b{right:6mm;background:rgba(184,155,141,.24);border:1.5px solid var(--gold);color:var(--gold-deep)}
-.venn-b span{margin-left:40mm}
-.venn-mid{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;z-index:2}
-.venn-mid strong{display:block;font-size:15pt;font-weight:700}
+/* 벤 */
+.venn{position:relative;height:120mm}
+.venn-c{position:absolute;top:0;width:106mm;height:106mm;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5pt;font-weight:700;line-height:1.5;text-align:center}
+.venn-a{left:0;background:rgba(77,95,232,.18);border:1.5px solid var(--indigo);color:var(--indigo-deep)}
+.venn-a span{margin-right:38mm}
+.venn-b{right:0;background:rgba(184,155,141,.26);border:1.5px solid var(--gold);color:var(--gold-deep)}
+.venn-b span{margin-left:38mm}
+.venn-mid{position:absolute;left:50%;top:53mm;transform:translate(-50%,-50%);text-align:center;z-index:2}
+.venn-mid strong{display:block;font-size:14pt;font-weight:700}
 .venn-mid span{font-size:8pt;color:var(--muted)}
-.pos-row{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:14mm}
-.pos{border-top:3px solid var(--indigo);padding-top:6mm;min-height:30mm}
-.pos-t{font-size:11pt;font-weight:700}
-.pos-d{font-size:8.5pt;color:var(--muted);margin-top:2.5mm;line-height:1.75}
+.pos-col{display:flex;flex-direction:column;gap:5mm}
+.pos{border-left:4px solid var(--indigo);background:var(--alt);border-radius:0 2mm 2mm 0;padding:6mm 7mm}
+.pos-t{font-size:12pt;font-weight:700}
+.pos-d{font-size:9pt;color:var(--muted);margin-top:2mm}
+.pos-note{background:var(--indigo);color:#fff;border-radius:2mm;padding:5mm 7mm;font-size:11pt;font-weight:700;text-align:center}
 
 /* 라인 */
-.chain{display:grid;grid-template-columns:1fr 7mm 1fr 7mm 1fr 7mm 1fr;align-items:stretch;margin-top:10mm}
-.chain-node{border:1px solid var(--line);border-top:3px solid var(--indigo);border-radius:3mm;padding:8mm 5mm;min-height:62mm}
-.chain-no{font-size:8pt;font-weight:700;color:var(--indigo)}
-.chain-t{font-size:10.5pt;font-weight:700;margin-top:2.5mm;line-height:1.4}
-.chain-d{font-size:8pt;line-height:1.75;color:#8a8a8a;margin-top:3mm}
+.chain{display:grid;grid-template-columns:1fr 8mm 1fr 8mm 1fr 8mm 1fr;align-items:stretch;flex-shrink:0}
+.chain-node{background:var(--alt);border-top:4px solid var(--indigo);border-radius:0 0 3mm 3mm;padding:7mm 6mm}
+.chain-no{font-size:8pt;font-weight:700;color:var(--indigo-deep)}
+.chain-t{font-size:11.5pt;font-weight:700;margin-top:2mm}
+.chain-d{font-size:8.5pt;color:var(--muted);margin-top:2.5mm}
 .chain-arrow{display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:9pt}
-.outcome{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:10mm}
-.outcome>div{background:var(--gold-tint);border-radius:3mm;padding:8mm;text-align:center}
-.oc-t{font-size:11pt;font-weight:700;color:var(--gold-deep)}
-.oc-d{font-size:8pt;color:var(--muted);margin-top:2mm}
-.one-line{margin-top:10mm;background:var(--indigo);color:#fff;border-radius:3mm;padding:10mm;text-align:center}
-.one-t{font-size:14pt;font-weight:700}
-.one-d{font-size:9.5pt;margin-top:2.5mm;color:rgba(255,255,255,.75)}
+.oneline{margin-top:7mm;background:var(--night);color:#fff;border-radius:3mm;padding:7mm;font-size:13pt;font-weight:700;text-align:center;flex-shrink:0}
 
 /* 효과 */
-.impact{display:grid;grid-template-columns:1fr 1fr;gap:5mm;margin-top:9mm}
-.imp{border:1px solid var(--line);border-radius:3mm;padding:9mm;min-height:88mm}
-.imp-no{font-size:20pt;font-weight:700;color:var(--indigo-tint);line-height:1}
-.imp-t{font-size:13pt;font-weight:700;margin-top:3mm;color:var(--indigo-deep)}
-.imp-d{font-size:9pt;line-height:1.9;color:var(--muted);margin-top:3mm}
+.impact{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;flex:1}
+.imp{background:var(--indigo);color:#fff;border-radius:3mm;padding:8mm;display:flex;flex-direction:column}
+.imp-alt{background:var(--gold)}
+.imp-no{font-size:9pt;font-weight:700;opacity:.7}
+.imp-t{font-size:14pt;font-weight:700;margin-top:3mm;line-height:1.4}
+.imp-d{font-size:9pt;line-height:1.85;margin-top:4mm;opacity:.9}
 
 /* 크루 */
-.creds{display:flex;flex-wrap:wrap;gap:3mm;margin-top:8mm}
-.cred{font-size:9pt;font-weight:700;color:var(--indigo-deep);background:var(--indigo-tint);border-radius:99px;padding:2.6mm 6mm}
-.crew{display:grid;grid-template-columns:repeat(4,1fr);gap:3.5mm;margin-top:7mm}
-.crew img{width:100%;height:70mm;object-fit:cover;border-radius:2mm}
-.crew-foot{display:flex;justify-content:space-between;align-items:center;gap:8mm;margin-top:9mm;border-top:1px solid var(--line);padding-top:7mm}
-.crew-foot p{font-size:9.5pt;color:var(--muted);line-height:1.85}
-.crew-stats{display:flex;gap:10mm;flex-shrink:0}
-.crew-stats strong{display:block;font-size:17pt;font-weight:700;color:var(--indigo)}
-.crew-stats span{font-size:7.5pt;color:#8a8a8a}
+.creds{display:flex;flex-wrap:wrap;gap:3mm;margin-bottom:6mm;flex-shrink:0}
+.cred{font-size:9pt;font-weight:700;color:#fff;background:var(--indigo);border-radius:99px;padding:2.4mm 6mm}
+.cred:nth-child(even){background:var(--gold)}
+.crew{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;gap:3.5mm;flex:1;min-height:0}
+.crew img{width:100%;height:100%;object-fit:cover;border-radius:2mm}
 
 /* 역할 */
-.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:3.5mm;margin-top:8mm}
-.role{border:1px solid var(--line);border-radius:3mm;padding:6mm;min-height:28mm}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:3.5mm;align-content:start}
+.role{background:var(--alt);border-radius:2mm;padding:5.5mm}
 .role-t{font-size:10pt;font-weight:700}
-.role-d{font-size:8pt;color:#8a8a8a;margin-top:2mm;line-height:1.7}
-.director{display:grid;grid-template-columns:1fr 62mm;gap:6mm;margin-top:8mm;background:var(--night);color:#fff;border-radius:3mm;padding:10mm;align-items:center}
-.dir-k{font-size:8pt;letter-spacing:.1em;color:var(--gold)}
-.dir-t{font-size:14pt;font-weight:700;margin-top:2.5mm}
-.dir-d{font-size:9pt;line-height:1.85;color:rgba(255,255,255,.65);margin-top:3mm}
-.dir-fig{text-align:right}
-.dir-fig strong{display:block;font-size:28pt;font-weight:700;color:var(--indigo);letter-spacing:-.02em}
-.dir-fig span{font-size:7.5pt;color:rgba(255,255,255,.5);line-height:1.6;display:block;margin-top:1mm}
-.ai-note{margin-top:5mm;border:1px solid var(--gold);background:var(--gold-tint);border-radius:3mm;padding:8mm}
-.ai-t{font-size:11pt;font-weight:700;color:var(--gold-deep)}
-.ai-d{font-size:9pt;line-height:1.85;color:var(--muted);margin-top:2mm}
+.role-d{font-size:7.5pt;color:#8a8a8a;margin-top:1.5mm;line-height:1.6}
+.side-col{display:flex;flex-direction:column;gap:4mm}
+.side-col .panel{flex:1}
 
 /* 사례 */
-.cases{display:grid;grid-template-columns:1fr 1fr;gap:5mm;margin-top:8mm}
-.case{border:1px solid var(--line);border-radius:3mm;padding:8mm;min-height:84mm;display:flex;flex-direction:column}
-.case-head{display:flex;gap:4mm;align-items:flex-start}
-.case-no{font-size:8pt;font-weight:700;color:#fff;background:var(--indigo);border-radius:50%;width:8mm;height:8mm;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.case-brand{font-size:12pt;font-weight:700;line-height:1.4}
-.case-scale{font-size:8pt;color:#8a8a8a;margin-top:1mm}
-.case-stats{display:flex;gap:8mm;margin-top:auto;padding-top:6mm}
-.case-stats strong{display:block;font-size:15pt;font-weight:700;color:var(--indigo-deep)}
-.case-stats span{font-size:7.5pt;color:#8a8a8a}
-.case-role{font-size:7.5pt;color:#9a9a9a;margin-top:5mm;border-top:1px solid #f0f0f0;padding-top:3.5mm}
+.cases{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;flex:1}
+.case{border:1px solid var(--line);border-radius:3mm;padding:7mm;display:flex;flex-direction:column}
+.case-head{display:flex;gap:3.5mm;align-items:flex-start}
+.case-no{font-size:7.5pt;font-weight:700;color:#fff;background:var(--indigo);border-radius:50%;width:7mm;height:7mm;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.case-brand{font-size:11pt;font-weight:700;line-height:1.35}
+.case-scale{font-size:7.5pt;color:#8a8a8a;margin-top:1mm}
+.case-stats{display:flex;gap:6mm;margin-top:auto;padding-top:5mm}
+.case-stats strong{display:block;font-size:13pt;font-weight:700}
+.case-stats span{font-size:7pt;color:#8a8a8a}
+.case-role{font-size:7pt;color:#9a9a9a;margin-top:4mm;border-top:1px solid #f0f0f0;padding-top:3mm}
 
 /* 로고 */
-.logos{display:grid;grid-template-columns:repeat(5,1fr);gap:5mm;margin-top:9mm}
-.logos div{height:27mm;border:1px solid #eee;border-radius:2mm;display:flex;align-items:center;justify-content:center;padding:4mm}
+.logos{display:grid;grid-template-columns:repeat(10,1fr);gap:3.5mm;flex:1;align-content:center}
+.logos div{height:23mm;border:1px solid #eee;border-radius:2mm;display:flex;align-items:center;justify-content:center;padding:3mm}
 .logos img{max-width:100%;max-height:100%;object-fit:contain;filter:grayscale(1);opacity:.72}
 
 /* 흐름 */
-.flow{margin-top:8mm}
-.flow-row{display:flex;gap:7mm;padding:7mm 0;border-bottom:1px solid #f0f0f0}
-.flow-no{font-size:13pt;font-weight:700;color:var(--indigo);width:11mm;flex-shrink:0}
-.flow-t{font-size:11pt;font-weight:700}
-.flow-d{font-size:8.5pt;line-height:1.8;color:var(--muted);margin-top:1.5mm}
-
-/* 시스템 */
-.sys{margin-top:6mm}
-.sys-row{display:flex;gap:5mm;padding:6mm 0;border-bottom:1px solid #f0f0f0;font-size:9pt;line-height:1.85;color:var(--muted)}
-.sys-no{width:7mm;flex-shrink:0;font-size:11pt;font-weight:700;color:var(--indigo)}
-.sys-t{font-size:10.5pt;font-weight:700;color:var(--ink);margin-bottom:1.5mm}
-.cards-3{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:7mm}
-.card{border:1px solid var(--line);border-radius:3mm;padding:7mm;font-size:8.5pt;line-height:1.85;color:var(--muted);min-height:44mm}
-.card-t{font-size:10pt;font-weight:700;color:var(--ink);margin-bottom:2.5mm}
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm;flex:1}
+.flow-row{display:flex;gap:5mm;background:var(--alt);border-radius:3mm;padding:7mm}
+.flow-no{font-size:13pt;font-weight:700;color:var(--indigo);flex-shrink:0}
+.flow-t{font-size:11.5pt;font-weight:700}
+.flow-d{font-size:8.5pt;line-height:1.8;color:var(--muted);margin-top:2mm}
 
 /* 포트폴리오 */
-.wall{display:grid;grid-template-columns:repeat(4,1fr);gap:3.5mm;margin-top:8mm}
-.wall img{width:100%;height:62mm;object-fit:cover;border-radius:2mm;background:#f2f2f2}
+.wall{display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:1fr 1fr;gap:3.5mm;flex:1;min-height:0}
+.wall img{width:100%;height:100%;object-fit:cover;border-radius:2mm;background:#f2f2f2}
 
-/* 플랜 표 */
-.tbl-lead{font-size:8.5pt;color:#8a8a8a;line-height:1.7;margin-bottom:3mm}
+/* 플랜 */
+.tbl-h{font-size:12pt;font-weight:700}
+.tbl-lead{font-size:8pt;color:#8a8a8a;margin-top:1.5mm;margin-bottom:3mm}
 .tbl{width:100%;border-collapse:collapse;font-size:9pt}
-.tbl th{text-align:left;font-size:7.5pt;font-weight:400;color:#9a9a9a;border-bottom:1px solid #d8d8d8;padding-bottom:2mm}
-.tbl th:last-child{text-align:right}
-.tbl td{padding:3.6mm 0;border-bottom:1px solid #f0f0f0;vertical-align:top}
-.t-name{font-weight:700;white-space:nowrap;width:36mm}
+.tbl td{padding:3.4mm 0;border-bottom:1px solid #f0f0f0;vertical-align:top}
+.t-name{font-weight:700;white-space:nowrap;width:34mm}
 .t-desc{font-size:8pt;color:#8a8a8a}
 .t-price{text-align:right;font-weight:700;white-space:nowrap}
-.t-price span{display:block;font-size:7.5pt;font-weight:400;color:#9a9a9a;margin-top:.6mm}
-.seeding-box{border:1px solid var(--indigo);background:rgba(77,95,232,.05);border-radius:3mm;padding:7mm;margin-top:8mm}
-.seeding-row{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:3mm}
-.seeding-row div{font-size:8pt;color:#8a8a8a}
-.seeding-row strong{display:block;font-size:12pt;color:var(--indigo-deep);margin-top:1mm}
-.vat{font-size:8pt;color:#8a8a8a;margin-top:5mm}
+.t-price span{display:block;font-size:7.5pt;font-weight:400;color:#9a9a9a;margin-top:.5mm}
+.seed-band{display:grid;grid-template-columns:auto repeat(3,1fr);gap:8mm;align-items:center;background:var(--gold);color:#fff;border-radius:3mm;padding:6mm 8mm;margin-top:6mm;flex-shrink:0}
+.seed-k{font-size:9pt;font-weight:700;line-height:1.5}
+.seed-i span{font-size:8pt;opacity:.85}
+.seed-i strong{display:block;font-size:12pt;margin-top:1mm}
+.vat{font-size:7.5pt;color:#8a8a8a;margin-top:4mm}
+
+/* 이용 방법 */
+.usage{display:flex;flex-direction:column;gap:2mm;justify-content:space-between}
+.use{display:flex;gap:5mm;background:var(--alt);border-radius:2mm;padding:3.6mm 6mm;align-items:baseline;flex:1}
+.use-no{font-size:9pt;font-weight:700;color:var(--indigo);flex-shrink:0}
+.use-t{font-size:10.5pt;font-weight:700}
+.use-d{font-size:8pt;color:var(--muted);margin-top:1mm}
+.shots{position:relative;display:flex;align-items:center;justify-content:center}
+.shot-main{width:100%;border:1px solid var(--line);border-radius:3mm}
+.shot-sub{position:absolute;right:-3mm;bottom:-3mm;width:54mm;border:1px solid var(--line);border-radius:2mm;background:#fff;box-shadow:0 2mm 6mm rgba(0,0,0,.14)}
 
 /* 단계 */
-.tracks{display:grid;grid-template-columns:1fr 1fr;gap:5mm;margin-top:7mm}
-.track{border:1px solid var(--line);border-radius:3mm;padding:7mm}
-.track-t{font-size:11pt;font-weight:700}
-.track-d{font-size:8pt;color:#8a8a8a;margin-top:1.5mm}
-.track ol{list-style:none;counter-reset:s;margin-top:3mm}
-.track li{counter-increment:s;font-size:9.5pt;padding:4mm 0;border-top:1px solid #f2f2f2;display:flex;gap:4mm}
-.track li::before{content:counter(s);color:var(--indigo);font-weight:700;width:5mm}
+.track{border-radius:3mm;padding:8mm;color:#fff}
+.track-indigo{background:var(--indigo)}
+.track-gold{background:var(--gold)}
+.track-t{font-size:13pt;font-weight:700}
+.track-d{font-size:8pt;opacity:.8;margin-top:1.5mm}
+.track ol{list-style:none;counter-reset:s;margin-top:4mm}
+.track li{counter-increment:s;font-size:10pt;padding:3.6mm 0;border-top:1px solid rgba(255,255,255,.25);display:flex;gap:4mm}
+.track li::before{content:counter(s);font-weight:700;width:5mm;opacity:.75}
 
 /* 계약 */
-.contract{margin-top:7mm}
-.ct-row{display:flex;gap:5mm;padding:4.6mm 0;border-bottom:1px solid #f2f2f2}
-.ct-no{font-size:10pt;font-weight:700;color:var(--indigo);width:9mm;flex-shrink:0}
-.ct-t{font-size:10.5pt;font-weight:700}
-.ct-d{font-size:8.5pt;line-height:1.75;color:var(--muted);margin-top:1.2mm}
-.pay-note{border:1px solid var(--indigo);background:rgba(77,95,232,.05);border-radius:3mm;padding:8mm;margin-top:8mm;font-size:9pt;line-height:1.85;color:var(--muted)}
-.pay-note b{color:var(--ink)}
+.contract{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;flex:1}
+.ct{background:var(--alt);border-top:4px solid var(--indigo);border-radius:0 0 3mm 3mm;padding:6mm}
+.ct-no{font-size:8pt;font-weight:700;color:var(--indigo-deep)}
+.ct-t{font-size:10.5pt;font-weight:700;margin-top:2mm}
+.ct-d{font-size:8pt;line-height:1.75;color:var(--muted);margin-top:2.5mm}
+.pay-band{background:var(--indigo);color:#fff;border-radius:3mm;padding:6mm 8mm;font-size:10.5pt;font-weight:700;margin-top:6mm;flex-shrink:0;text-align:center}
 
 /* 조건 */
-.terms{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-top:8mm}
-.term{border-left:3px solid var(--gold);background:var(--alt);border-radius:0 2mm 2mm 0;padding:7mm;font-size:9pt;line-height:1.8;color:var(--muted);min-height:30mm}
-.kv{margin-top:4mm;border-top:1px solid var(--line)}
-.kv>div{display:flex;gap:8mm;padding:4.6mm 0;border-bottom:1px solid #f0f0f0;font-size:9pt}
-.kv dt{width:38mm;flex-shrink:0;color:#8a8a8a}
-.kv dd{line-height:1.7}
+.terms{display:flex;flex-direction:column;gap:3mm}
+.term{border-left:4px solid var(--gold);background:var(--alt);border-radius:0 2mm 2mm 0;padding:5mm 6mm;font-size:9pt;line-height:1.7;color:var(--muted)}
 
 /* 후기 */
-.reviews{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-top:8mm;grid-auto-rows:1fr}
-.rv{border:1px solid var(--line);border-radius:3mm;padding:7mm;display:flex;flex-direction:column}
+.reviews{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:4mm;flex:1}
+.rv{background:var(--alt);border-radius:3mm;padding:7mm;display:flex;flex-direction:column}
 .rv p{font-size:9.5pt;line-height:1.9}
-.rv span{display:block;font-size:7.5pt;color:#8a8a8a;margin-top:auto;padding-top:5mm;border-top:2px solid var(--gold);align-self:flex-start}
+.rv span{display:block;font-size:7.5pt;color:#8a8a8a;margin-top:auto;padding-top:4mm}
 </style></head>
 <body>
 <section id="pg1" class="page dark">
   <div class="page-body"><div class="cover">
-  <div>
+  <div class="cover-l">
     <p class="cover-en">HGRS SHORTFORM STUDIO</p>
-    <h1>해그로시 숏폼 스튜디오<br><span>소개서</span></h1>
-    <p class="cover-sub">인플루언서 시딩부터 구매 전환 숏폼까지,<br><b>따로 발주하시던 두 가지를 한 라인으로 만들어 드립니다.</b></p>
-  </div>
-  <div class="cover-strip">
-<img src="http://localhost:8909/public/portfolio/clips/riiid-momcafe.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/moen-shampoo-ppl.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/zeroblock-interview.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/bone-w40s.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/seeding-patty.jpg" alt="">
-  </div>
-  <div class="cover-foot">
+    <h1>해그로시<br>숏폼 스튜디오<br><span class="chip-title">소개서</span></h1>
+    <p class="cover-sub">인플루언서 시딩부터 구매 전환 숏폼까지<br>따로 발주하시던 두 가지를 한 라인으로 만들어 드립니다.</p>
     <div class="cover-stats">
-      <div><strong>30+</strong><span>브랜드 프로젝트 수행</span></div>
+      <div><strong>30+</strong><span>브랜드 프로젝트</span></div>
       <div><strong>3억대</strong><span>연 거래액</span></div>
       <div><strong>₩2,000만</strong><span>평균 프로젝트 단가</span></div>
     </div>
     <p class="cover-org">주식회사 해그로시 · shortform.hgrs.io</p>
+  </div>
+  <div class="cover-r">
+<img src="http://localhost:8909/public/portfolio/clips/riiid-momcafe.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/moen-shampoo-ppl.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/zeroblock-interview.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/bone-w40s.jpg" alt="">
   </div>
 </div></div>
   
@@ -258,342 +249,313 @@ h3{font-size:11pt;font-weight:700;margin-top:9mm;margin-bottom:2.5mm}
 <section id="pg2" class="page">
   <div class="page-body">
 
-<p class="eyebrow">Greeting</p>
-<h2>매출로 이어지는 숏폼을 만들어 드립니다</h2>
-
-
-<div class="greet">
-  <div class="greet-mark">
-    <span class="dot dot-indigo"></span>
-    <span class="dot dot-gold"></span>
+<div class="shead">
+  <p class="eyebrow">Company</p>
+  <h2>브랜드 · 법인 소개</h2>
+  
+</div>
+<div class="two">
+  <div class="panel panel-ink">
+    <p class="pk">해그로시</p>
+    <p class="pt">브랜드 전략 · 그로스 마케팅 ·<br>광고 컨텐츠 · 영상 프로덕션을<br>함께 수행하는 프로젝트 집단</p>
   </div>
-  <p class="greet-lead">해그로시는 브랜드 전략과 그로스 마케팅, 광고 컨텐츠와<br>영상 프로덕션을 함께 수행해 온 <b>프로젝트 집단</b>입니다.</p>
+  <div class="kv">
+    <div><dt>상호</dt><dd>주식회사 해그로시</dd></div>
+    <div><dt>사업자등록번호</dt><dd>187-87-02820</dd></div>
+    <div><dt>사업자 소재지</dt><dd>경기 김포시 김포한강10로 133번 127, 438 E180호</dd></div>
+    <div><dt>서비스</dt><dd>해그로시 숏폼 스튜디오</dd></div>
+    <div><dt>사업 영역</dt><dd>브랜드 그로스 · 인플루언서 시딩 · 광고 숏폼 기획제작 · AI 기획제작</dd></div>
+    <div><dt>문의</dt><dd>ceo@h-grs.com</dd></div>
+  </div>
 </div>
-
-<div class="greet-grid">
-<div class="gq">
-  <span class="gq-no">01</span>
-  <p class="gq-q">무엇을 바로잡습니까</p>
-  <p class="gq-a">단순 납품 · 단순 AI · 마케팅 없는 기획 · 서사 없는 저감도</p>
-</div><div class="gq">
-  <span class="gq-no">02</span>
-  <p class="gq-q">무엇을 기준으로 합니까</p>
-  <p class="gq-a">조회수가 아니라 세일즈 · 매출 · 전환율</p>
-</div><div class="gq">
-  <span class="gq-no">03</span>
-  <p class="gq-q">무엇을 대신해 드립니까</p>
-  <p class="gq-a">컨텐츠 가이드라인 작성과 소스컷 확보 전 과정</p>
-</div>
-</div>
-
-<div class="greet-sign">
-  <p>브랜드의 매출 사이클을 함께 돌려 온 팀이<br><b>편수 단위로 붙어 드립니다.</b></p>
-  <span>해그로시 숏폼 스튜디오</span>
+<div class="band3">
+  <div class="bd bd-indigo"><p class="bd-t">브랜드 단위 프로젝트</p><p class="bd-d">포지셔닝 · 채널 마케팅 · 캠페인 설계</p></div>
+  <div class="bd bd-gold"><p class="bd-t">인플루언서 시딩</p><p class="bd-d">가이드라인 · 배포 · 소스컷 확보</p></div>
+  <div class="bd bd-alt"><p class="bd-t">광고 숏폼 기획제작</p><p class="bd-d">구매 전환 기준의 기획과 변주</p></div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오 소개서</span><span>02</span></footer>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>02</span></footer>
 </section>
 <section id="pg3" class="page">
   <div class="page-body">
 
-<p class="eyebrow">Market</p>
-<h2>지금 이렇게 따로 발주하고 계신가요?</h2>
-<p class="lead">인플루언서 시딩과 구매 전환형 광고 컨텐츠를 서로 다른 곳에 맡기면, 사이에 남는 일은 아무도 하지 않습니다.</p>
-
+<div class="shead">
+  <p class="eyebrow">Market</p>
+  <h2>시장 구조</h2>
+  <p class="lead">인플루언서 시딩과 구매 전환형 광고 컨텐츠를 서로 다른 곳에 발주하는 구조입니다.</p>
+</div>
 <div class="split">
   <div class="split-side">
     <div class="circle circle-indigo"><span>인플루언서<br>시딩</span></div>
-    <p class="split-t">A사에 발주</p>
-    <ul class="split-l"><li>채널 배포</li><li>소스컷 일부</li></ul>
+    <p class="split-t">A사 발주</p>
+    <p class="split-d">채널 배포 · 소스컷 일부</p>
   </div>
-
   <div class="split-gap">
     <p class="gap-label">아무도 하지 않는 구간</p>
     <ul class="gap-list"><li>컨텐츠 가이드라인</li><li>필요한 컷 설계</li><li>전환 소재 연결</li></ul>
   </div>
-
   <div class="split-side">
     <div class="circle circle-gold"><span>광고 숏폼<br>제작</span></div>
-    <p class="split-t">B사에 발주</p>
-    <ul class="split-l"><li>받은 소스로 편집</li><li>마케팅 의도 부재</li></ul>
+    <p class="split-t">B사 발주</p>
+    <p class="split-d">받은 소스로 편집 · 마케팅 의도 부재</p>
   </div>
 </div>
-
-<p class="verdict">각 잡은 채널 협업이 아닌 이상 시딩에 남는 건 <b>소스컷과 약간의 바이럴</b>입니다.<br>그 소스를 <b>전환 소재로 잇는 일</b>이 비어 있습니다.</p></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오 소개서</span><span>03</span></footer>
+<div class="verdict">각 잡은 채널 협업이 아닌 이상 시딩에 남는 건 소스컷과 약간의 바이럴입니다. 그 소스를 전환 소재로 잇는 일이 비어 있습니다.</div></div>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>03</span></footer>
 </section>
 <section id="pg4" class="page">
   <div class="page-body">
 
-<p class="eyebrow">Position</p>
-<h2>해그로시는 그 사이를 메웁니다</h2>
-<p class="lead">두 발주를 하나로 묶으면, 가이드라인을 쓴 팀이 소스컷을 뽑고 그 소스로 전환 소재까지 만들어 드립니다.</p>
-
-<div class="venn">
-  <div class="venn-c venn-a"><span>인플루언서<br>시딩</span></div>
-  <div class="venn-c venn-b"><span>광고 숏폼<br>기획제작</span></div>
-  <div class="venn-mid"><strong>해그로시</strong><span>숏폼 스튜디오</span></div>
+<div class="shead">
+  <p class="eyebrow">Position</p>
+  <h2>포지션</h2>
+  
 </div>
-
-<div class="pos-row">
-<div class="pos"><p class="pos-t">가이드라인부터</p><p class="pos-d">무엇을 왜 찍을지 먼저 정합니다</p></div><div class="pos"><p class="pos-t">필요한 컷만</p><p class="pos-d">광고에 쓸 컷을 설계해 확보합니다</p></div><div class="pos"><p class="pos-t">전환까지 연결</p><p class="pos-d">그 소스로 구매 전환 소재를 만듭니다</p></div>
-</div>
-
-<div class="one-line">
-  <p class="one-t">시딩과 숏폼을 한 팀이 맡습니다</p>
-  <p class="one-d">가이드라인 · 소스컷 · 전환 소재가 같은 기준 위에서 만들어집니다.</p>
+<div class="two vcenter">
+  <div class="venn">
+    <div class="venn-c venn-a"><span>인플루언서<br>시딩</span></div>
+    <div class="venn-c venn-b"><span>광고 숏폼<br>기획제작</span></div>
+    <div class="venn-mid"><strong>해그로시</strong><span>숏폼 스튜디오</span></div>
+  </div>
+  <div class="pos-col">
+<div class="pos"><p class="pos-t">가이드라인부터</p><p class="pos-d">무엇을 왜 찍을지 먼저 확정</p></div><div class="pos"><p class="pos-t">필요한 컷만</p><p class="pos-d">광고에 쓸 컷을 설계해 확보</p></div><div class="pos"><p class="pos-t">전환까지 연결</p><p class="pos-d">그 소스로 구매 전환 소재 제작</p></div>
+    <div class="pos-note">시딩과 숏폼을 한 팀이 맡습니다</div>
+  </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오 소개서</span><span>04</span></footer>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>04</span></footer>
 </section>
 <section id="pg5" class="page">
   <div class="page-body">
 
-<p class="eyebrow">Line</p>
-<h2>한 라인으로 이어 드립니다</h2>
-
-
+<div class="shead">
+  <p class="eyebrow">Line</p>
+  <h2>진행 라인</h2>
+  
+</div>
 <div class="chain">
 <div class="chain-node">
   <span class="chain-no">01</span>
   <p class="chain-t">컨텐츠 가이드라인</p>
-  <p class="chain-d">필요한 컷이 여기서 정해집니다</p>
+  <p class="chain-d">필요한 컷 확정</p>
 </div><div class="chain-arrow">▶</div><div class="chain-node">
   <span class="chain-no">02</span>
   <p class="chain-t">인플루언서 시딩</p>
-  <p class="chain-d">배포와 소스컷을 동시에 확보합니다</p>
+  <p class="chain-d">배포 · 소스컷 확보</p>
 </div><div class="chain-arrow">▶</div><div class="chain-node">
   <span class="chain-no">03</span>
   <p class="chain-t">소스컷 회수</p>
-  <p class="chain-d">원본에서 광고용 컷을 다시 뽑습니다</p>
+  <p class="chain-d">광고용 컷 추출</p>
 </div><div class="chain-arrow">▶</div><div class="chain-node">
   <span class="chain-no">04</span>
   <p class="chain-t">전환형 숏폼</p>
-  <p class="chain-d">광고 계정에 바로 태울 소재로 만듭니다</p>
+  <p class="chain-d">계정 투입 소재 제작</p>
 </div>
 </div>
-
-<div class="outcome">
-<div><p class="oc-t">바이럴 도달</p><p class="oc-d">실제 채널 배포</p></div><div><p class="oc-t">소스 자산</p><p class="oc-d">회수한 광고용 컷</p></div><div><p class="oc-t">전환 소재</p><p class="oc-d">계정에 태우는 숏폼</p></div>
+<div class="band3">
+  <div class="bd bd-gold"><p class="bd-t">바이럴 도달</p><p class="bd-d">실제 채널 배포</p></div>
+  <div class="bd bd-gold"><p class="bd-t">소스 자산</p><p class="bd-d">회수한 광고용 컷</p></div>
+  <div class="bd bd-gold"><p class="bd-t">전환 소재</p><p class="bd-d">계정에 태우는 숏폼</p></div>
 </div>
-
-<div class="one-line">
-  <p class="one-t">한 번의 발주 · 하나의 담당 · 하나의 대시보드</p>
-  <p class="one-d">넘길 때마다 처음부터 다시 설명하실 일이 없습니다.</p>
-</div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오 소개서</span><span>05</span></footer>
+<div class="oneline">한 번의 발주 · 하나의 담당 · 하나의 대시보드</div></div>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>05</span></footer>
 </section>
 <section id="pg6" class="page">
   <div class="page-body">
 
-<p class="eyebrow">Impact</p>
-<h2>묶으면 이렇게 달라집니다</h2>
-
-
+<div class="shead">
+  <p class="eyebrow">Impact</p>
+  <h2>기대 효과</h2>
+  
+</div>
 <div class="impact">
-<div class="imp">
+<div class="imp ">
   <span class="imp-no">01</span>
-  <p class="imp-t">매출을 늘려 드립니다</p>
-  <p class="imp-d">챔피언 소재 몇 종으로 스케일업합니다. 이긴 소재에 예산을 몰고 파생본을 이어 갑니다.</p>
-</div><div class="imp">
+  <p class="imp-t">매출 스케일업</p>
+  <p class="imp-d">챔피언 소재 몇 종으로 예산을 몰고 파생본을 이어 갑니다</p>
+</div><div class="imp imp-alt">
   <span class="imp-no">02</span>
-  <p class="imp-t">광고 운영이 쉬워집니다</p>
-  <p class="imp-d">소재가 마르지 않으니, 예산을 올릴 때 CPA가 먼저 오르지 않습니다.</p>
-</div><div class="imp">
+  <p class="imp-t">광고 운영 안정</p>
+  <p class="imp-d">소재가 마르지 않아 증액 시 CPA가 먼저 오르지 않습니다</p>
+</div><div class="imp ">
   <span class="imp-no">03</span>
-  <p class="imp-t">잡무가 사라집니다</p>
-  <p class="imp-d">크리에이터 선정 · 가이드라인 · 배송 · 소스컷 회수까지 대신해 드립니다.</p>
-</div><div class="imp">
+  <p class="imp-t">잡무 제거</p>
+  <p class="imp-d">크리에이터 선정 · 가이드라인 · 배송 · 소스컷 회수를 대행합니다</p>
+</div><div class="imp imp-alt">
   <span class="imp-no">04</span>
-  <p class="imp-t">피드백이 빨라집니다</p>
-  <p class="imp-d">대시보드에서 단계를 보시고 수정을 일괄로 넘기십니다.</p>
+  <p class="imp-t">피드백 단축</p>
+  <p class="imp-d">대시보드에서 단계 확인 후 수정을 일괄로 전달하십니다</p>
 </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오 소개서</span><span>06</span></footer>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>06</span></footer>
 </section>
 <section id="pg7" class="page">
   <div class="page-body">
 
-<p class="eyebrow">Crew</p>
-<h2>이런 분들이 직접 만듭니다</h2>
-
-
+<div class="shead">
+  <p class="eyebrow">Crew</p>
+  <h2>제작 조직</h2>
+  <p class="lead">저희 팀이 촬영 현장과 브랜드 현장에서 직접 찍은 사진입니다. 스톡 이미지가 아닙니다.</p>
+</div>
 <div class="creds">
 <span class="cred">블랭크 코퍼레이션 출신</span><span class="cred">라이브커머스 10종 이상 브랜드 밴더사</span><span class="cred">구글·메타 코리아 우수 크리에이티브</span><span class="cred">대형 종합몰 컨텐츠 담당 출신</span>
 </div>
-
 <div class="crew">
 <img src="http://localhost:8909/public/portfolio/crew/crew-01.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-02.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-03.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-04.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-05.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-06.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-07.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-08.webp" alt="">
-</div>
-
-<div class="crew-foot">
-  <p><b>스톡 이미지가 아닙니다.</b><br>브랜드 현장과 촬영 현장에서 저희 팀이 직접 찍은 사진입니다.</p>
-  <div class="crew-stats">
-    <div><strong>10</strong><span>컨텐츠 스케일업 팀</span></div>
-    <div><strong>30+</strong><span>브랜드 프로젝트</span></div>
-  </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오 소개서</span><span>07</span></footer>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>07</span></footer>
 </section>
 <section id="pg8" class="page">
   <div class="page-body">
 
-<p class="eyebrow">Team</p>
-<h2>숏폼 한 편에 이 역할이 붙습니다</h2>
-
-
-<div class="roles">
-<div class="role"><p class="role-t">숏폼 기획</p><p class="role-d">블랭크 코퍼레이션 출신</p></div><div class="role"><p class="role-t">커머스 컨텐츠 기획</p><p class="role-d">대형 라이브커머스 종합몰 담당 출신</p></div><div class="role"><p class="role-t">퍼포먼스 미디어바이어</p><p class="role-d">구글·메타 코리아 우수 크리에이티브</p></div><div class="role"><p class="role-t">촬영</p><p class="role-d">현장 디렉팅 · 촬영</p></div><div class="role"><p class="role-t">편집</p><p class="role-d">컷 편집 · 리텐션 설계</p></div><div class="role"><p class="role-t">숏폼 에디터</p><p class="role-d">변주본 · A/B 파생</p></div><div class="role"><p class="role-t">모션 디자이너</p><p class="role-d">자막 · 모션 그래픽</p></div><div class="role"><p class="role-t">카피라이터</p><p class="role-d">훅 카피 · CTA 문구</p></div><div class="role"><p class="role-t">시딩 · 제작 PM</p><p class="role-d">일정 · 산출물 관리</p></div>
+<div class="shead">
+  <p class="eyebrow">Team</p>
+  <h2>역할 구성</h2>
+  
 </div>
-
-<div class="director">
-  <div>
-    <p class="dir-k">디렉터</p>
-    <p class="dir-t">직접 태워 본 사람이 소재를 설계합니다</p>
-    <p class="dir-d">대행이 아니라 계정 안에서 배웠습니다. 무엇이 지출을 이어가게 하는지를 기준으로 기획합니다.</p>
+<div class="two t-6040">
+  <div class="roles">
+<div class="role"><p class="role-t">숏폼 기획</p><p class="role-d">블랭크 코퍼레이션 출신</p></div><div class="role"><p class="role-t">커머스 컨텐츠 기획</p><p class="role-d">라이브커머스 종합몰 담당 출신</p></div><div class="role"><p class="role-t">퍼포먼스 미디어바이어</p><p class="role-d">구글·메타 코리아 우수 크리에이티브</p></div><div class="role"><p class="role-t">촬영</p><p class="role-d">현장 디렉팅 · 촬영</p></div><div class="role"><p class="role-t">편집</p><p class="role-d">컷 편집 · 리텐션 설계</p></div><div class="role"><p class="role-t">숏폼 에디터</p><p class="role-d">변주본 · A/B 파생</p></div><div class="role"><p class="role-t">모션 디자이너</p><p class="role-d">자막 · 모션 그래픽</p></div><div class="role"><p class="role-t">카피라이터</p><p class="role-d">훅 카피 · CTA 문구</p></div><div class="role"><p class="role-t">시딩 · 제작 PM</p><p class="role-d">일정 · 산출물 관리</p></div>
   </div>
-  <div class="dir-fig">
-    <strong>100억</strong>
-    <span>디렉터 개인의<br>누적 광고 집행 경험</span>
+  <div class="side-col">
+    <div class="panel panel-ink">
+      <p class="pk">디렉터</p>
+      <p class="pt2">직접 태워 본 사람이<br>소재를 설계합니다</p>
+      <div class="fig"><strong>100억</strong><span>디렉터 개인의 누적 광고 집행 경험</span></div>
+    </div>
+    <div class="panel panel-indigo">
+      <p class="pk light">AI 기획제작 전문</p>
+      <p class="pt3">이 홈페이지와 어드민 대시보드 모두 저희 PO가 AI로 직접 기획·제작했습니다. 마케팅 의도의 반영은 담당자가 감도 있게 핸들링합니다.</p>
+    </div>
   </div>
-</div>
-
-<div class="ai-note">
-  <p class="ai-t">AI는 수단으로만 씁니다</p>
-  <p class="ai-d">손이 많이 가는 분석 구간에만 활용하고, 마케팅 의도의 반영은 담당자가 감도 있게 핸들링합니다.</p>
 </div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오 소개서</span><span>08</span></footer>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>08</span></footer>
 </section>
 <section id="pg9" class="page">
   <div class="page-body">
 
-<p class="eyebrow">Results</p>
-<h2>성과로 말씀드립니다</h2>
-<p class="lead">아래는 소재 제작을 포함한 프로젝트 수행 결과입니다. 이 패키지는 같은 제작 시스템을 사용합니다.</p>
-
+<div class="shead">
+  <p class="eyebrow">Results</p>
+  <h2>성과 사례</h2>
+  <p class="lead">소재 제작을 포함한 프로젝트 수행 결과입니다. 이 패키지는 같은 제작 시스템을 사용합니다.</p>
+</div>
 <div class="cases">
 <div class="case">
   <div class="case-head">
     <span class="case-no">01</span>
-    <div>
-      <p class="case-brand">뤼이드 리얼 아카데미</p>
-      <p class="case-scale">투자 2,000억</p>
-    </div>
+    <div><p class="case-brand">뤼이드 리얼 아카데미</p><p class="case-scale">투자 2,000억</p></div>
   </div>
   <div class="case-stats"><div><strong>3주</strong><span>연속 고지출</span></div><div><strong>1위</strong><span>CPA 단가</span></div></div>
   <p class="case-role">소재 제작 + 캠페인 운영</p>
 </div><div class="case">
   <div class="case-head">
     <span class="case-no">02</span>
-    <div>
-      <p class="case-brand">파크론 제로블럭</p>
-      <p class="case-scale">매출 200억대</p>
-    </div>
+    <div><p class="case-brand">파크론 제로블럭</p><p class="case-scale">매출 200억대</p></div>
   </div>
   <div class="case-stats"><div><strong>5배</strong><span>메타 예산 증액</span></div><div><strong>9만원</strong><span>CPA 절감</span></div></div>
   <p class="case-role">소재 제작 + 캠페인 운영</p>
 </div><div class="case">
   <div class="case-head">
     <span class="case-no">03</span>
-    <div>
-      <p class="case-brand">이노바인코리아 모에브</p>
-      <p class="case-scale">매출 300억대</p>
-    </div>
+    <div><p class="case-brand">이노바인코리아 모에브</p><p class="case-scale">매출 300억대</p></div>
   </div>
   <div class="case-stats"><div><strong>₩4,000만</strong><span>3개월 매출</span></div><div><strong>3배</strong><span>ROAS</span></div></div>
   <p class="case-role">출시 고투마켓 소재 부스팅</p>
 </div><div class="case">
   <div class="case-head">
     <span class="case-no">04</span>
-    <div>
-      <p class="case-brand">크래프톤 배틀그라운드</p>
-      <p class="case-scale">글로벌</p>
-    </div>
+    <div><p class="case-brand">크래프톤 배틀그라운드</p><p class="case-scale">글로벌</p></div>
   </div>
   <div class="case-stats"><div><strong>연간</strong><span>공식 프로젝트</span></div><div><strong>대표이사·연예인</strong><span>출연 기획</span></div></div>
   <p class="case-role">연간 공식 바이럴 쇼츠 기획·제작</p>
 </div>
 </div>
-
 <p class="foot-note">위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오 소개서</span><span>09</span></footer>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>09</span></footer>
 </section>
 <section id="pg10" class="page">
   <div class="page-body">
 
-<p class="eyebrow">Clients</p>
-<h2>이런 브랜드와 함께했습니다</h2>
-<p class="lead">커머스부터 서비스, 플랫폼까지 30여 브랜드의 그로스·컨텐츠 프로젝트를 수행했습니다.</p>
+<div class="shead">
+  <p class="eyebrow">Clients</p>
+  <h2>클라이언트</h2>
+  <p class="lead">커머스부터 서비스, 플랫폼까지 30여 브랜드의 그로스·컨텐츠 프로젝트를 수행했습니다.</p>
+</div>
 <div class="logos">
 <div><img src="http://localhost:8909/public/logos/krafton.png" alt=""></div><div><img src="http://localhost:8909/public/logos/riiid.png" alt=""></div><div><img src="http://localhost:8909/public/logos/lotte-rental.png" alt=""></div><div><img src="http://localhost:8909/public/logos/parklon.png" alt=""></div><div><img src="http://localhost:8909/public/logos/moev.png" alt=""></div><div><img src="http://localhost:8909/public/logos/greencar.png" alt=""></div><div><img src="http://localhost:8909/public/logos/purum-wellness.png" alt=""></div><div><img src="http://localhost:8909/public/logos/modu-training.png" alt=""></div><div><img src="http://localhost:8909/public/logos/sambunui-il.png" alt=""></div><div><img src="http://localhost:8909/public/logos/yeonae-jagyeok.png" alt=""></div><div><img src="http://localhost:8909/public/logos/gochodaejol.png" alt=""></div><div><img src="http://localhost:8909/public/logos/juwangsan.png" alt=""></div><div><img src="http://localhost:8909/public/logos/zeroblock.png" alt=""></div><div><img src="http://localhost:8909/public/logos/naechinso.png" alt=""></div><div><img src="http://localhost:8909/public/logos/real-class.png" alt=""></div><div><img src="http://localhost:8909/public/logos/curas.png" alt=""></div><div><img src="http://localhost:8909/public/logos/dmand.png" alt=""></div><div><img src="http://localhost:8909/public/logos/walla.png" alt=""></div><div><img src="http://localhost:8909/public/logos/posh.png" alt=""></div><div><img src="http://localhost:8909/public/logos/resq.png" alt=""></div><div><img src="http://localhost:8909/public/logos/natura-health.png" alt=""></div><div><img src="http://localhost:8909/public/logos/banaco.png" alt=""></div><div><img src="http://localhost:8909/public/logos/irvinelab.png" alt=""></div><div><img src="http://localhost:8909/public/logos/cyberdigm.png" alt=""></div><div><img src="http://localhost:8909/public/logos/code-i.png" alt=""></div><div><img src="http://localhost:8909/public/logos/fitflex.png" alt=""></div><div><img src="http://localhost:8909/public/logos/luvd.png" alt=""></div><div><img src="http://localhost:8909/public/logos/mudit.png" alt=""></div><div><img src="http://localhost:8909/public/logos/yeolda.png" alt=""></div><div><img src="http://localhost:8909/public/logos/bluehouse-seoul.png" alt=""></div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오 소개서</span><span>10</span></footer>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>10</span></footer>
 </section>
 <section id="pg11" class="page">
   <div class="page-body">
 
-<p class="eyebrow">Process</p>
-<h2>이렇게 진행해 드립니다</h2>
-
+<div class="shead">
+  <p class="eyebrow">Process</p>
+  <h2>진행 프로세스</h2>
+  
+</div>
 <div class="flow">
 <div class="flow-row">
   <span class="flow-no">01</span>
-  <div><p class="flow-t">브랜드 AI 기본 분석</p><p class="flow-d">상세페이지 URL만 주시면 타겟·USP·객단가·금지 표현을 구조화해 초안을 잡아 드립니다.</p></div>
+  <div><p class="flow-t">브랜드 AI 기본 분석</p><p class="flow-d">상세페이지 URL로 타겟·USP·객단가·금지 표현 구조화</p></div>
 </div><div class="flow-row">
   <span class="flow-no">02</span>
-  <div><p class="flow-t">컨텐츠 가이드라인 기획</p><p class="flow-d">편별로 포맷과 후킹을 갈라 편성합니다. 무엇을 왜 찍을지가 여기서 정해집니다.</p></div>
+  <div><p class="flow-t">컨텐츠 가이드라인 기획</p><p class="flow-d">편별 포맷과 후킹 편성 — 무엇을 왜 찍을지 확정</p></div>
 </div><div class="flow-row">
   <span class="flow-no">03</span>
-  <div><p class="flow-t">인플루언서 시딩 · 바이럴</p><p class="flow-d">브랜드에 맞는 크리에이터를 붙이고 리뷰를 실제 채널에 배포합니다.</p></div>
+  <div><p class="flow-t">인플루언서 시딩 · 바이럴</p><p class="flow-d">크리에이터 선정 후 실제 채널 배포</p></div>
 </div><div class="flow-row">
   <span class="flow-no">04</span>
-  <div><p class="flow-t">2차 활용 소스컷 확보</p><p class="flow-d">배포로 끝내지 않고 원본에서 광고용 컷을 다시 뽑아 자산으로 남겨 드립니다.</p></div>
+  <div><p class="flow-t">2차 활용 소스컷 확보</p><p class="flow-d">원본에서 광고용 컷 회수, 자산화</p></div>
 </div><div class="flow-row">
   <span class="flow-no">05</span>
-  <div><p class="flow-t">매출형 숏폼 기획제작</p><p class="flow-d">확보한 소스로 구매 전환형 숏폼을 만들어 광고 계정에 바로 태우실 수 있게 합니다.</p></div>
+  <div><p class="flow-t">매출형 숏폼 기획제작</p><p class="flow-d">확보 소스로 구매 전환 소재 제작</p></div>
 </div><div class="flow-row">
   <span class="flow-no">06</span>
-  <div><p class="flow-t">검수 · 납품</p><p class="flow-d">미리보기로 확인하시고 1회 무상 수정을 거쳐 최종본을 그대로 내려받으십니다.</p></div>
+  <div><p class="flow-t">검수 · 납품</p><p class="flow-d">미리보기 확인 · 1회 무상 수정 · 전체 다운로드</p></div>
 </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오 소개서</span><span>11</span></footer>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>11</span></footer>
 </section>
 <section id="pg12" class="page">
   <div class="page-body">
 
-<p class="eyebrow">System</p>
-<h2>이 퀄리티가 가능한 이유입니다</h2>
-<p class="lead">브랜드 프로젝트 안에서 반복 검증한 위너 소재 제작 시스템만 잘라내, 편수 단위로 결제하실 수 있게 열었습니다.</p>
-<div class="sys">
-<div class="sys-row"><span class="sys-no">1</span><div><p class="sys-t">위너 기준이 먼저 정의됩니다</p><p>조회수가 아니라 구매 전환이 기준입니다. 지출이 꺾이지 않는 소재만 위너로 분류해 변주합니다.</p></div></div><div class="sys-row"><span class="sys-no">2</span><div><p class="sys-t">프로젝트 사이클을 그대로 씁니다</p><p>기획 → 제작 → 데이터 판독 → 변주. 이 사이클 중 ‘기획 → 제작’ 구간을 상품화했습니다.</p></div></div><div class="sys-row"><span class="sys-no">3</span><div><p class="sys-t">담당이 나뉜 팀이 붙습니다</p><p>한 명의 프리랜서가 아니라, 담당이 빠져도 멈추지 않는 구조로 납품해 드립니다.</p></div></div>
+<div class="shead">
+  <p class="eyebrow">System</p>
+  <h2>제작 시스템</h2>
+  <p class="lead">브랜드 프로젝트 안에서 반복 검증한 위너 소재 제작 시스템을 편수 단위로 열었습니다.</p>
 </div>
-
-<div class="cards-3">
-  <div class="card"><p class="card-t">기준</p><p>조회수가 아니라 구매 전환. 훅 유지율 · CPA · ROAS로 판독합니다.</p></div>
-  <div class="card"><p class="card-t">사이클</p><p>기획 → 제작 → 판독 → 변주. 프로젝트에서 수십 회 반복한 순서입니다.</p></div>
-  <div class="card"><p class="card-t">구조</p><p>담당이 나뉘어 붙습니다. 한 명이 빠져도 일정이 멈추지 않습니다.</p></div>
+<div class="band3 tall">
+  <div class="bd bd-indigo"><p class="bd-n">01</p><p class="bd-t">판독 기준</p><p class="bd-d">조회수가 아니라 구매 전환. 훅 유지율 · CPA · ROAS로 위너를 가립니다.</p></div>
+  <div class="bd bd-gold"><p class="bd-n">02</p><p class="bd-t">제작 사이클</p><p class="bd-d">기획 → 제작 → 데이터 판독 → 변주. 프로젝트에서 수십 회 반복한 순서입니다.</p></div>
+  <div class="bd bd-alt"><p class="bd-n">03</p><p class="bd-t">팀 구조</p><p class="bd-d">담당이 나뉘어 붙습니다. 한 명이 빠져도 일정이 멈추지 않습니다.</p></div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오 소개서</span><span>12</span></footer>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>12</span></footer>
 </section>
 <section id="pg13" class="page">
   <div class="page-body">
 
-<p class="eyebrow">Portfolio</p>
-<h2>최근 작업한 소재입니다</h2>
-<p class="lead">기획과 서사, 마케팅과 세일즈를 아는 팀이 만드는 광고형 숏폼입니다.</p>
+<div class="shead">
+  <p class="eyebrow">Portfolio</p>
+  <h2>포트폴리오</h2>
+  <p class="lead">기획과 서사, 마케팅과 세일즈를 아는 팀이 만드는 광고형 숏폼입니다.</p>
+</div>
 <div class="wall">
 <img src="http://localhost:8909/public/portfolio/clips/riiid-momcafe.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/pet-portion.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/moen-shampoo-ppl.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/bone-w40s.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/zeroblock-interview.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/riiid-self-study.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/seeding-patty.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/pet-vet-pancreas.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/bone-m50s.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/riiid-parent-itv.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/seeding-garnish.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/pet-treats-plea.jpg" alt="">
 </div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오 소개서</span><span>13</span></footer>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>13</span></footer>
 </section>
 <section id="pg14" class="page">
   <div class="page-body">
 
-<p class="eyebrow">Plans</p>
-<h2>플랜과 금액을 안내드립니다</h2>
-<p class="lead">싱글과 패키지는 함께 구매하는 구성이 아닙니다. 둘 중 하나를 고르시면 됩니다.</p>
-
-<h3>싱글 · 숏폼 기획제작</h3>
-<p class="tbl-lead">브랜드가 보유한 소스(촬영본 · UGC · 제품컷)로 바로 시작합니다.</p>
-<table class="tbl"><thead><tr><th>구성</th><th>내역</th><th>금액</th></tr></thead><tbody><tr>
+<div class="shead">
+  <p class="eyebrow">Plans</p>
+  <h2>플랜 · 금액</h2>
+  
+</div>
+<div class="two">
+  <div>
+    <p class="tbl-h">싱글 · 숏폼 기획제작</p>
+    <p class="tbl-lead">보유 소스(촬영본 · UGC · 제품컷)로 바로 시작</p>
+    <table class="tbl"><tbody><tr>
   <td class="t-name">1편</td>
   <td class="t-desc">전환 숏폼 1편</td>
   <td class="t-price">₩210,000</td>
@@ -610,10 +572,11 @@ h3{font-size:11pt;font-weight:700;margin-top:9mm;margin-bottom:2.5mm}
   <td class="t-desc">전환 숏폼 20편</td>
   <td class="t-price">₩3,490,000<span>편당 ₩174,500</span></td>
 </tr></tbody></table>
-
-<h3>패키지 · 숏폼 + 인플루언서 시딩</h3>
-<p class="tbl-lead">찍을 소스부터 없으실 때, 소스컷 확보까지 함께 진행합니다.</p>
-<table class="tbl"><thead><tr><th>구성</th><th>내역</th><th>금액</th></tr></thead><tbody><tr>
+  </div>
+  <div>
+    <p class="tbl-h">패키지 · 숏폼 + 인플루언서 시딩</p>
+    <p class="tbl-lead">소스컷 확보까지 함께 진행</p>
+    <table class="tbl"><tbody><tr>
   <td class="t-name">스타터 패키지</td>
   <td class="t-desc">인플루언서 10 + 숏폼 5</td>
   <td class="t-price">₩1,540,000<span>숏폼 편당 ₩198,000</span></td>
@@ -626,105 +589,118 @@ h3{font-size:11pt;font-weight:700;margin-top:9mm;margin-bottom:2.5mm}
   <td class="t-desc">인플루언서 30 + 숏폼 20</td>
   <td class="t-price">₩4,870,000<span>숏폼 편당 ₩174,500</span></td>
 </tr></tbody></table>
-
-<div class="seeding-box">
-  <p class="card-t">패키지에 포함된 인플루언서 시딩 단가</p>
-  <div class="seeding-row">
-<div><span>스타터 · 10명</span><strong>₩550,000</strong></div><div><span>그로스 · 20명</span><strong>₩990,000</strong></div><div><span>스케일 · 30명</span><strong>₩1,380,000</strong></div>
   </div>
 </div>
-
-<p class="vat">※ 부가세 별도 · 인플루언서 시딩은 숏폼 5편 이상 묶음부터 함께 진행됩니다</p></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오 소개서</span><span>14</span></footer>
+<div class="seed-band">
+  <p class="seed-k">패키지 포함<br>시딩 단가</p>
+<div class="seed-i"><span>스타터 · 10명</span><strong>₩550,000</strong></div><div class="seed-i"><span>그로스 · 20명</span><strong>₩990,000</strong></div><div class="seed-i"><span>스케일 · 30명</span><strong>₩1,380,000</strong></div>
+</div>
+<p class="vat">※ 부가세 별도 · 싱글과 패키지는 택일 · 인플루언서 시딩은 숏폼 5편 이상 묶음부터 함께 진행됩니다</p></div>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>14</span></footer>
 </section>
 <section id="pg15" class="page">
   <div class="page-body">
 
-<p class="eyebrow">Dashboard</p>
-<h2>진행 단계를 실시간으로 보실 수 있습니다</h2>
-<p class="lead">플랜이 적용되면 내 프로젝트 대시보드가 열립니다. 기획제작 요청 확정까지 D-7이 기준 일정입니다.</p>
-<div class="tracks">
-  <div class="track">
-    <p class="track-t">인플루언서 시딩</p>
-    <p class="track-d">패키지 플랜에만 있습니다</p>
-    <ol><li>컨텐츠 가이드라인 작업중</li><li>모집중</li><li>확정</li><li>제품 및 서비스 배송중</li><li>컨텐츠 제작중</li><li>채널 라이브 확인</li></ol>
-  </div>
-  <div class="track">
-    <p class="track-t">숏폼 기획제작</p>
-    <p class="track-d">모든 플랜에 있습니다</p>
-    <ol><li>소스컷 확인중</li><li>기획중</li><li>제작완료</li><li>최종수정 반영중</li><li>다운로드하기</li></ol>
-  </div>
+<div class="shead">
+  <p class="eyebrow">How to use</p>
+  <h2>이용 방법</h2>
+  <p class="lead">플랜 적용 후 아래 화면에서 진행 상황을 직접 확인하십니다.</p>
 </div>
-
-<div class="cards-3">
-  <div class="card"><p class="card-t">가이드라인 작성</p><p>브랜드 정보를 남겨 주시면 그대로 기획에 들어갑니다.</p></div>
-  <div class="card"><p class="card-t">1차 선정 심사</p><p>후보 채널의 지표를 보고 직접 고르십니다.</p></div>
-  <div class="card"><p class="card-t">검수 · 수정</p><p>편당 1회 무상 수정 후 전체 다운로드하십니다.</p></div>
+<div class="two t-4060">
+  <div class="usage">
+<div class="use"><span class="use-no">01</span><div><p class="use-t">컨텐츠 진단</p><p class="use-d">5문항으로 현재 소재 컨디션 확인</p></div></div><div class="use"><span class="use-no">02</span><div><p class="use-t">플랜 문의</p><p class="use-d">브랜드 상황 입력 후 구성 제안 수신</p></div></div><div class="use"><span class="use-no">03</span><div><p class="use-t">상담 · 결제</p><p class="use-d">구성 확정 후 세금계산서 발행</p></div></div><div class="use"><span class="use-no">04</span><div><p class="use-t">가입 · 로그인</p><p class="use-d">이메일 인증 3단계</p></div></div><div class="use"><span class="use-no">05</span><div><p class="use-t">내 프로젝트 확인</p><p class="use-d">계정 · 플랜 · 기한 한 화면</p></div></div><div class="use"><span class="use-no">06</span><div><p class="use-t">진행 단계 확인</p><p class="use-d">시딩 6단계 · 숏폼 5단계 실시간</p></div></div><div class="use"><span class="use-no">07</span><div><p class="use-t">입력 · 피드백</p><p class="use-d">브랜드 소개 입력, 1차본 확인 후 수정 요청</p></div></div>
+  </div>
+  <div class="shots">
+    <img class="shot-main" src="http://localhost:8909/public/deck/ui-dashboard.png" alt="">
+    <img class="shot-sub" src="http://localhost:8909/public/deck/ui-signup.png" alt="">
+  </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오 소개서</span><span>15</span></footer>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>15</span></footer>
 </section>
 <section id="pg16" class="page">
   <div class="page-body">
 
-<p class="eyebrow">Contract</p>
-<h2>계약과 결제는 이렇게 진행됩니다</h2>
-
-<div class="contract">
-<div class="ct-row"><span class="ct-no">01</span><div><p class="ct-t">플랜 문의</p><p class="ct-d">브랜드 상황을 남겨 주십니다. 컨텐츠 진단을 함께 마치시면 제안이 정확해집니다.</p></div></div><div class="ct-row"><span class="ct-no">02</span><div><p class="ct-t">소개서 · 구성 안내</p><p class="ct-d">브랜드에 맞는 구성과 편수별 금액을 정리해 회신드립니다.</p></div></div><div class="ct-row"><span class="ct-no">03</span><div><p class="ct-t">구성 확정</p><p class="ct-d">편수 · 시딩 인원 · 일정을 확정하고 견적서로 정리해 드립니다.</p></div></div><div class="ct-row"><span class="ct-no">04</span><div><p class="ct-t">결제</p><p class="ct-d">세금계산서 발행 후 현금(계좌이체)이 기본이며, 카드 결제도 가능합니다.</p></div></div><div class="ct-row"><span class="ct-no">05</span><div><p class="ct-t">프로젝트 시작</p><p class="ct-d">플랜을 적용해 드리면 내 프로젝트에서 진행 단계가 열립니다.</p></div></div><div class="ct-row"><span class="ct-no">06</span><div><p class="ct-t">가이드라인 제출</p><p class="ct-d">브랜드 정보를 남겨 주십니다. 기획제작 요청 확정까지 D-7이 기준입니다.</p></div></div><div class="ct-row"><span class="ct-no">07</span><div><p class="ct-t">진행 · 검수</p><p class="ct-d">단계를 대시보드에서 보시고 편당 1회 무상 수정을 요청하십니다.</p></div></div><div class="ct-row"><span class="ct-no">08</span><div><p class="ct-t">납품</p><p class="ct-d">최종본을 프로젝트 폴더 하나로 전체 다운로드하십니다.</p></div></div>
+<div class="shead">
+  <p class="eyebrow">Stages</p>
+  <h2>진행 단계</h2>
+  <p class="lead">기획제작 요청 확정까지 D-7이 기준 일정입니다.</p>
 </div>
-<div class="pay-note">
-  <p class="card-t">결제 · 세금계산서</p>
-  <p><b>세금계산서 발행 후 현금(계좌이체)이 기본</b>이며, 카드 결제도 가능합니다. 발행에 필요한 사업자 정보는 확정 단계에서 요청드립니다.</p>
+<div class="two">
+  <div class="track track-indigo">
+    <p class="track-t">인플루언서 시딩</p>
+    <p class="track-d">패키지 플랜</p>
+    <ol><li>컨텐츠 가이드라인 작업중</li><li>모집중</li><li>확정</li><li>제품 및 서비스 배송중</li><li>컨텐츠 제작중</li><li>채널 라이브 확인</li></ol>
+  </div>
+  <div class="track track-gold">
+    <p class="track-t">숏폼 기획제작</p>
+    <p class="track-d">모든 플랜</p>
+    <ol><li>소스컷 확인중</li><li>기획중</li><li>제작완료</li><li>최종수정 반영중</li><li>다운로드하기</li></ol>
+  </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오 소개서</span><span>16</span></footer>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>16</span></footer>
 </section>
 <section id="pg17" class="page">
   <div class="page-body">
 
-<p class="eyebrow">Terms</p>
-<h2>진행 조건과 산출물을 안내드립니다</h2>
-
-<div class="terms">
-<div class="term">1회 무상 수정 포함 · 추가 수정은 편당 별도 견적</div><div class="term">인플루언서 출연 컷 포함 소재의 광고 사용기간은 다운로드일로부터 5개월</div><div class="term">숏폼 기획제작 단독은 브랜드 보유 소스(촬영본·UGC·제품컷) 제공 조건</div><div class="term">배포 콘텐츠는 크리에이터 고유 콘텐츠로 개별 수정 불가 — 사전 가이드라인으로 방향을 맞춥니다</div><div class="term">다운로드 링크는 발급 후 14일간 유효합니다</div><div class="term">싱글과 패키지는 함께 구매하는 구성이 아닙니다 — 둘 중 하나를 고르시면 됩니다</div>
+<div class="shead">
+  <p class="eyebrow">Contract</p>
+  <h2>계약 · 결제</h2>
+  
 </div>
-
-<h3>산출물 사양</h3>
-<div class="kv">
-  <div><dt>영상 비율</dt><dd>9:16 세로형 기본 · 요청 시 1:1 정사각 파생</dd></div>
-  <div><dt>납품 형식</dt><dd>MP4 (H.264) · 광고 계정 업로드 가능 사양</dd></div>
-  <div><dt>전달 방식</dt><dd>프로젝트 폴더 하나로 전체 다운로드</dd></div>
-  <div><dt>인플루언서 결과물</dt><dd>배포 채널 링크 및 인플루언서 편집본</dd></div>
-</div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오 소개서</span><span>17</span></footer>
+<div class="contract">
+<div class="ct"><span class="ct-no">01</span><p class="ct-t">플랜 문의</p><p class="ct-d">브랜드 상황 접수 · 컨텐츠 진단 연동</p></div><div class="ct"><span class="ct-no">02</span><p class="ct-t">구성 안내</p><p class="ct-d">편수별 구성과 금액 회신</p></div><div class="ct"><span class="ct-no">03</span><p class="ct-t">구성 확정</p><p class="ct-d">편수 · 시딩 인원 · 일정 확정, 견적서 발행</p></div><div class="ct"><span class="ct-no">04</span><p class="ct-t">결제</p><p class="ct-d">세금계산서 발행 후 현금(계좌이체) 기본 · 카드 가능</p></div><div class="ct"><span class="ct-no">05</span><p class="ct-t">프로젝트 개설</p><p class="ct-d">대시보드 진행 단계 오픈</p></div><div class="ct"><span class="ct-no">06</span><p class="ct-t">가이드라인 제출</p><p class="ct-d">브랜드 정보 입력 · 확정까지 D-7</p></div><div class="ct"><span class="ct-no">07</span><p class="ct-t">진행 · 검수</p><p class="ct-d">단계 확인 · 편당 1회 무상 수정</p></div><div class="ct"><span class="ct-no">08</span><p class="ct-t">납품</p><p class="ct-d">프로젝트 폴더 전체 다운로드</p></div>
+</div>
+<div class="pay-band">세금계산서 발행 후 현금(계좌이체)이 기본이며, 카드 결제도 가능합니다 · 부가세 별도</div></div>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>17</span></footer>
 </section>
 <section id="pg18" class="page">
   <div class="page-body">
 
-<p class="eyebrow">Reviews</p>
-<h2>실제 클라이언트 후기입니다</h2>
-<p class="lead">평균 2천만원(최소 5백 ~ 최대 2억) 규모 프로젝트를 진행하며 받은 후기입니다.</p>
-<div class="reviews">
-<div class="rv"><p>“3년 내 최고 ROAS 달성했고, 가입 단가 CPA도 40% 절감했어요.”</p><span>G 대기업 실장</span></div><div class="rv"><p>“조직이 고민하던 KPI 지표를 홀로 600% 달성. 오가닉 매출 2배 증대, 구매전환율 10%P 개선.”</p><span>Y 상담 스타트업 대표</span></div><div class="rv"><p>“월에 3백 쓰며 시작한 신규 브랜드 라인을 통으로 맡겼는데 5개월 안에 2천까지 씁니다.”</p><span>M 헤어뷰티 커머스</span></div><div class="rv"><p>“채용보다 저렴한 프로젝트 비용으로 DAU를 대폭 늘렸습니다.”</p><span>D HR 스타트업 공동대표</span></div><div class="rv"><p>“브랜드 쿼리수를 올리는 방향으로 포지셔닝을 다시 잡아 주셨고, 이제 매출도 순항중입니다.”</p><span>B 스포츠 커머스 이사</span></div><div class="rv"><p>“리브랜딩부터 실질적인 마케팅까지 3개월에 끊어주시더군요.”</p><span>F 건기식 커머스 대표</span></div>
-</div></div>
-  <footer class="page-foot"><span>해그로시 숏폼 스튜디오 소개서</span><span>18</span></footer>
-</section>
-<section id="pg19" class="page dark">
-  <div class="page-body"><div class="cover end">
-  <div>
-    <p class="cover-en">CONTACT</p>
-    <h1>다음 달 광고 소재,<br>함께 준비해 <span>드릴까요?</span></h1>
-    <p class="cover-sub">브랜드 상황을 남겨 주시면 구성과 금액을 정리해 회신드립니다.</p>
+<div class="shead">
+  <p class="eyebrow">Terms</p>
+  <h2>진행 조건 · 산출물</h2>
+  
+</div>
+<div class="two">
+  <div class="terms">
+<div class="term">1회 무상 수정 포함 · 추가 수정은 편당 별도 견적</div><div class="term">인플루언서 출연 컷 포함 소재의 광고 사용기간은 다운로드일로부터 5개월</div><div class="term">숏폼 기획제작 단독은 브랜드 보유 소스(촬영본·UGC·제품컷) 제공 조건</div><div class="term">배포 콘텐츠는 크리에이터 고유 콘텐츠로 개별 수정 불가 — 사전 가이드라인으로 방향을 맞춥니다</div><div class="term">다운로드 링크는 발급 후 14일간 유효합니다</div>
   </div>
+  <div class="kv">
+    <div><dt>영상 비율</dt><dd>9:16 기본 · 요청 시 1:1 파생</dd></div>
+    <div><dt>납품 형식</dt><dd>MP4 (H.264) · 광고 계정 업로드 사양</dd></div>
+    <div><dt>전달 방식</dt><dd>프로젝트 폴더 전체 다운로드</dd></div>
+    <div><dt>인플루언서 결과물</dt><dd>배포 채널 링크 · 인플루언서 편집본</dd></div>
+    <div><dt>수정</dt><dd>편당 1회 무상 · 추가는 별도 견적</dd></div>
+  </div>
+</div></div>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>18</span></footer>
+</section>
+<section id="pg19" class="page">
+  <div class="page-body">
 
+<div class="shead">
+  <p class="eyebrow">Reviews</p>
+  <h2>클라이언트 후기</h2>
+  <p class="lead">평균 2천만원(최소 5백 ~ 최대 2억) 규모 프로젝트에서 받은 후기입니다.</p>
+</div>
+<div class="reviews">
+<div class="rv"><p>“3년 내 최고 ROAS 달성했고, 가입 단가 CPA도 40% 절감했어요.”</p><span>G 대기업 실장</span></div><div class="rv"><p>“조직이 고민하던 KPI 지표를 홀로 600% 달성. 오가닉 매출 2배 증대.”</p><span>Y 상담 스타트업 대표</span></div><div class="rv"><p>“월 3백으로 시작한 신규 라인을 5개월 안에 2천까지 씁니다.”</p><span>M 헤어뷰티 커머스</span></div><div class="rv"><p>“채용보다 저렴한 프로젝트 비용으로 DAU를 대폭 늘렸습니다.”</p><span>D HR 스타트업 공동대표</span></div><div class="rv"><p>“브랜드 쿼리수를 올리는 방향으로 포지셔닝을 다시 잡아 주셨습니다.”</p><span>B 스포츠 커머스 이사</span></div><div class="rv"><p>“리브랜딩부터 실질적인 마케팅까지 3개월에 끊어주시더군요.”</p><span>F 건기식 커머스 대표</span></div>
+</div></div>
+  <footer class="page-foot"><span>해그로시 숏폼 스튜디오</span><span>19</span></footer>
+</section>
+<section id="pg20" class="page dark">
+  <div class="page-body"><div class="cover end">
+  <div class="cover-l">
+    <p class="cover-en">CONTACT</p>
+    <h1>다음 달 광고 소재,<br>함께 준비해 드릴까요?</h1>
+    <p class="cover-sub">브랜드 상황을 남겨 주시면 구성과 금액을 정리해 회신드립니다.</p>
+    <p class="cover-org">주식회사 해그로시 · 사업자등록번호 187-87-02820<br>경기 김포시 김포한강10로 133번 127, 438 E180호</p>
+  </div>
   <div class="contact-grid">
     <div><p class="ck">플랜 신청 · 내 프로젝트</p><p class="cv">shortform.hgrs.io</p></div>
     <div><p class="ck">문의 메일</p><p class="cv">ceo@h-grs.com</p></div>
     <div><p class="ck">브랜드 단위 프로젝트</p><p class="cv">hgrs.io/partnership</p></div>
     <div><p class="ck">응대 시간</p><p class="cv">평일 10:00 – 19:00</p></div>
-  </div>
-
-  <div class="cover-foot">
-    <p class="cover-org">주식회사 해그로시 · 사업자등록번호 187-87-02820<br>경기 김포시 김포한강10로 133번 127, 438 E180호</p>
   </div>
 </div></div>
   
