@@ -167,14 +167,6 @@ export default async function AdminInquiriesPage() {
                       <input type="hidden" name="inquiry_id" value={row.id} />
                     </ActionForm>
 
-                    {/* 보내기 전에 무엇이 가는지 본다 — 단가가 실린 문서다 */}
-                    <Link
-                      href={`/brochure/${row.id}`}
-                      target="_blank"
-                      className="text-xs text-muted underline underline-offset-2 hover:text-ink"
-                    >
-                      소개서 미리보기
-                    </Link>
                   </div>
                 </div>
               </li>
