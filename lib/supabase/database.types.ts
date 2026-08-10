@@ -501,6 +501,47 @@ export type Database = {
           },
         ]
       }
+      user_consents: {
+        Row: {
+          agreed: boolean
+          agreed_at: string
+          id: string
+          ip_address: unknown
+          kind: string
+          user_agent: string | null
+          user_id: string
+          version: string
+        }
+        Insert: {
+          agreed: boolean
+          agreed_at?: string
+          id?: string
+          ip_address?: unknown
+          kind: string
+          user_agent?: string | null
+          user_id: string
+          version: string
+        }
+        Update: {
+          agreed?: boolean
+          agreed_at?: string
+          id?: string
+          ip_address?: unknown
+          kind?: string
+          user_agent?: string | null
+          user_id?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_consents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

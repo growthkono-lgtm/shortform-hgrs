@@ -105,17 +105,6 @@ function PlanCard({
           </span>
         )}
 
-        {plan.headReview && (
-          <span
-            title={POLICY.headReviewScope}
-            className="mt-4 block rounded-xl border border-accent/40 bg-accent/[0.06] px-3.5 py-3 text-xs leading-[1.7] font-bold text-accent-deep"
-          >
-            + 헤드 전략 리뷰 1회
-            <span className="mt-1 block font-normal text-muted">
-              {POLICY.headReviewScope}
-            </span>
-          </span>
-        )}
       </label>
 
       <div className="p-6 pt-5">

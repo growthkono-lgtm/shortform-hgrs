@@ -54,7 +54,7 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[pla
         <aside className="lg:sticky lg:top-8 lg:self-start">
           <div className="rounded-2xl border border-line bg-paper-alt p-6">
             <h2 className="text-base font-bold">
-              {plan.code === "full" ? "플랜 1 — 풀 파이프라인" : "플랜 2 — 전환 숏폼 단독"}
+              {plan.code === "full" ? "패키지 플랜" : "싱글 플랜"}
             </h2>
             <p className="mt-1 text-sm text-muted">
               {plan.label} · {plan.composition}
@@ -79,15 +79,6 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[pla
                 <dd className="stat-figure text-xl">{formatKRW(plan.beta_price)}</dd>
               </div>
             </dl>
-
-            {plan.head_review && (
-              <p className="mt-5 rounded-xl border border-accent/40 bg-accent/[0.07] px-3.5 py-3 text-xs leading-[1.7] font-bold text-accent-deep">
-                + 헤드 전략 리뷰 1회 포함 (베타 한정)
-                <span className="mt-1 block font-normal text-muted">
-                  {POLICY.headReviewScope}
-                </span>
-              </p>
-            )}
 
             <ul className="mt-6 space-y-2 border-t border-line pt-5 text-xs leading-[1.7] text-muted">
               <li>· {POLICY.revisionOnce}</li>

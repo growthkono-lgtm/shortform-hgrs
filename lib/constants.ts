@@ -100,8 +100,6 @@ export const POLICY = {
   downloadExpiry: "다운로드 링크는 발급 후 14일간 유효합니다",
   noGuarantee:
     "위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.",
-  headReviewScope:
-    "해그로시 헤드가 캠페인 구조와 USP를 직접 리뷰하는 60분 세션.",
   // 1편은 "믿고 거래를 트는" 자리다. 시딩은 크리에이터 모집·배포 단위라 1편에 붙일 수 없다
   trialSingle:
     "1편 단품은 결과를 먼저 보고 판단하시라고 여는 자리입니다 — 인플루언서 시딩은 포함되지 않습니다",
@@ -134,7 +132,6 @@ export type Plan = {
    */
   shortsPrice?: number;
   seedingPrice?: number;
-  headReview: boolean;
   /** 첫 거래용 소량 티어 — 시딩을 붙일 수 없다 */
   trial?: boolean;
   recommended?: boolean;
@@ -153,11 +150,10 @@ export const PLANS: Plan[] = [
     composition: "인플루언서 10 + 숏폼 5",
     influencerCount: 10,
     shortsCount: 5,
-    listPrice: 1_250_000,
-    betaPrice: 1_250_000,
-    shortsPrice: 950_000,
-    seedingPrice: 300_000,
-    headReview: false,
+    listPrice: 1_540_000,
+    betaPrice: 1_540_000,
+    shortsPrice: 990_000,
+    seedingPrice: 550_000,
   },
   {
     code: "full",
@@ -166,11 +162,10 @@ export const PLANS: Plan[] = [
     composition: "인플루언서 20 + 숏폼 10",
     influencerCount: 20,
     shortsCount: 10,
-    listPrice: 2_250_000,
-    betaPrice: 2_250_000,
-    shortsPrice: 1_800_000,
-    seedingPrice: 450_000,
-    headReview: false,
+    listPrice: 2_880_000,
+    betaPrice: 2_880_000,
+    shortsPrice: 1_890_000,
+    seedingPrice: 990_000,
     recommended: true,
   },
   {
@@ -180,11 +175,10 @@ export const PLANS: Plan[] = [
     composition: "인플루언서 30 + 숏폼 20",
     influencerCount: 30,
     shortsCount: 20,
-    listPrice: 3_050_000,
-    betaPrice: 3_050_000,
-    shortsPrice: 2_400_000,
-    seedingPrice: 650_000,
-    headReview: true,
+    listPrice: 4_870_000,
+    betaPrice: 4_870_000,
+    shortsPrice: 3_490_000,
+    seedingPrice: 1_380_000,
   },
   {
     // 첫 거래를 트기 위한 단품. 시딩은 붙지 않는다 (5편 묶음부터)
@@ -196,7 +190,6 @@ export const PLANS: Plan[] = [
     shortsCount: 1,
     listPrice: 210_000,
     betaPrice: 210_000,
-    headReview: false,
     trial: true,
   },
   {
@@ -206,9 +199,8 @@ export const PLANS: Plan[] = [
     composition: "전환 숏폼 5편",
     influencerCount: 0,
     shortsCount: 5,
-    listPrice: 950_000,
-    betaPrice: 950_000,
-    headReview: false,
+    listPrice: 990_000,
+    betaPrice: 990_000,
   },
   {
     code: "shorts_only",
@@ -217,9 +209,8 @@ export const PLANS: Plan[] = [
     composition: "전환 숏폼 10편",
     influencerCount: 0,
     shortsCount: 10,
-    listPrice: 1_800_000,
-    betaPrice: 1_800_000,
-    headReview: false,
+    listPrice: 1_890_000,
+    betaPrice: 1_890_000,
     recommended: true,
   },
   {
@@ -229,9 +220,8 @@ export const PLANS: Plan[] = [
     composition: "전환 숏폼 20편",
     influencerCount: 0,
     shortsCount: 20,
-    listPrice: 2_400_000,
-    betaPrice: 2_400_000,
-    headReview: true,
+    listPrice: 3_490_000,
+    betaPrice: 3_490_000,
   },
 ];
 

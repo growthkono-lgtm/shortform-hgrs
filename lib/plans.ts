@@ -54,7 +54,7 @@ export async function getActivePlans(): Promise<PlanRow[]> {
 export const formatKRW = (won: number) => `₩${won.toLocaleString("ko-KR")}`;
 
 export function planOrderName(plan: PlanRow) {
-  const base = plan.code === "full" ? "풀 파이프라인" : "전환 숏폼 단독";
+  const base = plan.code === "full" ? "패키지 플랜" : "싱글 플랜";
   // 결제창·영수증에 찍히는 상품명이다. 서비스명은 한 곳(SERVICE.name)에서만 읽는다
   return `${SERVICE.name} — ${base} ${plan.label}`;
 }

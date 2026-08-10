@@ -3,15 +3,14 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { useSearchParams } from "next/navigation";
-import { startSignIn, type AuthState } from "@/app/auth/actions";
+import { signIn, type AuthState } from "@/app/auth/actions";
 import { Field, SubmitError } from "@/components/auth/field";
 import { SubmitButton } from "@/components/auth/submit-button";
 
 const initialState: AuthState = { error: null };
 
-/** 로그인도 비밀번호 없이 인증번호로 한다 — 가입 때 비밀번호를 만들지 않았다 */
 export function LoginForm() {
-  const [state, formAction] = useActionState(startSignIn, initialState);
+  const [state, formAction] = useActionState(signIn, initialState);
   const next = useSearchParams().get("next") ?? "/app";
 
   return (
@@ -19,7 +18,7 @@ export function LoginForm() {
       <p className="eyebrow">Sign In</p>
       <h1 className="mt-4 text-3xl font-bold">로그인</h1>
       <p className="mt-3 text-sm leading-[1.7] text-muted">
-        가입하신 회사 이메일로 인증번호를 보내드립니다.
+        진행 중인 캠페인과 산출물을 확인하실 수 있습니다.
       </p>
 
       <form action={formAction} className="mt-10 space-y-5">
@@ -34,8 +33,15 @@ export function LoginForm() {
           autoComplete="email"
           placeholder="you@company.com"
         />
+        <Field
+          label="비밀번호"
+          name="password"
+          type="password"
+          required
+          autoComplete="current-password"
+        />
 
-        <SubmitButton>인증번호 받기</SubmitButton>
+        <SubmitButton>로그인</SubmitButton>
       </form>
 
       <p className="mt-8 text-center text-sm text-muted">

@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState } from "react";
 import { useSearchParams } from "next/navigation";
-import { verifyCode, type AuthState } from "@/app/auth/actions";
+import { resendCode, verifyCode, type AuthState } from "@/app/auth/actions";
 import { SubmitError } from "@/components/auth/field";
 import { SubmitButton } from "@/components/auth/submit-button";
 
@@ -12,6 +11,7 @@ const initialState: AuthState = { error: null };
 /** 가입·로그인 공통 인증번호 입력 화면 */
 export function VerifyForm() {
   const [state, formAction] = useActionState(verifyCode, initialState);
+  const [, resendAction] = useActionState(resendCode, initialState);
   const params = useSearchParams();
   const email = params.get("email") ?? "";
   const next = params.get("next") ?? "/app";
@@ -60,12 +60,15 @@ export function VerifyForm() {
         동안 유효합니다.
       </p>
 
-      <p className="mt-8 text-center text-sm text-muted">
-        번호가 오지 않았나요?{" "}
-        <Link href="/login" className="font-bold text-ink underline underline-offset-2">
-          다시 받기
-        </Link>
-      </p>
+      <form action={resendAction} className="mt-8 text-center">
+        <input type="hidden" name="email" value={email} />
+        <button
+          type="submit"
+          className="text-sm text-muted underline underline-offset-2 hover:text-ink"
+        >
+          인증번호 다시 받기
+        </button>
+      </form>
     </>
   );
 }
