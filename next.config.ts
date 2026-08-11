@@ -10,6 +10,14 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   async redirects() {
     return [
+      // www → apex. canonical 로도 막고 있지만, 같은 내용이 두 주소로 200 을 주면
+      // 크롤 예산이 갈린다. 한쪽으로 모은다.
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.hgrs.io" }],
+        destination: "https://hgrs.io/:path*",
+        permanent: true,
+      },
       // 서브도메인 → 루트 도메인 하위 경로 (2026-08-11 도메인 이전).
       // shortform.hgrs.io 에 쌓인 검색 신호를 hgrs.io 로 넘긴다. 링크는 죽지 않는다.
       {
