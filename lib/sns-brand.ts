@@ -552,7 +552,7 @@ export const CAPABILITY = {
       id: "scale",
       head: "광고 스케일업",
       tail: "은 브랜드 결을 지키며 완성",
-      kind: "chart-green" as const,
+      kind: "line" as const,
       figure: 163,
       suffix: "%+",
       note: "ROAS 초과 달성",
@@ -567,6 +567,8 @@ export const CAPABILITY = {
       suffix: "",
       note: null as string | null,
       labelSide: false,
+      /** 원본은 세로 카드 안에서 화살표로 넘기는 유튜브 3편 슬라이더다 */
+      videos: ["BdGKoiPITZ0", "TJGx4iZBgTI", "KNiT370o2S8"],
     },
     {
       id: "data",

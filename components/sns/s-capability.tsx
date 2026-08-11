@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
+
 import { useCountUp, countUpText } from "@/components/ui/use-count-up";
 import { CAPABILITY } from "@/lib/sns-brand";
 import { Rich } from "./rich";
@@ -39,6 +41,69 @@ function Label({ card, className = "" }: { card: Card; className?: string }) {
       <span className="font-bold text-ink">{card.head}</span>
       <span className="text-muted">{card.tail}</span>
     </p>
+  );
+}
+
+/**
+ * 숏폼 세로 카드 — 원본은 카드 안에서 화살표로 넘기는 유튜브 3편 슬라이더다.
+ * 썸네일은 maxresdefault(레터박스 없음)를 9:16 박스에 object-cover 로 넣는다.
+ * hqdefault 를 쓰면 검은 여백이 같이 들어와 확대 크롭을 해야 하고, 그러면 구도가 깨진다.
+ */
+function ShortsSlider({ ids }: { ids: readonly string[] }) {
+  const [i, setI] = useState(0);
+  const id = ids[i] ?? ids[0];
+  if (!id) return null;
+
+  return (
+    <div className="relative aspect-[9/16] w-[12rem] overflow-hidden rounded-2xl bg-night sm:w-[15rem]">
+      <a
+        href={`https://www.youtube.com/watch?v=${id}`}
+        target="_blank"
+        rel="noreferrer"
+        className="block size-full"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`https://i.ytimg.com/vi_webp/${id}/maxresdefault.webp`}
+          alt="숏폼 컨텐츠"
+          loading="lazy"
+          className="size-full object-cover"
+        />
+        <span aria-hidden className="absolute inset-0 grid place-items-center">
+          <span className="grid size-12 place-items-center rounded-full bg-black/45 text-white backdrop-blur-sm">
+            <svg
+              viewBox="0 0 24 24"
+              className="ml-0.5 size-5"
+              fill="currentColor"
+            >
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </span>
+        </span>
+      </a>
+      {ids.length > 1 && (
+        <button
+          type="button"
+          onClick={() => setI((v) => (v + 1) % ids.length)}
+          aria-label="다음 숏폼"
+          className="absolute right-3 bottom-3 grid size-9 place-items-center rounded-full bg-black/45 text-white backdrop-blur-sm transition-colors hover:bg-black/70"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            className="size-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              d="M9 6l6 6-6 6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -104,51 +169,93 @@ function Visual({ card }: { card: Card }) {
   }
 
   if (card.kind === "vertical") {
-    return (
-      <a
-        href="https://www.youtube.com/watch?v=Bsp_HBS8ckM"
-        target="_blank"
-        rel="noreferrer"
-        className="relative block aspect-[9/16] w-[11rem] overflow-hidden rounded-2xl bg-night sm:w-[13rem]"
-      >
-        {/* 썸네일이 16:9라 세로 카드에서는 확대해 중앙만 쓴다 */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="https://i.ytimg.com/vi/Bsp_HBS8ckM/hqdefault.jpg"
-          alt="배틀그라운드 이스포츠 숏폼"
-          loading="lazy"
-          className="size-full scale-[1.8] object-cover"
-        />
-        <span aria-hidden className="absolute inset-0 grid place-items-center">
-          <span className="grid size-11 place-items-center rounded-full bg-paper/90 text-ink">
-            <svg
-              viewBox="0 0 24 24"
-              className="ml-0.5 size-4"
-              fill="currentColor"
-            >
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </span>
-        </span>
-      </a>
-    );
+    return <ShortsSlider ids={"videos" in card ? card.videos : []} />;
   }
 
   if (card.kind === "metrics") {
     return (
-      <div className="relative w-[17rem] overflow-hidden rounded-2xl bg-night px-6 py-7 sm:w-[22rem] sm:px-8 sm:py-9">
+      <div className="relative w-[17rem] overflow-hidden rounded-2xl bg-[#0b1020] px-6 py-8 sm:w-[22rem] sm:px-8 sm:py-10">
+        {/* 교차하는 화살표 — 원본 카드의 그래픽을 SVG로 다시 그렸다 */}
+        <svg
+          aria-hidden
+          viewBox="0 0 340 220"
+          className="absolute inset-0 size-full"
+          preserveAspectRatio="none"
+        >
+          <defs>
+            <marker
+              id="ah-g"
+              markerWidth="6"
+              markerHeight="6"
+              refX="4"
+              refY="3"
+              orient="auto"
+            >
+              <path d="M0 0 L6 3 L0 6 z" fill="#a3d94a" />
+            </marker>
+            <marker
+              id="ah-p"
+              markerWidth="6"
+              markerHeight="6"
+              refX="4"
+              refY="3"
+              orient="auto"
+            >
+              <path d="M0 0 L6 3 L0 6 z" fill="#c9a2e8" />
+            </marker>
+            <marker
+              id="ah-b"
+              markerWidth="6"
+              markerHeight="6"
+              refX="4"
+              refY="3"
+              orient="auto"
+            >
+              <path d="M0 0 L6 3 L0 6 z" fill="#4d8fe8" />
+            </marker>
+          </defs>
+          <path
+            d="M6 214 L330 12"
+            stroke="#a3d94a"
+            strokeWidth="4"
+            fill="none"
+            markerEnd="url(#ah-g)"
+          />
+          <path
+            d="M40 214 L318 42"
+            stroke="#c9a2e8"
+            strokeWidth="2"
+            fill="none"
+            markerEnd="url(#ah-p)"
+          />
+          <path
+            d="M60 26 L322 200"
+            stroke="#4d8fe8"
+            strokeWidth="2"
+            fill="none"
+            markerEnd="url(#ah-b)"
+          />
+          <path
+            d="M0 110 H340 M240 0 V220"
+            stroke="#ffffff"
+            strokeOpacity="0.12"
+            strokeWidth="1"
+          />
+        </svg>
+
+        {/* 화살표가 라벨 위를 지나가 글자가 묻힌다 — 왼쪽에 얇은 스크림을 깐다 */}
         <span
           aria-hidden
-          className="absolute inset-0 bg-[radial-gradient(70%_60%_at_15%_15%,color-mix(in_oklab,var(--color-accent)_35%,transparent),transparent_70%)]"
+          className="absolute inset-y-0 left-0 w-3/5 bg-gradient-to-r from-[#0b1020] via-[#0b1020]/85 to-transparent"
         />
-        <dl className="relative space-y-5">
+        <dl className="relative space-y-6">
           {"metrics" in card &&
             card.metrics?.map((m) => (
-              <div key={m.k} className="flex items-baseline gap-3">
-                <dt className="w-24 shrink-0 text-xs text-white/55">{m.k}</dt>
-                <dd className="stat-figure text-2xl text-white sm:text-[1.75rem]">
+              <div key={m.k} className="flex items-baseline gap-2.5">
+                <dt className="text-[0.8125rem] text-white/80">{m.k}</dt>
+                <dd className="stat-figure text-[1.75rem] text-white sm:text-[2rem]">
                   {m.v}
-                  <span className="ml-0.5 text-xs font-normal text-white/70">
+                  <span className="ml-0.5 text-xs font-normal text-white/85">
                     {m.u}
                   </span>
                 </dd>
@@ -159,8 +266,61 @@ function Visual({ card }: { card: Card }) {
     );
   }
 
-  // chart / chart-green — 같은 차트를 색만 돌려 쓴다 (원본 3번 카드 소스는 프레이머에 없다)
-  const green = card.kind === "chart-green";
+  if (card.kind === "line") {
+    return (
+      <figure className="relative aspect-square w-[15rem] overflow-hidden rounded-2xl bg-[linear-gradient(150deg,#05070f_0%,#0b1020_45%,#1e3a8a_100%)] sm:w-[19rem]">
+        {/* 라임 꺾은선 — 원본 카드 그래픽 */}
+        <svg
+          aria-hidden
+          viewBox="0 0 300 300"
+          className="absolute inset-0 size-full"
+        >
+          <polyline
+            points="14,214 52,180 76,196 104,166 148,150 182,150 224,96 286,44"
+            fill="none"
+            stroke="#a3d94a"
+            strokeWidth="3"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
+          {[
+            [14, 214],
+            [52, 180],
+            [76, 196],
+            [104, 166],
+            [148, 150],
+            [182, 150],
+            [224, 96],
+            [286, 44],
+          ].map(([x, y]) => (
+            <rect
+              key={`${x}-${y}`}
+              x={x - 3}
+              y={y - 3}
+              width="6"
+              height="6"
+              fill="#0b1020"
+              stroke="#a3d94a"
+              strokeWidth="1.5"
+            />
+          ))}
+        </svg>
+        <figcaption className="absolute bottom-6 left-6 flex items-baseline gap-3">
+          {card.figure !== null && (
+            <Figure to={card.figure} suffix={card.suffix} />
+          )}
+          {card.note && (
+            <span className="text-xs leading-[1.5] text-white/85">
+              ROAS
+              <span className="block">초과 달성</span>
+            </span>
+          )}
+        </figcaption>
+      </figure>
+    );
+  }
+
+  // chart — 원본 1번 카드(차트 배경 + 중앙 카운터 + 좌상단 원형 썸네일)
   return (
     <figure className="relative aspect-square w-[15rem] overflow-hidden rounded-2xl bg-night sm:w-[21rem]">
       <Image
@@ -168,11 +328,7 @@ function Visual({ card }: { card: Card }) {
         alt={card.head}
         fill
         sizes="336px"
-        className={
-          green
-            ? "object-cover [filter:hue-rotate(265deg)_saturate(0.85)]"
-            : "object-cover"
-        }
+        className="object-cover"
       />
       {card.id === "funnel" && (
         <span className="absolute top-4 left-4 size-[4.5rem] overflow-hidden rounded-full border border-white/25 sm:size-24">
