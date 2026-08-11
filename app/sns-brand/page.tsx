@@ -7,6 +7,8 @@ import { Hero } from "@/components/sns/s-hero";
 import { Method, Pov } from "@/components/sns/s-pov";
 import { Engagement, Team } from "@/components/sns/s-team";
 import { Cases } from "@/components/sns/s-cases";
+import { Capability } from "@/components/sns/s-capability";
+import { Actions } from "@/components/sns/s-actions";
 import { Faq, FinalCta } from "@/components/sns/s-faq";
 import { Contact } from "@/components/sns/s-contact";
 
@@ -19,6 +21,9 @@ import { Contact } from "@/components/sns/s-contact";
  *
  * 케이스 원문은 접어 둔다(Cases). 넷을 다 펼치면 페이지가 13,000px을 넘고,
  * 스캔하는 방문자가 계약 조건까지 도달하지 못한다.
+ *
+ * Capability / Actions 두 섹션은 hgrs.io/partnership 에서 옮긴 것이다 —
+ * 사장님이 캡처로 지정한 섹션인데 1차 구축에서 빠졌다가 복구했다.
  *
  * 로고월(Clients)과 후기(Reviews)는 숏폼 랜딩 컴포넌트를 그대로 가져다 쓴다.
  * 카피는 lib/sns-brand.ts 한 곳에서만 고친다.
@@ -43,11 +48,13 @@ export default function SnsBrandPage() {
       <main>
         <Hero />
         <Clients />
+        <Capability />
         <Pov />
         <Method />
         <Team />
         <Engagement />
         <Cases />
+        <Actions />
         <Reviews />
         <Faq />
         <FinalCta />
