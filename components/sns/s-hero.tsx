@@ -58,10 +58,10 @@ export function Hero() {
 
           <div className="mt-9 flex flex-wrap gap-3">
             <Cta href="#contact" variant="invert">
-              채널 프로젝트 문의
+              {HERO.ctaPrimary}
             </Cta>
             <Cta href="#cases" variant="outlineLight">
-              브랜드별 성과 보기
+              {HERO.ctaSecondary}
             </Cta>
           </div>
         </div>
