@@ -46,14 +46,22 @@ export function SiteHeader({
           className="flex shrink-0 items-center"
           aria-label={SERVICE.name}
         >
+          {/* 심볼만 쓰고 이름은 텍스트로 — 워드마크 파일은 다른 브랜드 것이었다 */}
           <Image
-            src={paper ? "/logo/navi-kr.png" : "/logo/white-kr.png"}
-            alt={SERVICE.name}
-            width={525}
-            height={97}
+            src={paper ? "/logo/navi-symbol.png" : "/logo/white-symbol.png"}
+            alt=""
+            width={98}
+            height={98}
             priority
             className="h-[1.375rem] w-auto sm:h-6"
           />
+          <span
+            className={`ml-2.5 text-[0.9375rem] font-bold whitespace-nowrap sm:text-base ${
+              paper ? "text-ink" : "text-white"
+            }`}
+          >
+            {SERVICE.name}
+          </span>
         </Link>
 
         {/* 고정 카테고리 — 좁은 화면에서는 접고 CTA 만 남긴다 */}
