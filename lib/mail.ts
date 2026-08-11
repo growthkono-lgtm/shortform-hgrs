@@ -19,11 +19,13 @@ const BROCHURE_FILE = "hgrs-shortform-studio-brochure.pdf";
  * 회신은 contact@h-grs.com 으로 모은다.
  */
 /**
- * 발신은 **Resend에서 인증된 도메인**이어야 한다. h-grs.com 은 아직 미인증이라
- * 발신 주소는 hgrs.io 를 쓰고, 회신은 contact@h-grs.com 으로 받는다.
- * (h-grs.com 을 Resend에 인증해 두면 발신 주소도 그대로 옮길 수 있다)
+ * 발신은 **Resend에서 인증된 도메인**이어야 해서 지금은 hgrs.io 를 쓴다.
+ * 다만 **@hgrs.io 로 오는 메일을 받을 수신함은 없다** — 회신은 반드시
+ * contact@h-grs.com 으로 모은다(REPLY_TO). h-grs.com 을 Resend에 인증하면
+ * NOTIFY_FROM_EMAIL 만 바꿔 발신 주소도 옮길 수 있다.
  */
-const FROM = process.env.NOTIFY_FROM_EMAIL || "해그로시 숏폼 스튜디오 <contact@hgrs.io>";
+const FROM =
+  process.env.NOTIFY_FROM_EMAIL || "해그로시 숏폼 스튜디오 <contact@hgrs.io>";
 const REPLY_TO = "contact@h-grs.com";
 
 export type MailKind = "brochure" | "project_start" | "stage" | "other";
@@ -67,7 +69,11 @@ export async function sendMail({
 
   if (!key) {
     await log("skipped", "RESEND_API_KEY 미설정");
-    return { ok: false, skipped: true, error: "발송 키가 아직 설정되지 않았습니다." };
+    return {
+      ok: false,
+      skipped: true,
+      error: "발송 키가 아직 설정되지 않았습니다.",
+    };
   }
 
   try {

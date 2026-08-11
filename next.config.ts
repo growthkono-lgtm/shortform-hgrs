@@ -13,21 +13,10 @@ const nextConfig: NextConfig = {
       // 브랜드 단위 프로젝트를 찾던 사람 → 브랜드 SNS 채널
       { source: "/partnership", destination: "/sns-brand", permanent: true },
       { source: "/coaching", destination: "/sns-brand", permanent: true },
-      // 성과 사례 → 사례 섹션
-      {
-        source: "/portfolio",
-        destination: "/sns-brand#cases",
-        permanent: true,
-      },
+      // 개별 사례 상세는 통합 사례 페이지로
       {
         source: "/portfolio/:slug",
-        destination: "/sns-brand#cases",
-        permanent: true,
-      },
-      // 브런치 블로그
-      {
-        source: "/article",
-        destination: "https://brunch.co.kr/brunchbook/bmaha2",
+        destination: "/portfolio",
         permanent: true,
       },
       // 문의 → 문의 폼
@@ -36,6 +25,8 @@ const nextConfig: NextConfig = {
         destination: "/sns-brand#contact",
         permanent: true,
       },
+      // 프레이머 시절 블로그 경로 → 새 블로그 자리
+      { source: "/article", destination: "/blog", permanent: true },
     ];
   },
 };
