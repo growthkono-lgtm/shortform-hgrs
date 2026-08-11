@@ -15,6 +15,9 @@ export function Process() {
       <SectionHeading>
         <strong className="font-bold">{PROCESS.title}</strong>
       </SectionHeading>
+      <p className="mt-5 max-w-2xl text-[0.9375rem] leading-[1.8] text-muted sm:text-base">
+        {PROCESS.lead}
+      </p>
 
       <ol className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {PROCESS.items.map((item) => (

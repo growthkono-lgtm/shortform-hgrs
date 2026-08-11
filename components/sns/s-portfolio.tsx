@@ -1,13 +1,72 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import { PORTFOLIO } from "@/lib/sns-brand";
 
 /**
- * 최근 주요 포트폴리오 — 실제로 편성·제작한 컨텐츠 타일.
+ * 최근 주요 포트폴리오 — 롱폼 영상을 **자동재생·음소거로 전부 틀어 둔다**.
  *
- * 로고월(누구와 했나) 다음에 "무엇을 만들었나"를 눈으로 보여주는 자리다.
- * 유튜브 썸네일은 유튜브에서 그대로 받고(그 CDN은 사라지지 않는다), 현장·산출물
- * 이미지는 프로젝트 원본을 쓴다. 스톡 이미지는 넣지 않는다.
+ * 유튜브 iframe 17개를 처음부터 붙이면 페이지가 무너진다. 화면에 들어온 타일만
+ * iframe 으로 바꾸고(IntersectionObserver), 나가면 썸네일로 되돌려 재생을 끊는다.
+ * 그래서 스크롤을 따라 "보이는 것만" 돌아간다.
+ *
+ * 감속 설정(prefers-reduced-motion)이 켜져 있으면 자동재생하지 않고 썸네일만 둔다 —
+ * 자동재생 영상이 17개 도는 화면은 그 설정을 켠 사람에게 특히 괴롭다.
  */
+function VideoTile({ id, title }: { id: string; title: string }) {
+  const ref = useRef<HTMLLIElement>(null);
+  const [live, setLive] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setLive(entry.isIntersecting),
+      { rootMargin: "10% 0px 10% 0px", threshold: 0.25 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <li
+      ref={ref}
+      className="group relative aspect-video overflow-hidden rounded-xl bg-night"
+    >
+      {live ? (
+        <iframe
+          src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&modestbranding=1&rel=0&playsinline=1`}
+          title={title}
+          allow="autoplay; encrypted-media; picture-in-picture"
+          className="pointer-events-none absolute inset-0 size-full scale-[1.35]"
+        />
+      ) : (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={`https://i.ytimg.com/vi/${id}/maxresdefault.jpg`}
+          alt={title}
+          loading="lazy"
+          className="size-full object-cover"
+        />
+      )}
+
+      {/* 제목은 아래에 얇게 — 영상이 주인공이라 위에 덮지 않는다 */}
+      <a
+        href={`https://www.youtube.com/watch?v=${id}`}
+        target="_blank"
+        rel="noreferrer"
+        className="absolute inset-0 flex items-end bg-gradient-to-t from-black/70 via-transparent to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+      >
+        <span className="text-xs leading-[1.5] font-bold text-white">
+          {title}
+        </span>
+      </a>
+    </li>
+  );
+}
+
 export function Portfolio() {
   return (
     <section
@@ -20,56 +79,9 @@ export function Portfolio() {
           {PORTFOLIO.title}
         </h2>
 
-        <ul className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {PORTFOLIO.videos.map((id) => (
-            <li
-              key={id}
-              className="relative aspect-square overflow-hidden rounded-xl bg-night"
-            >
-              <a
-                href={`https://www.youtube.com/watch?v=${id}`}
-                target="_blank"
-                rel="noreferrer"
-                className="group block size-full"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`https://i.ytimg.com/vi_webp/${id}/maxresdefault.webp`}
-                  alt="브랜드 채널 컨텐츠"
-                  loading="lazy"
-                  className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <span
-                  aria-hidden
-                  className="absolute inset-0 grid place-items-center"
-                >
-                  <span className="grid size-10 place-items-center rounded-full bg-black/45 text-white backdrop-blur-sm">
-                    <svg
-                      viewBox="0 0 24 24"
-                      className="ml-0.5 size-4"
-                      fill="currentColor"
-                    >
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </span>
-                </span>
-              </a>
-            </li>
-          ))}
-
-          {PORTFOLIO.shots.map((shot) => (
-            <li
-              key={shot.src}
-              className="relative aspect-square overflow-hidden rounded-xl bg-night"
-            >
-              <Image
-                src={shot.src}
-                alt={shot.alt}
-                fill
-                sizes="(min-width: 1024px) 280px, 50vw"
-                className="object-cover"
-              />
-            </li>
+        <ul className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {PORTFOLIO.videos.map((video) => (
+            <VideoTile key={video.id} id={video.id} title={video.title} />
           ))}
         </ul>
       </div>

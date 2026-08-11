@@ -295,9 +295,10 @@ dd {
   text-decoration-thickness: 2px;
   text-underline-offset: 4px;
 }
-/* 다크 섹션에서는 글자를 흰색으로 올리고 밑줄만 골드로 남긴다 */
+/* 다크 섹션에서는 형광 라임으로 — 흰 본문 위에서 강조가 확실히 튄다 */
 .on-dark .rich em {
-  color: #fff;
+  color: #c9f24d;
+  text-decoration-color: color-mix(in oklab, #c9f24d 55%, transparent);
 }
 
 /* ── /sns-brand 스크롤 연출 (partnership 원본 재현) ─────────────

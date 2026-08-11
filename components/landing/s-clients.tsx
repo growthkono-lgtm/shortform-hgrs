@@ -1,7 +1,6 @@
 "use client";
 
 import { Marquee } from "@/components/ui/marquee";
-import { SectionHeading } from "@/components/ui/section";
 
 /**
  * 함께한 클라이언트 로고월. 원래 s-services.tsx 안에 Service 섹션과 한 컴포넌트로
@@ -61,10 +60,6 @@ export function Clients() {
     <section className="overflow-hidden bg-paper py-20 md:py-24">
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <p className="eyebrow">Clients</p>
-        <SectionHeading className="mt-5">
-          커머스부터 서비스, 플랫폼까지{" "}
-          <strong className="font-bold">함께한 클라이언트</strong>
-        </SectionHeading>
       </div>
 
       {/* hgrs.io와 같은 5행 좌우 마퀴. 행마다 시작점을 어긋나게 잘라
@@ -74,7 +69,11 @@ export function Clients() {
           const offset = Math.round((CLIENTS.length / 5) * row);
           const items = [...CLIENTS.slice(offset), ...CLIENTS.slice(0, offset)];
           return (
-            <Marquee key={row} durationSec={38 + row * 6} reverse={row % 2 === 1}>
+            <Marquee
+              key={row}
+              durationSec={38 + row * 6}
+              reverse={row % 2 === 1}
+            >
               <div className="flex items-center gap-8 pr-8 sm:gap-10 sm:pr-10">
                 {items.map(([slug, name]) => (
                   <span

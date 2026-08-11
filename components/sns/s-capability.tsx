@@ -173,6 +173,8 @@ function Visual({ card }: { card: Card }) {
   }
 
   if (card.kind === "metrics") {
+    // 두 장이 같은 그림으로 보이면 안 된다 — 카드마다 곡선을 다르게 그린다
+    const crm = card.id === "crm";
     return (
       <div className="relative w-[17rem] overflow-hidden rounded-2xl bg-[#0b1020] px-6 py-8 sm:w-[22rem] sm:px-8 sm:py-10">
         {/* 교차하는 화살표 — 원본 카드의 그래픽을 SVG로 다시 그렸다 */}
@@ -356,7 +358,9 @@ function Visual({ card }: { card: Card }) {
 }
 
 export function Capability() {
-  const track = useViewProgress<HTMLDivElement>({ from: 0.9, to: 0.05 });
+  // 섹션이 중앙에 오기도 전에 트랙이 밀려 첫 카드를 못 보던 문제 —
+  // 시작을 화면 중앙(0.45) 이후로 늦추고 끝을 위쪽(-0.35)까지 늘려 천천히 흐르게 한다
+  const track = useViewProgress<HTMLDivElement>({ from: 0.45, to: -0.35 });
 
   return (
     <section id="capability" className="scroll-mt-16 bg-paper py-20 md:py-28">
