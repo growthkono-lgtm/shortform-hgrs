@@ -34,6 +34,11 @@
   /* 서체 — hgrs.io 실측: 한글 Pyeojin Gothic, 라틴 DM Sans */
   --font-sans: var(--font-pyeojin), var(--font-dm-sans), system-ui, sans-serif;
   --font-display: var(--font-dm-sans), var(--font-pyeojin), system-ui, sans-serif;
+  /* 세리프 — /sns-brand 매거진 에디션 헤드라인 전용 */
+  --font-serif: var(--font-noto-serif-kr), Georgia, "Times New Roman", serif;
+
+  /* 매거진 지면 — 순백보다 살짝 따뜻하게 (종이 느낌) */
+  --color-paper-warm: #faf8f4;
 
   /* 자간 — hgrs.io 실측: 헤드라인 -0.04em, 영문 아이브로우 +0.02em */
   --tracking-head: -0.04em;
@@ -275,5 +280,64 @@ dd {
 @media (prefers-reduced-motion: reduce) {
   .vmarquee-track {
     animation: none;
+  }
+}
+
+/* ── 매거진 에디토리얼 (/sns-brand) ────────────────────────────
+   숏폼 랜딩과 결을 의도적으로 다르게 간다: 세리프 헤드라인 + 괘선 + 여백.
+   컬러 토큰은 그대로 공유하므로 같은 브랜드로 읽힌다.
+   클래스 접두사를 mag- 로 묶어 다른 페이지로 새지 않게 한다. ── */
+
+/* 매거진 라벨 — FEATURE 01 / EDITOR'S NOTE. .eyebrow보다 자간을 더 벌린다 */
+.mag-label {
+  font-family: var(--font-display);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-gold-deep);
+}
+
+.mag-serif {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.42;
+}
+
+/* 본문 — 매거진은 줄간을 넉넉히. 한글 장문이라 1.95는 되어야 읽힌다 */
+.mag-body p {
+  font-size: 0.9375rem;
+  line-height: 1.95;
+  color: var(--color-ink-soft);
+}
+@media (min-width: 640px) {
+  .mag-body p {
+    font-size: 1rem;
+  }
+}
+.mag-body p + p {
+  margin-top: 1.25rem;
+}
+
+/* 스크롤 등장 — 매거진은 차분해야 한다. 페이드 + 미세한 상승만.
+   animation-timeline 미지원 브라우저에서는 그냥 보인 채로 둔다(퇴화 안전) */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .mag-rise {
+      animation: mag-rise-in linear both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 22%;
+    }
+  }
+}
+@keyframes mag-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }

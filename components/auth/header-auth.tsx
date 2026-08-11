@@ -14,7 +14,7 @@ import { createClient } from "@/lib/supabase/client";
  * 2026-08-10: 메뉴를 "로그인 / 내 프로젝트" 둘로 줄였다. 가입 CTA는 뺐다 —
  * 랜딩의 전환 경로는 진단 → 신청 하나뿐이고, 가입은 결제 길목에서만 필요하다.
  */
-export function HeaderAuth() {
+export function HeaderAuth({ paper }: { paper?: boolean } = {}) {
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -41,7 +41,11 @@ export function HeaderAuth() {
       {signedIn === false && (
         <Link
           href="/login"
-          className="shrink-0 text-[0.6875rem] whitespace-nowrap text-white/60 hover:text-white sm:text-sm"
+          className={
+            paper
+              ? "shrink-0 text-[0.6875rem] whitespace-nowrap text-muted hover:text-ink sm:text-sm"
+              : "shrink-0 text-[0.6875rem] whitespace-nowrap text-white/60 hover:text-white sm:text-sm"
+          }
         >
           로그인
         </Link>
