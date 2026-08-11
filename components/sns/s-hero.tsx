@@ -42,10 +42,6 @@ export function Hero() {
             <span className="block">{HERO.sub[1]}</span>
           </p>
 
-          <p className="mt-6 max-w-xl text-sm leading-[1.85] text-white/55 sm:text-[0.9375rem]">
-            {HERO.body}
-          </p>
-
           {/* 숫자 셋 — 이 서비스가 무엇을 파는지(연 단위·팀 단위)를 버튼 앞에서 못박는다 */}
           <dl className="mt-10 grid max-w-2xl gap-px overflow-hidden rounded-2xl bg-white/10 sm:grid-cols-3">
             {HERO.stats.map((s) => (

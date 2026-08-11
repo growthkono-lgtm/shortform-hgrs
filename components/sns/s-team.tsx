@@ -20,9 +20,9 @@ export function Team() {
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <p className="eyebrow">Team</p>
         <h2 className="mt-5 max-w-3xl text-[1.5rem] leading-[1.35] font-bold sm:text-[2.125rem] sm:leading-[1.3] lg:text-[2.75rem]">
-          한 명이 아니라,
+          {TEAM.title[0]}
           <br />
-          <strong className="font-bold">네 개 팀이 붙습니다</strong>
+          <strong className="font-bold">{TEAM.title[1]}</strong>
         </h2>
         <Rich
           html={TEAM.lead}
@@ -123,9 +123,9 @@ export function Engagement() {
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <p className="eyebrow">Engagement</p>
         <h2 className="mt-5 max-w-3xl text-[1.5rem] leading-[1.35] font-bold sm:text-[2.125rem] sm:leading-[1.3] lg:text-[2.75rem]">
-          월 단위로 갈아타는 대행이 아니라,
+          {ENGAGEMENT.title[0]}
           <br />
-          <strong className="font-bold">연 단위로 쌓는 파트너십</strong>
+          <strong className="font-bold">{ENGAGEMENT.title[1]}</strong>
         </h2>
         <p className="mt-5 max-w-2xl text-[0.9375rem] leading-[1.8] text-muted sm:text-base">
           {ENGAGEMENT.lead}
