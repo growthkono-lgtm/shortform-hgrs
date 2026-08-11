@@ -1,6 +1,6 @@
 "use client";
 
-import { SectionHeading } from "@/components/ui/section";
+import { SectionHeading, SectionLede } from "@/components/ui/section";
 import {
   BrandAiPreview,
   DeliveryPreview,
@@ -66,38 +66,73 @@ const PILLARS = [
   },
 ];
 
+/** 단계 사이 화살표 — 원형 배지. 방향만 prop으로 돌린다 */
+function StepArrow({ className }: { className?: string }) {
+  return (
+    <span
+      aria-hidden
+      className={`pointer-events-none absolute z-10 size-7 place-items-center rounded-full border border-line bg-paper text-accent shadow-[0_1px_3px_rgba(3,3,3,0.06)] ${className ?? ""}`}
+    >
+      <svg viewBox="0 0 16 16" className="size-3.5" fill="none">
+        <path
+          d="M3 8h9m0 0L8.5 4.5M12 8l-3.5 3.5"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  );
+}
+
 export function Services() {
   return (
     <section id="services" className="scroll-mt-16 bg-paper-alt py-20 md:py-28">
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <p className="eyebrow">Service</p>
         <SectionHeading className="mt-5">
-          다양한 스케일업으로 증명된{" "}
-          <strong className="font-bold">
-            인플루언서 컨텐츠 · 광고 숏폼 패키지
-          </strong>
+          대시보드에서 한번에 처리되는{" "}
+          <strong className="font-bold">스케일업 소재 프로세스</strong>
         </SectionHeading>
+        <SectionLede>
+          결제 후 <strong className="font-bold text-ink">내 프로젝트</strong>에
+          상세페이지 URL과 일정만 남겨 주시면 됩니다. 분석부터 납품까지 여섯
+          단계가 같은 대시보드 안에서 순서대로 처리됩니다.
+        </SectionLede>
 
-        <div className="mt-14 grid gap-5 md:grid-cols-3">
-          {PILLARS.map((p) => (
-            <div
-              key={p.no}
-              className="overflow-hidden rounded-2xl border border-line bg-paper"
-            >
-              {/* 번호를 미리보기 위에 얹으면 화면 안 제목(폴더명·핸들)을 가린다.
-                  모바일에서 특히 심했다. 본문 영역으로 내려 제목 앞에 둔다. */}
-              <div className="relative aspect-[4/3] overflow-hidden bg-paper-alt">
-                <p.Preview />
+        {/* 카드 사이 화살표를 gap 위에 얹기 때문에 md에서 gap-x를 넉넉히 준다.
+            화살표는 카드(overflow-hidden) 밖 래퍼에 붙여야 잘리지 않는다. */}
+        <div className="mt-12 grid gap-6 md:mt-14 md:grid-cols-3 md:gap-x-9 md:gap-y-7">
+          {PILLARS.map((p, i) => (
+            <div key={p.no} className="relative">
+              <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-paper">
+                {/* 제목·설명을 미리보기 위로 올리고 배경을 틴트로 갈랐다 —
+                    "무엇을 하는 단계인지" 먼저 읽히고 화면은 근거로 따라온다. */}
+                <div className="flex-1 border-b border-line bg-accent/[0.055] p-6 sm:p-7">
+                  <h3 className="flex items-center gap-2.5 text-lg font-bold">
+                    <span className="stat-figure grid size-6 shrink-0 place-items-center rounded-full bg-accent text-xs text-white">
+                      {p.no}
+                    </span>
+                    {p.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-[1.8] text-muted">
+                    {p.body}
+                  </p>
+                </div>
+                <div className="relative aspect-[4/3] overflow-hidden bg-paper-alt">
+                  <p.Preview />
+                </div>
               </div>
-              <div className="p-6 sm:p-7">
-                <h3 className="flex items-center gap-2.5 text-lg font-bold">
-                  <span className="stat-figure grid size-6 shrink-0 place-items-center rounded-full bg-accent text-xs text-white">
-                    {p.no}
-                  </span>
-                  {p.title}
-                </h3>
-                <p className="mt-3 text-sm leading-[1.8] text-muted">{p.body}</p>
-              </div>
+
+              {/* 데스크톱: 같은 줄의 다음 카드로 (3·6번 뒤에는 붙이지 않는다) */}
+              {(i + 1) % 3 !== 0 && (
+                <StepArrow className="top-1/2 -right-8 hidden -translate-y-1/2 md:grid" />
+              )}
+              {/* 모바일: 한 줄 세로 배치라 아래로 */}
+              {i < PILLARS.length - 1 && (
+                <StepArrow className="-bottom-[1.625rem] left-1/2 grid -translate-x-1/2 rotate-90 md:hidden" />
+              )}
             </div>
           ))}
         </div>
