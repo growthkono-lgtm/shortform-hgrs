@@ -68,3 +68,46 @@ export function useViewProgress<T extends HTMLElement = HTMLDivElement>({
 
   return { ref, p };
 }
+
+/**
+ * sticky 구간 진행도(0 → 1).
+ *
+ * 가로 트랙처럼 "다 볼 때까지 페이지가 넘어가면 안 되는" 연출에 쓴다.
+ * 바깥 래퍼(키 큰 박스)가 뷰포트를 통과하는 동안의 진행을 재고, 그 안의
+ * sticky 박스가 화면에 붙어 있는 사이 트랙이 옆으로 흐른다.
+ *
+ * useViewProgress 는 요소 상단이 화면을 지나는 비율이라 이 용도에 맞지 않는다 —
+ * 섹션이 짧으면 다 보기 전에 스크롤이 지나가 버린다(실제로 그렇게 났다).
+ */
+export function useStickyProgress<T extends HTMLElement = HTMLDivElement>() {
+  const ref = useRef<T>(null);
+  const [p, setP] = useState(0);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    let raf = 0;
+    const measure = () => {
+      raf = 0;
+      const rect = node.getBoundingClientRect();
+      const travel = rect.height - window.innerHeight;
+      if (travel <= 0) return setP(0);
+      setP(Math.min(1, Math.max(0, -rect.top / travel)));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(measure);
+    };
+
+    measure();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return { ref, p };
+}

@@ -71,7 +71,7 @@ export function FinalCta() {
           </p>
           <div className="mt-9">
             <Cta href="#contact" variant="invert">
-              채널 현황 보내고 제안받기
+              대면 미팅 신청하기
             </Cta>
           </div>
         </div>

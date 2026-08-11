@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { CASES, FEATURES, type Feature, type Figure } from "@/lib/sns-brand";
 import { Rich } from "./rich";
 import { useViewProgress } from "./use-view-progress";
@@ -17,7 +17,6 @@ import { useViewProgress } from "./use-view-progress";
  *     (카드 안 도판도 같은 방식으로 한 장씩 넘어간다)
  */
 
-const SLIDE_MS = 7000;
 const PLATE_MS = 3200;
 
 /** 카드 안 도판 — 한 장씩 자동 전환 */
@@ -89,11 +88,11 @@ function Card({ feature }: { feature: Feature }) {
               <Rich
                 key={para.slice(0, 14)}
                 html={para}
-                className={`text-[0.9375rem] leading-[1.95] text-white/70 transition-all duration-700 sm:text-base ${
-                  i < shown
-                    ? "translate-y-0 opacity-100"
-                    : "translate-y-3 opacity-0"
-                }`}
+                className={`transition-all duration-700 ${
+                  i === 0
+                    ? "text-[1.0625rem] leading-[1.8] font-bold text-white sm:text-[1.1875rem]"
+                    : "text-[1rem] leading-[1.9] text-white/80 sm:text-[1.0625rem]"
+                } ${i < shown ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}
               />
             ))}
           </div>
@@ -156,23 +155,12 @@ function Card({ feature }: { feature: Feature }) {
 }
 
 export function Cases() {
-  const [i, setI] = useState(0);
-  const paused = useRef(false);
-
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const t = setInterval(() => {
-      if (!paused.current) setI((v) => (v + 1) % FEATURES.length);
-    }, SLIDE_MS);
-    return () => clearInterval(t);
-  }, []);
-
   return (
     <section
       id="cases"
-      className="on-dark scroll-mt-16 overflow-hidden bg-night py-20 text-white md:py-28"
+      className="on-dark scroll-mt-16 bg-night px-5 py-20 text-white sm:px-8 md:py-28"
     >
-      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+      <div className="mx-auto w-full max-w-6xl">
         <p className="eyebrow">Cases</p>
         <h2 className="mt-5 text-[1.5rem] leading-[1.35] font-bold sm:text-[2.125rem] sm:leading-[1.3] lg:text-[2.75rem]">
           {CASES.title[0]}
@@ -184,41 +172,14 @@ export function Cases() {
         <p className="mt-5 max-w-3xl text-[0.9375rem] leading-[1.85] text-white/55 sm:text-base">
           {CASES.lead}
         </p>
-      </div>
 
-      {/* 자동 스와이프 — 한 장씩 우측으로 넘어간다 */}
-      <div
-        className="mt-12 overflow-hidden"
-        onMouseEnter={() => (paused.current = true)}
-        onMouseLeave={() => (paused.current = false)}
-      >
-        <div
-          className="flex transition-transform duration-700 ease-out"
-          style={{ transform: `translateX(-${i * 100}%)` }}
-        >
+        {/* 사례는 넷 다 세로로 편다 — 접거나 넘기지 않는다.
+            세로로 쌓이지 말아야 할 것은 카드 안 **도판**이고, 그건 PlateSwiper가 넘긴다 */}
+        <div className="mt-12 space-y-6">
           {FEATURES.map((feature) => (
-            <div key={feature.id} className="w-full shrink-0 px-5 sm:px-8">
-              <div className="mx-auto w-full max-w-6xl">
-                <Card feature={feature} />
-              </div>
-            </div>
+            <Card key={feature.id} feature={feature} />
           ))}
         </div>
-      </div>
-
-      {/* 인디케이터 — 지금 몇 번째인지 보이고, 눌러서 바로 갈 수 있다 */}
-      <div className="mx-auto mt-8 flex w-full max-w-6xl justify-center gap-2 px-5 sm:px-8">
-        {FEATURES.map((feature, idx) => (
-          <button
-            key={feature.id}
-            type="button"
-            onClick={() => setI(idx)}
-            aria-label={`${feature.meta} 보기`}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              idx === i ? "w-8 bg-gold" : "w-3 bg-white/25 hover:bg-white/50"
-            }`}
-          />
-        ))}
       </div>
     </section>
   );

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useCountUp, countUpText } from "@/components/ui/use-count-up";
 import { CAPABILITY } from "@/lib/sns-brand";
 import { Rich } from "./rich";
-import { useViewProgress } from "./use-view-progress";
+import { useStickyProgress } from "./use-view-progress";
 
 /**
  * 역량 — hgrs.io/partnership "브랜드의 지속성에는…" 섹션.
@@ -358,46 +358,51 @@ function Visual({ card }: { card: Card }) {
 }
 
 export function Capability() {
-  // 섹션이 중앙에 오기도 전에 트랙이 밀려 첫 카드를 못 보던 문제 —
-  // 시작을 화면 중앙(0.45) 이후로 늦추고 끝을 위쪽(-0.35)까지 늘려 천천히 흐르게 한다
-  const track = useViewProgress<HTMLDivElement>({ from: 0.45, to: -0.35 });
+  // **sticky 구간**으로 바꿨다. 그냥 스크롤에 맞춰 밀면 섹션이 짧아서
+  // 오른쪽 카드를 다 보기 전에 페이지가 넘어가 버린다. 키 큰 래퍼가 지나가는
+  // 동안 화면을 붙잡아 두고, 그 사이에 트랙이 끝까지 흐르게 한다.
+  const track = useStickyProgress<HTMLDivElement>();
 
   return (
-    <section id="capability" className="scroll-mt-16 bg-paper py-20 md:py-28">
-      <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
-        <p className="eyebrow">Capability</p>
-        <h2 className="mt-5 max-w-3xl text-[1.5rem] leading-[1.4] font-bold sm:text-[2.125rem] sm:leading-[1.35] lg:text-[2.75rem]">
-          {CAPABILITY.title.map((line) => (
-            <Rich key={line} as="span" html={line} className="block" />
-          ))}
-        </h2>
-      </div>
+    <section id="capability" className="scroll-mt-16 bg-paper">
+      {/* 스크롤 길이 확보용 래퍼 — 이 높이만큼 트랙이 흐른다 */}
+      <div ref={track.ref} className="relative h-[300vh]">
+        <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-16">
+          <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+            <p className="eyebrow">Capability</p>
+            <h2 className="mt-4 max-w-3xl text-[1.375rem] leading-[1.4] font-bold sm:text-[1.875rem] sm:leading-[1.35] lg:text-[2.25rem]">
+              {CAPABILITY.title.map((line) => (
+                <Rich key={line} as="span" html={line} className="block" />
+              ))}
+            </h2>
+          </div>
 
-      <div
-        ref={track.ref}
-        className="mt-12 overflow-x-auto pb-2 lg:overflow-hidden"
-      >
-        <div
-          className="cap-track flex w-max items-start gap-6 px-5 sm:px-8 lg:gap-10 lg:pl-[max(2rem,calc((100vw-72rem)/2+13rem))]"
-          style={
-            { "--cap-shift": "-58%", "--p": track.p } as React.CSSProperties
-          }
-        >
-          {CAPABILITY.cards.map((card) =>
-            card.labelSide ? (
-              // 첫 카드만 라벨이 옆에 붙는다 (원본과 동일)
-              <div key={card.id} className="flex shrink-0 items-start gap-5">
-                <Label card={card} className="w-[7.5rem] pt-1 sm:w-40" />
-                <Visual card={card} />
-              </div>
-            ) : (
-              <div key={card.id} className="shrink-0">
-                <Visual card={card} />
-                <Label card={card} className="mt-5 max-w-[17rem] pl-1" />
-              </div>
-            ),
-          )}
-          <div aria-hidden className="w-5 shrink-0 sm:w-8" />
+          <div className="mt-10 overflow-hidden">
+            <div
+              className="flex w-max items-start gap-6 px-5 will-change-transform sm:px-8 lg:gap-10"
+              style={{
+                transform: `translateX(calc(-72% * ${track.p}))`,
+              }}
+            >
+              {CAPABILITY.cards.map((card) =>
+                card.labelSide ? (
+                  <div
+                    key={card.id}
+                    className="flex shrink-0 items-start gap-5"
+                  >
+                    <Label card={card} className="w-[7.5rem] pt-1 sm:w-40" />
+                    <Visual card={card} />
+                  </div>
+                ) : (
+                  <div key={card.id} className="shrink-0">
+                    <Visual card={card} />
+                    <Label card={card} className="mt-4 max-w-[17rem] pl-1" />
+                  </div>
+                ),
+              )}
+              <div aria-hidden className="w-5 shrink-0 sm:w-8" />
+            </div>
+          </div>
         </div>
       </div>
     </section>

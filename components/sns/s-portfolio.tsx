@@ -16,6 +16,7 @@ import { PORTFOLIO } from "@/lib/sns-brand";
 function VideoTile({ id, title }: { id: string; title: string }) {
   const ref = useRef<HTMLLIElement>(null);
   const [live, setLive] = useState(false);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const node = ref.current;
@@ -23,7 +24,10 @@ function VideoTile({ id, title }: { id: string; title: string }) {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => setLive(entry.isIntersecting),
+      ([entry]) => {
+        setLive(entry.isIntersecting);
+        if (!entry.isIntersecting) setReady(false);
+      },
       { rootMargin: "10% 0px 10% 0px", threshold: 0.25 },
     );
     observer.observe(node);
@@ -35,20 +39,23 @@ function VideoTile({ id, title }: { id: string; title: string }) {
       ref={ref}
       className="group relative aspect-video overflow-hidden rounded-xl bg-night"
     >
-      {live ? (
+      {/* 썸네일을 항상 깔아 둔다 — iframe 로딩 중 검은 사각형이 뜨던 원인 */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={`https://i.ytimg.com/vi/${id}/maxresdefault.jpg`}
+        alt={title}
+        loading="lazy"
+        className="absolute inset-0 size-full object-cover"
+      />
+      {live && (
         <iframe
-          src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&modestbranding=1&rel=0&playsinline=1`}
+          src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3`}
           title={title}
           allow="autoplay; encrypted-media; picture-in-picture"
-          className="pointer-events-none absolute inset-0 size-full scale-[1.35]"
-        />
-      ) : (
-        /* eslint-disable-next-line @next/next/no-img-element */
-        <img
-          src={`https://i.ytimg.com/vi/${id}/maxresdefault.jpg`}
-          alt={title}
-          loading="lazy"
-          className="size-full object-cover"
+          onLoad={() => setReady(true)}
+          className={`pointer-events-none absolute inset-0 size-full transition-opacity duration-500 ${
+            ready ? "opacity-100" : "opacity-0"
+          }`}
         />
       )}
 
@@ -79,7 +86,7 @@ export function Portfolio() {
           {PORTFOLIO.title}
         </h2>
 
-        <ul className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-12 grid gap-4 sm:grid-cols-2">
           {PORTFOLIO.videos.map((video) => (
             <VideoTile key={video.id} id={video.id} title={video.title} />
           ))}
