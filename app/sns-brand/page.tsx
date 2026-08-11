@@ -19,6 +19,10 @@ import { Contact } from "@/components/sns/s-contact";
  * 파는 화면이기 때문이다. 서체·색·배경은 숏폼 랜딩과 완전히 같은 시스템을 쓴다
  * (같은 회사의 다른 서비스 라인으로 읽혀야 한다).
  *
+ * 순서(2026-08-11): **성과와 업무 범위를 먼저 보여주고** 방식·팀·계약을 뒤에 둔다.
+ * 로고월 → 역량(숫자) → 통합 브랜드 액션(범위) → 사례(깊이) → 포지셔닝 → 방식 → 팀 → 계약.
+ * 우리가 누구인지 설명하기 전에 무엇을 해냈는지가 먼저 읽혀야 한다.
+ *
  * 케이스 원문은 접어 둔다(Cases). 넷을 다 펼치면 페이지가 13,000px을 넘고,
  * 스캔하는 방문자가 계약 조건까지 도달하지 못한다.
  *
@@ -49,12 +53,12 @@ export default function SnsBrandPage() {
         <Hero />
         <Clients />
         <Capability />
+        <Actions />
+        <Cases />
         <Pov />
         <Method />
         <Team />
         <Engagement />
-        <Cases />
-        <Actions />
         <Reviews />
         <Faq />
         <FinalCta />

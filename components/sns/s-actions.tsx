@@ -2,7 +2,8 @@ import { ACTIONS } from "@/lib/sns-brand";
 import { BrandOrbit } from "./brand-orbit";
 
 /**
- * 통합 마케팅 액션의 주요 예시 — hgrs.io/partnership 섹션.
+ * 통합 브랜드 액션의 주요 예시 — hgrs.io/partnership 섹션(원문 제목의 "마케팅"은
+ * 사장님 지시로 "브랜드"로 바꿨다).
  *
  * 원본과 같은 구성이다: **맨 앞 한 건은 크게** 놓고 파트가 모여드는 애니메이션으로
  * "나뉘어 있던 업무가 합쳐져 전략이 된다"를 보여준 뒤, 나머지를 그리드로 깐다.

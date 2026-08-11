@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { Cta } from "@/components/ui/cta";
 import { useCountUp, countUpText } from "@/components/ui/use-count-up";
 import { useViewProgress } from "./use-view-progress";
 import { CAPABILITY } from "@/lib/sns-brand";
@@ -18,6 +17,9 @@ import { Rich } from "./rich";
  * 가로 스크롤로 직접 밀 수 있게 뷰포트에 overflow-x-auto 를 남겨 둔다.
  *
  * 숫자(200%+ / 88%+ / 163%)는 원본과 같이 카운트업한다 — 앱의 공용 훅을 쓴다.
+ *
+ * 2026-08-11: 퍼널 깔때기와 파트너십 밴드를 이 섹션에서 내렸다 — 채널 페이지
+ * 맥락에서 문맥 없이 튀어나온다는 지적. 데이터는 lib 에 남겨 뒀다.
  */
 
 function Figure({ to, suffix }: { to: number; suffix: string }) {
@@ -210,31 +212,6 @@ export function Capability() {
             </li>
           ))}
         </ul>
-
-        <div className="mt-16 flex flex-col items-center gap-2.5">
-          {CAPABILITY.funnel.steps.map((step, i) => (
-            <div
-              key={step}
-              style={{ width: `${100 - i * 11}%` }}
-              className="rounded-xl border border-accent/20 bg-accent/[0.06] py-3.5 text-center text-[0.8125rem] font-bold text-accent-deep sm:text-sm"
-            >
-              {step}
-            </div>
-          ))}
-          <p className="mt-3 text-sm font-bold text-ink">
-            {CAPABILITY.funnel.result}
-          </p>
-        </div>
-
-        {/* 전환 밴드 */}
-        <div className="hero-night on-dark mt-20 flex flex-wrap items-center justify-between gap-8 rounded-3xl px-8 py-12 text-white sm:px-12">
-          <h3 className="max-w-xl text-[1.25rem] leading-[1.45] font-bold sm:text-[1.75rem] sm:leading-[1.4]">
-            {CAPABILITY.band}
-          </h3>
-          <Cta href="#contact" variant="invert">
-            {CAPABILITY.bandCta}
-          </Cta>
-        </div>
       </div>
     </section>
   );
