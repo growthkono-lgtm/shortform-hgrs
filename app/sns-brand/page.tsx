@@ -70,7 +70,7 @@ export default function SnsBrandPage() {
       <JsonLd data={CRUMBS} />
       {/* FAQ 스키마 — 생성형 검색이 문답을 그대로 인용할 수 있게 한다 */}
       <JsonLd data={faqSchema([...FAQ])} />
-      <SiteHeader nav={{ href: "#contact", label: "프로젝트 문의" }} />
+      <SiteHeader cta={{ href: "#contact", label: "프로젝트 문의" }} />
       <main>
         <Hero />
         <Capability />

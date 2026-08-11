@@ -86,7 +86,7 @@ export default function LandingPage() {
     <DiagnosisProvider>
       <JsonLd data={SCHEMA} />
       <JsonLd data={CRUMBS} />
-      <SiteHeader />
+      <SiteHeader cta={{ href: "#apply", label: "소개서 받기" }} />
       <main>
         <Hero />
         <ServiceFlow />

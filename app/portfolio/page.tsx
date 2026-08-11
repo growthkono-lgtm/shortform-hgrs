@@ -54,7 +54,7 @@ export default function PortfolioPage() {
       <JsonLd data={SCHEMA} />
       <JsonLd data={CRUMBS} />
       <SiteHeader
-        nav={{ href: "/sns-brand#contact", label: "프로젝트 문의" }}
+        cta={{ href: "/sns-brand#contact", label: "프로젝트 문의" }}
       />
       <main>
         <PortfolioHero />

@@ -1,21 +1,37 @@
+import Image from "next/image";
 import Link from "next/link";
 import { SERVICE } from "@/lib/constants";
 import { HeaderAuth } from "@/components/auth/header-auth";
 
 /**
- * 헤더는 다크다 — 히어로가 다크로 깔려 있어서 밝은 바가 올라가면 띠처럼 잘려 보인다.
- * hgrs.io도 히어로 위 헤더를 어둡게 붙여 하나의 화면으로 읽히게 한다.
+ * 사이트 헤더 — 2026-08-11 루트 도메인 이전에 맞춰 다시 짰다.
+ *
+ * 프레이머 홈의 구성을 그대로 가져왔다: 좌측 로고 · 가운데 고정 카테고리 ·
+ * 우측 문의 CTA. 카테고리는 새 경로 체계로 바꿨다 — 프레이머 시절 메뉴가 아니라
+ * 지금 실제로 있는 페이지들이다.
+ *
+ * 다크/페이퍼 두 톤 — 히어로가 다크인 페이지 위에 밝은 바가 올라가면 띠처럼 잘려 보인다.
  */
+const NAV = [
+  { href: "/shortform", label: "숏폼 스튜디오" },
+  { href: "/sns-brand", label: "브랜드 SNS 채널" },
+  { href: "/portfolio", label: "성과 사례" },
+  { href: "/blog", label: "블로그" },
+] as const;
+
 export function SiteHeader({
-  nav = { href: "#diagnosis", label: "컨텐츠 진단" },
+  nav = NAV,
   tone = "dark",
+  cta,
 }: {
-  /** 페이지마다 헤더의 한 칸짜리 메뉴가 다르다 — 그 페이지의 전환 입구를 건다 */
-  nav?: { href: string; label: string };
-  /** 히어로가 다크가 아닌 페이지(/sns-brand 매거진)에서는 지면 위에 띠가 얹히면 안 된다 */
+  nav?: readonly { href: string; label: string }[];
+  /** 히어로가 다크가 아닌 페이지에서는 지면 위에 띠가 얹히면 안 된다 */
   tone?: "dark" | "paper";
+  /** 우측 CTA — 없으면 로그인/내 프로젝트(숏폼 결제 흐름)를 보여준다 */
+  cta?: { href: string; label: string };
 } = {}) {
   const paper = tone === "paper";
+
   return (
     <header
       className={
@@ -24,30 +40,54 @@ export function SiteHeader({
           : "fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-night/70 text-white backdrop-blur-md"
       }
     >
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5 sm:px-8">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-5 sm:px-8">
         <Link
           href="/"
-          className="min-w-0 truncate text-[0.8125rem] font-bold sm:text-sm"
+          className="flex shrink-0 items-center"
+          aria-label={SERVICE.name}
         >
-          {SERVICE.name}
+          <Image
+            src={paper ? "/logo/navi-kr.png" : "/logo/white-kr.png"}
+            alt={SERVICE.name}
+            width={525}
+            height={97}
+            priority
+            className="h-[1.375rem] w-auto sm:h-6"
+          />
         </Link>
 
-        {/* 메뉴는 셋으로 고정한다 — 컨텐츠 진단 / 로그인 / 내 프로젝트.
-            PC·모바일 동일. 랜딩의 전환 경로는 진단 → 신청 하나뿐이라
-            그 입구(진단)만 헤더에 남기고 나머지 섹션 링크는 뺐다.
-            "파트너십"처럼 밖으로 나가는 링크도 두지 않는다 — 읽기 전에 이탈한다. */}
-        <nav className="flex shrink-0 items-center gap-2.5 text-sm sm:gap-5">
-          <Link
-            href={nav.href}
-            className={
-              paper
-                ? "shrink-0 text-[0.6875rem] whitespace-nowrap text-muted hover:text-ink sm:text-sm"
-                : "shrink-0 text-[0.6875rem] whitespace-nowrap text-white/60 hover:text-white sm:text-sm"
-            }
-          >
-            {nav.label}
-          </Link>
-          <HeaderAuth paper={paper} />
+        {/* 고정 카테고리 — 좁은 화면에서는 접고 CTA 만 남긴다 */}
+        <nav className="hidden flex-1 items-center justify-center gap-7 text-sm lg:flex">
+          {nav.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={
+                paper
+                  ? "whitespace-nowrap text-muted transition-colors hover:text-ink"
+                  : "whitespace-nowrap text-white/65 transition-colors hover:text-white"
+              }
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        <nav className="flex shrink-0 items-center gap-2.5 text-sm sm:gap-4">
+          {cta ? (
+            <Link
+              href={cta.href}
+              className={
+                paper
+                  ? "rounded-full bg-ink px-4 py-2 text-xs font-bold whitespace-nowrap text-paper transition-colors hover:bg-ink-soft sm:px-5 sm:py-2.5 sm:text-sm"
+                  : "rounded-full bg-paper px-4 py-2 text-xs font-bold whitespace-nowrap text-ink transition-colors hover:bg-paper/85 sm:px-5 sm:py-2.5 sm:text-sm"
+              }
+            >
+              {cta.label}
+            </Link>
+          ) : (
+            <HeaderAuth paper={paper} />
+          )}
         </nav>
       </div>
     </header>

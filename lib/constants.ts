@@ -10,8 +10,11 @@
  * 서브도메인은 shortform 고정. 폴더명(hgrs-boost)이 boost라 헷갈리지만 boost는 쓰지 않는다.
  */
 export const SERVICE = {
-  name: "해그로시 숏폼 스튜디오",
-  nameEn: "HGRS Shortform Studio",
+  /** 2026-08-11 사이트 명칭 — 서비스 라인이 둘 이상이라 "숏폼"을 이름에서 뺐다 */
+  name: "해그로시 브랜드 스튜디오",
+  nameEn: "HGRS Brand Studio",
+  /** 숏폼 랜딩 안에서만 쓰는 서비스 이름 */
+  shortformName: "해그로시 숏폼 스튜디오",
   /**
    * 2026-08-11 루트 도메인 이전 — 서브도메인(shortform.hgrs.io)이 아니라
    * hgrs.io 하위 경로로 간다. 프레이머 사이트는 더 쓰지 않는다.

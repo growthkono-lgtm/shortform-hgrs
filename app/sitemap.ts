@@ -11,6 +11,7 @@ const PAGES: {
   priority: number;
   changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
 }[] = [
+  { path: "", priority: 1, changeFrequency: "weekly" },
   { path: "/shortform", priority: 1, changeFrequency: "weekly" },
   { path: "/sns-brand", priority: 1, changeFrequency: "weekly" },
   { path: "/portfolio", priority: 0.9, changeFrequency: "weekly" },
