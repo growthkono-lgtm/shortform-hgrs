@@ -181,32 +181,54 @@ export function brochureMail(inquiry: BrochureInquiry) {
   const para = (t: string) =>
     `<p style="font-size:14px;line-height:1.9;margin:0 0 16px">${t}</p>`;
 
+  /** 세 갈래 선택지 — 문의한 사람이 자기 상황을 고르게 만든다 */
+  const choice = (title: string, desc: string, href: string) =>
+    `<tr><td style="padding:0 0 10px">
+  <a href="${href}" style="display:block;background:#f7f5f3;border-radius:12px;padding:16px 18px;text-decoration:none">
+    <span style="display:block;font-size:14px;font-weight:700;color:#030303">${title}</span>
+    <span style="display:block;font-size:13px;color:#5c5c5c;line-height:1.7;margin-top:4px">${desc}</span>
+  </a>
+</td></tr>`;
+
   return {
-    subject: `[${SERVICE.name}] ${name}께 드리는 소개서입니다`,
+    subject: `[${SERVICE.name}] ${name}께 드리는 종합 소개서입니다`,
     html: mailShell(`
-<p style="font-size:16px;font-weight:700;line-height:1.6;margin:0 0 20px">매출 높이는 구매전환형 숏폼부터<br>인플루언서 시딩 바이럴까지 한번에!<br>해그로시 숏폼 스튜디오를 소개합니다.</p>
+<p style="font-size:16px;font-weight:700;line-height:1.65;margin:0 0 20px">요즘 브랜드는 컨텐츠에서 시작해<br>고객으로 전환시키는 그로스 퍼널로 끝납니다.</p>
 
 ${para(
-  "인플루언서 시딩과 매출용 구매전환형 숏폼 소재. 마케팅 익숙하게 하는 팀은 당연히 2차 활용 소스컷들을 확보해서 브랜드 매출의 연속성을 만듭니다.",
-)}
-${para(
-  "혹시 아직도 유행하는 인플루언서 바이럴 배포만 하고 단기적인 트래픽만 보고 계시진 않나요?",
+  "해그로시는 <strong>종합 마케팅과 브랜드 컨텐츠 덕션을 함께 운영하는 스튜디오</strong>입니다. 브랜드 유튜브·인스타그램 등 SNS 채널과, 인플루언서 시딩 바이럴 그리고 그 소스의 2차 활용을 통한 구매 전환형 숏폼 기획제작을 함께 진행합니다.",
 )}
 
 <img src="${PUBLIC_ORIGIN}/deck/mail-hero.jpg" alt="해그로시 촬영 현장" width="512" style="width:100%;max-width:512px;border-radius:12px;display:block;margin:4px 0 20px">
 
 ${para(
-  "해그로시에서는 컨텐츠 가이드라인과 영상 소스 확보, 챔피언성 광고 숏폼 기획제작 시스템을 하나로 해결해 드립니다. 브랜드 담당자 분은 플랜 신청 후 ‘내 프로젝트’에서 진행 현황을 보고 한두 번 필요한 피드백만 전달하시면 됩니다.",
-)}
-${para(
-  "AI 숏폼은 성과가 안 나오는 게 확인됐고, 비싼 모델 영상은 가성비가 안 좋은 걸 알았습니다. 이제 AI도 소스컷도 매출 만드는 기획제작력도 모두 합리적인 실력으로 확인하세요.",
+  "필요하시면 브랜드 이벤트와 프로모션, CRM까지 병행해 비즈니스의 스케일과 포지션을 함께 만들어 갑니다. 채널 하나를 맡기시든, 브랜드 전체를 함께 굴리시든 같은 팀이 붙습니다.",
 )}
 
-<table style="width:100%;border-collapse:collapse;background:#f7f5f3;border-radius:12px;margin:24px 0 20px">
+<p style="font-size:15px;font-weight:700;margin:24px 0 12px">지금 어느 쪽이 필요하신가요?</p>
+<table style="width:100%;border-collapse:collapse;margin:0 0 20px">
+${choice(
+  "구매 전환형 숏폼이 필요하다",
+  "인플루언서 시딩과 2차 활용 소스로 광고 소재를 편수 단위로",
+  `${PUBLIC_ORIGIN}/shortform`,
+)}
+${choice(
+  "SNS 채널 활성화가 필요하다",
+  "유튜브·인스타그램 채널의 기획·전략·운영을 연 단위로",
+  `${PUBLIC_ORIGIN}/sns-brand`,
+)}
+${choice(
+  "종합 브랜드 마케팅이 필요하다",
+  "채널·컨텐츠·광고·이벤트·CRM을 하나의 전략으로",
+  `${PUBLIC_ORIGIN}/portfolio`,
+)}
+</table>
+
+<table style="width:100%;border-collapse:collapse;background:#f7f5f3;border-radius:12px;margin:0 0 20px">
   <tr><td style="padding:20px 22px">
-    <p style="font-size:15px;font-weight:700;margin:0 0 6px">1분 숏폼 소개서</p>
+    <p style="font-size:15px;font-weight:700;margin:0 0 6px">해그로시 스튜디오 종합 소개서</p>
     <p style="font-size:13px;color:#5c5c5c;line-height:1.8;margin:0">
-      법인 소개 · 진행 프로세스 · 플랜 안내 · 계약 절차까지 한 부에 담았습니다.<br>
+      법인 소개 · 세 서비스 라인 · 성과 사례 · 진행 프로세스 · 플랜과 계약 절차까지 한 부에 담았습니다.<br>
       <strong style="color:#030303">이 메일에 PDF로 첨부</strong>해 두었고, 아래 버튼으로도 바로 보실 수 있습니다.
     </p>
   </td></tr>
@@ -214,17 +236,15 @@ ${para(
 
 <p style="margin:0 0 8px">
   <a href="${brochureUrl}" style="display:inline-block;background:#030303;color:#fff;text-decoration:none;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:700">
-    1분 숏폼 소개서 보기 (PDF)
+    종합 소개서 보기 (PDF)
   </a>
 </p>
 <p style="font-size:13px;color:#5c5c5c;margin:16px 0 0;line-height:1.9">
-  플랜 신청과 ‘내 프로젝트’는 아래 주소에서 이용하실 수 있습니다.
+  브랜드 상황에 맞는 구성이 궁금하시면 <strong style="color:#030303">이 메일에 그대로 답장</strong>해 주세요.<br>
+  채널 현황과 목표를 보내주시면 필요한 작업 범위를 정리해 회신드립니다.
 </p>
-<p style="font-size:15px;font-weight:700;margin:10px 0 0">
+<p style="font-size:15px;font-weight:700;margin:14px 0 0">
   <a href="${PUBLIC_ORIGIN}" style="color:#030303">${PUBLIC_ORIGIN.replace("https://", "")}</a>
-</p>
-<p style="font-size:13px;color:#5c5c5c;margin:16px 0 0;line-height:1.8">
-  브랜드 상황에 맞는 구성이 궁금하시면 이 메일에 그대로 답장해 주세요.
 </p>`),
   };
 }
