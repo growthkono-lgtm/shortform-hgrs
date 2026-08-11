@@ -197,10 +197,6 @@ ${para(
 
 <img src="${PUBLIC_ORIGIN}/deck/mail-hero.jpg" alt="해그로시 촬영 현장" width="512" style="width:100%;max-width:512px;border-radius:12px;display:block;margin:4px 0 20px">
 
-${para(
-  "필요하시면 브랜드 이벤트와 프로모션, CRM까지 병행해 비즈니스의 스케일과 포지션을 함께 만들어 갑니다. 채널 하나를 맡기시든, 브랜드 전체를 함께 굴리시든 같은 팀이 붙습니다.",
-)}
-
 <p style="font-size:15px;font-weight:700;margin:24px 0 12px">지금 어느 쪽이 필요하신가요?</p>
 <table style="width:100%;border-collapse:collapse;margin:0 0 20px">
 ${choice(

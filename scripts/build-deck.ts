@@ -211,36 +211,6 @@ ${["riiid-momcafe", "moen-shampoo-ppl", "zeroblock-interview", "bone-w40s"].map(
   ),
 );
 
-// 02 브랜드 · 법인 소개
-
-
-
-
-
-pages.push(
-  slide(`
-${head("법인 소개", "브랜드 전략부터 광고 컨텐츠·영상 프로덕션까지 함께 수행해 온 프로젝트 집단입니다")}
-<div class="two">
-  <div class="panel panel-ink">
-    <p class="pk">해그로시</p>
-    <p class="pt">브랜드 하나를 맡아<br>전략 · 마케팅 · 컨텐츠 · 영상까지<br>턴 키로 진행해 왔습니다</p>
-  </div>
-  <div class="kv">
-    <div><dt>상호</dt><dd>${COMPANY.name}</dd></div>
-    <div><dt>사업자등록번호</dt><dd>${COMPANY.bizRegNumber}</dd></div>
-    <div><dt>${COMPANY.addressLabel}</dt><dd>${COMPANY.address}</dd></div>
-    <div><dt>서비스</dt><dd>${SERVICE.name}</dd></div>
-    <div><dt>사업 영역</dt><dd>브랜드 그로스 · 인플루언서 시딩 · 광고 숏폼 기획제작 · AI 기획제작</dd></div>
-    <div><dt>문의</dt><dd>contact@h-grs.com</dd></div>
-  </div>
-</div>
-<div class="band3">
-  <div class="bd bd-indigo"><p class="bd-t">브랜드 단위 프로젝트</p><p class="bd-d">포지셔닝 · 채널 마케팅 · 캠페인 설계</p></div>
-  <div class="bd bd-gold"><p class="bd-t">인플루언서 시딩</p><p class="bd-d">가이드라인 · 배포 · 소스컷 확보</p></div>
-  <div class="bd bd-alt"><p class="bd-t">광고 숏폼 기획제작</p><p class="bd-d">구매 전환 기준의 기획과 변주</p></div>
-</div>`),
-);
-
 // 02-1 관점 — 이 문서 전체의 전제
 
 
@@ -258,6 +228,47 @@ pages.push(
 </div>`,
     { dark: true, bare: true },
   ),
+);
+
+// 03 법인 소개 — 메인 화면과 세 서비스
+
+
+
+
+
+pages.push(
+  slide(`
+${head("해그로시 스튜디오", "하나의 스튜디오에서 세 갈래로 붙습니다 — hgrs.io")}
+<div class="corp">
+  <img class="corp-shot" src="${asset("/deck/home-hero.jpg")}" alt="">
+  <div class="corp-side">
+    <div class="kv">
+      <div><dt>상호</dt><dd>${COMPANY.name}</dd></div>
+      <div><dt>사업자등록번호</dt><dd>${COMPANY.bizRegNumber}</dd></div>
+      <div><dt>${COMPANY.addressLabel}</dt><dd>${COMPANY.address}</dd></div>
+      <div><dt>문의</dt><dd>contact@h-grs.com</dd></div>
+    </div>
+    <ul class="corp-lines">
+      <li><strong>매출 스케일업</strong> 구매 전환형 숏폼</li>
+      <li><strong>브랜드 SNS 채널</strong> 컨텐츠 활성화</li>
+      <li><strong>종합 브랜드 마케팅</strong> 전개</li>
+    </ul>
+  </div>
+</div>`),
+);
+
+// 09 클라이언트
+
+
+
+
+
+pages.push(
+  slide(`
+${head("클라이언트 히스토리", "커머스부터 서비스, 플랫폼까지 30여 브랜드와 함께했습니다")}
+<div class="logos">
+${CLIENTS.map((c) => `<div><img src="${asset(`/logos/${c}.png`)}" alt=""></div>`).join("")}
+</div>`),
 );
 
 // 02-2 세 갈래
@@ -301,7 +312,7 @@ ${[
 <div class="oneline">소재로 시작해 채널로 넓히는 순서가 가장 많습니다</div>`),
 );
 
-// 02-3 PART 1 표지 — SNS 채널
+// PART1
 
 
 
@@ -311,151 +322,11 @@ pages.push(
   slide(
     `<div class="part">
   <p class="part-k">LINE 01</p>
-  <p class="part-t">SNS 채널 활성화</p>
-  <p class="part-d">브랜드 유튜브 · 인스타그램 채널의 기획 · 전략 · 운영</p>
-</div>`,
-    { dark: true, bare: true },
-  ),
-);
-
-// 02-4 SNS 종합 브랜드 마케팅 시스템 (랜딩 Process 섹션 그대로)
-
-
-
-
-
-pages.push(
-  slide(`
-${head(PROCESS.title, PROCESS.lead)}
-<div class="cards4">
-${PROCESS.items
-  .map(
-    (it) => `<div class="card4">
-  <img class="card4-img" src="${asset(it.shot.src)}" alt="">
-  <div class="card4-body">
-    <span class="card4-no">${it.no}</span>
-    <p class="card4-t">${esc(it.title)}</p>
-    <p class="card4-d">${esc(it.body)}</p>
-  </div>
-</div>`,
-  )
-  .join("")}
-</div>`),
-);
-
-// 02-5 투입 조직 (랜딩 Team 섹션 그대로)
-
-
-
-
-
-pages.push(
-  slide(`
-${head("투입 조직", plain(TEAM.lead))}
-<div class="teams">
-${TEAM.teams
-  .map(
-    (t) => `<div class="team">
-  <img class="team-img" src="${asset(t.photo)}" alt="">
-  <p class="team-name">${esc(t.name)}</p>
-  <ul class="team-list">${t.items.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
-</div>`,
-  )
-  .join("")}
-</div>
-<p class="foot-note">${esc(plain(TEAM.footnote))}</p>`),
-);
-
-// 02-6 채널 성과 (랜딩 Cases 섹션 그대로)
-
-
-
-
-
-pages.push(
-  slide(`
-${head(SNS_CASES.title.join(" "), SNS_CASES.lead)}
-<div class="cases">
-${FEATURES.map(
-  (f, i) => `<div class="case">
-  <img class="case-img" src="${asset(f.hero.src)}" alt="">
-  <div class="case-head">
-    <span class="case-no">0${i + 1}</span>
-    <div><p class="case-brand">${esc(f.meta.split(" (")[0])}</p><p class="case-scale">${esc(f.category)}</p></div>
-  </div>
-  <ul class="case-facts">${f.stats
-    .map((st) => `<li>${esc(st.v)}${st.note ? `<span>(${esc(st.note)})</span>` : ""}</li>`)
-    .join("")}</ul>
-  <p class="case-role">${esc(f.title)}</p>
-</div>`,
-).join("")}
-</div>
-<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
-);
-
-// 02-6-1 최근 주요 포트폴리오 (랜딩 Portfolio 섹션)
-
-
-
-
-
-pages.push(
-  slide(`
-${head(PORTFOLIO.title, "실제로 편성·제작한 롱폼 컨텐츠입니다")}
-<div class="thumbs">
-${PORTFOLIO.videos
-  .slice(0, 12)
-  .map(
-    (v) => `<div class="thumb"><img src="https://i.ytimg.com/vi/${v.id}/mqdefault.jpg" alt=""><span>${esc(v.title)}</span></div>`,
-  )
-  .join("")}
-</div>
-<p class="foot-note">${esc(PORTFOLIO.note)}</p>`),
-);
-
-// 02-7 PART 2 표지 — 숏폼
-
-
-
-
-
-pages.push(
-  slide(
-    `<div class="part">
-  <p class="part-k">LINE 02</p>
-  <p class="part-t">구매 전환형 숏폼</p>
+  <p class="part-t">매출 스케일업 구매 전환형 숏폼</p>
   <p class="part-d">인플루언서 시딩 바이럴 · 2차 활용 소스 · 광고 숏폼 기획제작</p>
 </div>`,
     { dark: true, bare: true },
   ),
-);
-
-// 03 시장 구조
-
-
-
-
-
-pages.push(
-  slide(`
-${head("요즘 브랜드 업무", "인플루언서 바이럴에 이어 매출 연속성을 확보하고 싶으신가요?")}
-<div class="split">
-  <div class="split-side">
-    <div class="circle circle-indigo"><span>인플루언서<br>시딩</span></div>
-    <p class="split-t">A사 발주</p>
-    <p class="split-d">채널 배포 · 소스컷 일부</p>
-  </div>
-  <div class="split-gap">
-    <p class="gap-label">내부 리소스가 많이 드는 구간</p>
-    <ul class="gap-list"><li>컨텐츠 가이드라인</li><li>필요한 컷 설계</li><li>전환 소재 연결</li></ul>
-  </div>
-  <div class="split-side">
-    <div class="circle circle-gold"><span>광고 숏폼<br>제작</span></div>
-    <p class="split-t">B사 발주</p>
-    <p class="split-d">받은 소스로 편집 · 마케팅 의도 부재</p>
-  </div>
-</div>
-<div class="verdict">각 잡은 채널 협업이 아닌 이상 시딩에 남는 건 소스컷과 약간의 바이럴입니다. 그 소스를 전환 소재로 잇는 일이 비어 있습니다.</div>`),
 );
 
 // 04 포지션
@@ -505,7 +376,24 @@ ${FLOW.map(
 <div class="oneline">한 번의 발주 · 하나의 담당 · 하나의 대시보드</div>`),
 );
 
-// 06 기대 효과
+// PART2
+
+
+
+
+
+pages.push(
+  slide(
+    `<div class="part">
+  <p class="part-k">LINE 02</p>
+  <p class="part-t">브랜드 SNS 채널 컨텐츠 활성화</p>
+  <p class="part-d">브랜드 유튜브 · 인스타그램 채널의 기획 · 전략 · 운영</p>
+</div>`,
+    { dark: true, bare: true },
+  ),
+);
+
+// 02-4 SNS 종합 브랜드 마케팅 시스템 (랜딩 Process 섹션 그대로)
 
 
 
@@ -513,23 +401,89 @@ ${FLOW.map(
 
 pages.push(
   slide(`
-${head("기대 효과", "챔피언 소재 몇 종으로 매출을 늘려 드립니다")}
-<div class="impact">
-${[
-  ["매출 스케일업", "챔피언 소재 몇 종으로 예산을 몰고 파생본을 이어 갑니다"],
-  ["광고 운영 안정", "소재가 마르지 않아 증액 시 CPA가 먼저 오르지 않습니다"],
-  ["잡무 제거", "크리에이터 선정 · 가이드라인 · 배송 · 소스컷 회수를 대행합니다"],
-  ["피드백 단축", "대시보드에서 단계 확인 후 수정을 일괄로 전달하십니다"],
-]
+${head(PROCESS.title, PROCESS.lead)}
+<div class="cards4">
+${PROCESS.items
   .map(
-    ([t, d], i) => `<div class="imp ${i % 2 ? "imp-alt" : ""}">
-  <span class="imp-no">0${i + 1}</span>
-  <p class="imp-t">${t}</p>
-  <p class="imp-d">${d}</p>
+    (it) => `<div class="card4">
+  <img class="card4-img" src="${asset(it.shot.src)}" alt="">
+  <div class="card4-body">
+    <span class="card4-no">${it.no}</span>
+    <p class="card4-t">${esc(it.title)}</p>
+    <p class="card4-d">${esc(it.body)}</p>
+  </div>
 </div>`,
   )
   .join("")}
 </div>`),
+);
+
+// PART3
+
+
+
+
+
+pages.push(
+  slide(
+    `<div class="part">
+  <p class="part-k">LINE 03</p>
+  <p class="part-t">종합 브랜드 마케팅 전개</p>
+  <p class="part-d">채널 · 컨텐츠 · 광고에 이벤트 · 프로모션 · CRM 까지</p>
+</div>`,
+    { dark: true, bare: true },
+  ),
+);
+
+// 15-5 통합 브랜드 액션 (랜딩 Actions 섹션 그대로)
+
+
+
+
+
+pages.push(
+  slide(`
+${head(ACTIONS.title, ACTIONS.lead)}
+<div class="acts">
+${ACTIONS.items
+  .slice(0, 6)
+  .map(
+    (a) => `<div class="act">
+  <p class="act-b">${esc(a.brand)} 브랜드${a.period ? ` · ${esc(a.period)}` : ""}</p>
+  <p class="act-p">${a.items.map((x) => esc(x)).join(" · ")}</p>
+  <p class="act-r">${esc(a.results[a.results.length - 1])}</p>
+</div>`,
+  )
+  .join("")}
+</div>
+<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
+);
+
+// 02-6 채널 성과 (랜딩 Cases 섹션 그대로)
+
+
+
+
+
+pages.push(
+  slide(`
+${head(SNS_CASES.title.join(" "), SNS_CASES.lead)}
+<div class="cases">
+${FEATURES.map(
+  (f, i) => `<div class="case">
+  <img class="case-img" src="${asset(f.hero.src)}" alt="">
+  <div class="case-head">
+    <span class="case-no">0${i + 1}</span>
+    <div><p class="case-brand">${esc(f.meta.split(" (")[0])}</p><p class="case-scale">${esc(f.category)}</p></div>
+  </div>
+  <ul class="case-facts">${f.stats
+    .map((st) => `<li>${esc(st.v)}${st.note ? `<span>(${esc(st.note)})</span>` : ""}</li>`)
+    .join("")}</ul>
+  <p class="case-role">${esc(f.title)}</p>
+</div>`,
+).join("")}
+</div>
+<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
 );
 
 // 07 성과 사례
@@ -557,7 +511,7 @@ ${CASES.map(
 <p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
 );
 
-// 08 포트폴리오
+// 02-6-1 최근 주요 포트폴리오 (랜딩 Portfolio 섹션)
 
 
 
@@ -565,13 +519,19 @@ ${CASES.map(
 
 pages.push(
   slide(`
-${head("최근 주요 포트폴리오", "기획과 서사, 마케팅과 세일즈를 아는 팀이 만든 광고형 숏폼입니다")}
-<div class="wall">
-${WALL.map((s) => `<img src="${asset(`/portfolio/clips/${s}.jpg`)}" alt="">`).join("")}
-</div>`),
+${head(PORTFOLIO.title, "실제로 편성·제작한 롱폼 컨텐츠입니다")}
+<div class="thumbs">
+${PORTFOLIO.videos
+  .slice(0, 12)
+  .map(
+    (v) => `<div class="thumb"><img src="https://i.ytimg.com/vi/${v.id}/mqdefault.jpg" alt=""><span>${esc(v.title)}</span></div>`,
+  )
+  .join("")}
+</div>
+<p class="foot-note">${esc(PORTFOLIO.note)}</p>`),
 );
 
-// 09 클라이언트
+// 02-5 투입 조직 (랜딩 Team 섹션 그대로)
 
 
 
@@ -579,10 +539,19 @@ ${WALL.map((s) => `<img src="${asset(`/portfolio/clips/${s}.jpg`)}" alt="">`).jo
 
 pages.push(
   slide(`
-${head("클라이언트 히스토리", "커머스부터 서비스, 플랫폼까지 30여 브랜드와 함께했습니다")}
-<div class="logos">
-${CLIENTS.map((c) => `<div><img src="${asset(`/logos/${c}.png`)}" alt=""></div>`).join("")}
-</div>`),
+${head("투입 조직", plain(TEAM.lead))}
+<div class="teams">
+${TEAM.teams
+  .map(
+    (t) => `<div class="team">
+  <img class="team-img" src="${asset(t.photo)}" alt="">
+  <p class="team-name">${esc(t.name)}</p>
+  <ul class="team-list">${t.items.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+</div>`,
+  )
+  .join("")}
+</div>
+<p class="foot-note">${esc(plain(TEAM.footnote))}</p>`),
 );
 
 // 10 제작 조직 (현장)
@@ -602,33 +571,6 @@ ${Array.from({ length: 8 }, (_, i) => `<img src="${asset(`/portfolio/crew/crew-0
 </div>`),
 );
 
-// 11 역할 구성 · AI
-
-
-
-
-
-pages.push(
-  slide(`
-${head("역할 구성", "숏폼 한 편에 아홉 개 역할이 각자 담당으로 붙습니다")}
-<div class="two t-6040">
-  <div class="roles">
-${ROLES.map(([t, d]) => `<div class="role"><p class="role-t">${t}</p><p class="role-d">${d}</p></div>`).join("")}
-  </div>
-  <div class="side-col">
-    <div class="panel panel-ink">
-      <p class="pk">디렉터</p>
-      <p class="pt2">직접 태워 본 사람이<br>소재를 설계합니다</p>
-      <div class="fig"><strong>100억</strong><span>디렉터 개인의 누적 광고 집행 경험</span></div>
-    </div>
-    <div class="panel panel-indigo">
-      <p class="pk light">AI 기획제작 전문</p>
-      <p class="pt3">이 홈페이지와 어드민 대시보드 모두 저희 PO가 AI로 직접 기획·제작했습니다. 마케팅 의도의 반영은 담당자가 감도 있게 핸들링합니다.</p>
-    </div>
-  </div>
-</div>`),
-);
-
 // 12 제작 시스템
 
 
@@ -642,29 +584,6 @@ ${head("제작 시스템", "프로젝트에서 반복 검증한 위너 소재 �
   <div class="bd bd-indigo"><p class="bd-n">01</p><p class="bd-t">판독 기준</p><p class="bd-d">조회수가 아니라 구매 전환. 훅 유지율 · CPA · ROAS로 위너를 가립니다.</p></div>
   <div class="bd bd-gold"><p class="bd-n">02</p><p class="bd-t">제작 사이클</p><p class="bd-d">기획 → 제작 → 데이터 판독 → 변주. 프로젝트에서 수십 회 반복한 순서입니다.</p></div>
   <div class="bd bd-alt"><p class="bd-n">03</p><p class="bd-t">팀 구조</p><p class="bd-d">담당이 나뉘어 붙습니다. 한 명이 빠져도 일정이 멈추지 않습니다.</p></div>
-</div>`),
-);
-
-// 13 진행 단계
-
-
-
-
-
-pages.push(
-  slide(`
-${head("세부 업무 흐름", "두 트랙이 각자 단계를 밟아 나갑니다")}
-<div class="two">
-  <div class="track track-indigo">
-    <p class="track-t">인플루언서 시딩</p>
-    <p class="track-d">패키지 플랜</p>
-    <ol>${SEEDING_STAGES.map((s) => `<li>${esc(s.label)}</li>`).join("")}</ol>
-  </div>
-  <div class="track track-gold">
-    <p class="track-t">숏폼 기획제작</p>
-    <p class="track-d">모든 플랜</p>
-    <ol>${SHORTS_STAGES.map((s) => `<li>${esc(s.label)}</li>`).join("")}</ol>
-  </div>
 </div>`),
 );
 
@@ -739,47 +658,6 @@ ${packages
 </div>
 
 <p class="vat">※ 부가세 별도 · ${esc(POLICY.seedingBundleOnly)}</p>`),
-);
-
-// 15-4 PART 3 표지 — 종합 브랜드 마케팅
-
-
-
-
-
-pages.push(
-  slide(
-    `<div class="part">
-  <p class="part-k">LINE 03</p>
-  <p class="part-t">종합 브랜드 마케팅</p>
-  <p class="part-d">채널 · 컨텐츠 · 광고에 이벤트 · 프로모션 · CRM 까지 하나의 전략으로</p>
-</div>`,
-    { dark: true, bare: true },
-  ),
-);
-
-// 15-5 통합 브랜드 액션 (랜딩 Actions 섹션 그대로)
-
-
-
-
-
-pages.push(
-  slide(`
-${head(ACTIONS.title, ACTIONS.lead)}
-<div class="acts">
-${ACTIONS.items
-  .slice(0, 6)
-  .map(
-    (a) => `<div class="act">
-  <p class="act-b">${esc(a.brand)} 브랜드${a.period ? ` · ${esc(a.period)}` : ""}</p>
-  <p class="act-p">${a.items.map((x) => esc(x)).join(" · ")}</p>
-  <p class="act-r">${esc(a.results[a.results.length - 1])}</p>
-</div>`,
-  )
-  .join("")}
-</div>
-<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
 );
 
 // 16 계약 · 결제
@@ -1090,6 +968,14 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 /* 조건 */
 .terms{display:flex;flex-direction:column;gap:3mm}
 .term{border-left:4px solid var(--gold);background:var(--alt);border-radius:0 2mm 2mm 0;padding:5mm 6mm;font-size:9pt;line-height:1.7;color:var(--muted)}
+
+/* 법인 소개 — 메인 화면 + 세 서비스 */
+.corp{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:7mm;flex:1}
+.corp-shot{width:100%;border:1px solid var(--line);border-radius:3mm;object-fit:cover;object-position:top;align-self:start}
+.corp-side{display:flex;flex-direction:column;gap:6mm}
+.corp-lines{display:flex;flex-direction:column;gap:3mm;margin-top:auto}
+.corp-lines li{background:var(--alt);border-radius:2.5mm;padding:5mm 6mm;font-size:9.5pt;line-height:1.6;color:var(--muted)}
+.corp-lines strong{color:var(--ink)}
 
 /* 케이스 성과 — 문장 그대로 (숫자만 뽑아 쪼개면 문맥이 깨진다) */
 .case-facts{margin:4mm 6mm 0;display:flex;flex-direction:column;gap:2.5mm}
