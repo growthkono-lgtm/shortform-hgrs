@@ -25,8 +25,14 @@ const BROCHURE_FILE = "hgrs-studio-brochure.pdf";
  * contact@h-grs.com 으로 모은다(REPLY_TO). h-grs.com 을 Resend에 인증하면
  * NOTIFY_FROM_EMAIL 만 바꿔 발신 주소도 옮길 수 있다.
  */
+/**
+ * 표시 이름에 괄호나 @ 가 들어가면 **반드시 따옴표로 감싼다.**
+ * RFC 5322 에서 따옴표 없는 괄호는 주석, @ 는 특수문자다 — SES 가 거절한다.
+ * (한 번 당했다: `해그로시 스튜디오 (contact@h-grs.com) <...>` 로 넣었다가 발송 실패)
+ */
 const FROM =
-  process.env.NOTIFY_FROM_EMAIL || "해그로시 숏폼 스튜디오 <contact@hgrs.io>";
+  process.env.NOTIFY_FROM_EMAIL ||
+  `"해그로시 스튜디오" <contact@hgrs.io>`;
 const REPLY_TO = "contact@h-grs.com";
 
 export type MailKind = "brochure" | "project_start" | "stage" | "other";
@@ -96,6 +102,28 @@ export async function sendMail({
 
     if (!res.ok) {
       const error = `${res.status} ${await res.text()}`.slice(0, 400);
+
+      /**
+       * 첨부가 붙은 메일이 실패하면 **링크만으로 한 번 더 보낸다.**
+       * 소개서 PDF 가 12MB 라 용량·타임아웃으로 거절될 여지가 있는데,
+       * 그렇다고 메일이 아예 안 가면 문의한 사람은 아무것도 못 받는다.
+       * 본문에 소개서 링크가 이미 들어 있어서 링크만으로도 쓸모가 있다.
+       */
+      if (attachments?.length) {
+        const retry = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${key}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ from: FROM, to: [to], reply_to: REPLY_TO, subject, html }),
+        });
+        if (retry.ok) {
+          await log("sent", `첨부 실패로 링크만 재발송: ${error}`);
+          return { ok: true, skipped: false };
+        }
+      }
+
       await log("failed", error);
       return { ok: false, skipped: false, error };
     }
