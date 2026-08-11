@@ -90,6 +90,11 @@ export function Portfolio() {
           {PORTFOLIO.videos.map((video) => (
             <VideoTile key={video.id} id={video.id} title={video.title} />
           ))}
+
+          {/* 홀수로 끝나면 마지막 칸이 빈다 — 거기에 "이게 전부가 아니다"를 적는다 */}
+          <li className="flex aspect-video items-center justify-center rounded-xl border border-dashed border-line">
+            <span className="text-sm text-muted">{PORTFOLIO.note}</span>
+          </li>
         </ul>
       </div>
     </section>

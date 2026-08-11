@@ -197,6 +197,12 @@ export const FEATURES: Feature[] = [
       caption: "컨텐츠 IMC로 채널과 광고를 함께 키운 펫푸드 커머스",
     },
     figures: [],
+    videos: [
+      {
+        id: "LCQywT3a2pQ",
+        title: "강아지 사료 솔루션 — 짱구 이야기 (전편)",
+      },
+    ],
   },
 ];
 
@@ -207,6 +213,8 @@ export const FEATURES: Feature[] = [
  */
 export const PORTFOLIO = {
   title: "최근 주요 포트폴리오",
+  /** 마지막 빈 칸에 넣는 한 줄 — 여기 있는 게 전부가 아니라는 표시 */
+  note: "(다수 숏폼 생략)",
   videos: [
     { id: "Bsp_HBS8ckM", title: "배그극장" },
     { id: "aEbmZ3H5EWo", title: "배그극장" },
@@ -429,11 +437,7 @@ export const ARCHIVE = {
 
 /** 사례 섹션 머리말 */
 export const CASES = {
-  title: [
-    "글로벌 대기업부터",
-    "저예산 스타트업까지",
-    "비즈니스에 기여합니다.",
-  ],
+  title: ["글로벌 대기업부터", "저예산 스타트업까지", "비즈니스에 기여합니다."],
   lead: "해그로시는 브랜드가 당면한 과제를 함께 해결하기 위해 고객 세그먼트 분류, 페르소나 매칭, 사연자 섭외, 시청 후 DB 확보, 커뮤니티 바이럴, 심리 테스트 검사지 등 다양한 종합 마케팅의 결과를 만들어 왔습니다.",
 } as const;
 

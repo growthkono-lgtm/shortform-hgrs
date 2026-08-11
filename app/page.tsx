@@ -15,6 +15,8 @@ import { Apply } from "@/components/landing/s-apply";
 import { Beyond } from "@/components/landing/s-beyond";
 import { Faq } from "@/components/landing/s13-faq";
 import { FinalCta } from "@/components/landing/s14-final-cta";
+import { Actions } from "@/components/sns/s-actions";
+import { BrunchCard } from "@/components/sns/s-faq";
 
 /**
  * 섹션 구성은 2026-08-06 피그마 개편안의 **오른쪽 열(신규 와이어프레임)이 유일한 기준**이다.
@@ -43,6 +45,10 @@ import { FinalCta } from "@/components/landing/s14-final-cta";
  * 잇고, 구성·금액은 소개서로 메일 발송한다. 컴포넌트(s12-pricing.tsx)와 결제 경로는
  * 지우지 않고 남겨 뒀다 — 가격을 다시 열 때 마운트만 되돌리면 된다.
  * Clients 로고월은 System을 끼우기 위해 s-services.tsx에서 s-clients.tsx로 분리했다.
+ *
+ * 2026-08-11 /sns-brand 와 공통으로 쓰는 블록 둘을 얹었다 —
+ * 통합 브랜드 액션(Actions)과 브런치북 카드(BrunchCard). 같은 컴포넌트를
+ * 그대로 가져다 쓰므로 한쪽을 고치면 양쪽이 같이 바뀐다.
  */
 export default function LandingPage() {
   return (
@@ -61,8 +67,15 @@ export default function LandingPage() {
         <Diagnosis />
         <Apply />
         <Beyond />
+        {/* 두 서비스 라인이 같이 쓰는 블록 — /sns-brand 와 같은 컴포넌트다 */}
+        <Actions />
         <Faq />
         <FinalCta />
+        <section className="px-5 pb-20 sm:px-8 md:pb-24">
+          <div className="mx-auto w-full max-w-6xl">
+            <BrunchCard />
+          </div>
+        </section>
       </main>
       <SiteFooter />
     </DiagnosisProvider>

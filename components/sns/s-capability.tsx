@@ -173,11 +173,12 @@ function Visual({ card }: { card: Card }) {
   }
 
   if (card.kind === "metrics") {
-    // 두 장이 같은 그림으로 보이면 안 된다 — 카드마다 곡선을 다르게 그린다
+    // 두 장이 같은 그림이면 안 된다 — 카드마다 곡선을 다르게 그린다.
+    // marker id 도 카드별로 갈라야 한다(문서 전체에서 유일해야 하므로)
     const crm = card.id === "crm";
+    const uid = card.id;
     return (
       <div className="relative w-[17rem] overflow-hidden rounded-2xl bg-[#0b1020] px-6 py-8 sm:w-[22rem] sm:px-8 sm:py-10">
-        {/* 교차하는 화살표 — 원본 카드의 그래픽을 SVG로 다시 그렸다 */}
         <svg
           aria-hidden
           viewBox="0 0 340 220"
@@ -186,7 +187,7 @@ function Visual({ card }: { card: Card }) {
         >
           <defs>
             <marker
-              id="ah-g"
+              id={`g-${uid}`}
               markerWidth="6"
               markerHeight="6"
               refX="4"
@@ -196,7 +197,7 @@ function Visual({ card }: { card: Card }) {
               <path d="M0 0 L6 3 L0 6 z" fill="#a3d94a" />
             </marker>
             <marker
-              id="ah-p"
+              id={`p-${uid}`}
               markerWidth="6"
               markerHeight="6"
               refX="4"
@@ -206,7 +207,7 @@ function Visual({ card }: { card: Card }) {
               <path d="M0 0 L6 3 L0 6 z" fill="#c9a2e8" />
             </marker>
             <marker
-              id="ah-b"
+              id={`b-${uid}`}
               markerWidth="6"
               markerHeight="6"
               refX="4"
@@ -216,33 +217,70 @@ function Visual({ card }: { card: Card }) {
               <path d="M0 0 L6 3 L0 6 z" fill="#4d8fe8" />
             </marker>
           </defs>
-          <path
-            d="M6 214 L330 12"
-            stroke="#a3d94a"
-            strokeWidth="4"
-            fill="none"
-            markerEnd="url(#ah-g)"
-          />
-          <path
-            d="M40 214 L318 42"
-            stroke="#c9a2e8"
-            strokeWidth="2"
-            fill="none"
-            markerEnd="url(#ah-p)"
-          />
-          <path
-            d="M60 26 L322 200"
-            stroke="#4d8fe8"
-            strokeWidth="2"
-            fill="none"
-            markerEnd="url(#ah-b)"
-          />
-          <path
-            d="M0 110 H340 M240 0 V220"
-            stroke="#ffffff"
-            strokeOpacity="0.12"
-            strokeWidth="1"
-          />
+
+          {crm ? (
+            <>
+              {/* CRM — 완만한 S자 상승 + 계단형 하강 */}
+              <path
+                d="M8 206 C 110 202, 168 150, 208 108 S 292 40, 330 18"
+                stroke="#a3d94a"
+                strokeWidth="4"
+                fill="none"
+                markerEnd={`url(#g-${uid})`}
+              />
+              <path
+                d="M8 214 C 132 210, 202 168, 320 66"
+                stroke="#c9a2e8"
+                strokeWidth="2"
+                fill="none"
+                markerEnd={`url(#p-${uid})`}
+              />
+              <path
+                d="M52 28 L52 92 L146 92 L146 146 L240 146 L240 194 L324 194"
+                stroke="#4d8fe8"
+                strokeWidth="2"
+                fill="none"
+                markerEnd={`url(#b-${uid})`}
+              />
+              <path
+                d="M0 74 H340 M0 148 H340"
+                stroke="#fff"
+                strokeOpacity="0.1"
+                strokeWidth="1"
+              />
+            </>
+          ) : (
+            <>
+              {/* 데이터 — 직선으로 교차하는 상승·하강 */}
+              <path
+                d="M6 214 L330 12"
+                stroke="#a3d94a"
+                strokeWidth="4"
+                fill="none"
+                markerEnd={`url(#g-${uid})`}
+              />
+              <path
+                d="M40 214 L318 42"
+                stroke="#c9a2e8"
+                strokeWidth="2"
+                fill="none"
+                markerEnd={`url(#p-${uid})`}
+              />
+              <path
+                d="M60 26 L322 200"
+                stroke="#4d8fe8"
+                strokeWidth="2"
+                fill="none"
+                markerEnd={`url(#b-${uid})`}
+              />
+              <path
+                d="M0 110 H340 M240 0 V220"
+                stroke="#fff"
+                strokeOpacity="0.12"
+                strokeWidth="1"
+              />
+            </>
+          )}
         </svg>
 
         {/* 화살표가 라벨 위를 지나가 글자가 묻힌다 — 왼쪽에 얇은 스크림을 깐다 */}

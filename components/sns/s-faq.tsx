@@ -2,6 +2,63 @@ import { Section, SectionHeading } from "@/components/ui/section";
 import { Cta } from "@/components/ui/cta";
 import { ARCHIVE, FAQ, FINAL_CTA } from "@/lib/sns-brand";
 
+/**
+ * 브런치북 카드 — /sns-brand 와 숏폼 랜딩이 같이 쓴다.
+ * 그냥 텍스트 줄이면 지나쳐서, 책 아이콘을 살짝 붙여 눈에 걸리게 했다.
+ */
+export function BrunchCard({ className = "" }: { className?: string }) {
+  return (
+    <a
+      href={ARCHIVE.href}
+      target="_blank"
+      rel="noreferrer"
+      className={`group flex flex-wrap items-center gap-5 rounded-2xl border border-line bg-paper px-6 py-6 transition-colors duration-200 hover:border-ink/25 ${className}`}
+    >
+      <span
+        aria-hidden
+        className="grid size-12 shrink-0 place-items-center rounded-xl bg-gold/15 text-gold-deep"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          className="size-6"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+        >
+          <path
+            d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H5.5A1.5 1.5 0 0 1 4 15.5v-10Z"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M20 5.5A1.5 1.5 0 0 0 18.5 4H14a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h4.5a1.5 1.5 0 0 0 1.5-1.5v-10Z"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+
+      <span className="min-w-0 flex-1">
+        <span className="eyebrow block">Archive</span>
+        <span className="mt-1.5 block text-base font-bold group-hover:underline group-hover:underline-offset-4">
+          {ARCHIVE.title}
+        </span>
+        <span className="mt-1 block text-xs leading-[1.7] text-muted">
+          디렉터가 직접 쓰는 마케팅 노하우 연재
+        </span>
+      </span>
+
+      <span className="shrink-0 text-sm font-bold text-ink">
+        {ARCHIVE.cta}
+        <span
+          aria-hidden
+          className="ml-1.5 inline-block transition-transform duration-200 group-hover:translate-x-1"
+        >
+          →
+        </span>
+      </span>
+    </a>
+  );
+}
+
 /** FAQ — hgrs.io/partnership 원문 발췌 (문안은 lib/sns-brand.ts) */
 export function Faq() {
   return (
@@ -24,32 +81,7 @@ export function Faq() {
         ))}
       </div>
 
-      {/* 브런치북 — 페이지 밖으로 나가는 링크는 이 한 자리로만 모은다 */}
-      <a
-        href={ARCHIVE.href}
-        target="_blank"
-        rel="noreferrer"
-        className="group mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-line bg-paper px-6 py-6"
-      >
-        <span className="min-w-0">
-          <span className="eyebrow block">Archive</span>
-          <span className="mt-2 block text-base font-bold group-hover:underline group-hover:underline-offset-4">
-            {ARCHIVE.title}
-          </span>
-          <span className="mt-1.5 block text-xs leading-[1.7] text-muted">
-            디렉터가 직접 쓰는 마케팅 노하우 연재
-          </span>
-        </span>
-        <span className="shrink-0 text-sm font-bold text-ink">
-          {ARCHIVE.cta}
-          <span
-            aria-hidden
-            className="ml-1.5 inline-block transition-transform duration-200 group-hover:translate-x-1"
-          >
-            →
-          </span>
-        </span>
-      </a>
+      <BrunchCard className="mt-6" />
     </Section>
   );
 }
