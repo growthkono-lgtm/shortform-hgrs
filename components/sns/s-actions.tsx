@@ -1,78 +1,20 @@
 import { ACTIONS } from "@/lib/sns-brand";
+import { BrandOrbit } from "./brand-orbit";
 
 /**
- * 통합 마케팅 액션의 주요 예시 — hgrs.io/partnership 의 원형 다이어그램 그리드.
+ * 통합 마케팅 액션의 주요 예시 — hgrs.io/partnership 섹션.
  *
- * 원본은 브랜드 이니셜을 가운데 큰 원에 두고 실행 항목 4개를 위성처럼 붙인 형태다.
- * 프레이머 도형을 이미지로 뜨지 않고 CSS로 다시 그렸다 — 반응형에서 글자가 깨지지 않고,
- * 항목이 바뀌어도 데이터만 고치면 되기 때문이다.
- *
- * 브랜드명은 원문대로 이니셜 표기를 유지한다.
+ * 원본과 같은 구성이다: **맨 앞 한 건은 크게** 놓고 파트가 모여드는 애니메이션으로
+ * "나뉘어 있던 업무가 합쳐져 전략이 된다"를 보여준 뒤, 나머지를 그리드로 깐다.
+ * 여덟 건을 처음부터 같은 크기로 늘어놓으면 그 뜻이 사라진다.
  */
-
-/**
- * 위성 4개 — 위/오른쪽/아래/왼쪽.
- * 위성과 가운데 원이 겹치는 구도라(원본이 그렇다) 글자를 원 한가운데 두면
- * 가운데 원에 먹힌다. 패딩으로 **바깥쪽으로 밀어** 겹치는 쪽을 비운다.
- */
-const SATELLITES = [
-  { pos: "left-1/2 top-0 -translate-x-1/2", pad: "pb-[42%]" },
-  { pos: "right-0 top-1/2 -translate-y-1/2", pad: "pl-[33%]" },
-  { pos: "left-1/2 bottom-0 -translate-x-1/2", pad: "pt-[42%]" },
-  { pos: "left-0 top-1/2 -translate-y-1/2", pad: "pr-[33%]" },
-];
-
-function Diagram({
-  brand,
-  period,
-  items,
-}: {
-  brand: string;
-  period: string | null;
-  items: readonly string[];
-}) {
-  return (
-    <div className="relative mx-auto aspect-square w-full max-w-[320px]">
-      {/* 바깥 링 — 원본의 얇은 궤도선 */}
-      <span
-        aria-hidden
-        className="absolute inset-[6%] rounded-full border border-white/12"
-      />
-
-      {items.map((item, i) => (
-        <span
-          key={item}
-          className={`absolute grid size-[46%] place-items-center rounded-full bg-accent/80 px-2 text-center text-[0.625rem] leading-[1.35] font-bold text-white sm:text-[0.6875rem] ${SATELLITES[i].pos} ${SATELLITES[i].pad}`}
-        >
-          {item}
-        </span>
-      ))}
-
-      {/* 가운데 — 브랜드 이니셜. 위성 위에 올라와야 원본과 같은 겹침이 난다 */}
-      <span className="absolute inset-[30%] z-10 grid place-items-center rounded-full bg-accent text-white shadow-[0_0_50px_-8px_rgba(77,95,232,0.9)]">
-        <span className="text-center">
-          <span className="stat-figure block text-lg sm:text-xl">
-            {brand}
-            <span className="ml-0.5 text-[0.6875rem] font-normal text-white/70">
-              브랜드
-            </span>
-          </span>
-          {period && (
-            <span className="mt-1 block text-[0.625rem] text-white/60">
-              {period}
-            </span>
-          )}
-        </span>
-      </span>
-    </div>
-  );
-}
-
 export function Actions() {
+  const [featured, ...rest] = ACTIONS.items;
+
   return (
     <section
       id="actions"
-      className="on-dark scroll-mt-16 bg-night py-20 text-white md:py-28"
+      className="on-dark scroll-mt-16 overflow-hidden bg-night py-20 text-white md:py-28"
     >
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <p className="eyebrow">Actions</p>
@@ -80,14 +22,66 @@ export function Actions() {
           {ACTIONS.title}
         </h2>
         <p className="mt-5 max-w-2xl text-[0.9375rem] leading-[1.85] text-white/55 sm:text-base">
-          채널 하나만 떼어 맡은 프로젝트도, 브랜드 전체를 함께 굴린 프로젝트도
-          있습니다. 어떤 조합으로 붙었고 무엇이 남았는지만 정리했습니다.
+          채널·컨텐츠·광고·CRM은 따로 굴러가면 각자의 지표만 남습니다.
+          브랜드마다 어떤 파트를 붙여 하나의 전략으로 묶었는지, 그리고 무엇이
+          남았는지만 정리했습니다.
         </p>
+      </div>
 
-        <ul className="mt-16 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
-          {ACTIONS.items.map((item, i) => (
+      {/* 대표 한 건 — 파트가 모여드는 자리 */}
+      <div className="relative mt-16 sm:mt-20">
+        <div
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-[70%] bg-[radial-gradient(60%_60%_at_50%_35%,color-mix(in_oklab,var(--color-accent)_28%,transparent),transparent_70%)]"
+        />
+        <div className="relative mx-auto grid w-full max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-16">
+          <BrandOrbit
+            brand={featured.brand}
+            period={featured.period}
+            items={featured.items}
+            size="lg"
+          />
+
+          {/* 흩어진 위성이 지나가는 자리라 본문을 위로 올려 둔다 */}
+          <div className="relative z-10 min-w-0">
+            <p className="eyebrow">Featured</p>
+            <ul className="mt-5 space-y-3">
+              {featured.items.map((item) => (
+                <li
+                  key={item}
+                  className="flex items-center gap-3 text-[0.9375rem] font-bold text-white/85"
+                >
+                  <span
+                    aria-hidden
+                    className="size-2 shrink-0 rounded-full bg-accent"
+                  />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <ul className="mt-8 space-y-2.5 border-t border-white/15 pt-7">
+              {featured.results.map((line) => (
+                <li
+                  key={line}
+                  className="flex gap-2.5 text-sm leading-[1.75] text-white/70"
+                >
+                  <span aria-hidden className="mt-0.5 shrink-0 text-gold">
+                    ✓
+                  </span>
+                  {line}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* 나머지 */}
+      <div className="mx-auto mt-24 w-full max-w-6xl px-5 sm:px-8">
+        <ul className="grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+          {rest.map((item, i) => (
             <li key={`${item.brand}-${i}`}>
-              <Diagram
+              <BrandOrbit
                 brand={item.brand}
                 period={item.period}
                 items={item.items}

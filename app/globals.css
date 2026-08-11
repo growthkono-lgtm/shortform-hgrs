@@ -33,7 +33,8 @@
 
   /* 서체 — hgrs.io 실측: 한글 Pyeojin Gothic, 라틴 DM Sans */
   --font-sans: var(--font-pyeojin), var(--font-dm-sans), system-ui, sans-serif;
-  --font-display: var(--font-dm-sans), var(--font-pyeojin), system-ui, sans-serif;
+  --font-display:
+    var(--font-dm-sans), var(--font-pyeojin), system-ui, sans-serif;
 
   /* 자간 — hgrs.io 실측: 헤드라인 -0.04em, 영문 아이브로우 +0.02em */
   --tracking-head: -0.04em;
@@ -286,11 +287,70 @@ dd {
   font-weight: 700;
   color: var(--color-ink);
   text-decoration: underline;
-  text-decoration-color: color-mix(in oklab, var(--color-gold) 85%, transparent);
+  text-decoration-color: color-mix(
+    in oklab,
+    var(--color-gold) 85%,
+    transparent
+  );
   text-decoration-thickness: 2px;
   text-underline-offset: 4px;
 }
 /* 다크 섹션에서는 글자를 흰색으로 올리고 밑줄만 골드로 남긴다 */
 .on-dark .rich em {
   color: #fff;
+}
+
+/* ── /sns-brand 스크롤 연출 (partnership 원본 재현) ─────────────
+   진행도 --p (0 → 1)는 JS가 잰다 (components/sns/use-view-progress.ts).
+   기본값이 1이라 JS가 안 돌면 **완성된 상태**가 그대로 보인다.
+
+   처음엔 CSS 스크롤 구동(animation-timeline: view())으로 짰는데,
+   CSS.supports 가 true 인데도 ViewTimeline 이 활성화되지 않는 환경이 있었다
+   (timeline.currentTime === null → 끝 상태 고정). 검증 못 하는 방식은 버렸다. */
+
+/* 역량 카드 트랙 — 스크롤에 맞춰 옆으로 흐른다 */
+@media (min-width: 1024px) {
+  .cap-track {
+    transform: translateX(calc(var(--cap-shift, -26%) * var(--p, 1)));
+  }
+}
+
+/* 파트 수렴 — 흩어져 있던 업무들이 모여 하나의 전략이 된다.
+   출발 위치는 위성마다 --fx/--fy 로 들고 있다(오른쪽에 일렬로 늘어선 상태). */
+.converge .sat {
+  --q: calc(1 - var(--p, 1));
+  transform: translate(
+      calc(var(--fx, 0) * var(--q)),
+      calc(var(--fy, 0) * var(--q))
+    )
+    scale(calc(1 - 0.14 * var(--q)));
+  opacity: calc(1 - 0.82 * var(--q));
+}
+/* 위성마다 도착 시점을 어긋나게 — 한꺼번에 붙으면 조립되는 느낌이 안 난다 */
+.converge .seat-1 .sat {
+  --q: clamp(0, calc((1 - var(--p, 1)) * 1.18), 1);
+}
+.converge .seat-2 .sat {
+  --q: clamp(0, calc((1 - var(--p, 1)) * 1.36), 1);
+}
+.converge .seat-3 .sat {
+  --q: clamp(0, calc((1 - var(--p, 1)) * 1.54), 1);
+}
+
+/* 중앙 오브 — 원본의 푸른 구체 */
+.brand-orb {
+  background: radial-gradient(
+    circle at 38% 32%,
+    color-mix(in oklab, var(--color-accent) 55%, #fff),
+    var(--color-accent) 45%,
+    color-mix(in oklab, var(--color-accent) 70%, #000) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cap-track,
+  .converge .sat {
+    transform: none;
+    opacity: 1;
+  }
 }
