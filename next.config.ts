@@ -10,14 +10,16 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   async redirects() {
     return [
-      // www → apex. canonical 로도 막고 있지만, 같은 내용이 두 주소로 200 을 주면
-      // 크롤 예산이 갈린다. 한쪽으로 모은다.
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "www.hgrs.io" }],
-        destination: "https://hgrs.io/:path*",
-        permanent: true,
-      },
+      /**
+       * ⚠️ www → apex 308 을 걸었다가 뺐다 (2026-08-11).
+       *
+       * apex 인증서가 발급되기 전 Vercel 이 apex → www 로 308 을 내보냈고,
+       * 그게 브라우저에 **영구 캐시**된 상태에서 반대 방향 308 을 얹으니
+       * ERR_TOO_MANY_REDIRECTS 로 물렸다. 308 은 브라우저가 지우지 않는다.
+       *
+       * 그래서 www 도 그냥 200 으로 서빙한다. 중복 색인은 canonical 이 막는다
+       * (모든 페이지 canonical 은 https://hgrs.io/... 로 고정).
+       */
       // 서브도메인 → 루트 도메인 하위 경로 (2026-08-11 도메인 이전).
       // shortform.hgrs.io 에 쌓인 검색 신호를 hgrs.io 로 넘긴다. 링크는 죽지 않는다.
       {
