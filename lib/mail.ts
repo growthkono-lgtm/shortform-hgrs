@@ -7,7 +7,8 @@ export type BrochureInquiry = {
 };
 
 /** `npm run deck` 이 만들어 public/ 에 두는 소개서 파일명 */
-const BROCHURE_FILE = "hgrs-shortform-studio-brochure.pdf";
+/** `npm run deck` 이 만들어 public/ 에 두는 소개서 파일명 (숏폼+브랜드SNS 종합) */
+const BROCHURE_FILE = "hgrs-studio-brochure.pdf";
 
 /**
  * 자동 메일 발송.
@@ -121,8 +122,8 @@ ${body}
 
 /** 소개서 파일 — `npm run deck` 이 만들어 public/ 에 둔다 */
 export const BROCHURE = {
-  file: "hgrs-shortform-studio-brochure.pdf",
-  filename: "해그로시_숏폼_스튜디오_소개서.pdf",
+  file: "hgrs-studio-brochure.pdf",
+  filename: "해그로시_스튜디오_종합소개서.pdf",
 } as const;
 
 /**

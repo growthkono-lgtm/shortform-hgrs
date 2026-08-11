@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { createAdminClient } from "@/lib/supabase/server";
 import { CONSENT_VERSION } from "@/lib/consents";
+import { BROCHURE, brochureMail, brochureUrl, sendMail } from "@/lib/mail";
 
 export type InquiryState = { ok: boolean; error: string | null };
 
@@ -64,7 +65,9 @@ export async function submitInquiry(
     null;
 
   const admin = createAdminClient();
-  const { error } = await admin.from("inquiries").insert({
+  const { data: inserted, error } = await admin
+    .from("inquiries")
+    .insert({
     company_name: companyName,
     contact_name: contactName,
     email,
@@ -77,11 +80,41 @@ export async function submitInquiry(
     consent_version: CONSENT_VERSION,
     marketing_agreed: marketing,
     ip_address: ip,
-    user_agent: head.get("user-agent"),
+      user_agent: head.get("user-agent"),
+    })
+    .select("id, email, contact_name, company_name")
+    .single();
+
+  if (error || !inserted) {
+    return { ok: false, error: "접수 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요." };
+  }
+
+  /**
+   * 접수 즉시 소개서를 보낸다 (2026-08-11).
+   *
+   * 예전에는 어드민이 [소개서 발송]을 눌러야 나갔다. 문의한 사람은 그때까지
+   * 아무것도 못 받는데, 그 사이가 제일 식는 구간이다.
+   *
+   * **발송 실패가 접수 실패로 번지면 안 된다.** 신청은 이미 DB에 들어갔고
+   * 어드민에서 다시 보낼 수 있다. 그래서 결과를 화면에 되돌리지 않고
+   * email_log(sendMail 내부)에만 남긴다.
+   */
+  const mail = brochureMail(inserted);
+  const sent = await sendMail({
+    kind: "brochure",
+    to: inserted.email,
+    subject: mail.subject,
+    html: mail.html,
+    inquiryId: inserted.id,
+    // 첨부와 링크를 함께 — 첨부를 막아 둔 메일 환경이 적지 않다
+    attachments: [{ filename: BROCHURE.filename, path: brochureUrl }],
   });
 
-  if (error) {
-    return { ok: false, error: "접수 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요." };
+  if (sent.ok) {
+    await admin
+      .from("inquiries")
+      .update({ status: "sent", brochure_sent_at: new Date().toISOString() })
+      .eq("id", inserted.id);
   }
 
   return { ok: true, error: null };

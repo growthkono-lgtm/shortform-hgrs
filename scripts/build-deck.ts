@@ -177,9 +177,9 @@ pages.push(
   slide(
     `<div class="cover">
   <div class="cover-l">
-    <p class="cover-en">HGRS SHORTFORM STUDIO</p>
-    <h1>해그로시<br>숏폼 스튜디오<br><span class="chip-title">소개서</span></h1>
-    <p class="cover-sub">인플루언서 시딩부터 구매 전환 숏폼까지<br>따로 발주하시던 두 가지를 한 라인으로 만들어 드립니다.</p>
+    <p class="cover-en">HGRS STUDIO</p>
+    <h1>해그로시<br>스튜디오<br><span class="chip-title">종합 소개서</span></h1>
+    <p class="cover-sub">브랜드 SNS 채널 커뮤니케이션부터 구매 전환 숏폼까지<br>브랜드 퍼널을 완성하는 두 서비스 라인을 함께 소개합니다.</p>
     <div class="cover-stats">
       <div><strong>30+</strong><span>브랜드 프로젝트</span></div>
       <div><strong>3억대</strong><span>연 거래액</span></div>
@@ -534,6 +534,86 @@ ${packages
 </div>
 
 <p class="vat">※ 부가세 별도 · ${esc(POLICY.seedingBundleOnly)}</p>`),
+);
+
+// 15-1 브랜드 SNS 채널 — 서비스 라인 소개
+
+
+
+
+
+pages.push(
+  slide(`
+${head("브랜드 SNS 채널 커뮤니케이션", "숏폼 소재 옆에 채널 자체를 함께 굴리는 두 번째 서비스 라인입니다")}
+<div class="two">
+  <div class="panel panel-ink">
+    <p class="pk">hgrs.io/sns-brand</p>
+    <p class="pt">팔로워를 모으는 채널 말고,<br>팬과 매출을 만드는 채널</p>
+  </div>
+  <div class="kv">
+    <div><dt>대상</dt><dd>인스타그램 · 유튜브 중 메인 채널 선정 후 미러링</dd></div>
+    <div><dt>범위</dt><dd>채널 전략 설계 · 컨텐츠 에디팅/덕션 · 브랜드 CRM 퍼널 연결</dd></div>
+    <div><dt>투입</dt><dd>PM/CP · 컨텐츠 · 퍼널 · 퍼포먼스 4개 팀</dd></div>
+    <div><dt>기간</dt><dd>최소 6개월 · 기본 1년 단위 파트너십</dd></div>
+    <div><dt>운영</dt><dd>분기별 신규 4-5개 프로젝트만 추가 진행</dd></div>
+  </div>
+</div>`),
+);
+
+// 15-2 채널 성과 사례
+
+
+
+
+
+pages.push(
+  slide(`
+${head("채널 성과", "실제로 채널을 기획·제작·운영한 프로젝트 기록입니다")}
+<div class="cases">
+${[
+  { no: "01", brand: "크래프톤 배틀그라운드", scale: "12개월 · 이스포츠", role: "공식 SNS 5개 채널 IMC", img: "/sns/krafton-contents.jpg", stats: [["300편", "유튜브 기획제작"], ["5개", "공식 채널 운영"]] },
+  { no: "02", brand: "럽디 연애상담", scale: "12개월 · 서비스", role: "온드 유튜브 인물 브랜딩", img: "/sns/lovedy-funnel.png", stats: [["600%P", "퍼널 리드 성장"], ["60%", "CRM 전환율"]] },
+  { no: "03", brand: "열다 옷장정리", scale: "4개월 · 스타트업", role: "인물 브랜딩 + 광고 Multi-Use", img: "/sns/yeolda-shoot.jpg", stats: [["17%P", "CAC 개선"], ["1화", "알고리즘 노출"]] },
+  { no: "04", brand: "트러스티푸드", scale: "펫푸드 커머스", role: "컨텐츠 기반 IMC", img: "/sns/trusty-product.jpg", stats: [["1.4배", "예산 증액"], ["100%P+", "ROAS 상승"]] },
+]
+  .map(
+    (c) => `<div class="case">
+  <img class="case-img" src="${asset(c.img)}" alt="">
+  <div class="case-head">
+    <span class="case-no">${c.no}</span>
+    <div><p class="case-brand">${esc(c.brand)}</p><p class="case-scale">${esc(c.scale)}</p></div>
+  </div>
+  <div class="case-stats">${c.stats.map(([v, l]) => `<div><strong>${v}</strong><span>${l}</span></div>`).join("")}</div>
+  <p class="case-role">${esc(c.role)}</p>
+</div>`,
+  )
+  .join("")}
+</div>
+<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
+);
+
+// 15-3 두 라인의 관계
+
+
+
+
+
+pages.push(
+  slide(`
+${head("두 라인, 한 팀", "소재만 필요할 수도, 채널까지 함께 굴려야 할 수도 있습니다")}
+<div class="two">
+  <div class="panel panel-indigo">
+    <p class="pk light">숏폼 스튜디오</p>
+    <p class="pt2">편수 단위 광고 소재</p>
+    <p class="pt3">인플루언서 시딩과 구매 전환형 숏폼을 편수로 끊어 진행합니다.<br>지금 태울 소재가 급할 때 가장 빠릅니다.</p>
+  </div>
+  <div class="panel panel-ink">
+    <p class="pk">브랜드 SNS 채널</p>
+    <p class="pt2">연 단위 채널 파트너십</p>
+    <p class="pt3">채널 전략부터 편성·제작·성과 판독까지 한 팀이 붙습니다.<br>브랜드 자산을 쌓아야 할 때 맞습니다.</p>
+  </div>
+</div>
+<div class="pay-band">두 라인 모두 같은 제작 조직이 진행합니다 — 소재로 시작해 채널로 넓히는 순서가 가장 많습니다</div>`),
 );
 
 // 16 계약 · 결제

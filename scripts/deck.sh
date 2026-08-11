@@ -10,7 +10,8 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PORT="${DECK_PORT:-8909}"
-OUT="$ROOT/docs/deck/해그로시_숏폼_스튜디오_소개서.pdf"
+OUT="$ROOT/docs/deck/해그로시_스튜디오_종합소개서.pdf"
+PUB="$ROOT/public/hgrs-studio-brochure.pdf"
 CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 mkdir -p "$ROOT/docs/deck"
@@ -39,3 +40,7 @@ else
   echo "실패: PDF가 만들어지지 않았습니다" >&2
   exit 1
 fi
+
+# 메일 첨부·링크가 public/ 에서 읽는다 — 빌드할 때마다 같이 갱신한다
+cp "$OUT" "$PUB"
+echo "배포본: $PUB"
