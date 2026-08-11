@@ -6,7 +6,6 @@ import { Field, SubmitError } from "@/components/auth/field";
 import { CONTACT } from "@/lib/sns-brand";
 import { INQUIRY_CONSENTS, CONSENT_VERSION } from "@/lib/consents";
 import { submitInquiry, type InquiryState } from "@/app/inquiry/actions";
-import { Spread } from "./mag";
 
 const INITIAL: InquiryState = { ok: false, error: null };
 
@@ -25,18 +24,16 @@ export function Contact() {
   const [state, formAction] = useActionState(submitInquiry, INITIAL);
 
   return (
-    <section id="contact" className="scroll-mt-20 bg-paper-warm py-16 sm:py-24">
-      <Spread>
-        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-ink pt-3">
-          <p className="mag-label">Contact</p>
-          <p className="text-xs text-muted">해그로시 브랜드 채널 프로젝트</p>
-        </div>
+    <section
+      id="contact"
+      className="scroll-mt-16 bg-paper-alt px-5 py-20 sm:px-8 md:py-28"
+    >
+      <div className="mx-auto w-full max-w-6xl">
+        <p className="eyebrow">Contact</p>
 
         {state.ok ? (
-          <div className="mt-12 border-y border-line py-16 text-center">
-            <h2 className="mag-serif text-[1.5rem] text-ink sm:text-[2rem]">
-              문의가 접수되었습니다
-            </h2>
+          <div className="mt-8 rounded-3xl border border-line bg-paper py-16 text-center">
+            <h2 className="text-2xl font-bold">문의가 접수되었습니다</h2>
             <p className="mt-5 text-sm leading-[1.9] text-muted">
               보내주신 채널 현황을 보고, 지금 필요한 작업 범위를 정리해
               회신드립니다. 영업일 기준 하루 정도 걸립니다.
@@ -44,14 +41,14 @@ export function Contact() {
           </div>
         ) : (
           <>
-            <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-14">
-              <h2 className="mag-serif text-[1.5rem] text-ink sm:text-[2rem] lg:text-[2.25rem]">
-                {CONTACT.title}
-              </h2>
-              <p className="text-sm leading-[1.9] text-muted lg:pt-2">
-                {CONTACT.lead}
-              </p>
-            </div>
+            <h2 className="mt-5 max-w-3xl text-[1.5rem] leading-[1.35] font-bold sm:text-[2.125rem] sm:leading-[1.3] lg:text-[2.75rem]">
+              다음 프로젝트가 될
+              <br />
+              <strong className="font-bold">브랜드를 찾습니다</strong>
+            </h2>
+            <p className="mt-5 max-w-2xl text-[0.9375rem] leading-[1.8] text-muted sm:text-base">
+              {CONTACT.lead}
+            </p>
 
             <form action={formAction} className="mt-12 max-w-2xl space-y-5">
               <SubmitError message={state.error} />
@@ -113,13 +110,16 @@ export function Contact() {
                   name="message"
                   rows={5}
                   placeholder="지금 어떤 채널을 어떻게 운영하고 계신지, 6개월 뒤 무엇이 달라져 있어야 하는지 적어 주세요."
-                  className="mt-2 w-full border border-line bg-paper px-4 py-3 text-sm placeholder:text-muted/70 focus:border-ink focus:outline-none"
+                  className="mt-2 w-full rounded-xl border border-line bg-paper px-4 py-3 text-sm placeholder:text-muted/70 focus:border-ink focus:outline-none"
                 />
               </div>
 
-              <div className="space-y-3 border border-line bg-paper p-5">
+              <div className="space-y-3 rounded-2xl border border-line bg-paper p-5">
                 {INQUIRY_CONSENTS.map((consent) => (
-                  <details key={consent.kind} className="border border-line bg-paper-warm">
+                  <details
+                    key={consent.kind}
+                    className="rounded-xl border border-line bg-paper-alt"
+                  >
                     <summary className="flex cursor-pointer list-none items-start gap-3 p-4 text-sm">
                       <input
                         type="checkbox"
@@ -128,7 +128,9 @@ export function Contact() {
                         onClick={(e) => e.stopPropagation()}
                         className="mt-0.5 size-4 shrink-0 accent-[var(--color-ink)]"
                       />
-                      <span className="flex-1 leading-[1.6]">{consent.label}</span>
+                      <span className="flex-1 leading-[1.6]">
+                        {consent.label}
+                      </span>
                       <span className="mt-0.5 shrink-0 text-xs text-muted underline underline-offset-2">
                         전문
                       </span>
@@ -140,7 +142,10 @@ export function Contact() {
                 ))}
                 <p className="text-[0.6875rem] leading-[1.7] text-muted">
                   동의 시각과 문안 버전({CONSENT_VERSION})이 함께 기록됩니다.{" "}
-                  <Link href="/privacy" className="underline underline-offset-2">
+                  <Link
+                    href="/privacy"
+                    className="underline underline-offset-2"
+                  >
                     개인정보처리방침
                   </Link>
                 </p>
@@ -148,7 +153,7 @@ export function Contact() {
 
               <button
                 type="submit"
-                className="w-full bg-ink px-6 py-4 text-sm font-bold text-paper transition-colors duration-200 hover:bg-ink-soft"
+                className="w-full rounded-full bg-ink px-6 py-4 text-sm font-bold text-paper transition-colors duration-200 hover:bg-ink-soft"
               >
                 프로젝트 문의하기
               </button>
@@ -157,13 +162,13 @@ export function Contact() {
         )}
 
         {/* 갈림길 — 이 페이지가 답이 아닌 방문자를 제자리로 보낸다 */}
-        <div className="mt-16 grid gap-px border-y border-line bg-line sm:grid-cols-2">
+        <div className="mt-16 grid gap-px overflow-hidden rounded-2xl bg-line sm:grid-cols-2">
           <Link
             href="/"
-            className="group bg-paper-warm px-6 py-7 transition-colors duration-200 hover:bg-paper"
+            className="group bg-paper-alt px-6 py-7 transition-colors duration-200 hover:bg-paper"
           >
-            <p className="mag-label">Shortform Studio</p>
-            <p className="mag-serif mt-2.5 text-base text-ink">
+            <p className="eyebrow">Shortform Studio</p>
+            <p className="mt-2.5 text-base font-bold text-ink">
               광고 소재가 먼저 필요하신가요?
               <span
                 aria-hidden
@@ -180,10 +185,10 @@ export function Contact() {
             href="https://hgrs.io/partnership"
             target="_blank"
             rel="noreferrer"
-            className="group bg-paper-warm px-6 py-7 transition-colors duration-200 hover:bg-paper"
+            className="group bg-paper-alt px-6 py-7 transition-colors duration-200 hover:bg-paper"
           >
-            <p className="mag-label">IMC Partnership</p>
-            <p className="mag-serif mt-2.5 text-base text-ink">
+            <p className="eyebrow">IMC Partnership</p>
+            <p className="mt-2.5 text-base font-bold text-ink">
               브랜드 전체 프로젝트가 필요하신가요?
               <span
                 aria-hidden
@@ -197,7 +202,7 @@ export function Contact() {
             </p>
           </a>
         </div>
-      </Spread>
+      </div>
     </section>
   );
 }

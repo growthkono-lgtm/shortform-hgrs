@@ -1,32 +1,37 @@
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { Cover } from "@/components/sns/s-cover";
-import { EditorsNote } from "@/components/sns/s-editors-note";
-import { FeatureArticle, ShortFeature } from "@/components/sns/s-feature";
-import { Archive, Method } from "@/components/sns/s-method";
+import { Clients } from "@/components/landing/s-clients";
+import { Reviews } from "@/components/landing/s11-reviews";
+import { Hero } from "@/components/sns/s-hero";
+import { Method, Pov } from "@/components/sns/s-pov";
+import { Engagement, Team } from "@/components/sns/s-team";
+import { Cases } from "@/components/sns/s-cases";
+import { Faq, FinalCta } from "@/components/sns/s-faq";
 import { Contact } from "@/components/sns/s-contact";
-import { FEATURES } from "@/lib/sns-brand";
 
 /**
- * /sns-brand — 브랜드 컨텐츠·SNS 채널의 기획·전략·운영.
+ * /sns-brand — 브랜드 SNS 채널 커뮤니케이션. **리드 확보용 서비스 랜딩**이다.
  *
- * 서비스 소개 페이지가 아니라 **매거진 한 호를 읽는 경험**으로 만든다.
- * 케이스를 포트폴리오 카드가 아니라 피처 기사로 싣고, 방식(Method)은
- * 기사 네 편을 다 읽은 뒤에야 꺼낸다 — "이 사람들 진짜 컨텐츠를 만든다"가
- * 설명이 아니라 지면 자체로 읽혀야 하기 때문이다.
+ * 처음엔 매거진 형식으로 만들었다가 되돌렸다 — 읽을거리가 아니라 연 단위 계약을
+ * 파는 화면이기 때문이다. 서체·색·배경은 숏폼 랜딩과 완전히 같은 시스템을 쓴다
+ * (같은 회사의 다른 서비스 라인으로 읽혀야 한다).
  *
- * 본문은 hgrs.io/portfolio 원문 발췌다. 카피는 lib/sns-brand.ts 한 곳에서만 고친다.
+ * 케이스 원문은 접어 둔다(Cases). 넷을 다 펼치면 페이지가 13,000px을 넘고,
+ * 스캔하는 방문자가 계약 조건까지 도달하지 못한다.
+ *
+ * 로고월(Clients)과 후기(Reviews)는 숏폼 랜딩 컴포넌트를 그대로 가져다 쓴다.
+ * 카피는 lib/sns-brand.ts 한 곳에서만 고친다.
  */
 export const metadata: Metadata = {
   // 루트 템플릿("| 해그로시 숏폼 스튜디오")은 이 페이지에 맞지 않는다 — 다른 서비스 라인이다
-  title: { absolute: "브랜드 컨텐츠 · SNS 채널 기획전략 운영 | 해그로시" },
+  title: { absolute: "브랜드 SNS 채널 커뮤니케이션 | 해그로시" },
   description:
-    "팔로워를 모으는 채널 말고, 팬과 매출을 만드는 채널. 크래프톤·럽디·열다·트러스티푸드 — 세일즈를 이해하는 에디터들이 성과에 필요한 작업만 하는 채널 기획·전략·운영 기록.",
+    "팔로워를 모으는 채널 말고, 팬과 매출을 만드는 채널. PM·컨텐츠·퍼널·퍼포먼스 4개 팀이 붙는 연 단위 채널 파트너십 — 크래프톤·럽디·열다·트러스티푸드 성과 기록.",
   openGraph: {
-    title: "브랜드 컨텐츠 · SNS 채널 | 해그로시",
+    title: "브랜드 SNS 채널 커뮤니케이션 | 해그로시",
     description:
-      "팔로워를 모으는 채널 말고, 팬과 매출을 만드는 채널. 네 편의 피처로 읽는 채널 기획·전략·운영.",
+      "팔로워를 모으는 채널 말고, 팬과 매출을 만드는 채널. 4개 팀이 붙는 연 단위 채널 파트너십.",
     images: ["/sns/krafton-contents.jpg"],
   },
 };
@@ -34,16 +39,18 @@ export const metadata: Metadata = {
 export default function SnsBrandPage() {
   return (
     <>
-      <SiteHeader tone="paper" nav={{ href: "#contact", label: "프로젝트 문의" }} />
-      <main className="bg-paper-warm">
-        <Cover />
-        <EditorsNote />
-        {FEATURES.map((feature, i) => (
-          <FeatureArticle key={feature.id} feature={feature} index={i} />
-        ))}
-        <ShortFeature />
+      <SiteHeader nav={{ href: "#contact", label: "프로젝트 문의" }} />
+      <main>
+        <Hero />
+        <Clients />
+        <Pov />
         <Method />
-        <Archive />
+        <Team />
+        <Engagement />
+        <Cases />
+        <Reviews />
+        <Faq />
+        <FinalCta />
         <Contact />
       </main>
       <SiteFooter />

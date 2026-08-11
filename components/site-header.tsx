@@ -20,7 +20,7 @@ export function SiteHeader({
     <header
       className={
         paper
-          ? "fixed inset-x-0 top-0 z-40 border-b border-line bg-paper-warm/85 text-ink backdrop-blur-md"
+          ? "fixed inset-x-0 top-0 z-40 border-b border-line bg-paper/85 text-ink backdrop-blur-md"
           : "fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-night/70 text-white backdrop-blur-md"
       }
     >

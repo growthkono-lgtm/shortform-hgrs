@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, Noto_Serif_KR } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import { SERVICE } from "@/lib/constants";
 import { ChannelTalk } from "@/components/channel-talk";
@@ -24,19 +24,6 @@ const pyeojin = localFont({
   ],
 });
 
-/**
- * 세리프 — /sns-brand("브랜드 컨텐츠 매거진") 전용 헤드라인 서체.
- * 랜딩(숏폼)과 결을 의도적으로 다르게 가져가되 컬러 토큰은 공유한다.
- * subsets 에 'korean' 은 없다 — 구글이 한글을 이름 없는 unicode-range 로 쪼개 내려주기 때문이다.
- * latin 만 지정해도 한글 face 가 함께 받아진다 (렌더 확인 완료).
- */
-const notoSerifKr = Noto_Serif_KR({
-  variable: "--font-noto-serif-kr",
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  display: "swap",
-});
-
 export const metadata: Metadata = {
   metadataBase: new URL(SERVICE.url),
   title: {
@@ -56,7 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="ko"
-      className={`${pyeojin.variable} ${dmSans.variable} ${notoSerifKr.variable} h-full antialiased`}
+      className={`${pyeojin.variable} ${dmSans.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-paper text-ink">
         {children}
