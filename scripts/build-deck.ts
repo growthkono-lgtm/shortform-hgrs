@@ -19,6 +19,7 @@ import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { PLANS, POLICY, COMPANY, SERVICE, formatKRW } from "@/lib/constants";
 import { SEEDING_STAGES, SHORTS_STAGES } from "@/lib/stages";
+import { WALL_CLIPS, clipPoster } from "@/lib/clips";
 /**
  * 소개서의 SNS·종합 파트는 **랜딩(/sns-brand)과 같은 데이터를 읽는다.**
  * 예전엔 여기서 문안을 새로 지어 썼는데, 사이트와 내용이 갈라져 두 번 고쳐야 했다.
@@ -309,7 +310,7 @@ ${[
 </div>`,
 ).join("")}
 </div>
-<div class="oneline">소재로 시작해 채널로 넓히는 순서가 가장 많습니다</div>`),
+`),
 );
 
 // PART1
@@ -352,7 +353,7 @@ ${[
 ]
   .map(([t, d]) => `<div class="pos"><p class="pos-t">${t}</p><p class="pos-d">${d}</p></div>`)
   .join("")}
-    <div class="pos-note">시딩과 숏폼을 한 팀이 맡습니다</div>
+    <div class="pos-note">인플 시딩부터 매출형 숏폼까지 해결합니다.</div>
   </div>
 </div>`),
 );
@@ -409,7 +410,7 @@ ${CASES.map(
 
 pages.push(
   slide(`
-${head("숏폼 제작 현장", "촬영 현장과 브랜드 현장에서 저희 팀이 직접 찍고 직접 만듭니다")}
+${head("브랜드 마케팅과 덕션의 일체화 집단", "전략을 아는 사람이 만들고, 만드는 사람이 성과를 봅니다")}
 <div class="creds">
 ${CREDENTIALS.map((c) => `<span class="cred">${c}</span>`).join("")}
 </div>
@@ -418,19 +419,28 @@ ${Array.from({ length: 8 }, (_, i) => `<img src="${asset(`/portfolio/crew/crew-0
 </div>`),
 );
 
-// 12 제작 시스템
-
-
+// 14 이용 방법 (실제 화면)
 
 
 
 pages.push(
   slide(`
-${head("제작 시스템", "프로젝트에서 반복 검증한 위너 소재 제작 시스템을 그대로 쓰실 수 있습니다")}
-<div class="band3 tall">
-  <div class="bd bd-indigo"><p class="bd-n">01</p><p class="bd-t">판독 기준</p><p class="bd-d">조회수가 아니라 구매 전환. 훅 유지율 · CPA · ROAS로 위너를 가립니다.</p></div>
-  <div class="bd bd-gold"><p class="bd-n">02</p><p class="bd-t">제작 사이클</p><p class="bd-d">기획 → 제작 → 데이터 판독 → 변주. 프로젝트에서 수십 회 반복한 순서입니다.</p></div>
-  <div class="bd bd-alt"><p class="bd-n">03</p><p class="bd-t">팀 구조</p><p class="bd-d">담당이 나뉘어 붙습니다. 한 명이 빠져도 일정이 멈추지 않습니다.</p></div>
+${head("프로젝트 대시보드 확인", "인플루언서 시딩부터 2차 활용, 숏폼 기획·제작, 컨텐츠 배포까지 대시보드에서 바로 확인하세요")}
+<div class="board">
+  <div class="board-side">
+    <div class="board-item">
+      <img src="${asset("/deck/ui-cpv.png")}" alt="">
+      <p class="cap">1차 선정 심사 — 팔로워 · 평균 조회 · CPV를 보고 직접 선택</p>
+    </div>
+    <div class="board-item">
+      <img src="${asset("/deck/ui-brandai.png")}" alt="">
+      <p class="cap">브랜드 AI 기본 분석 — 타겟 · USP · 객단가 · 금지 표현 구조화</p>
+    </div>
+  </div>
+  <div class="board-main">
+    <img src="${asset("/deck/ui-dashboard.png")}" alt="">
+    <p class="cap">진행중인 캠페인 — 진행 단계 · 플랜 · 기한을 한 화면에서</p>
+  </div>
 </div>`),
 );
 
@@ -482,31 +492,6 @@ ${packages
 <p class="vat">※ 부가세 별도 · ${esc(POLICY.seedingBundleOnly)}</p>`),
 );
 
-// 14 이용 방법 (실제 화면)
-
-
-
-pages.push(
-  slide(`
-${head("프로젝트 대시보드 확인", "초기 요청사항부터 컨텐츠 컨펌과 진행 단계까지 한번에 확인하세요")}
-<div class="board">
-  <div class="board-side">
-    <div class="board-item">
-      <img src="${asset("/deck/ui-cpv.png")}" alt="">
-      <p class="cap">1차 선정 심사 — 팔로워 · 평균 조회 · CPV를 보고 직접 선택</p>
-    </div>
-    <div class="board-item">
-      <img src="${asset("/deck/ui-brandai.png")}" alt="">
-      <p class="cap">브랜드 AI 기본 분석 — 타겟 · USP · 객단가 · 금지 표현 구조화</p>
-    </div>
-  </div>
-  <div class="board-main">
-    <img src="${asset("/deck/ui-dashboard.png")}" alt="">
-    <p class="cap">진행중인 캠페인 — 진행 단계 · 플랜 · 기한을 한 화면에서</p>
-  </div>
-</div>`),
-);
-
 // PART2
 
 
@@ -532,7 +517,7 @@ pages.push(
 
 pages.push(
   slide(`
-${head(PROCESS.title, PROCESS.lead)}
+${head(PROCESS.title, "SNS 채널 연간 기획운영이 기본이며, 아래 범위는 필요 시 협의해 더합니다")}
 <div class="cards4">
 ${PROCESS.items
   .map(
@@ -549,32 +534,38 @@ ${PROCESS.items
 </div>`),
 );
 
-// 02-6 채널 성과 (랜딩 Cases 섹션 그대로)
+// 02-6 채널 성과 — 브랜드당 한 장
 
 
 
 
 
-pages.push(
-  slide(`
-${head("채널 성과", "채널을 기획·제작·운영해 만든 결과입니다")}
-<div class="cases">
-${FEATURES.map(
-  (f, i) => `<div class="case">
-  <img class="case-img" src="${asset(f.hero.src)}" alt="">
-  <div class="case-head">
-    <span class="case-no">0${i + 1}</span>
-    <div><p class="case-brand">${esc(f.meta.split(" (")[0])}</p><p class="case-scale">${esc(f.category)}</p></div>
+FEATURES.forEach((f, idx) => {
+  pages.push(
+    slide(`
+${head(f.title, `${f.meta} · ${f.category}`)}
+<div class="brandcase">
+  <div class="bc-body">
+    ${f.body.map((t) => `<p class="bc-p">${esc(plain(t))}</p>`).join("")}
+    <ul class="bc-stats">
+      ${f.stats
+        .map(
+          (st) =>
+            `<li><strong>${esc(st.v)}</strong>${st.note ? `<span>${esc(st.note)}</span>` : ""}</li>`,
+        )
+        .join("")}
+    </ul>
   </div>
-  <ul class="case-facts">${f.stats
-    .map((st) => `<li>${esc(st.v)}${st.note ? `<span>(${esc(st.note)})</span>` : ""}</li>`)
-    .join("")}</ul>
-  <p class="case-role">${esc(f.title)}</p>
-</div>`,
-).join("")}
-</div>
-<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
-);
+  <div class="bc-media">
+    <img src="${asset(f.hero.src)}" alt="">
+    ${f.figures
+      .slice(0, 1)
+      .map((g) => `<img src="${asset(g.src)}" alt="">`)
+      .join("")}
+  </div>
+</div>`),
+  );
+});
 
 // 02-5 투입 조직 (랜딩 Team 섹션 그대로)
 
@@ -599,7 +590,30 @@ ${TEAM.teams
 <p class="foot-note">${esc(plain(TEAM.footnote))}</p>`),
 );
 
-// 02-6-1 최근 주요 포트폴리오 (랜딩 Portfolio 섹션)
+// 02-6-1 최근 주요 포트폴리오 — 8장씩 나눠 담는다 (한 장에 12개를 넣으니 잘렸다)
+
+
+
+
+
+[0, 8].forEach((from, page) => {
+  const rows = PORTFOLIO.videos.slice(from, from + 8);
+  if (!rows.length) return;
+  pages.push(
+    slide(`
+${head("최근 주요 포트폴리오", page === 0 ? "실제로 편성·제작한 롱폼 컨텐츠입니다" : "브랜드 채널에 편성한 컨텐츠를 이어서 보여드립니다")}
+<div class="thumbs">
+${rows
+  .map(
+    (v) => `<div class="thumb"><img src="https://i.ytimg.com/vi/${v.id}/mqdefault.jpg" alt=""><span>${esc(v.title)}</span></div>`,
+  )
+  .join("")}
+</div>
+${page === 1 ? `<p class="foot-note">${esc(PORTFOLIO.note)}</p>` : ""}`),
+  );
+});
+
+// 02-6-2 숏폼 포트폴리오
 
 
 
@@ -607,16 +621,12 @@ ${TEAM.teams
 
 pages.push(
   slide(`
-${head(PORTFOLIO.title, "실제로 편성·제작한 롱폼 컨텐츠입니다")}
-<div class="thumbs">
-${PORTFOLIO.videos
-  .slice(0, 12)
-  .map(
-    (v) => `<div class="thumb"><img src="https://i.ytimg.com/vi/${v.id}/mqdefault.jpg" alt=""><span>${esc(v.title)}</span></div>`,
-  )
+${head("숏폼 포트폴리오", "브랜드 광고 계정에 바로 태운 구매 전환형 소재입니다")}
+<div class="shorts">
+${WALL_CLIPS.slice(0, 12)
+  .map((c) => `<div class="short"><img src="${asset(clipPoster(c.slug))}" alt=""></div>`)
   .join("")}
-</div>
-<p class="foot-note">${esc(PORTFOLIO.note)}</p>`),
+</div>`),
 );
 
 // PART3
@@ -642,12 +652,13 @@ pages.push(
 
 
 
-pages.push(
-  slide(`
-${head(ACTIONS.title, ACTIONS.lead)}
+[0, 4].forEach((actFrom, actPage) => {
+  pages.push(
+    slide(`
+${head(ACTIONS.title, actPage === 0 ? ACTIONS.lead : "브랜드마다 붙인 파트 조합과 결과를 이어서 보여드립니다")}
 <div class="orbits">
 ${ACTIONS.items
-  .slice(0, 4)
+  .slice(actFrom, actFrom + 4)
   .map(
     (a) => `<div class="orbit-card">
   <div class="orbit">
@@ -665,8 +676,9 @@ ${ACTIONS.items
   )
   .join("")}
 </div>
-<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
-);
+${actPage === 1 ? `<p class="foot-note">${esc(POLICY.noGuarantee)}</p>` : ""}`),
+  );
+});
 
 // 16 계약 · 결제
 
@@ -696,8 +708,8 @@ pages.push(
     `<div class="cover end">
   <div class="cover-l">
     <p class="cover-en">CONTACT</p>
-    <h1>다음 달 광고 소재,<br>함께 준비해 드릴까요?</h1>
-    <p class="cover-sub">브랜드 상황을 남겨 주시면 구성과 금액을 정리해 회신드립니다.</p>
+    <h1>컨텐츠로<br>브랜드 스케일업을 완성하세요.</h1>
+    <p class="cover-sub">브랜드 상황을 남겨 주시면 구성과 금액을 정리해 회신드립니다.<br><a class="mailcta" href="mailto:contact@h-grs.com?subject=%5B%ED%95%B4%EA%B7%B8%EB%A1%9C%EC%8B%9C%5D%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EB%AC%B8%EC%9D%98">contact@h-grs.com 으로 문의하기</a></p>
     <p class="cover-org">${COMPANY.name} · 사업자등록번호 ${COMPANY.bizRegNumber}<br>${COMPANY.address}</p>
   </div>
   <div class="contact-grid">
@@ -849,8 +861,8 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .creds{display:flex;flex-wrap:wrap;gap:3mm;margin-bottom:6mm;flex-shrink:0}
 .cred{font-size:9pt;font-weight:700;color:#fff;background:var(--indigo);border-radius:99px;padding:2.4mm 6mm}
 .cred:nth-child(even){background:var(--gold)}
-.crew{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;gap:3.5mm;flex:1;min-height:0}
-.crew img{width:100%;height:100%;object-fit:cover;border-radius:2mm}
+.crew{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:3.5mm;flex:1 1 0;min-height:0;overflow:hidden}
+.crew img{width:100%;height:100%;object-fit:cover;display:block;border-radius:2.5mm}
 
 /* 역할 */
 .roles{display:grid;grid-template-columns:repeat(3,1fr);gap:3.5mm;align-content:start}
@@ -977,6 +989,8 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .terms{display:flex;flex-direction:column;gap:3mm}
 .term{border-left:4px solid var(--gold);background:var(--alt);border-radius:0 2mm 2mm 0;padding:5mm 6mm;font-size:9pt;line-height:1.7;color:var(--muted)}
 
+.mailcta{display:inline-block;margin-top:5mm;background:#fff;color:#030303;text-decoration:none;border-radius:99mm;padding:3.5mm 8mm;font-size:9.5pt;font-weight:700}
+
 /* 통합 브랜드 액션 — 원형 다이어그램 (사이트와 같은 구도, 정지 상태) */
 .orbits{display:grid;grid-template-columns:repeat(4,1fr);gap:5mm;flex:1;align-content:start}
 .orbit-card{display:flex;flex-direction:column;gap:4mm}
@@ -1003,18 +1017,34 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .corp-lines strong{color:var(--ink)}
 
 /* 케이스 성과 — 문장 그대로 (숫자만 뽑아 쪼개면 문맥이 깨진다) */
-.case-facts{margin:4mm 6mm 0;display:flex;flex-direction:column;gap:2.5mm}
+.case-facts{margin:4mm 6mm 0;display:flex;flex-direction:column;gap:2.5mm;list-style:none}
 .case-facts li{font-size:8.5pt;line-height:1.5;font-weight:700;color:var(--ink)}
 .case-facts li span{display:block;font-size:7pt;font-weight:400;color:var(--muted);margin-top:1mm}
+
+/* 브랜드 케이스 — 한 브랜드 한 장 */
+.brandcase{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:8mm;flex:1;min-height:0;overflow:hidden}
+.bc-body{display:flex;flex-direction:column}
+.bc-p{font-size:8.5pt;line-height:1.75;color:var(--muted);margin-bottom:3.5mm}
+.bc-stats{margin-top:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;list-style:none}
+.bc-stats li{background:var(--alt);border-radius:2.5mm;padding:4mm}
+.bc-stats strong{display:block;font-size:8.5pt;line-height:1.45}
+.bc-stats span{display:block;font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
+.bc-media{display:flex;flex-direction:column;gap:4mm;min-width:0}
+.bc-media img{width:100%;flex:1 1 0;min-height:0;object-fit:cover;border:1px solid var(--line);border-radius:3mm}
+
+/* 숏폼 포트폴리오 */
+.shorts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:3.5mm;flex:1 1 0;min-height:0;overflow:hidden}
+.short{border-radius:2.5mm;overflow:hidden;background:var(--alt);min-height:0}
+.short img{width:100%;height:100%;object-fit:cover;display:block}
 
 /* 4분할 카드 (이미지 + 본문) */
 .cards4{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;flex:1}
 .card4{border:1px solid var(--line);border-radius:3mm;display:flex;flex-direction:column;overflow:hidden;align-self:start}
 .card4-img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:center;display:block;border-bottom:1px solid var(--line)}
-.card4-body{padding:6mm}
+.card4-body{padding:7mm;text-align:center;display:flex;flex-direction:column;align-items:center}
 .card4-no{font-size:7.5pt;font-weight:700;color:#fff;background:var(--indigo);border-radius:50%;width:7mm;height:7mm;display:flex;align-items:center;justify-content:center}
-.card4-t{font-size:11pt;font-weight:700;margin-top:4mm}
-.card4-d{font-size:8.5pt;line-height:1.75;color:var(--muted);margin-top:3mm}
+.card4-t{font-size:13pt;font-weight:700;margin-top:4mm}
+.card4-d{font-size:9.5pt;line-height:1.8;color:var(--muted);margin-top:3.5mm}
 
 /* 영상 썸네일 그리드 */
 .thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:3.5mm;flex:1;align-content:start}
@@ -1048,8 +1078,8 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .team-img{width:100%;aspect-ratio:4/3;object-fit:cover;object-position:top;display:block}
 .team-name{font-size:11.5pt;font-weight:700;margin:5mm 6mm 0}
 .team-list{margin:4mm 6mm 0 !important}
-.team-list{margin-top:5mm;display:flex;flex-direction:column;gap:3mm}
-.team-list li{font-size:8.5pt;line-height:1.65;color:var(--muted);padding-left:4mm;position:relative}
+.team-list{margin-top:5mm;display:flex;flex-direction:column;gap:3mm;list-style:none}
+.team-list li{font-size:8.5pt;line-height:1.65;color:var(--muted);padding-left:4mm;position:relative;list-style:none}
 .team-list li:before{content:"";position:absolute;left:0;top:2.6mm;width:1.6mm;height:1.6mm;border-radius:50%;background:var(--gold)}
 
 /* 통합 브랜드 액션 */
