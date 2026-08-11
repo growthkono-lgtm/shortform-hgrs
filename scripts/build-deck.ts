@@ -337,7 +337,7 @@ pages.push(
 
 pages.push(
   slide(`
-${head("해그로시 서비스 영역", "시딩과 2차 활용 영상 확보부터 구매전환 숏폼 기획제작까지 하나로 해결해 드립니다")}
+${head("숏폼 스튜디오 서비스 영역", "시딩과 2차 활용 영상 확보부터 구매전환 숏폼 기획제작까지 하나로 해결해 드립니다")}
 <div class="two vcenter">
   <div class="venn">
     <div class="venn-c venn-a"><span>인플루언서<br>시딩</span></div>
@@ -376,116 +376,6 @@ ${FLOW.map(
 <div class="oneline">한 번의 발주 · 하나의 담당 · 하나의 대시보드</div>`),
 );
 
-// PART2
-
-
-
-
-
-pages.push(
-  slide(
-    `<div class="part">
-  <p class="part-k">LINE 02</p>
-  <p class="part-t">브랜드 SNS 채널 컨텐츠 활성화</p>
-  <p class="part-d">브랜드 유튜브 · 인스타그램 채널의 기획 · 전략 · 운영</p>
-</div>`,
-    { dark: true, bare: true },
-  ),
-);
-
-// 02-4 SNS 종합 브랜드 마케팅 시스템 (랜딩 Process 섹션 그대로)
-
-
-
-
-
-pages.push(
-  slide(`
-${head(PROCESS.title, PROCESS.lead)}
-<div class="cards4">
-${PROCESS.items
-  .map(
-    (it) => `<div class="card4">
-  <img class="card4-img" src="${asset(it.shot.src)}" alt="">
-  <div class="card4-body">
-    <span class="card4-no">${it.no}</span>
-    <p class="card4-t">${esc(it.title)}</p>
-    <p class="card4-d">${esc(it.body)}</p>
-  </div>
-</div>`,
-  )
-  .join("")}
-</div>`),
-);
-
-// PART3
-
-
-
-
-
-pages.push(
-  slide(
-    `<div class="part">
-  <p class="part-k">LINE 03</p>
-  <p class="part-t">종합 브랜드 마케팅 전개</p>
-  <p class="part-d">채널 · 컨텐츠 · 광고에 이벤트 · 프로모션 · CRM 까지</p>
-</div>`,
-    { dark: true, bare: true },
-  ),
-);
-
-// 15-5 통합 브랜드 액션 (랜딩 Actions 섹션 그대로)
-
-
-
-
-
-pages.push(
-  slide(`
-${head(ACTIONS.title, ACTIONS.lead)}
-<div class="acts">
-${ACTIONS.items
-  .slice(0, 6)
-  .map(
-    (a) => `<div class="act">
-  <p class="act-b">${esc(a.brand)} 브랜드${a.period ? ` · ${esc(a.period)}` : ""}</p>
-  <p class="act-p">${a.items.map((x) => esc(x)).join(" · ")}</p>
-  <p class="act-r">${esc(a.results[a.results.length - 1])}</p>
-</div>`,
-  )
-  .join("")}
-</div>
-<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
-);
-
-// 02-6 채널 성과 (랜딩 Cases 섹션 그대로)
-
-
-
-
-
-pages.push(
-  slide(`
-${head(SNS_CASES.title.join(" "), SNS_CASES.lead)}
-<div class="cases">
-${FEATURES.map(
-  (f, i) => `<div class="case">
-  <img class="case-img" src="${asset(f.hero.src)}" alt="">
-  <div class="case-head">
-    <span class="case-no">0${i + 1}</span>
-    <div><p class="case-brand">${esc(f.meta.split(" (")[0])}</p><p class="case-scale">${esc(f.category)}</p></div>
-  </div>
-  <ul class="case-facts">${f.stats
-    .map((st) => `<li>${esc(st.v)}${st.note ? `<span>(${esc(st.note)})</span>` : ""}</li>`)
-    .join("")}</ul>
-  <p class="case-role">${esc(f.title)}</p>
-</div>`,
-).join("")}
-</div>
-<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
-);
-
 // 07 성과 사례
 
 
@@ -494,7 +384,7 @@ ${FEATURES.map(
 
 pages.push(
   slide(`
-${head("주요 성과", "소재 제작과 캠페인 운영으로 이런 결과를 만들어 왔습니다")}
+${head("숏폼 성과", "소재 제작과 캠페인 운영으로 만든 결과입니다")}
 <div class="cases">
 ${CASES.map(
   (c) => `<div class="case">
@@ -511,49 +401,6 @@ ${CASES.map(
 <p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
 );
 
-// 02-6-1 최근 주요 포트폴리오 (랜딩 Portfolio 섹션)
-
-
-
-
-
-pages.push(
-  slide(`
-${head(PORTFOLIO.title, "실제로 편성·제작한 롱폼 컨텐츠입니다")}
-<div class="thumbs">
-${PORTFOLIO.videos
-  .slice(0, 12)
-  .map(
-    (v) => `<div class="thumb"><img src="https://i.ytimg.com/vi/${v.id}/mqdefault.jpg" alt=""><span>${esc(v.title)}</span></div>`,
-  )
-  .join("")}
-</div>
-<p class="foot-note">${esc(PORTFOLIO.note)}</p>`),
-);
-
-// 02-5 투입 조직 (랜딩 Team 섹션 그대로)
-
-
-
-
-
-pages.push(
-  slide(`
-${head("투입 조직", plain(TEAM.lead))}
-<div class="teams">
-${TEAM.teams
-  .map(
-    (t) => `<div class="team">
-  <img class="team-img" src="${asset(t.photo)}" alt="">
-  <p class="team-name">${esc(t.name)}</p>
-  <ul class="team-list">${t.items.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
-</div>`,
-  )
-  .join("")}
-</div>
-<p class="foot-note">${esc(plain(TEAM.footnote))}</p>`),
-);
-
 // 10 제작 조직 (현장)
 
 
@@ -562,7 +409,7 @@ ${TEAM.teams
 
 pages.push(
   slide(`
-${head("스케일업 숏폼 기획제작 조직", "촬영 현장과 브랜드 현장에서 저희 팀이 직접 찍고 직접 만듭니다")}
+${head("숏폼 제작 현장", "촬영 현장과 브랜드 현장에서 저희 팀이 직접 찍고 직접 만듭니다")}
 <div class="creds">
 ${CREDENTIALS.map((c) => `<span class="cred">${c}</span>`).join("")}
 </div>
@@ -584,31 +431,6 @@ ${head("제작 시스템", "프로젝트에서 반복 검증한 위너 소재 �
   <div class="bd bd-indigo"><p class="bd-n">01</p><p class="bd-t">판독 기준</p><p class="bd-d">조회수가 아니라 구매 전환. 훅 유지율 · CPA · ROAS로 위너를 가립니다.</p></div>
   <div class="bd bd-gold"><p class="bd-n">02</p><p class="bd-t">제작 사이클</p><p class="bd-d">기획 → 제작 → 데이터 판독 → 변주. 프로젝트에서 수십 회 반복한 순서입니다.</p></div>
   <div class="bd bd-alt"><p class="bd-n">03</p><p class="bd-t">팀 구조</p><p class="bd-d">담당이 나뉘어 붙습니다. 한 명이 빠져도 일정이 멈추지 않습니다.</p></div>
-</div>`),
-);
-
-// 14 이용 방법 (실제 화면)
-
-
-
-pages.push(
-  slide(`
-${head("프로젝트 대시보드 확인", "초기 요청사항부터 컨텐츠 컨펌과 진행 단계까지 한번에 확인하세요")}
-<div class="board">
-  <div class="board-side">
-    <div class="board-item">
-      <img src="${asset("/deck/ui-cpv.png")}" alt="">
-      <p class="cap">1차 선정 심사 — 팔로워 · 평균 조회 · CPV를 보고 직접 선택</p>
-    </div>
-    <div class="board-item">
-      <img src="${asset("/deck/ui-brandai.png")}" alt="">
-      <p class="cap">브랜드 AI 기본 분석 — 타겟 · USP · 객단가 · 금지 표현 구조화</p>
-    </div>
-  </div>
-  <div class="board-main">
-    <img src="${asset("/deck/ui-dashboard.png")}" alt="">
-    <p class="cap">진행중인 캠페인 — 진행 단계 · 플랜 · 기한을 한 화면에서</p>
-  </div>
 </div>`),
 );
 
@@ -658,6 +480,192 @@ ${packages
 </div>
 
 <p class="vat">※ 부가세 별도 · ${esc(POLICY.seedingBundleOnly)}</p>`),
+);
+
+// 14 이용 방법 (실제 화면)
+
+
+
+pages.push(
+  slide(`
+${head("프로젝트 대시보드 확인", "초기 요청사항부터 컨텐츠 컨펌과 진행 단계까지 한번에 확인하세요")}
+<div class="board">
+  <div class="board-side">
+    <div class="board-item">
+      <img src="${asset("/deck/ui-cpv.png")}" alt="">
+      <p class="cap">1차 선정 심사 — 팔로워 · 평균 조회 · CPV를 보고 직접 선택</p>
+    </div>
+    <div class="board-item">
+      <img src="${asset("/deck/ui-brandai.png")}" alt="">
+      <p class="cap">브랜드 AI 기본 분석 — 타겟 · USP · 객단가 · 금지 표현 구조화</p>
+    </div>
+  </div>
+  <div class="board-main">
+    <img src="${asset("/deck/ui-dashboard.png")}" alt="">
+    <p class="cap">진행중인 캠페인 — 진행 단계 · 플랜 · 기한을 한 화면에서</p>
+  </div>
+</div>`),
+);
+
+// PART2
+
+
+
+
+
+pages.push(
+  slide(
+    `<div class="part">
+  <p class="part-k">LINE 02</p>
+  <p class="part-t">브랜드 SNS 채널 컨텐츠 활성화</p>
+  <p class="part-d">브랜드 유튜브 · 인스타그램 채널의 기획 · 전략 · 운영</p>
+</div>`,
+    { dark: true, bare: true },
+  ),
+);
+
+// 02-4 SNS 종합 브랜드 마케팅 시스템 (랜딩 Process 섹션 그대로)
+
+
+
+
+
+pages.push(
+  slide(`
+${head(PROCESS.title, PROCESS.lead)}
+<div class="cards4">
+${PROCESS.items
+  .map(
+    (it) => `<div class="card4">
+  <img class="card4-img" src="${asset(it.shot.src)}" alt="">
+  <div class="card4-body">
+    <span class="card4-no">${it.no}</span>
+    <p class="card4-t">${esc(it.title)}</p>
+    <p class="card4-d">${esc(it.body)}</p>
+  </div>
+</div>`,
+  )
+  .join("")}
+</div>`),
+);
+
+// 02-6 채널 성과 (랜딩 Cases 섹션 그대로)
+
+
+
+
+
+pages.push(
+  slide(`
+${head("채널 성과", "채널을 기획·제작·운영해 만든 결과입니다")}
+<div class="cases">
+${FEATURES.map(
+  (f, i) => `<div class="case">
+  <img class="case-img" src="${asset(f.hero.src)}" alt="">
+  <div class="case-head">
+    <span class="case-no">0${i + 1}</span>
+    <div><p class="case-brand">${esc(f.meta.split(" (")[0])}</p><p class="case-scale">${esc(f.category)}</p></div>
+  </div>
+  <ul class="case-facts">${f.stats
+    .map((st) => `<li>${esc(st.v)}${st.note ? `<span>(${esc(st.note)})</span>` : ""}</li>`)
+    .join("")}</ul>
+  <p class="case-role">${esc(f.title)}</p>
+</div>`,
+).join("")}
+</div>
+<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
+);
+
+// 02-5 투입 조직 (랜딩 Team 섹션 그대로)
+
+
+
+
+
+pages.push(
+  slide(`
+${head("채널 프로젝트 투입 조직", plain(TEAM.lead))}
+<div class="teams">
+${TEAM.teams
+  .map(
+    (t) => `<div class="team">
+  <img class="team-img" src="${asset(t.photo)}" alt="">
+  <p class="team-name">${esc(t.name)}</p>
+  <ul class="team-list">${t.items.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+</div>`,
+  )
+  .join("")}
+</div>
+<p class="foot-note">${esc(plain(TEAM.footnote))}</p>`),
+);
+
+// 02-6-1 최근 주요 포트폴리오 (랜딩 Portfolio 섹션)
+
+
+
+
+
+pages.push(
+  slide(`
+${head(PORTFOLIO.title, "실제로 편성·제작한 롱폼 컨텐츠입니다")}
+<div class="thumbs">
+${PORTFOLIO.videos
+  .slice(0, 12)
+  .map(
+    (v) => `<div class="thumb"><img src="https://i.ytimg.com/vi/${v.id}/mqdefault.jpg" alt=""><span>${esc(v.title)}</span></div>`,
+  )
+  .join("")}
+</div>
+<p class="foot-note">${esc(PORTFOLIO.note)}</p>`),
+);
+
+// PART3
+
+
+
+
+
+pages.push(
+  slide(
+    `<div class="part">
+  <p class="part-k">LINE 03</p>
+  <p class="part-t">종합 브랜드 마케팅 전개</p>
+  <p class="part-d">채널 · 컨텐츠 · 광고에 이벤트 · 프로모션 · CRM 까지</p>
+</div>`,
+    { dark: true, bare: true },
+  ),
+);
+
+// 15-5 통합 브랜드 액션 — 랜딩의 원형 다이어그램을 정지 상태로
+
+
+
+
+
+pages.push(
+  slide(`
+${head(ACTIONS.title, ACTIONS.lead)}
+<div class="orbits">
+${ACTIONS.items
+  .slice(0, 4)
+  .map(
+    (a) => `<div class="orbit-card">
+  <div class="orbit">
+    <span class="orbit-ring"></span>
+    <span class="orbit-ring2"></span>
+    <span class="orbit-orb"></span>
+    ${a.items
+      .slice(0, 4)
+      .map((x, k) => `<span class="sat sat-${k}">${esc(x)}</span>`)
+      .join("")}
+    <span class="orbit-label">${esc(a.brand)}<em>브랜드</em>${a.period ? `<i>${esc(a.period)}</i>` : ""}</span>
+  </div>
+  <p class="orbit-r">${esc(a.results[a.results.length - 1])}</p>
+</div>`,
+  )
+  .join("")}
+</div>
+<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
 );
 
 // 16 계약 · 결제
@@ -854,7 +862,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 
 /* 사례 */
 .cases{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;flex:1}
-.case{border:1px solid var(--line);border-radius:3mm;padding:0 0 6mm;display:flex;flex-direction:column;overflow:hidden}
+.case{border:1px solid var(--line);border-radius:3mm;padding:0 0 6mm;display:flex;flex-direction:column;overflow:hidden;align-self:start}
 .case-img{width:100%;height:68mm;object-fit:cover;background:#f2f2f2}
 .case-head{padding:6mm 6mm 0}
 .case-stats{padding:0 6mm}
@@ -969,6 +977,23 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .terms{display:flex;flex-direction:column;gap:3mm}
 .term{border-left:4px solid var(--gold);background:var(--alt);border-radius:0 2mm 2mm 0;padding:5mm 6mm;font-size:9pt;line-height:1.7;color:var(--muted)}
 
+/* 통합 브랜드 액션 — 원형 다이어그램 (사이트와 같은 구도, 정지 상태) */
+.orbits{display:grid;grid-template-columns:repeat(4,1fr);gap:5mm;flex:1;align-content:start}
+.orbit-card{display:flex;flex-direction:column;gap:4mm}
+.orbit{position:relative;width:100%;aspect-ratio:1}
+.orbit-ring{position:absolute;inset:0;border:1px solid rgba(3,3,3,.10);border-radius:50%}
+.orbit-ring2{position:absolute;inset:13%;border:1px solid rgba(3,3,3,.14);border-radius:50%}
+.orbit-orb{position:absolute;inset:26%;border-radius:50%;background:radial-gradient(circle at 38% 32%,#8f9cf2,var(--indigo) 55%,#2b39aa)}
+.sat{position:absolute;width:47%;height:47%;border-radius:50%;background:rgba(77,95,232,.55);color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;font-size:6pt;font-weight:700;line-height:1.3;padding:1.5mm}
+.sat-0{left:50%;top:0;transform:translateX(-50%)}
+.sat-1{right:0;top:50%;transform:translateY(-50%)}
+.sat-2{left:50%;bottom:0;transform:translateX(-50%)}
+.sat-3{left:0;top:50%;transform:translateY(-50%)}
+.orbit-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-size:11pt;font-weight:700;z-index:2}
+.orbit-label em{font-style:normal;font-size:6.5pt;font-weight:400;opacity:.8}
+.orbit-label i{font-style:normal;font-size:6pt;opacity:.7;margin-top:.6mm}
+.orbit-r{font-size:8pt;line-height:1.6;font-weight:700;color:var(--indigo);text-align:center}
+
 /* 법인 소개 — 메인 화면 + 세 서비스 */
 .corp{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:7mm;flex:1}
 .corp-shot{width:100%;border:1px solid var(--line);border-radius:3mm;object-fit:cover;object-position:top;align-self:start}
@@ -984,8 +1009,8 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 
 /* 4분할 카드 (이미지 + 본문) */
 .cards4{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;flex:1}
-.card4{border:1px solid var(--line);border-radius:3mm;display:flex;flex-direction:column;overflow:hidden}
-.card4-img{width:100%;height:34mm;object-fit:cover;display:block;border-bottom:1px solid var(--line)}
+.card4{border:1px solid var(--line);border-radius:3mm;display:flex;flex-direction:column;overflow:hidden;align-self:start}
+.card4-img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:center;display:block;border-bottom:1px solid var(--line)}
 .card4-body{padding:6mm}
 .card4-no{font-size:7.5pt;font-weight:700;color:#fff;background:var(--indigo);border-radius:50%;width:7mm;height:7mm;display:flex;align-items:center;justify-content:center}
 .card4-t{font-size:11pt;font-weight:700;margin-top:4mm}
@@ -1019,8 +1044,8 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 
 /* 팀 4분할 */
 .teams{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;flex:1}
-.team{border:1px solid var(--line);border-radius:3mm;padding:0 0 7mm;display:flex;flex-direction:column;overflow:hidden}
-.team-img{width:100%;height:38mm;object-fit:cover;display:block}
+.team{border:1px solid var(--line);border-radius:3mm;padding:0 0 7mm;display:flex;flex-direction:column;overflow:hidden;align-self:start}
+.team-img{width:100%;aspect-ratio:4/3;object-fit:cover;object-position:top;display:block}
 .team-name{font-size:11.5pt;font-weight:700;margin:5mm 6mm 0}
 .team-list{margin:4mm 6mm 0 !important}
 .team-list{margin-top:5mm;display:flex;flex-direction:column;gap:3mm}

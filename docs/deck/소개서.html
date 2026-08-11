@@ -147,7 +147,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 
 /* 사례 */
 .cases{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;flex:1}
-.case{border:1px solid var(--line);border-radius:3mm;padding:0 0 6mm;display:flex;flex-direction:column;overflow:hidden}
+.case{border:1px solid var(--line);border-radius:3mm;padding:0 0 6mm;display:flex;flex-direction:column;overflow:hidden;align-self:start}
 .case-img{width:100%;height:68mm;object-fit:cover;background:#f2f2f2}
 .case-head{padding:6mm 6mm 0}
 .case-stats{padding:0 6mm}
@@ -262,6 +262,23 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .terms{display:flex;flex-direction:column;gap:3mm}
 .term{border-left:4px solid var(--gold);background:var(--alt);border-radius:0 2mm 2mm 0;padding:5mm 6mm;font-size:9pt;line-height:1.7;color:var(--muted)}
 
+/* 통합 브랜드 액션 — 원형 다이어그램 (사이트와 같은 구도, 정지 상태) */
+.orbits{display:grid;grid-template-columns:repeat(4,1fr);gap:5mm;flex:1;align-content:start}
+.orbit-card{display:flex;flex-direction:column;gap:4mm}
+.orbit{position:relative;width:100%;aspect-ratio:1}
+.orbit-ring{position:absolute;inset:0;border:1px solid rgba(3,3,3,.10);border-radius:50%}
+.orbit-ring2{position:absolute;inset:13%;border:1px solid rgba(3,3,3,.14);border-radius:50%}
+.orbit-orb{position:absolute;inset:26%;border-radius:50%;background:radial-gradient(circle at 38% 32%,#8f9cf2,var(--indigo) 55%,#2b39aa)}
+.sat{position:absolute;width:47%;height:47%;border-radius:50%;background:rgba(77,95,232,.55);color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;font-size:6pt;font-weight:700;line-height:1.3;padding:1.5mm}
+.sat-0{left:50%;top:0;transform:translateX(-50%)}
+.sat-1{right:0;top:50%;transform:translateY(-50%)}
+.sat-2{left:50%;bottom:0;transform:translateX(-50%)}
+.sat-3{left:0;top:50%;transform:translateY(-50%)}
+.orbit-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-size:11pt;font-weight:700;z-index:2}
+.orbit-label em{font-style:normal;font-size:6.5pt;font-weight:400;opacity:.8}
+.orbit-label i{font-style:normal;font-size:6pt;opacity:.7;margin-top:.6mm}
+.orbit-r{font-size:8pt;line-height:1.6;font-weight:700;color:var(--indigo);text-align:center}
+
 /* 법인 소개 — 메인 화면 + 세 서비스 */
 .corp{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:7mm;flex:1}
 .corp-shot{width:100%;border:1px solid var(--line);border-radius:3mm;object-fit:cover;object-position:top;align-self:start}
@@ -277,8 +294,8 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 
 /* 4분할 카드 (이미지 + 본문) */
 .cards4{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;flex:1}
-.card4{border:1px solid var(--line);border-radius:3mm;display:flex;flex-direction:column;overflow:hidden}
-.card4-img{width:100%;height:34mm;object-fit:cover;display:block;border-bottom:1px solid var(--line)}
+.card4{border:1px solid var(--line);border-radius:3mm;display:flex;flex-direction:column;overflow:hidden;align-self:start}
+.card4-img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:center;display:block;border-bottom:1px solid var(--line)}
 .card4-body{padding:6mm}
 .card4-no{font-size:7.5pt;font-weight:700;color:#fff;background:var(--indigo);border-radius:50%;width:7mm;height:7mm;display:flex;align-items:center;justify-content:center}
 .card4-t{font-size:11pt;font-weight:700;margin-top:4mm}
@@ -312,8 +329,8 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 
 /* 팀 4분할 */
 .teams{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;flex:1}
-.team{border:1px solid var(--line);border-radius:3mm;padding:0 0 7mm;display:flex;flex-direction:column;overflow:hidden}
-.team-img{width:100%;height:38mm;object-fit:cover;display:block}
+.team{border:1px solid var(--line);border-radius:3mm;padding:0 0 7mm;display:flex;flex-direction:column;overflow:hidden;align-self:start}
+.team-img{width:100%;aspect-ratio:4/3;object-fit:cover;object-position:top;display:block}
 .team-name{font-size:11.5pt;font-weight:700;margin:5mm 6mm 0}
 .team-list{margin:4mm 6mm 0 !important}
 .team-list{margin-top:5mm;display:flex;flex-direction:column;gap:3mm}
@@ -440,7 +457,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   <div class="page-body">
 
 <div class="shead">
-  <h2>해그로시 서비스 영역</h2>
+  <h2>숏폼 스튜디오 서비스 영역</h2>
   <p class="subline">시딩과 2차 활용 영상 확보부터 구매전환 숏폼 기획제작까지 하나로 해결해 드립니다</p>
 </div>
 <div class="two vcenter">
@@ -487,150 +504,12 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 <div class="oneline">한 번의 발주 · 하나의 담당 · 하나의 대시보드</div></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>08</span></footer>
 </section>
-<section id="pg9" class="page dark">
-  <div class="page-body"><div class="part">
-  <p class="part-k">LINE 02</p>
-  <p class="part-t">브랜드 SNS 채널 컨텐츠 활성화</p>
-  <p class="part-d">브랜드 유튜브 · 인스타그램 채널의 기획 · 전략 · 운영</p>
-</div></div>
-  
-</section>
-<section id="pg10" class="page">
+<section id="pg9" class="page">
   <div class="page-body">
 
 <div class="shead">
-  <h2>SNS 종합 브랜드 마케팅 시스템</h2>
-  <p class="subline">SNS 채널 연간 기획운영으로 진행하되, 필요 시 추가 범위를 협의합니다.</p>
-</div>
-<div class="cards4">
-<div class="card4">
-  <img class="card4-img" src="http://localhost:8909/public/sns/krafton-contents.jpg" alt="">
-  <div class="card4-body">
-    <span class="card4-no">01</span>
-    <p class="card4-t">인스타그램 · 유튜브</p>
-    <p class="card4-d">메인 채널을 둘 중 선정 후 그 외 채널에는 컨텐츠 미러링을 병행해 드립니다.</p>
-  </div>
-</div><div class="card4">
-  <img class="card4-img" src="http://localhost:8909/public/sns/krafton-funnel.png" alt="">
-  <div class="card4-body">
-    <span class="card4-no">02</span>
-    <p class="card4-t">광고 부스팅</p>
-    <p class="card4-d">챔피언성 인기 피드는 퍼포먼스마케팅 및 채널 자체 트래픽을 붓습니다.</p>
-  </div>
-</div><div class="card4">
-  <img class="card4-img" src="http://localhost:8909/public/sns/yeolda-shoot.jpg" alt="">
-  <div class="card4-body">
-    <span class="card4-no">03</span>
-    <p class="card4-t">인플루언서 게스트 콜라보</p>
-    <p class="card4-d">유튜버, 연예인, 인플루언서, 스트리머 등과 콜라보 시 협업을 매니징합니다.</p>
-  </div>
-</div><div class="card4">
-  <img class="card4-img" src="http://localhost:8909/public/sns/lovedy-result.png" alt="">
-  <div class="card4-body">
-    <span class="card4-no">04</span>
-    <p class="card4-t">CRM 퍼널링</p>
-    <p class="card4-d">고객 DB로의 연결이 필요할 때 그 시스템을 함께 구축 관리합니다.</p>
-  </div>
-</div>
-</div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>10</span></footer>
-</section>
-<section id="pg11" class="page dark">
-  <div class="page-body"><div class="part">
-  <p class="part-k">LINE 03</p>
-  <p class="part-t">종합 브랜드 마케팅 전개</p>
-  <p class="part-d">채널 · 컨텐츠 · 광고에 이벤트 · 프로모션 · CRM 까지</p>
-</div></div>
-  
-</section>
-<section id="pg12" class="page">
-  <div class="page-body">
-
-<div class="shead">
-  <h2>통합 브랜드 액션도 수행 중입니다.</h2>
-  <p class="subline">해그로시는 프로덕션의 전문성과 함께 종합 마케팅 전략을 전개해 온 전문 컨텐츠 그로스 집단입니다.</p>
-</div>
-<div class="acts">
-<div class="act">
-  <p class="act-b">G 브랜드</p>
-  <p class="act-p">CRM 멤버십 · AARRR 퍼널 시나리오 · 브랜드 마케팅 · 종합 마케팅 전략</p>
-  <p class="act-r">ROAS 500% 개선, CPA 45% 절감, 예산 00억</p>
-</div><div class="act">
-  <p class="act-b">K 브랜드</p>
-  <p class="act-p">브랜드 세계관 기획 · 팬덤 컨텐츠 기획 제작 · 커뮤니티 여론 바이럴 · 5개 온드 채널 최적화</p>
-  <p class="act-r">브랜드 세계관과 컨텐츠 그로스, 유튜브 300편 제작</p>
-</div><div class="act">
-  <p class="act-b">W 브랜드 · 6개월</p>
-  <p class="act-p">오가닉 SEO · 리드 세일즈 구축 · GA4 데이터 마케팅 · 블로그 최적화</p>
-  <p class="act-r">리드 DB 제너레이션과 GA4 컨텐츠 그로스 성과</p>
-</div><div class="act">
-  <p class="act-b">J 브랜드 · 3개월</p>
-  <p class="act-p">자사몰 최적화 · 퍼포먼스마케팅 · 숏폼 촬영 컨텐츠 · 이벤트 프로모션</p>
-  <p class="act-r">제품 컨셉 개편과 세일즈 퍼널 구축으로 ROI 개선</p>
-</div><div class="act">
-  <p class="act-b">L 브랜드 · 12개월</p>
-  <p class="act-p">노코드툴 그로스 · 온드 채널 매출 구조화 · 페이드 스케일업 · AARRR 퍼널 완성</p>
-  <p class="act-r">예산 10배+ 증액, CPA 30원대, DAU 30% 상승</p>
-</div><div class="act">
-  <p class="act-b">G 브랜드 · 14개월</p>
-  <p class="act-p">스타트업 마케팅 교육 · 퍼포먼스마케팅 · 제휴 SEO마케팅 · DAU 그로스 마케팅</p>
-  <p class="act-r">예산 월 5천대에서 4억까지 스케일업, CRM 최적화</p>
-</div>
-</div>
-<p class="foot-note">위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>12</span></footer>
-</section>
-<section id="pg13" class="page">
-  <div class="page-body">
-
-<div class="shead">
-  <h2>글로벌 대기업부터 저예산 스타트업까지 비즈니스에 기여합니다.</h2>
-  <p class="subline">해그로시는 브랜드가 당면한 과제를 함께 해결하기 위해 고객 세그먼트 분류, 페르소나 매칭, 사연자 섭외, 시청 후 DB 확보, 커뮤니티 바이럴, 심리 테스트 검사지 등 다양한 종합 마케팅의 결과를 만들어 왔습니다.</p>
-</div>
-<div class="cases">
-<div class="case">
-  <img class="case-img" src="http://localhost:8909/public/sns/krafton-contents.jpg" alt="">
-  <div class="case-head">
-    <span class="case-no">01</span>
-    <div><p class="case-brand">크래프톤</p><p class="case-scale">GAME · FANDOM</p></div>
-  </div>
-  <ul class="case-facts"><li>공식 SNS 채널 통합 운영</li><li>유튜브 총 300편 기획제작</li><li>종합 마케팅 대행</li></ul>
-  <p class="case-role">남아있는 골수 팬부터, 떠나갔던 유저까지 확보한 팬덤 영상 이야기</p>
-</div><div class="case">
-  <img class="case-img" src="http://localhost:8909/public/sns/lovedy-funnel.png" alt="">
-  <div class="case-head">
-    <span class="case-no">02</span>
-    <div><p class="case-brand">럽디</p><p class="case-scale">SERVICE · OWNED GROWTH</p></div>
-  </div>
-  <ul class="case-facts"><li>퍼널 리드 600%P 성장<span>(인스타그램, 뉴스레터 포함)</span></li><li>세일즈CRM 전환율 60%<span>(고객 코드를 분류해 팀 간 매칭)</span></li><li>신사업 매출 2억<span>(6개월 내 성과)</span></li></ul>
-  <p class="case-role">유튜브에서 인물 브랜딩을 성공하면 고객 DB로 연결됩니다.</p>
-</div><div class="case">
-  <img class="case-img" src="http://localhost:8909/public/sns/yeolda-shoot.jpg" alt="">
-  <div class="case-head">
-    <span class="case-no">03</span>
-    <div><p class="case-brand">열다</p><p class="case-scale">STARTUP · PERSON BRANDING</p></div>
-  </div>
-  <ul class="case-facts"><li>CAC 17%P 개선</li><li>첫 영상부터 알고리즘 대박</li><li>브랜딩-광고 통합 시스템</li></ul>
-  <p class="case-role">옷장 정리라는 새로운 맥락의 유료 서비스, 유튜브와 광고로 승부!</p>
-</div><div class="case">
-  <img class="case-img" src="http://localhost:8909/public/sns/trusty-product.jpg" alt="">
-  <div class="case-head">
-    <span class="case-no">04</span>
-    <div><p class="case-brand">트러스티푸드</p><p class="case-scale">COMMERCE · IMC</p></div>
-  </div>
-  <ul class="case-facts"><li>SNS 채널 통합 브랜딩</li><li>댕터뷰-블라인드 시식대회</li><li>종합 IMC 프로젝트</li></ul>
-  <p class="case-role">넘쳐나는 수의사 컨텐츠, 그 중 펫푸드와 저속노화 키워드는 우리가 으뜸</p>
-</div>
-</div>
-<p class="foot-note">위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>13</span></footer>
-</section>
-<section id="pg14" class="page">
-  <div class="page-body">
-
-<div class="shead">
-  <h2>주요 성과</h2>
-  <p class="subline">소재 제작과 캠페인 운영으로 이런 결과를 만들어 왔습니다</p>
+  <h2>숏폼 성과</h2>
+  <p class="subline">소재 제작과 캠페인 운영으로 만든 결과입니다</p>
 </div>
 <div class="cases">
 <div class="case">
@@ -668,55 +547,13 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 </div>
 </div>
 <p class="foot-note">위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>14</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>09</span></footer>
 </section>
-<section id="pg15" class="page">
+<section id="pg10" class="page">
   <div class="page-body">
 
 <div class="shead">
-  <h2>최근 주요 포트폴리오</h2>
-  <p class="subline">실제로 편성·제작한 롱폼 컨텐츠입니다</p>
-</div>
-<div class="thumbs">
-<div class="thumb"><img src="https://i.ytimg.com/vi/Bsp_HBS8ckM/mqdefault.jpg" alt=""><span>배그극장</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/aEbmZ3H5EWo/mqdefault.jpg" alt=""><span>배그극장</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/f5QK9Hik2C8/mqdefault.jpg" alt=""><span>PNC</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/_h3PLQlhs1s/mqdefault.jpg" alt=""><span>PNC</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/yNsu5XfTN1E/mqdefault.jpg" alt=""><span>이스포츠 스케치</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/kN57OTVMSD0/mqdefault.jpg" alt=""><span>이스포츠 하이라이트</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/Yy9K61hUC3Y/mqdefault.jpg" alt=""><span>핏플렉스 브랜드 캠페인</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/XmX0iYOTUGE/mqdefault.jpg" alt=""><span>열다 옷장정리</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/EU26OQv6ATE/mqdefault.jpg" alt=""><span>열다 옷장정리</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/6gfORrmxY2Q/mqdefault.jpg" alt=""><span>열다 옷장정리</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/Th4pjIRJUz8/mqdefault.jpg" alt=""><span>우리 강아지 비만·피부염 해결 (후편)</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/LCQywT3a2pQ/mqdefault.jpg" alt=""><span>강아지 사료 솔루션 — 짱구 이야기 (전편)</span></div>
-</div>
-<p class="foot-note">(다수 숏폼 생략)</p></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>15</span></footer>
-</section>
-<section id="pg16" class="page">
-  <div class="page-body">
-
-<div class="shead">
-  <h2>투입 조직</h2>
-  <p class="subline">분기별 신규 4-5개 프로젝트만 추가 진행합니다.</p>
-</div>
-<div class="teams">
-<div class="team">
-  <img class="team-img" src="http://localhost:8909/public/sns/team-pm.jpg" alt="">
-  <p class="team-name">PM/CP(기획총괄)팀</p>
-  <ul class="team-list"><li>프로젝트 마일스톤 관리</li><li>전략 기획 및 세부 지표 싱크</li><li>브랜드 종합 목표 달성 체크</li><li>클라이언트 협업 경험 최적화</li></ul>
-</div><div class="team">
-  <img class="team-img" src="http://localhost:8909/public/sns/team-ct.jpg" alt="">
-  <p class="team-name">컨텐츠팀</p>
-  <ul class="team-list"><li>브랜딩 크리에이티브</li><li>시니어 출신 고감도 촬영 감독진</li><li>방송/예능/유튜브/마케팅 PD</li><li>멀티 유즈 및 그로스 성과 연결</li></ul>
-</div><div class="team">
-  <img class="team-img" src="http://localhost:8909/public/sns/team-fn.jpg" alt="">
-  <p class="team-name">퍼널팀</p>
-  <ul class="team-list"><li>AARRR 전환율 고도화</li><li>AEO/SEO/리드 제너레이션</li><li>GA4 및 CRM 그로스툴 최적화</li><li>홈페이지 및 자사몰 구축</li></ul>
-</div><div class="team">
-  <img class="team-img" src="http://localhost:8909/public/sns/team-pf.jpg" alt="">
-  <p class="team-name">퍼포먼스팀</p>
-  <ul class="team-list"><li>매출 지표 스케일업</li><li>구매 전환형 숏폼 기획제작</li><li>브랜드 마케팅, 프로모션 운영</li><li>인플루언서 리뷰 시딩 바이럴</li></ul>
-</div>
-</div>
-<p class="foot-note">인하우스 안에는 또 다른 인하우스 팀이 필요합니다. 이제 단순 구독이 아닌 진짜 시스템을 경험하세요.</p></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>16</span></footer>
-</section>
-<section id="pg17" class="page">
-  <div class="page-body">
-
-<div class="shead">
-  <h2>스케일업 숏폼 기획제작 조직</h2>
+  <h2>숏폼 제작 현장</h2>
   <p class="subline">촬영 현장과 브랜드 현장에서 저희 팀이 직접 찍고 직접 만듭니다</p>
 </div>
 <div class="creds">
@@ -725,9 +562,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 <div class="crew">
 <img src="http://localhost:8909/public/portfolio/crew/crew-01.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-02.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-03.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-04.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-05.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-06.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-07.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-08.webp" alt="">
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>17</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>10</span></footer>
 </section>
-<section id="pg18" class="page">
+<section id="pg11" class="page">
   <div class="page-body">
 
 <div class="shead">
@@ -739,34 +576,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   <div class="bd bd-gold"><p class="bd-n">02</p><p class="bd-t">제작 사이클</p><p class="bd-d">기획 → 제작 → 데이터 판독 → 변주. 프로젝트에서 수십 회 반복한 순서입니다.</p></div>
   <div class="bd bd-alt"><p class="bd-n">03</p><p class="bd-t">팀 구조</p><p class="bd-d">담당이 나뉘어 붙습니다. 한 명이 빠져도 일정이 멈추지 않습니다.</p></div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>18</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>11</span></footer>
 </section>
-<section id="pg19" class="page">
-  <div class="page-body">
-
-<div class="shead">
-  <h2>프로젝트 대시보드 확인</h2>
-  <p class="subline">초기 요청사항부터 컨텐츠 컨펌과 진행 단계까지 한번에 확인하세요</p>
-</div>
-<div class="board">
-  <div class="board-side">
-    <div class="board-item">
-      <img src="http://localhost:8909/public/deck/ui-cpv.png" alt="">
-      <p class="cap">1차 선정 심사 — 팔로워 · 평균 조회 · CPV를 보고 직접 선택</p>
-    </div>
-    <div class="board-item">
-      <img src="http://localhost:8909/public/deck/ui-brandai.png" alt="">
-      <p class="cap">브랜드 AI 기본 분석 — 타겟 · USP · 객단가 · 금지 표현 구조화</p>
-    </div>
-  </div>
-  <div class="board-main">
-    <img src="http://localhost:8909/public/deck/ui-dashboard.png" alt="">
-    <p class="cap">진행중인 캠페인 — 진행 단계 · 플랜 · 기한을 한 화면에서</p>
-  </div>
-</div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>19</span></footer>
-</section>
-<section id="pg20" class="page">
+<section id="pg12" class="page">
   <div class="page-body">
 
 <div class="shead">
@@ -825,6 +637,223 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 </div>
 
 <p class="vat">※ 부가세 별도 · 인플루언서 시딩은 숏폼 5편 이상 묶음부터 함께 진행됩니다</p></div>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>12</span></footer>
+</section>
+<section id="pg13" class="page">
+  <div class="page-body">
+
+<div class="shead">
+  <h2>프로젝트 대시보드 확인</h2>
+  <p class="subline">초기 요청사항부터 컨텐츠 컨펌과 진행 단계까지 한번에 확인하세요</p>
+</div>
+<div class="board">
+  <div class="board-side">
+    <div class="board-item">
+      <img src="http://localhost:8909/public/deck/ui-cpv.png" alt="">
+      <p class="cap">1차 선정 심사 — 팔로워 · 평균 조회 · CPV를 보고 직접 선택</p>
+    </div>
+    <div class="board-item">
+      <img src="http://localhost:8909/public/deck/ui-brandai.png" alt="">
+      <p class="cap">브랜드 AI 기본 분석 — 타겟 · USP · 객단가 · 금지 표현 구조화</p>
+    </div>
+  </div>
+  <div class="board-main">
+    <img src="http://localhost:8909/public/deck/ui-dashboard.png" alt="">
+    <p class="cap">진행중인 캠페인 — 진행 단계 · 플랜 · 기한을 한 화면에서</p>
+  </div>
+</div></div>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>13</span></footer>
+</section>
+<section id="pg14" class="page dark">
+  <div class="page-body"><div class="part">
+  <p class="part-k">LINE 02</p>
+  <p class="part-t">브랜드 SNS 채널 컨텐츠 활성화</p>
+  <p class="part-d">브랜드 유튜브 · 인스타그램 채널의 기획 · 전략 · 운영</p>
+</div></div>
+  
+</section>
+<section id="pg15" class="page">
+  <div class="page-body">
+
+<div class="shead">
+  <h2>SNS 종합 브랜드 마케팅 시스템</h2>
+  <p class="subline">SNS 채널 연간 기획운영으로 진행하되, 필요 시 추가 범위를 협의합니다.</p>
+</div>
+<div class="cards4">
+<div class="card4">
+  <img class="card4-img" src="http://localhost:8909/public/sns/krafton-contents.jpg" alt="">
+  <div class="card4-body">
+    <span class="card4-no">01</span>
+    <p class="card4-t">인스타그램 · 유튜브</p>
+    <p class="card4-d">메인 채널을 둘 중 선정 후 그 외 채널에는 컨텐츠 미러링을 병행해 드립니다.</p>
+  </div>
+</div><div class="card4">
+  <img class="card4-img" src="http://localhost:8909/public/sns/krafton-funnel.png" alt="">
+  <div class="card4-body">
+    <span class="card4-no">02</span>
+    <p class="card4-t">광고 부스팅</p>
+    <p class="card4-d">챔피언성 인기 피드는 퍼포먼스마케팅 및 채널 자체 트래픽을 붓습니다.</p>
+  </div>
+</div><div class="card4">
+  <img class="card4-img" src="http://localhost:8909/public/sns/yeolda-shoot.jpg" alt="">
+  <div class="card4-body">
+    <span class="card4-no">03</span>
+    <p class="card4-t">인플루언서 게스트 콜라보</p>
+    <p class="card4-d">유튜버, 연예인, 인플루언서, 스트리머 등과 콜라보 시 협업을 매니징합니다.</p>
+  </div>
+</div><div class="card4">
+  <img class="card4-img" src="http://localhost:8909/public/sns/lovedy-result.png" alt="">
+  <div class="card4-body">
+    <span class="card4-no">04</span>
+    <p class="card4-t">CRM 퍼널링</p>
+    <p class="card4-d">고객 DB로의 연결이 필요할 때 그 시스템을 함께 구축 관리합니다.</p>
+  </div>
+</div>
+</div></div>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>15</span></footer>
+</section>
+<section id="pg16" class="page">
+  <div class="page-body">
+
+<div class="shead">
+  <h2>채널 성과</h2>
+  <p class="subline">채널을 기획·제작·운영해 만든 결과입니다</p>
+</div>
+<div class="cases">
+<div class="case">
+  <img class="case-img" src="http://localhost:8909/public/sns/krafton-contents.jpg" alt="">
+  <div class="case-head">
+    <span class="case-no">01</span>
+    <div><p class="case-brand">크래프톤</p><p class="case-scale">GAME · FANDOM</p></div>
+  </div>
+  <ul class="case-facts"><li>공식 SNS 채널 통합 운영</li><li>유튜브 총 300편 기획제작</li><li>종합 마케팅 대행</li></ul>
+  <p class="case-role">남아있는 골수 팬부터, 떠나갔던 유저까지 확보한 팬덤 영상 이야기</p>
+</div><div class="case">
+  <img class="case-img" src="http://localhost:8909/public/sns/lovedy-funnel.png" alt="">
+  <div class="case-head">
+    <span class="case-no">02</span>
+    <div><p class="case-brand">럽디</p><p class="case-scale">SERVICE · OWNED GROWTH</p></div>
+  </div>
+  <ul class="case-facts"><li>퍼널 리드 600%P 성장<span>(인스타그램, 뉴스레터 포함)</span></li><li>세일즈CRM 전환율 60%<span>(고객 코드를 분류해 팀 간 매칭)</span></li><li>신사업 매출 2억<span>(6개월 내 성과)</span></li></ul>
+  <p class="case-role">유튜브에서 인물 브랜딩을 성공하면 고객 DB로 연결됩니다.</p>
+</div><div class="case">
+  <img class="case-img" src="http://localhost:8909/public/sns/yeolda-shoot.jpg" alt="">
+  <div class="case-head">
+    <span class="case-no">03</span>
+    <div><p class="case-brand">열다</p><p class="case-scale">STARTUP · PERSON BRANDING</p></div>
+  </div>
+  <ul class="case-facts"><li>CAC 17%P 개선</li><li>첫 영상부터 알고리즘 대박</li><li>브랜딩-광고 통합 시스템</li></ul>
+  <p class="case-role">옷장 정리라는 새로운 맥락의 유료 서비스, 유튜브와 광고로 승부!</p>
+</div><div class="case">
+  <img class="case-img" src="http://localhost:8909/public/sns/trusty-product.jpg" alt="">
+  <div class="case-head">
+    <span class="case-no">04</span>
+    <div><p class="case-brand">트러스티푸드</p><p class="case-scale">COMMERCE · IMC</p></div>
+  </div>
+  <ul class="case-facts"><li>SNS 채널 통합 브랜딩</li><li>댕터뷰-블라인드 시식대회</li><li>종합 IMC 프로젝트</li></ul>
+  <p class="case-role">넘쳐나는 수의사 컨텐츠, 그 중 펫푸드와 저속노화 키워드는 우리가 으뜸</p>
+</div>
+</div>
+<p class="foot-note">위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>16</span></footer>
+</section>
+<section id="pg17" class="page">
+  <div class="page-body">
+
+<div class="shead">
+  <h2>채널 프로젝트 투입 조직</h2>
+  <p class="subline">분기별 신규 4-5개 프로젝트만 추가 진행합니다.</p>
+</div>
+<div class="teams">
+<div class="team">
+  <img class="team-img" src="http://localhost:8909/public/sns/team-pm.jpg" alt="">
+  <p class="team-name">PM/CP(기획총괄)팀</p>
+  <ul class="team-list"><li>프로젝트 마일스톤 관리</li><li>전략 기획 및 세부 지표 싱크</li><li>브랜드 종합 목표 달성 체크</li><li>클라이언트 협업 경험 최적화</li></ul>
+</div><div class="team">
+  <img class="team-img" src="http://localhost:8909/public/sns/team-ct.jpg" alt="">
+  <p class="team-name">컨텐츠팀</p>
+  <ul class="team-list"><li>브랜딩 크리에이티브</li><li>시니어 출신 고감도 촬영 감독진</li><li>방송/예능/유튜브/마케팅 PD</li><li>멀티 유즈 및 그로스 성과 연결</li></ul>
+</div><div class="team">
+  <img class="team-img" src="http://localhost:8909/public/sns/team-fn.jpg" alt="">
+  <p class="team-name">퍼널팀</p>
+  <ul class="team-list"><li>AARRR 전환율 고도화</li><li>AEO/SEO/리드 제너레이션</li><li>GA4 및 CRM 그로스툴 최적화</li><li>홈페이지 및 자사몰 구축</li></ul>
+</div><div class="team">
+  <img class="team-img" src="http://localhost:8909/public/sns/team-pf.jpg" alt="">
+  <p class="team-name">퍼포먼스팀</p>
+  <ul class="team-list"><li>매출 지표 스케일업</li><li>구매 전환형 숏폼 기획제작</li><li>브랜드 마케팅, 프로모션 운영</li><li>인플루언서 리뷰 시딩 바이럴</li></ul>
+</div>
+</div>
+<p class="foot-note">인하우스 안에는 또 다른 인하우스 팀이 필요합니다. 이제 단순 구독이 아닌 진짜 시스템을 경험하세요.</p></div>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>17</span></footer>
+</section>
+<section id="pg18" class="page">
+  <div class="page-body">
+
+<div class="shead">
+  <h2>최근 주요 포트폴리오</h2>
+  <p class="subline">실제로 편성·제작한 롱폼 컨텐츠입니다</p>
+</div>
+<div class="thumbs">
+<div class="thumb"><img src="https://i.ytimg.com/vi/Bsp_HBS8ckM/mqdefault.jpg" alt=""><span>배그극장</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/aEbmZ3H5EWo/mqdefault.jpg" alt=""><span>배그극장</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/f5QK9Hik2C8/mqdefault.jpg" alt=""><span>PNC</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/_h3PLQlhs1s/mqdefault.jpg" alt=""><span>PNC</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/yNsu5XfTN1E/mqdefault.jpg" alt=""><span>이스포츠 스케치</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/kN57OTVMSD0/mqdefault.jpg" alt=""><span>이스포츠 하이라이트</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/Yy9K61hUC3Y/mqdefault.jpg" alt=""><span>핏플렉스 브랜드 캠페인</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/XmX0iYOTUGE/mqdefault.jpg" alt=""><span>열다 옷장정리</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/EU26OQv6ATE/mqdefault.jpg" alt=""><span>열다 옷장정리</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/6gfORrmxY2Q/mqdefault.jpg" alt=""><span>열다 옷장정리</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/Th4pjIRJUz8/mqdefault.jpg" alt=""><span>우리 강아지 비만·피부염 해결 (후편)</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/LCQywT3a2pQ/mqdefault.jpg" alt=""><span>강아지 사료 솔루션 — 짱구 이야기 (전편)</span></div>
+</div>
+<p class="foot-note">(다수 숏폼 생략)</p></div>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>18</span></footer>
+</section>
+<section id="pg19" class="page dark">
+  <div class="page-body"><div class="part">
+  <p class="part-k">LINE 03</p>
+  <p class="part-t">종합 브랜드 마케팅 전개</p>
+  <p class="part-d">채널 · 컨텐츠 · 광고에 이벤트 · 프로모션 · CRM 까지</p>
+</div></div>
+  
+</section>
+<section id="pg20" class="page">
+  <div class="page-body">
+
+<div class="shead">
+  <h2>통합 브랜드 액션도 수행 중입니다.</h2>
+  <p class="subline">해그로시는 프로덕션의 전문성과 함께 종합 마케팅 전략을 전개해 온 전문 컨텐츠 그로스 집단입니다.</p>
+</div>
+<div class="orbits">
+<div class="orbit-card">
+  <div class="orbit">
+    <span class="orbit-ring"></span>
+    <span class="orbit-ring2"></span>
+    <span class="orbit-orb"></span>
+    <span class="sat sat-0">CRM 멤버십</span><span class="sat sat-1">AARRR 퍼널 시나리오</span><span class="sat sat-2">브랜드 마케팅</span><span class="sat sat-3">종합 마케팅 전략</span>
+    <span class="orbit-label">G<em>브랜드</em></span>
+  </div>
+  <p class="orbit-r">ROAS 500% 개선, CPA 45% 절감, 예산 00억</p>
+</div><div class="orbit-card">
+  <div class="orbit">
+    <span class="orbit-ring"></span>
+    <span class="orbit-ring2"></span>
+    <span class="orbit-orb"></span>
+    <span class="sat sat-0">브랜드 세계관 기획</span><span class="sat sat-1">팬덤 컨텐츠 기획 제작</span><span class="sat sat-2">커뮤니티 여론 바이럴</span><span class="sat sat-3">5개 온드 채널 최적화</span>
+    <span class="orbit-label">K<em>브랜드</em></span>
+  </div>
+  <p class="orbit-r">브랜드 세계관과 컨텐츠 그로스, 유튜브 300편 제작</p>
+</div><div class="orbit-card">
+  <div class="orbit">
+    <span class="orbit-ring"></span>
+    <span class="orbit-ring2"></span>
+    <span class="orbit-orb"></span>
+    <span class="sat sat-0">오가닉 SEO</span><span class="sat sat-1">리드 세일즈 구축</span><span class="sat sat-2">GA4 데이터 마케팅</span><span class="sat sat-3">블로그 최적화</span>
+    <span class="orbit-label">W<em>브랜드</em><i>6개월</i></span>
+  </div>
+  <p class="orbit-r">리드 DB 제너레이션과 GA4 컨텐츠 그로스 성과</p>
+</div><div class="orbit-card">
+  <div class="orbit">
+    <span class="orbit-ring"></span>
+    <span class="orbit-ring2"></span>
+    <span class="orbit-orb"></span>
+    <span class="sat sat-0">자사몰 최적화</span><span class="sat sat-1">퍼포먼스마케팅</span><span class="sat sat-2">숏폼 촬영 컨텐츠</span><span class="sat sat-3">이벤트 프로모션</span>
+    <span class="orbit-label">J<em>브랜드</em><i>3개월</i></span>
+  </div>
+  <p class="orbit-r">제품 컨셉 개편과 세일즈 퍼널 구축으로 ROI 개선</p>
+</div>
+</div>
+<p class="foot-note">위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>20</span></footer>
 </section>
 <section id="pg21" class="page">
