@@ -377,7 +377,35 @@ ${FLOW.map(
 <div class="oneline">한 번의 발주 · 하나의 담당 · 하나의 대시보드</div>`),
 );
 
-// 07 성과 사례
+// 07 숏폼 성과 — 브랜드당 한 장
+
+
+
+
+
+CASES.forEach((c) => {
+  pages.push(
+    slide(`
+<div class="bc-head">
+  <p class="bc-meta">${esc(c.scale)} · ${esc(c.role)}</p>
+  <h2 class="bc-title">${esc(c.brand)}</h2>
+</div>
+<div class="brandcase">
+  <div class="bc-body">
+    <ul class="bc-stats bc-stats-2">
+      ${c.stats.map(([v, l]) => `<li><strong class="big">${v}</strong><span>${esc(l)}</span></li>`).join("")}
+    </ul>
+    <p class="bc-p">${esc(c.role)} — 소재 기획부터 캠페인 운영까지 한 팀이 맡아 진행했습니다.</p>
+  </div>
+  <div class="bc-media">
+    <img src="${asset(c.img)}" alt="">
+  </div>
+</div>
+<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
+  );
+});
+
+// 02-6-2 숏폼 포트폴리오
 
 
 
@@ -385,21 +413,12 @@ ${FLOW.map(
 
 pages.push(
   slide(`
-${head("숏폼 성과", "소재 제작과 캠페인 운영으로 만든 결과입니다")}
-<div class="cases">
-${CASES.map(
-  (c) => `<div class="case">
-  <img class="case-img" src="${asset(c.img)}" alt="">
-  <div class="case-head">
-    <span class="case-no">${c.no}</span>
-    <div><p class="case-brand">${esc(c.brand)}</p><p class="case-scale">${esc(c.scale)}</p></div>
-  </div>
-  <div class="case-stats">${c.stats.map(([v, l]) => `<div><strong>${v}</strong><span>${l}</span></div>`).join("")}</div>
-  <p class="case-role">${esc(c.role)}</p>
-</div>`,
-).join("")}
-</div>
-<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
+${head("최근 주요 숏폼 포트폴리오", "브랜드 광고 계정에 바로 태운 구매 전환형 소재입니다")}
+<div class="shorts">
+${WALL_CLIPS.slice(0, 12)
+  .map((c) => `<div class="short"><img src="${asset(clipPoster(c.slug))}" alt=""></div>`)
+  .join("")}
+</div>`),
 );
 
 // 10 제작 조직 (현장)
@@ -492,6 +511,23 @@ ${packages
 <p class="vat">※ 부가세 별도 · ${esc(POLICY.seedingBundleOnly)}</p>`),
 );
 
+// 16 계약 · 결제
+
+
+
+
+
+pages.push(
+  slide(`
+${head("숏폼 계약 · 결제", "숏폼 플랜은 구성 확정부터 납품까지 이 순서로 진행됩니다")}
+<div class="contract">
+${CONTRACT.map(
+  ([n, t, d]) => `<div class="ct"><span class="ct-no">${n}</span><p class="ct-t">${esc(t)}</p><p class="ct-d">${esc(d)}</p></div>`,
+).join("")}
+</div>
+<div class="pay-band">세금계산서 발행 후 현금(계좌이체)이 기본이며, 카드 결제도 가능합니다 · 부가세 별도</div>`),
+);
+
 // PART2
 
 
@@ -540,13 +576,15 @@ ${PROCESS.items
 
 
 
-FEATURES.forEach((f, idx) => {
+FEATURES.forEach((f) => {
   pages.push(
     slide(`
-${head(f.title, `${f.meta} · ${f.category}`)}
+<div class="bc-head">
+  <p class="bc-meta">${esc(f.meta)} · ${esc(f.category)}</p>
+  <h2 class="bc-title">${esc(f.title)}</h2>
+</div>
 <div class="brandcase">
   <div class="bc-body">
-    ${f.body.map((t) => `<p class="bc-p">${esc(plain(t))}</p>`).join("")}
     <ul class="bc-stats">
       ${f.stats
         .map(
@@ -555,13 +593,10 @@ ${head(f.title, `${f.meta} · ${f.category}`)}
         )
         .join("")}
     </ul>
+    ${f.body.map((t) => `<p class="bc-p">${esc(plain(t))}</p>`).join("")}
   </div>
   <div class="bc-media">
     <img src="${asset(f.hero.src)}" alt="">
-    ${f.figures
-      .slice(0, 1)
-      .map((g) => `<img src="${asset(g.src)}" alt="">`)
-      .join("")}
   </div>
 </div>`),
   );
@@ -601,7 +636,7 @@ ${TEAM.teams
   if (!rows.length) return;
   pages.push(
     slide(`
-${head("최근 주요 포트폴리오", page === 0 ? "실제로 편성·제작한 롱폼 컨텐츠입니다" : "브랜드 채널에 편성한 컨텐츠를 이어서 보여드립니다")}
+${head(page === 0 ? "롱폼 주요 포트폴리오" : "롱폼 주요 포트폴리오 (2)", page === 0 ? "실제로 편성·제작한 롱폼 컨텐츠입니다" : "이어서 보여드립니다")}
 <div class="thumbs">
 ${rows
   .map(
@@ -612,22 +647,6 @@ ${rows
 ${page === 1 ? `<p class="foot-note">${esc(PORTFOLIO.note)}</p>` : ""}`),
   );
 });
-
-// 02-6-2 숏폼 포트폴리오
-
-
-
-
-
-pages.push(
-  slide(`
-${head("숏폼 포트폴리오", "브랜드 광고 계정에 바로 태운 구매 전환형 소재입니다")}
-<div class="shorts">
-${WALL_CLIPS.slice(0, 12)
-  .map((c) => `<div class="short"><img src="${asset(clipPoster(c.slug))}" alt=""></div>`)
-  .join("")}
-</div>`),
-);
 
 // PART3
 
@@ -640,7 +659,7 @@ pages.push(
     `<div class="part">
   <p class="part-k">LINE 03</p>
   <p class="part-t">종합 브랜드 마케팅 전개</p>
-  <p class="part-d">채널 · 컨텐츠 · 광고에 이벤트 · 프로모션 · CRM 까지</p>
+  <p class="part-d">구독형 또는 SNS 채널 커뮤니케이션의 패키지 옵션으로 진행합니다</p>
 </div>`,
     { dark: true, bare: true },
   ),
@@ -655,7 +674,7 @@ pages.push(
 [0, 4].forEach((actFrom, actPage) => {
   pages.push(
     slide(`
-${head(ACTIONS.title, actPage === 0 ? ACTIONS.lead : "브랜드마다 붙인 파트 조합과 결과를 이어서 보여드립니다")}
+${head(actPage === 0 ? "통합 브랜드 액션 수행 결과" : "통합 브랜드 액션 수행 결과 (2)", actPage === 0 ? ACTIONS.lead : "이어서 보여드립니다")}
 <div class="orbits">
 ${ACTIONS.items
   .slice(actFrom, actFrom + 4)
@@ -679,23 +698,6 @@ ${ACTIONS.items
 ${actPage === 1 ? `<p class="foot-note">${esc(POLICY.noGuarantee)}</p>` : ""}`),
   );
 });
-
-// 16 계약 · 결제
-
-
-
-
-
-pages.push(
-  slide(`
-${head("계약 · 결제", "구성 확정부터 납품까지 여덟 단계로 진행해 드립니다")}
-<div class="contract">
-${CONTRACT.map(
-  ([n, t, d]) => `<div class="ct"><span class="ct-no">${n}</span><p class="ct-t">${esc(t)}</p><p class="ct-d">${esc(d)}</p></div>`,
-).join("")}
-</div>
-<div class="pay-band">세금계산서 발행 후 현금(계좌이체)이 기본이며, 카드 결제도 가능합니다 · 부가세 별도</div>`),
-);
 
 // 17 문의처
 
@@ -1021,15 +1023,22 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .case-facts li{font-size:8.5pt;line-height:1.5;font-weight:700;color:var(--ink)}
 .case-facts li span{display:block;font-size:7pt;font-weight:400;color:var(--muted);margin-top:1mm}
 
+/* 브랜드 케이스 머리 — 제목이 길어 두 줄까지 허용 */
+.bc-head{margin-bottom:7mm}
+.bc-meta{font-size:8pt;letter-spacing:.06em;color:var(--gold-deep);font-weight:700}
+.bc-title{font-size:19pt;font-weight:700;line-height:1.45;margin-top:3mm;max-width:200mm}
+
 /* 브랜드 케이스 — 한 브랜드 한 장 */
 .brandcase{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:8mm;flex:1;min-height:0;overflow:hidden}
-.bc-body{display:flex;flex-direction:column}
-.bc-p{font-size:8.5pt;line-height:1.75;color:var(--muted);margin-bottom:3.5mm}
-.bc-stats{margin-top:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;list-style:none}
+.bc-body{display:flex;flex-direction:column;min-width:0}
+.bc-p{font-size:9.5pt;line-height:1.9;color:var(--ink-soft, #171717);margin-bottom:4mm}
+.bc-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3mm;list-style:none;margin-bottom:7mm}
+.bc-stats-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.bc-stats .big{font-size:15pt;line-height:1.2}
 .bc-stats li{background:var(--alt);border-radius:2.5mm;padding:4mm}
 .bc-stats strong{display:block;font-size:8.5pt;line-height:1.45}
 .bc-stats span{display:block;font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
-.bc-media{display:flex;flex-direction:column;gap:4mm;min-width:0}
+.bc-media{display:flex;flex-direction:column;gap:4mm;min-width:0;min-height:0}
 .bc-media img{width:100%;flex:1 1 0;min-height:0;object-fit:cover;border:1px solid var(--line);border-radius:3mm}
 
 /* 숏폼 포트폴리오 */

@@ -191,10 +191,10 @@ export const FEATURES: Feature[] = [
       { v: "종합 IMC 프로젝트" },
     ],
     hero: {
-      src: "/sns/trusty-product.jpg",
-      width: 1600,
-      height: 1066,
-      caption: "컨텐츠 IMC로 채널과 광고를 함께 키운 펫푸드 커머스",
+      src: "/sns/trusty-vet.jpg",
+      width: 1280,
+      height: 720,
+      caption: "수의사가 직접 나오는 롱폼 — 처방식 라인까지 잇는 컨텐츠",
     },
     figures: [],
     videos: [
