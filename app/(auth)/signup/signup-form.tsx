@@ -212,7 +212,9 @@ export function SignUpForm() {
                       onClick={(e) => e.stopPropagation()}
                       className="mt-0.5 size-4 shrink-0 accent-[var(--color-ink)]"
                     />
-                    <span className="flex-1 leading-[1.6]">{consent.label}</span>
+                    <span className="flex-1 leading-[1.6]">
+                      {consent.label}
+                    </span>
                     <span className="mt-0.5 shrink-0 text-xs text-muted underline underline-offset-2">
                       전문
                     </span>
@@ -246,7 +248,10 @@ export function SignUpForm() {
 
       <p className="mt-8 text-center text-sm text-muted">
         이미 계정이 있으신가요?{" "}
-        <Link href="/login" className="font-bold text-ink underline underline-offset-2">
+        <Link
+          href="/login"
+          className="font-bold text-ink underline underline-offset-2"
+        >
           로그인
         </Link>
       </p>

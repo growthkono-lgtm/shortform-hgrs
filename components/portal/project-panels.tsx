@@ -15,7 +15,13 @@ const INITIAL: ClientActionState = { ok: false, message: null };
 const field =
   "mt-2 w-full rounded-xl border border-line bg-paper px-4 py-3 text-sm placeholder:text-muted/60 focus:border-ink focus:outline-none";
 
-function Submit({ children, small }: { children: React.ReactNode; small?: boolean }) {
+function Submit({
+  children,
+  small,
+}: {
+  children: React.ReactNode;
+  small?: boolean;
+}) {
   const { pending } = useFormStatus();
   return (
     <button
@@ -58,8 +64,16 @@ export type Guideline = {
 } | null;
 
 const GUIDE_FIELDS = [
-  ["brand_intro", "브랜드 소개", "무엇을 파는 브랜드인지 두세 줄로 적어 주세요."],
-  ["target", "핵심 타겟", "연령·성별·상황. 예) 30대 초반, 첫 자취를 시작한 직장인"],
+  [
+    "brand_intro",
+    "브랜드 소개",
+    "무엇을 파는 브랜드인지 두세 줄로 적어 주세요.",
+  ],
+  [
+    "target",
+    "핵심 타겟",
+    "연령·성별·상황. 예) 30대 초반, 첫 자취를 시작한 직장인",
+  ],
   ["usp", "USP", "경쟁 제품과 갈리는 지점 한 가지만 꼽는다면?"],
   ["price_range", "가격대 · 객단가", "예) 3만원대 / 평균 객단가 5.2만원"],
   ["tone", "톤앤매너", "예) 담백하게, 과장 없이. 자막은 최소로"],
@@ -88,7 +102,8 @@ export function GuidelinePanel({
         <span>
           <span className="text-base font-bold">컨텐츠 가이드라인</span>
           <span className="mt-1 block text-xs leading-[1.7] text-muted">
-            기획 방향을 맞추는 자료입니다. 먼저 채워 주시면 그대로 기획에 들어갑니다.
+            기획 방향을 맞추는 자료입니다. 먼저 채워 주시면 그대로 기획에
+            들어갑니다.
           </span>
         </span>
         <span
@@ -161,7 +176,8 @@ export function CandidatePanel({
     <div className="rounded-2xl border border-line bg-paper p-6">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="text-base font-bold">
-          1차 선정 심사 <span className="text-muted">{candidates.length}명</span>
+          1차 선정 심사{" "}
+          <span className="text-muted">{candidates.length}명</span>
         </h3>
         <p className="text-xs text-muted">
           선택 {picked}명

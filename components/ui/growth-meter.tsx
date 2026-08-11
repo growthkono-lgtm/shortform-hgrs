@@ -52,7 +52,10 @@ export function GrowthMeter({ metrics }: { metrics: Metric[] }) {
           cy="2"
           r="4"
           fill="var(--color-gold)"
-          style={{ opacity: p > 0.96 ? 1 : 0, transition: "opacity 250ms ease" }}
+          style={{
+            opacity: p > 0.96 ? 1 : 0,
+            transition: "opacity 250ms ease",
+          }}
         />
       </svg>
 

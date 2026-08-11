@@ -40,15 +40,15 @@ export function PlanSelectionProvider({
     };
   }, [code, tier]);
 
-  return (
-    <PlanSelectionContext value={value}>{children}</PlanSelectionContext>
-  );
+  return <PlanSelectionContext value={value}>{children}</PlanSelectionContext>;
 }
 
 export function usePlanSelection() {
   const context = useContext(PlanSelectionContext);
   if (!context) {
-    throw new Error("usePlanSelection must be used within PlanSelectionProvider");
+    throw new Error(
+      "usePlanSelection must be used within PlanSelectionProvider",
+    );
   }
   return context;
 }

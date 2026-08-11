@@ -33,18 +33,26 @@ export default async function AdminProjectPage({
     .maybeSingle();
   if (!project) notFound();
 
-  const [{ data: candidates }, { data: deliverables }, { data: grants }, { data: guideline }] =
-    await Promise.all([
-      admin
-        .from("influencer_candidates")
-        .select("*")
-        .eq("project_id", id)
-        .order("sort_order")
-        .order("created_at"),
-      admin.from("deliverables").select("*").eq("project_id", id).order("seq"),
-      admin.from("drive_grants").select("*").eq("project_id", id),
-      admin.from("project_guidelines").select("*").eq("project_id", id).maybeSingle(),
-    ]);
+  const [
+    { data: candidates },
+    { data: deliverables },
+    { data: grants },
+    { data: guideline },
+  ] = await Promise.all([
+    admin
+      .from("influencer_candidates")
+      .select("*")
+      .eq("project_id", id)
+      .order("sort_order")
+      .order("created_at"),
+    admin.from("deliverables").select("*").eq("project_id", id).order("seq"),
+    admin.from("drive_grants").select("*").eq("project_id", id),
+    admin
+      .from("project_guidelines")
+      .select("*")
+      .eq("project_id", id)
+      .maybeSingle(),
+  ]);
 
   const shortsCount = project.plans?.shorts_count ?? 0;
   const seedingLink = grants?.find((g) => g.kind === "seeding");
@@ -52,7 +60,10 @@ export default async function AdminProjectPage({
 
   return (
     <>
-      <Link href="/admin/projects" className="text-sm text-muted hover:text-ink">
+      <Link
+        href="/admin/projects"
+        className="text-sm text-muted hover:text-ink"
+      >
         ← 프로젝트 목록
       </Link>
 
@@ -190,7 +201,10 @@ export default async function AdminProjectPage({
           {candidates && candidates.length > 0 && (
             <ul className="mt-4 space-y-2">
               {candidates.map((c) => (
-                <li key={c.id} className="rounded-xl border border-line p-4 text-xs">
+                <li
+                  key={c.id}
+                  className="rounded-xl border border-line p-4 text-xs"
+                >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <span className="min-w-0">
                       <a
@@ -210,9 +224,10 @@ export default async function AdminProjectPage({
                         </span>
                       )}
                       <span className="mt-1.5 block text-muted">
-                        팔로워 {num(c.follower_count)} · 게시물 {num(c.content_count)} ·
-                        평균 조회 {num(c.avg_views)} · 좋아요 {num(c.avg_likes)} · 댓글{" "}
-                        {num(c.avg_comments)} · CPV {num(c.avg_cpv)}
+                        팔로워 {num(c.follower_count)} · 게시물{" "}
+                        {num(c.content_count)} · 평균 조회 {num(c.avg_views)} ·
+                        좋아요 {num(c.avg_likes)} · 댓글 {num(c.avg_comments)} ·
+                        CPV {num(c.avg_cpv)}
                       </span>
                       {c.fetch_error && (
                         <span className="mt-1.5 block text-red-600">
@@ -229,11 +244,24 @@ export default async function AdminProjectPage({
                         inline
                       >
                         <input type="hidden" name="candidate_id" value={c.id} />
-                        <input type="hidden" name="project_id" value={project.id} />
+                        <input
+                          type="hidden"
+                          name="project_id"
+                          value={project.id}
+                        />
                       </ActionForm>
-                      <ActionForm action={removeCandidate} label="삭제" variant="ghost" inline>
+                      <ActionForm
+                        action={removeCandidate}
+                        label="삭제"
+                        variant="ghost"
+                        inline
+                      >
                         <input type="hidden" name="candidate_id" value={c.id} />
-                        <input type="hidden" name="project_id" value={project.id} />
+                        <input
+                          type="hidden"
+                          name="project_id"
+                          value={project.id}
+                        />
                       </ActionForm>
                     </span>
                   </div>
@@ -269,13 +297,18 @@ export default async function AdminProjectPage({
                 placeholder="채널 링크만 붙여넣으세요 — https://instagram.com/aamoonlog"
                 className={input}
               />
-              <input name="reward" placeholder="제안 단가(원, 선택)" className={input} />
+              <input
+                name="reward"
+                placeholder="제안 단가(원, 선택)"
+                className={input}
+              />
             </div>
             <input name="note" placeholder="메모 (선택)" className={input} />
             <p className="text-[0.6875rem] leading-[1.7] text-muted">
               링크를 넣으면 채널명·팔로워·게시물수·평균 조회/좋아요/댓글을{" "}
-              <strong>자동으로 수집</strong>합니다. CPV는 제안 단가 ÷ 평균 조회수로
-              계산됩니다. 수집이 실패해도 후보는 저장되고, 사유가 목록에 표시됩니다.
+              <strong>자동으로 수집</strong>합니다. CPV는 제안 단가 ÷ 평균
+              조회수로 계산됩니다. 수집이 실패해도 후보는 저장되고, 사유가
+              목록에 표시됩니다.
             </p>
           </ActionForm>
         </section>
@@ -285,12 +318,18 @@ export default async function AdminProjectPage({
       <section className="mt-10 rounded-2xl border border-line bg-paper p-5 sm:p-6">
         <h2 className="text-sm font-bold">숏폼 산출물 {shortsCount}편</h2>
         <p className="mt-2 text-xs text-muted">
-          미리보기 URL을 넣으면 클라이언트 화면에 임베드로 뜹니다. <strong>최종 결과물은
-          위의 &ldquo;최종 납품 드라이브&rdquo; 링크 하나로</strong> 전달됩니다.
+          미리보기 URL을 넣으면 클라이언트 화면에 임베드로 뜹니다.{" "}
+          <strong>
+            최종 결과물은 위의 &ldquo;최종 납품 드라이브&rdquo; 링크 하나로
+          </strong>{" "}
+          전달됩니다.
         </p>
 
         <div className="mt-5 space-y-4">
-          {Array.from({ length: Math.max(shortsCount, 1) }, (_, i) => i + 1).map((seq) => {
+          {Array.from(
+            { length: Math.max(shortsCount, 1) },
+            (_, i) => i + 1,
+          ).map((seq) => {
             const d = deliverables?.find((x) => x.seq === seq);
             return (
               <ActionForm
@@ -332,7 +371,6 @@ export default async function AdminProjectPage({
           })}
         </div>
       </section>
-
     </>
   );
 }

@@ -15,7 +15,13 @@ import { countUpText, useCountUp } from "@/components/ui/use-count-up";
 const CHIPS = [
   { to: 30, suffix: "+", label: "브랜드 프로젝트 수행" },
   { to: 3, suffix: "억대", label: "연 거래액" },
-  { to: 2000, prefix: "₩", suffix: "만", grouped: true, label: "평균 프로젝트 단가" },
+  {
+    to: 2000,
+    prefix: "₩",
+    suffix: "만",
+    grouped: true,
+    label: "평균 프로젝트 단가",
+  },
 ] as const;
 
 export function HeroStats() {
@@ -30,7 +36,10 @@ export function HeroStats() {
     >
       {/* min-w-0 — nowrap 숫자가 트랙 최소폭을 밀어올려 열 전체가 넓어지던 걸 막는다 */}
       {CHIPS.map((c) => (
-        <div key={c.label} className="min-w-0 bg-night/70 px-3 py-4 backdrop-blur-sm sm:px-5 sm:py-5">
+        <div
+          key={c.label}
+          className="min-w-0 bg-night/70 px-3 py-4 backdrop-blur-sm sm:px-5 sm:py-5"
+        >
           <dt className="stat-figure text-gold text-lg whitespace-nowrap tabular-nums sm:text-3xl">
             {countUpText(p, c)}
           </dt>

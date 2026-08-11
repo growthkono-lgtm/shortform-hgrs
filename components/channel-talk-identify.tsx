@@ -9,7 +9,11 @@ import type { ChannelTalkProfile } from "./channel-talk";
  * 루트 레이아웃에서 이미 boot()가 끝났으므로 여기서는 updateUser만 부른다 —
  * 중복 boot는 위젯을 다시 그린다.
  */
-export function ChannelTalkIdentify({ profile }: { profile: ChannelTalkProfile }) {
+export function ChannelTalkIdentify({
+  profile,
+}: {
+  profile: ChannelTalkProfile;
+}) {
   useEffect(() => {
     if (!window.ChannelIO) return;
 

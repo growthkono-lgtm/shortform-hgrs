@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import localFont from "next/font/local";
-import { SERVICE } from "@/lib/constants";
+import { ORG, SERVICE } from "@/lib/constants";
+import {
+  JsonLd,
+  organization,
+  website,
+} from "@/components/seo/structured-data";
 import { ChannelTalk } from "@/components/channel-talk";
 import "./globals.css";
 
@@ -18,25 +23,49 @@ const pyeojin = localFont({
   variable: "--font-pyeojin",
   display: "swap",
   src: [
-    { path: "./fonts/PyeojinGothic-Light.woff2", weight: "300", style: "normal" },
-    { path: "./fonts/PyeojinGothic-Regular.woff2", weight: "400", style: "normal" },
-    { path: "./fonts/PyeojinGothic-Bold.woff2", weight: "700", style: "normal" },
+    {
+      path: "./fonts/PyeojinGothic-Light.woff2",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "./fonts/PyeojinGothic-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/PyeojinGothic-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
   ],
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SERVICE.url),
   title: {
-    default: `${SERVICE.name} — 매출로 검증된 팀이 만드는, 위너 숏폼`,
-    template: `%s | ${SERVICE.name}`,
+    default: `${ORG.name} — 브랜드 SNS 채널과 구매 전환 숏폼`,
+    template: `%s | 해그로시`,
   },
-  description:
-    "인플루언서 바이럴부터 구매전환 소재까지 — 하나의 파이프라인, 결제 한 번으로. 평균 프로젝트 단가 2천만원 이상의 전략 집단 해그로시가 숏폼 소재 시스템만 패키지로 열었습니다.",
+  alternates: { canonical: "/" },
+  description: ORG.description,
+  keywords: [
+    "SNS 채널 운영",
+    "브랜드 컨텐츠",
+    "유튜브 채널 기획",
+    "숏폼 제작",
+    "퍼포먼스 마케팅",
+    "컨텐츠 그로스",
+    "해그로시",
+  ],
   openGraph: {
     type: "website",
     locale: "ko_KR",
-    siteName: SERVICE.name,
+    siteName: ORG.name,
+    url: SERVICE.url,
   },
+  twitter: { card: "summary_large_image" },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -46,6 +75,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${pyeojin.variable} ${dmSans.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-paper text-ink">
+        {/* 사이트 전역 구조화 데이터 — 생성형 검색이 회사를 식별하는 근거 */}
+        <JsonLd data={organization} />
+        <JsonLd data={website} />
         {children}
         {/* 전 페이지 상담 위젯. pluginKey 미설정 시 렌더되지 않는다 (F11) */}
         <ChannelTalk />

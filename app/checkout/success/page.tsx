@@ -35,7 +35,9 @@ export default async function CheckoutSuccessPage({
 
   return (
     <div className="mx-auto w-full max-w-lg px-5 py-20 text-center sm:px-8">
-      <p className="eyebrow">{isVbank ? "Awaiting Deposit" : "Payment Complete"}</p>
+      <p className="eyebrow">
+        {isVbank ? "Awaiting Deposit" : "Payment Complete"}
+      </p>
 
       <h1 className="mt-5 text-3xl font-bold">
         {isVbank ? "입금을 기다리고 있습니다" : "결제가 완료되었습니다"}
@@ -44,13 +46,13 @@ export default async function CheckoutSuccessPage({
       <p className="mt-5 text-sm leading-[1.8] text-muted">
         {isVbank ? (
           <>
-            발급된 가상계좌로 입금이 확인되면 프로젝트가 자동으로 시작됩니다. 입금
-            정보는 결제 완료 안내 메일에서 확인하실 수 있습니다.
+            발급된 가상계좌로 입금이 확인되면 프로젝트가 자동으로 시작됩니다.
+            입금 정보는 결제 완료 안내 메일에서 확인하실 수 있습니다.
           </>
         ) : (
           <>
-            담당자가 배정되면 안내 메일을 보내드립니다. 대시보드에서 진행 상황을 단계별로
-            확인하실 수 있습니다.
+            담당자가 배정되면 안내 메일을 보내드립니다. 대시보드에서 진행 상황을
+            단계별로 확인하실 수 있습니다.
           </>
         )}
       </p>

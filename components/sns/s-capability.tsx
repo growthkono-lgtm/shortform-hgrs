@@ -173,10 +173,59 @@ function Visual({ card }: { card: Card }) {
   }
 
   if (card.kind === "metrics") {
-    // 두 장이 같은 그림이면 안 된다 — 카드마다 곡선을 다르게 그린다.
-    // marker id 도 카드별로 갈라야 한다(문서 전체에서 유일해야 하므로)
-    const crm = card.id === "crm";
     const uid = card.id;
+
+    // CRM 카드는 **그래픽 종류 자체를 다르게** 간다.
+    // 화살표 곡선만 바꿔서는 옆 카드와 한 덩어리로 보인다(같은 지적을 세 번 받았다).
+    // 여기는 퍼널 — 리드가 상담을 거쳐 결제로 좁혀지는 계단 막대.
+    if (card.id === "crm") {
+      const bars = [
+        { w: 100, label: "유입" },
+        { w: 74, label: "리드" },
+        { w: 52, label: "상담" },
+        { w: 33, label: "결제" },
+      ];
+      return (
+        <div className="relative w-[17rem] overflow-hidden rounded-2xl bg-[#0b1020] px-6 py-7 sm:w-[22rem] sm:px-8 sm:py-8">
+          <div className="space-y-2">
+            {bars.map((bar, idx) => (
+              <div key={bar.label} className="flex items-center gap-3">
+                <span className="w-8 shrink-0 text-[0.625rem] text-white/45">
+                  {bar.label}
+                </span>
+                <span
+                  className="h-6 rounded-r-md sm:h-7"
+                  style={{
+                    width: `${bar.w}%`,
+                    background: `linear-gradient(90deg, color-mix(in oklab, var(--color-accent) ${90 - idx * 12}%, #0b1020), color-mix(in oklab, #a3d94a ${25 + idx * 22}%, var(--color-accent)))`,
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+
+          <dl className="mt-6 grid gap-px overflow-hidden rounded-lg bg-white/10">
+            {"metrics" in card &&
+              card.metrics?.map((m) => (
+                <div
+                  key={m.k}
+                  className="flex items-baseline justify-between bg-[#0b1020] px-3.5 py-2.5"
+                >
+                  <dt className="text-[0.75rem] text-white/60">{m.k}</dt>
+                  <dd className="stat-figure text-lg text-white sm:text-xl">
+                    {m.v}
+                    <span className="ml-0.5 text-[0.625rem] font-normal text-white/70">
+                      {m.u}
+                    </span>
+                  </dd>
+                </div>
+              ))}
+          </dl>
+        </div>
+      );
+    }
+
+    // 데이터 카드 — 교차하는 상승·하강 화살표
     return (
       <div className="relative w-[17rem] overflow-hidden rounded-2xl bg-[#0b1020] px-6 py-8 sm:w-[22rem] sm:px-8 sm:py-10">
         <svg
@@ -217,73 +266,35 @@ function Visual({ card }: { card: Card }) {
               <path d="M0 0 L6 3 L0 6 z" fill="#4d8fe8" />
             </marker>
           </defs>
-
-          {crm ? (
-            <>
-              {/* CRM — 완만한 S자 상승 + 계단형 하강 */}
-              <path
-                d="M8 206 C 110 202, 168 150, 208 108 S 292 40, 330 18"
-                stroke="#a3d94a"
-                strokeWidth="4"
-                fill="none"
-                markerEnd={`url(#g-${uid})`}
-              />
-              <path
-                d="M8 214 C 132 210, 202 168, 320 66"
-                stroke="#c9a2e8"
-                strokeWidth="2"
-                fill="none"
-                markerEnd={`url(#p-${uid})`}
-              />
-              <path
-                d="M52 28 L52 92 L146 92 L146 146 L240 146 L240 194 L324 194"
-                stroke="#4d8fe8"
-                strokeWidth="2"
-                fill="none"
-                markerEnd={`url(#b-${uid})`}
-              />
-              <path
-                d="M0 74 H340 M0 148 H340"
-                stroke="#fff"
-                strokeOpacity="0.1"
-                strokeWidth="1"
-              />
-            </>
-          ) : (
-            <>
-              {/* 데이터 — 직선으로 교차하는 상승·하강 */}
-              <path
-                d="M6 214 L330 12"
-                stroke="#a3d94a"
-                strokeWidth="4"
-                fill="none"
-                markerEnd={`url(#g-${uid})`}
-              />
-              <path
-                d="M40 214 L318 42"
-                stroke="#c9a2e8"
-                strokeWidth="2"
-                fill="none"
-                markerEnd={`url(#p-${uid})`}
-              />
-              <path
-                d="M60 26 L322 200"
-                stroke="#4d8fe8"
-                strokeWidth="2"
-                fill="none"
-                markerEnd={`url(#b-${uid})`}
-              />
-              <path
-                d="M0 110 H340 M240 0 V220"
-                stroke="#fff"
-                strokeOpacity="0.12"
-                strokeWidth="1"
-              />
-            </>
-          )}
+          <path
+            d="M6 214 L330 12"
+            stroke="#a3d94a"
+            strokeWidth="4"
+            fill="none"
+            markerEnd={`url(#g-${uid})`}
+          />
+          <path
+            d="M40 214 L318 42"
+            stroke="#c9a2e8"
+            strokeWidth="2"
+            fill="none"
+            markerEnd={`url(#p-${uid})`}
+          />
+          <path
+            d="M60 26 L322 200"
+            stroke="#4d8fe8"
+            strokeWidth="2"
+            fill="none"
+            markerEnd={`url(#b-${uid})`}
+          />
+          <path
+            d="M0 110 H340 M240 0 V220"
+            stroke="#fff"
+            strokeOpacity="0.12"
+            strokeWidth="1"
+          />
         </svg>
 
-        {/* 화살표가 라벨 위를 지나가 글자가 묻힌다 — 왼쪽에 얇은 스크림을 깐다 */}
         <span
           aria-hidden
           className="absolute inset-y-0 left-0 w-3/5 bg-gradient-to-r from-[#0b1020] via-[#0b1020]/85 to-transparent"

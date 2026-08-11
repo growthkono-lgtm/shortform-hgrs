@@ -32,7 +32,9 @@ export function ForYou() {
             className="rounded-2xl border border-line bg-paper p-6"
           >
             <h3 className="text-base leading-snug font-bold">{target.title}</h3>
-            <p className="mt-3 text-sm leading-[1.7] text-muted">{target.body}</p>
+            <p className="mt-3 text-sm leading-[1.7] text-muted">
+              {target.body}
+            </p>
           </div>
         ))}
       </div>

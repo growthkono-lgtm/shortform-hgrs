@@ -58,9 +58,9 @@ export function LoopVideo({
       {visible && (
         <video
           className={cn(
-          "absolute inset-0 size-full",
-          fit === "contain" ? "object-contain" : "object-cover",
-        )}
+            "absolute inset-0 size-full",
+            fit === "contain" ? "object-contain" : "object-cover",
+          )}
           src={src}
           poster={poster}
           muted

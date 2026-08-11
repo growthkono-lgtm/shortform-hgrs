@@ -569,9 +569,9 @@ pages.push(
     <p class="cover-org">${COMPANY.name} · 사업자등록번호 ${COMPANY.bizRegNumber}<br>${COMPANY.address}</p>
   </div>
   <div class="contact-grid">
-    <div><p class="ck">플랜 신청 · 내 프로젝트</p><p class="cv">${SERVICE.url.replace("https://", "")}</p></div>
+    <div><p class="ck">플랜 신청 · 내 프로젝트</p><p class="cv">${SERVICE.url.replace("https://", "")}${SERVICE.path}</p></div>
     <div><p class="ck">문의 메일</p><p class="cv">contact@h-grs.com</p></div>
-    <div><p class="ck">브랜드 단위 프로젝트</p><p class="cv">${SERVICE.parentUrl.replace("https://", "")}/partnership</p></div>
+    <div><p class="ck">브랜드 SNS 채널</p><p class="cv">${SERVICE.url.replace("https://", "")}/sns-brand</p></div>
     <div><p class="ck">응대 시간</p><p class="cv">평일 10:00 – 19:00</p></div>
   </div>
 </div>`,

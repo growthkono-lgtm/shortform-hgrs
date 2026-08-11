@@ -64,7 +64,11 @@ const STEPS: Step[] = [
 ];
 
 const TONE: Record<Tone, { section: string; kicker: string; no: string }> = {
-  light: { section: "bg-paper text-ink", kicker: "text-ink-soft", no: "text-accent" },
+  light: {
+    section: "bg-paper text-ink",
+    kicker: "text-ink-soft",
+    no: "text-accent",
+  },
   indigo: {
     section: "on-dark bg-accent text-white",
     kicker: "text-white/75",
@@ -94,7 +98,9 @@ export function ServiceFlow() {
                   <span className={`stat-figure text-3xl sm:text-4xl ${t.no}`}>
                     {step.no}
                   </span>
-                  <span className={`text-base font-bold sm:text-lg ${t.kicker}`}>
+                  <span
+                    className={`text-base font-bold sm:text-lg ${t.kicker}`}
+                  >
                     {step.kicker}
                   </span>
                 </p>

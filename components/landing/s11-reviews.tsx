@@ -45,7 +45,10 @@ export function Reviews() {
           <Marquee key={i} durationSec={72 + i * 11} reverse={i % 2 === 1}>
             <div className="flex gap-3">
               {row.map((review) => (
-                <Card key={review.company + review.body.slice(0, 12)} review={review} />
+                <Card
+                  key={review.company + review.body.slice(0, 12)}
+                  review={review}
+                />
               ))}
             </div>
           </Marquee>

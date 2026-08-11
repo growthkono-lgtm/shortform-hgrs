@@ -161,47 +161,28 @@ export function Contact() {
           </>
         )}
 
-        {/* 갈림길 — 이 페이지가 답이 아닌 방문자를 제자리로 보낸다 */}
-        <div className="mt-16 grid gap-px overflow-hidden rounded-2xl bg-line sm:grid-cols-2">
-          <Link
-            href="/"
-            className="group bg-paper-alt px-6 py-7 transition-colors duration-200 hover:bg-paper"
-          >
-            <p className="eyebrow">Shortform Studio</p>
-            <p className="mt-2.5 text-base font-bold text-ink">
+        {/* 갈림길 — 광고 소재만 필요한 방문자를 숏폼 쪽으로 보낸다.
+            IMC 파트너십(프레이머) 링크는 뺐다 — 그 사이트를 더 쓰지 않는다 */}
+        <Link
+          href="/shortform"
+          className="group mt-16 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-line bg-paper px-6 py-6 transition-colors duration-200 hover:border-ink/25"
+        >
+          <span className="min-w-0">
+            <span className="eyebrow block">Shortform Studio</span>
+            <span className="mt-2 block text-base font-bold text-ink">
               광고 소재가 먼저 필요하신가요?
-              <span
-                aria-hidden
-                className="ml-1.5 inline-block transition-transform duration-200 group-hover:translate-x-1"
-              >
-                →
-              </span>
-            </p>
-            <p className="mt-2 text-xs leading-[1.7] text-muted">
+            </span>
+            <span className="mt-1.5 block text-xs leading-[1.7] text-muted">
               인플루언서 시딩부터 구매 전환형 숏폼까지 편수 단위로
-            </p>
-          </Link>
-          <a
-            href="https://hgrs.io/partnership"
-            target="_blank"
-            rel="noreferrer"
-            className="group bg-paper-alt px-6 py-7 transition-colors duration-200 hover:bg-paper"
+            </span>
+          </span>
+          <span
+            aria-hidden
+            className="shrink-0 text-sm font-bold text-ink transition-transform duration-200 group-hover:translate-x-1"
           >
-            <p className="eyebrow">IMC Partnership</p>
-            <p className="mt-2.5 text-base font-bold text-ink">
-              브랜드 전체 프로젝트가 필요하신가요?
-              <span
-                aria-hidden
-                className="ml-1.5 inline-block transition-transform duration-200 group-hover:translate-x-1"
-              >
-                →
-              </span>
-            </p>
-            <p className="mt-2 text-xs leading-[1.7] text-muted">
-              전략·컨텐츠·퍼널·퍼포먼스를 한 팀으로 붙이는 액셀러레이팅
-            </p>
-          </a>
-        </div>
+            →
+          </span>
+        </Link>
       </div>
     </section>
   );

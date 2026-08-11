@@ -96,7 +96,9 @@ export function Apply() {
     : null;
 
   const [seenResult, setSeenResult] = useState(result);
-  const [picked, setPicked] = useState<{ interest?: string; volume?: string }>({});
+  const [picked, setPicked] = useState<{ interest?: string; volume?: string }>(
+    {},
+  );
   if (seenResult !== result) {
     setSeenResult(result);
     setPicked({});
@@ -168,8 +170,9 @@ export function Apply() {
 
           {result && (
             <p className="rounded-xl border border-accent/40 bg-accent/[0.06] px-4 py-3 text-xs leading-[1.7] text-accent-deep">
-              진단 결과(<strong className="font-bold">{result.plan.label}</strong>{" "}
-              · {result.plan.composition})가 함께 전달됩니다.
+              진단 결과(
+              <strong className="font-bold">{result.plan.label}</strong> ·{" "}
+              {result.plan.composition})가 함께 전달됩니다.
             </p>
           )}
 
@@ -303,8 +306,14 @@ export function Apply() {
             <p className="eyebrow">플랜 안내에 담기는 것</p>
             <ul className="mt-5 space-y-4 text-sm">
               {[
-                ["브랜드 맞춤 구성 제안", "소스 보유 상황과 소재 상태에 맞춘 편수·구성"],
-                ["편수별 금액", "싱글·패키지 전 구간 단가와 시딩 단가 분리 표기"],
+                [
+                  "브랜드 맞춤 구성 제안",
+                  "소스 보유 상황과 소재 상태에 맞춘 편수·구성",
+                ],
+                [
+                  "편수별 금액",
+                  "싱글·패키지 전 구간 단가와 시딩 단가 분리 표기",
+                ],
                 ["제작 사례", "같은 카테고리에서 진행한 소재와 성과 흐름"],
               ].map(([title, body]) => (
                 <li key={title} className="flex gap-3">
@@ -324,16 +333,18 @@ export function Apply() {
           </div>
 
           <ul className="mt-5 space-y-2 text-xs leading-[1.7] text-muted">
-            {[POLICY.revisionOnce, POLICY.usagePeriod, POLICY.sourceRequired].map(
-              (line) => (
-                <li key={line} className="flex gap-2">
-                  <span aria-hidden className="text-accent">
-                    ·
-                  </span>
-                  {line}
-                </li>
-              ),
-            )}
+            {[
+              POLICY.revisionOnce,
+              POLICY.usagePeriod,
+              POLICY.sourceRequired,
+            ].map((line) => (
+              <li key={line} className="flex gap-2">
+                <span aria-hidden className="text-accent">
+                  ·
+                </span>
+                {line}
+              </li>
+            ))}
           </ul>
         </aside>
       </div>

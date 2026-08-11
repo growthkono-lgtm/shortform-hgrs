@@ -26,7 +26,9 @@ export function RoasCounter({ className }: { className?: string }) {
     const node = ref.current;
     if (!node) return;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     if (reduced) return;
 
     const rect = node.getBoundingClientRect();
@@ -43,9 +45,7 @@ export function RoasCounter({ className }: { className?: string }) {
         setDrawn(true);
         // 마지막 300+ 앞에 한 박자 쉬어 "튀어오르는" 인상을 만든다
         const delays = [420, 840, 1260, 1680, 2280];
-        timers = delays.map((d, i) =>
-          setTimeout(() => setStep(i + 1), d),
-        );
+        timers = delays.map((d, i) => setTimeout(() => setStep(i + 1), d));
       },
       { threshold: 0.3 },
     );
@@ -70,7 +70,9 @@ export function RoasCounter({ className }: { className?: string }) {
           </p>
           <p
             className={`stat-figure tabular-nums transition-[font-size,color] duration-300 ${
-              last ? "text-accent text-4xl sm:text-5xl" : "text-ink text-3xl sm:text-4xl"
+              last
+                ? "text-accent text-4xl sm:text-5xl"
+                : "text-ink text-3xl sm:text-4xl"
             }`}
           >
             {STEPS[step]}

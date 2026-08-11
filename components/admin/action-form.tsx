@@ -61,7 +61,10 @@ export function ActionForm({
   return (
     <form
       action={formAction}
-      className={cn(inline ? "flex items-center gap-2" : "space-y-3", className)}
+      className={cn(
+        inline ? "flex items-center gap-2" : "space-y-3",
+        className,
+      )}
     >
       {children}
       <Submit variant={variant}>{label}</Submit>

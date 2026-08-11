@@ -56,8 +56,8 @@ export function CodeLoginForm() {
         ) : (
           <>
             <p className="text-sm leading-[1.8] text-muted">
-              <span className="font-bold text-ink">{state.email}</span> 으로 6자리
-              인증번호를 보냈습니다.
+              <span className="font-bold text-ink">{state.email}</span> 으로
+              6자리 인증번호를 보냈습니다.
             </p>
             <div>
               <label htmlFor="token" className="block text-sm font-bold">
@@ -91,7 +91,10 @@ export function CodeLoginForm() {
       </form>
 
       <p className="mt-8 text-center text-sm text-muted">
-        <Link href="/login" className="font-bold text-ink underline underline-offset-2">
+        <Link
+          href="/login"
+          className="font-bold text-ink underline underline-offset-2"
+        >
           비밀번호로 로그인
         </Link>
       </p>

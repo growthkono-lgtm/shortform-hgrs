@@ -44,7 +44,9 @@ export function Proof() {
 
               <p className="mt-4 text-xs">
                 <span className="font-bold">{item.company}</span>
-                {item.role && <span className="ml-2 text-muted">{item.role}</span>}
+                {item.role && (
+                  <span className="ml-2 text-muted">{item.role}</span>
+                )}
               </p>
             </div>
 

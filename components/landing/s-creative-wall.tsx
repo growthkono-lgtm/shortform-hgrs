@@ -67,7 +67,15 @@ const PLAYABLE = GRID.filter(
 );
 
 /** 유튜브 쇼츠 칸 — 파일이 아니라 유튜브에 있는 소재라 눌렀을 때 유튜브로 넘긴다 */
-function ShortCard({ id, poster, label }: { id: string; poster: string; label: string }) {
+function ShortCard({
+  id,
+  poster,
+  label,
+}: {
+  id: string;
+  poster: string;
+  label: string;
+}) {
   return (
     <a
       href={`https://www.youtube.com/shorts/${id}`}
@@ -86,7 +94,10 @@ function ShortCard({ id, poster, label }: { id: string; poster: string; label: s
       />
       <span className="pointer-events-none absolute inset-0 grid place-items-center bg-ink/0 transition-colors duration-300 group-hover:bg-ink/25">
         <span className="grid size-11 place-items-center rounded-full bg-paper/90 shadow-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-110 sm:size-14">
-          <svg viewBox="0 0 24 24" className="ml-0.5 size-5 fill-ink sm:ml-1 sm:size-6">
+          <svg
+            viewBox="0 0 24 24"
+            className="ml-0.5 size-5 fill-ink sm:ml-1 sm:size-6"
+          >
             <path d="M8 5v14l11-7z" />
           </svg>
         </span>
@@ -118,7 +129,10 @@ function ClipCard({
       {/* 칸이 좁아진 모바일에서 버튼이 소재를 다 덮지 않게 크기를 줄인다 */}
       <span className="pointer-events-none absolute inset-0 grid place-items-center bg-ink/0 transition-colors duration-300 group-hover:bg-ink/25">
         <span className="grid size-11 place-items-center rounded-full bg-paper/90 shadow-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-110 sm:size-14">
-          <svg viewBox="0 0 24 24" className="ml-0.5 size-5 fill-ink sm:ml-1 sm:size-6">
+          <svg
+            viewBox="0 0 24 24"
+            className="ml-0.5 size-5 fill-ink sm:ml-1 sm:size-6"
+          >
             <path d="M8 5v14l11-7z" />
           </svg>
         </span>
@@ -201,7 +215,10 @@ function LongformCard({ id, label }: { id: string; label: string }) {
       />
       <span className="pointer-events-none absolute inset-0 grid place-items-center bg-ink/0 transition-colors duration-300 group-hover:bg-ink/25">
         <span className="grid size-11 place-items-center rounded-full bg-paper/90 shadow-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-110 sm:size-14">
-          <svg viewBox="0 0 24 24" className="ml-0.5 size-5 fill-ink sm:ml-1 sm:size-6">
+          <svg
+            viewBox="0 0 24 24"
+            className="ml-0.5 size-5 fill-ink sm:ml-1 sm:size-6"
+          >
             <path d="M8 5v14l11-7z" />
           </svg>
         </span>
@@ -252,10 +269,7 @@ export function CreativeWall() {
   const close = useCallback(() => setOpen(null), []);
 
   return (
-    <section
-      id="wall"
-      className="scroll-mt-16 bg-paper py-20 md:py-28"
-    >
+    <section id="wall" className="scroll-mt-16 bg-paper py-20 md:py-28">
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <p className="eyebrow">Creative Wall</p>
         <SectionHeading className="mt-5">
@@ -265,8 +279,8 @@ export function CreativeWall() {
         </SectionHeading>
         <p className="mt-5 max-w-2xl text-sm leading-[1.8] text-muted sm:text-[0.9375rem]">
           기획과 서사, 마케팅과 세일즈를 아는 팀이 만드는{" "}
-          <strong className="font-bold text-ink">광고형 숏폼</strong> 전문입니다.
-          최근 진행한 캠페인 중 주요 위너 소재만 추렸습니다.
+          <strong className="font-bold text-ink">광고형 숏폼</strong>{" "}
+          전문입니다. 최근 진행한 캠페인 중 주요 위너 소재만 추렸습니다.
         </p>
       </div>
 
@@ -274,7 +288,12 @@ export function CreativeWall() {
       <div className="mx-auto mt-10 grid w-full max-w-6xl grid-cols-2 gap-2 px-5 sm:gap-4 sm:px-8 lg:grid-cols-3 md:mt-14">
         {GRID.map((tile) =>
           tile.kind === "short" ? (
-            <ShortCard key={tile.id} id={tile.id} poster={tile.poster} label={tile.label} />
+            <ShortCard
+              key={tile.id}
+              id={tile.id}
+              poster={tile.poster}
+              label={tile.label}
+            />
           ) : (
             <ClipCard
               key={tile.video}
@@ -297,7 +316,6 @@ export function CreativeWall() {
         <BandRow row={BAND_ROW_A} durationSec={150} />
         <BandRow row={BAND_ROW_B} durationSec={170} reverse />
       </div>
-
 
       {open !== null && (
         <ClipPlayer

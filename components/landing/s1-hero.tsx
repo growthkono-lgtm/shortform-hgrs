@@ -49,12 +49,13 @@ export function Hero() {
             숏폼 부스팅 프로젝트
           </h1>
 
-
           {/* 두 줄 고정 — 한 줄로 흘리면 모바일에서 끝이 잘린다.
               <br> 대신 블록 두 개로 두어야 폭이 좁아져도 줄이 섞이지 않는다. */}
           <p className="mt-4 max-w-xl text-[0.9375rem] leading-[1.75] font-bold text-balance text-white/70 sm:mt-5 sm:text-xl sm:leading-[1.7]">
             <span className="block">인플루언서 시딩과 채널 바이럴</span>
-            <span className="block">그리고 구매 전환형 광고 소재를 한번에!</span>
+            <span className="block">
+              그리고 구매 전환형 광고 소재를 한번에!
+            </span>
           </p>
 
           <HeroStats />

@@ -41,6 +41,7 @@ export function DiagnosisProvider({ children }: { children: React.ReactNode }) {
 
 export function useDiagnosis() {
   const ctx = useContext(Ctx);
-  if (!ctx) throw new Error("useDiagnosis must be used within DiagnosisProvider");
+  if (!ctx)
+    throw new Error("useDiagnosis must be used within DiagnosisProvider");
   return ctx;
 }

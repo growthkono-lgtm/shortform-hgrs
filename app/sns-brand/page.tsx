@@ -1,4 +1,11 @@
 import type { Metadata } from "next";
+import {
+  JsonLd,
+  breadcrumb,
+  faqSchema,
+  serviceSchema,
+} from "@/components/seo/structured-data";
+import { FAQ } from "@/lib/sns-brand";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Clients } from "@/components/landing/s-clients";
@@ -31,6 +38,7 @@ import { Contact } from "@/components/sns/s-contact";
 export const metadata: Metadata = {
   // 루트 템플릿("| 해그로시 숏폼 스튜디오")은 이 페이지에 맞지 않는다 — 다른 서비스 라인이다
   title: { absolute: "브랜드 SNS 채널 커뮤니케이션 | 해그로시" },
+  alternates: { canonical: "/sns-brand" },
   description:
     "브랜드 퍼널을 완성하는 SNS 채널 그로스 프로젝트. 단순 바이럴이 아닌, 팬덤과 고객 연결의 커뮤니케이션을 완성합니다 — 크래프톤·럽디·열다·트러스티푸드 성과 기록.",
   openGraph: {
@@ -38,12 +46,30 @@ export const metadata: Metadata = {
     description:
       "브랜드 퍼널을 완성하는 SNS 채널 그로스 프로젝트. 팬덤과 고객 연결의 커뮤니케이션을 완성합니다.",
     images: ["/sns/krafton-contents.jpg"],
+    url: "/sns-brand",
   },
 };
+
+const SCHEMA = serviceSchema({
+  path: "/sns-brand",
+  name: "브랜드 SNS 채널 커뮤니케이션",
+  description:
+    "브랜드 SNS 채널의 기획·전략·운영. PM·컨텐츠·퍼널·퍼포먼스 4개 팀이 붙는 연 단위 채널 파트너십.",
+  serviceType: "SNS 채널 기획·운영",
+});
+
+const CRUMBS = breadcrumb([
+  { name: "해그로시", path: "/" },
+  { name: "브랜드 SNS 채널", path: "/sns-brand" },
+]);
 
 export default function SnsBrandPage() {
   return (
     <>
+      <JsonLd data={SCHEMA} />
+      <JsonLd data={CRUMBS} />
+      {/* FAQ 스키마 — 생성형 검색이 문답을 그대로 인용할 수 있게 한다 */}
+      <JsonLd data={faqSchema([...FAQ])} />
       <SiteHeader nav={{ href: "#contact", label: "프로젝트 문의" }} />
       <main>
         <Hero />

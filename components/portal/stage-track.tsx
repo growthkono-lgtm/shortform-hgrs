@@ -66,7 +66,9 @@ export function StageTrack({
                         <path d="M2 5.2l2 2 4-4.4" />
                       </svg>
                     )}
-                    {active && <span className="size-1.5 rounded-full bg-white" />}
+                    {active && (
+                      <span className="size-1.5 rounded-full bg-white" />
+                    )}
                   </span>
                   {!last && (
                     <span

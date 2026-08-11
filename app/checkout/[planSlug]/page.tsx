@@ -9,7 +9,9 @@ import { CheckoutForm } from "./checkout-form";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
-export default async function CheckoutPage({ params }: PageProps<"/checkout/[planSlug]">) {
+export default async function CheckoutPage({
+  params,
+}: PageProps<"/checkout/[planSlug]">) {
   const { planSlug } = await params;
 
   const plan = await getPlanBySlug(planSlug);
@@ -66,7 +68,9 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[pla
                 <>
                   <div className="flex justify-between text-muted">
                     <dt>정가</dt>
-                    <dd className="line-through">{formatKRW(plan.list_price)}</dd>
+                    <dd className="line-through">
+                      {formatKRW(plan.list_price)}
+                    </dd>
                   </div>
                   <div className="flex justify-between text-accent-deep">
                     <dt>베타 오픈 할인</dt>
@@ -76,14 +80,18 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[pla
               )}
               <div className="flex justify-between border-t border-line pt-3 text-base font-bold">
                 <dt>결제 금액</dt>
-                <dd className="stat-figure text-xl">{formatKRW(plan.beta_price)}</dd>
+                <dd className="stat-figure text-xl">
+                  {formatKRW(plan.beta_price)}
+                </dd>
               </div>
             </dl>
 
             <ul className="mt-6 space-y-2 border-t border-line pt-5 text-xs leading-[1.7] text-muted">
               <li>· {POLICY.revisionOnce}</li>
               <li>· {POLICY.usagePeriod}</li>
-              {plan.code === "shorts_only" && <li>· {POLICY.sourceRequired}</li>}
+              {plan.code === "shorts_only" && (
+                <li>· {POLICY.sourceRequired}</li>
+              )}
             </ul>
           </div>
         </aside>

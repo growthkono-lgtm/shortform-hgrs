@@ -25,7 +25,10 @@ export function SiteHeader({
       }
     >
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5 sm:px-8">
-        <Link href="/" className="min-w-0 truncate text-[0.8125rem] font-bold sm:text-sm">
+        <Link
+          href="/"
+          className="min-w-0 truncate text-[0.8125rem] font-bold sm:text-sm"
+        >
           {SERVICE.name}
         </Link>
 

@@ -19,8 +19,8 @@ export function Process() {
   return (
     <Section eyebrow="Process">
       <SectionHeading>
-        결제 다음 날부터, <strong className="font-bold">무엇이 언제 오는지</strong>{" "}
-        보입니다
+        결제 다음 날부터,{" "}
+        <strong className="font-bold">무엇이 언제 오는지</strong> 보입니다
       </SectionHeading>
 
       <div
@@ -47,7 +47,10 @@ export function Process() {
 
       <ol className="mt-10 space-y-px overflow-hidden rounded-2xl border border-line bg-line">
         {steps.map((step, i) => (
-          <li key={step.title} className="bg-paper p-6 sm:flex sm:items-start sm:gap-6">
+          <li
+            key={step.title}
+            className="bg-paper p-6 sm:flex sm:items-start sm:gap-6"
+          >
             <span className="font-display shrink-0 text-sm font-bold text-accent">
               STEP {String(i + 1).padStart(2, "0")}
             </span>

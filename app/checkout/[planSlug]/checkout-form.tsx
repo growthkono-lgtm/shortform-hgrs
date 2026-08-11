@@ -59,7 +59,8 @@ export function CheckoutForm({
         widgetsRef.current = widgets;
         setReady(true);
       } catch {
-        if (!disposed) setError("결제 모듈을 불러오지 못했습니다. 새로고침해 주세요.");
+        if (!disposed)
+          setError("결제 모듈을 불러오지 못했습니다. 새로고침해 주세요.");
       }
     })();
 
@@ -184,7 +185,8 @@ export function CheckoutForm({
             className="mt-0.5 size-4 shrink-0 accent-[var(--color-ink)]"
           />
           <span className="leading-[1.7] text-muted">
-            <span className="font-bold text-ink">[필수]</span> {POLICY.noIndividualEdit}
+            <span className="font-bold text-ink">[필수]</span>{" "}
+            {POLICY.noIndividualEdit}
           </span>
         </label>
 

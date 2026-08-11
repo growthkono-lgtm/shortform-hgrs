@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { COMPANY, PARTNERSHIP_URL, SERVICE } from "@/lib/constants";
+import { COMPANY } from "@/lib/constants";
 
 /** PG 심사 요건 — 확정 전까지 어떤 항목이 비었는지 개발 화면에서 보이게 둔다 */
 const REQUIRED_FIELDS = [
@@ -19,26 +19,18 @@ export function SiteFooter() {
           <Link href="/terms" className="text-muted hover:text-ink">
             이용약관
           </Link>
-          <Link href="/privacy" className="font-bold text-ink-soft hover:text-ink">
-            개인정보처리방침
-          </Link>
-          {/* 브랜드 단위로 붙어야 하는 사람만 여기서 본진으로 넘어간다 */}
-          <a
-            href={PARTNERSHIP_URL}
-            target="_blank"
-            rel="noreferrer"
+          <Link
+            href="/privacy"
             className="font-bold text-ink-soft hover:text-ink"
           >
-            IMC 프로젝트
-          </a>
-          <a
-            href={SERVICE.parentUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="text-muted hover:text-ink"
+            개인정보처리방침
+          </Link>
+          <Link
+            href="/sns-brand"
+            className="font-bold text-ink-soft hover:text-ink"
           >
-            hgrs.io
-          </a>
+            브랜드 SNS 채널
+          </Link>
         </div>
 
         <dl className="mt-8 space-y-1.5 text-xs leading-[1.7] text-muted">

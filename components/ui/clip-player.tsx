@@ -104,7 +104,15 @@ export function ClipPlayer({
             }}
             className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-ink/70 px-4 py-2 text-sm font-bold text-paper backdrop-blur-sm transition hover:bg-ink/85"
           >
-            <svg viewBox="0 0 24 24" className="size-4" fill="none" strokeWidth={2} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              viewBox="0 0 24 24"
+              className="size-4"
+              fill="none"
+              strokeWidth={2}
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M11 5L6 9H3v6h3l5 4V5z" />
               <path d="M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13" />
             </svg>
@@ -134,7 +142,13 @@ export function ClipPlayer({
         aria-label="닫기"
         className="absolute right-4 top-4 grid size-11 place-items-center rounded-full bg-paper/15 text-paper transition hover:bg-paper/30"
       >
-        <svg viewBox="0 0 24 24" className="size-5" fill="none" strokeWidth={2} stroke="currentColor">
+        <svg
+          viewBox="0 0 24 24"
+          className="size-5"
+          fill="none"
+          strokeWidth={2}
+          stroke="currentColor"
+        >
           <path d="M6 6l12 12M18 6L6 18" />
         </svg>
       </button>
@@ -159,7 +173,15 @@ function StepButton({
       aria-label={label}
       className="grid size-11 place-items-center rounded-full bg-paper/15 transition hover:bg-paper/30"
     >
-      <svg viewBox="0 0 24 24" className="size-5" fill="none" strokeWidth={2} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        viewBox="0 0 24 24"
+        className="size-5"
+        fill="none"
+        strokeWidth={2}
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         {children}
       </svg>
     </button>

@@ -6,7 +6,8 @@ export function Market() {
   return (
     <Section eyebrow="Market" alt>
       <SectionHeading>
-        숏폼은 선택이 아니라 <strong className="font-bold">매출의 기본값</strong>
+        숏폼은 선택이 아니라{" "}
+        <strong className="font-bold">매출의 기본값</strong>
         입니다
       </SectionHeading>
 

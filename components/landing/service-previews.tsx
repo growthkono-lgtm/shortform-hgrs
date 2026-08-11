@@ -31,13 +31,18 @@ export function BrandAiPreview() {
       </div>
       <dl className="mt-2.5 divide-y divide-line overflow-hidden rounded-lg border border-line bg-paper">
         {rows.map(([k, v]) => (
-          <div key={k} className="flex items-baseline gap-2 px-3 py-[0.4375rem]">
+          <div
+            key={k}
+            className="flex items-baseline gap-2 px-3 py-[0.4375rem]"
+          >
             <dt className="w-14 shrink-0 text-[0.5625rem] text-muted">{k}</dt>
             <dd className="truncate text-[0.625rem] font-bold">{v}</dd>
           </div>
         ))}
       </dl>
-      <p className="mt-2 text-[0.5625rem] text-muted">AI 초안 · 담당자 검수 후 확정</p>
+      <p className="mt-2 text-[0.5625rem] text-muted">
+        AI 초안 · 담당자 검수 후 확정
+      </p>
     </div>
   );
 }
@@ -45,10 +50,30 @@ export function BrandAiPreview() {
 /** 0-1 — 컨텐츠 가이드라인 세부 기획. 편별로 포맷·후킹이 갈린다 */
 export function GuidelinePreview() {
   const rows = [
-    { no: "01", format: "후기형", hook: "\"밥 먹어~\" 소리도 안 들려요", tag: "전환" },
-    { no: "02", format: "전문가형", hook: "췌장염 저지방 식이 성분", tag: "신뢰" },
-    { no: "03", format: "비교형", hook: "기존 레시피 그대로 괜찮을까", tag: "설득" },
-    { no: "04", format: "리얼리티", hook: "보호자가 더 신나는 이유", tag: "도달" },
+    {
+      no: "01",
+      format: "후기형",
+      hook: '"밥 먹어~" 소리도 안 들려요',
+      tag: "전환",
+    },
+    {
+      no: "02",
+      format: "전문가형",
+      hook: "췌장염 저지방 식이 성분",
+      tag: "신뢰",
+    },
+    {
+      no: "03",
+      format: "비교형",
+      hook: "기존 레시피 그대로 괜찮을까",
+      tag: "설득",
+    },
+    {
+      no: "04",
+      format: "리얼리티",
+      hook: "보호자가 더 신나는 이유",
+      tag: "도달",
+    },
   ];
 
   return (
@@ -62,12 +87,18 @@ export function GuidelinePreview() {
       <ul className="mt-2.5 divide-y divide-line overflow-hidden rounded-lg border border-line bg-paper">
         {rows.map((r) => (
           <li key={r.no} className="flex items-center gap-2 px-3 py-2">
-            <span className="stat-figure shrink-0 text-[0.5625rem] text-muted">{r.no}</span>
+            <span className="stat-figure shrink-0 text-[0.5625rem] text-muted">
+              {r.no}
+            </span>
             <span className="shrink-0 rounded bg-paper-alt px-1.5 py-0.5 text-[0.5625rem] font-bold">
               {r.format}
             </span>
-            <span className="truncate text-[0.625rem] text-muted">{r.hook}</span>
-            <span className="ml-auto shrink-0 text-[0.5625rem] text-accent-deep">{r.tag}</span>
+            <span className="truncate text-[0.625rem] text-muted">
+              {r.hook}
+            </span>
+            <span className="ml-auto shrink-0 text-[0.5625rem] text-accent-deep">
+              {r.tag}
+            </span>
           </li>
         ))}
       </ul>
@@ -104,7 +135,9 @@ export function SeedingPreview() {
         <span className="text-xs font-bold">
           1차 선정 심사 <span className="text-muted">12명</span>
         </span>
-        <span className="text-[0.5625rem] text-muted">선택 4명 · 08/10 기준</span>
+        <span className="text-[0.5625rem] text-muted">
+          선택 4명 · 08/10 기준
+        </span>
       </div>
 
       <div className="mt-2.5 space-y-1.5">
@@ -117,7 +150,9 @@ export function SeedingPreview() {
           >
             <div className="flex items-center gap-1.5">
               <span className="size-4 shrink-0 rounded-full bg-accent/20" />
-              <span className="truncate text-[0.625rem] font-bold">{r.name}</span>
+              <span className="truncate text-[0.625rem] font-bold">
+                {r.name}
+              </span>
               <span className="rounded bg-paper-alt px-1 py-0.5 text-[0.5rem] text-muted">
                 {r.handle}
               </span>
@@ -162,7 +197,10 @@ export function SourcePreview() {
       </div>
       <ul className="mt-2.5 divide-y divide-line overflow-hidden rounded-lg border border-line bg-paper">
         {folders.map((f) => (
-          <li key={f.name} className="flex items-center gap-2 px-3 py-[0.4375rem] text-[0.625rem]">
+          <li
+            key={f.name}
+            className="flex items-center gap-2 px-3 py-[0.4375rem] text-[0.625rem]"
+          >
             <span className="size-3.5 shrink-0 rounded-sm bg-gold/40" />
             <span className="truncate">{f.name}</span>
             <span className="ml-auto shrink-0 text-muted">{f.files}</span>
@@ -277,7 +315,10 @@ export function DeliveryPreview() {
 
       <ul className="mt-3 divide-y divide-line overflow-hidden rounded-lg border border-line bg-paper">
         {rows.map((r) => (
-          <li key={r.seq} className="flex items-center gap-2 px-3 py-2 text-[0.5625rem]">
+          <li
+            key={r.seq}
+            className="flex items-center gap-2 px-3 py-2 text-[0.5625rem]"
+          >
             <span className="font-bold">{r.seq}</span>
             <span
               className={

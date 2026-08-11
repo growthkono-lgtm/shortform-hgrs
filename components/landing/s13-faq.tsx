@@ -50,7 +50,9 @@ export function Faq() {
             <summary className="cursor-pointer list-none px-6 py-5 text-base font-bold marker:hidden hover:bg-paper-alt">
               {faq.q}
             </summary>
-            <p className="px-6 pb-6 text-sm leading-[1.8] text-muted">{faq.a}</p>
+            <p className="px-6 pb-6 text-sm leading-[1.8] text-muted">
+              {faq.a}
+            </p>
           </details>
         ))}
       </div>

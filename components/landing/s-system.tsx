@@ -46,10 +46,11 @@ export function System() {
         </h2>
 
         <p className="mt-6 max-w-3xl text-[0.9375rem] leading-[1.85] text-white/60 sm:mt-7 sm:text-base">
-          저희는 원래 편당 단가로 소재를 파는 팀이 아니었습니다. 브랜드 하나를 맡아
-          기획부터 소재 제작, 캠페인 운영까지 통으로 수행해온 프로젝트 팀입니다. 그
-          프로젝트 안에서 반복 검증된 &lsquo;위너 소재 제작 시스템&rsquo;만 잘라내, 편수
-          단위로 결제할 수 있게 연 것이 이 패키지입니다.
+          저희는 원래 편당 단가로 소재를 파는 팀이 아니었습니다. 브랜드 하나를
+          맡아 기획부터 소재 제작, 캠페인 운영까지 통으로 수행해온 프로젝트
+          팀입니다. 그 프로젝트 안에서 반복 검증된 &lsquo;위너 소재 제작
+          시스템&rsquo;만 잘라내, 편수 단위로 결제할 수 있게 연 것이 이
+          패키지입니다.
         </p>
 
         <div className="mt-12 grid gap-5 md:mt-14 md:grid-cols-3">
@@ -64,14 +65,18 @@ export function System() {
                 </span>
                 {c.title}
               </h3>
-              <p className="mt-3.5 text-sm leading-[1.85] text-white/60">{c.body}</p>
+              <p className="mt-3.5 text-sm leading-[1.85] text-white/60">
+                {c.body}
+              </p>
             </div>
           ))}
         </div>
 
         {/* 누적 제작 소재 편수는 실집계가 확인되기 전까지 싣지 않는다 —
             근거 섹션에서 검증 안 된 숫자를 하나 얹는 순간 나머지 숫자도 같이 의심받는다. */}
-        <p className="mt-8 text-right text-xs text-white/40">브랜드 프로젝트 30+</p>
+        <p className="mt-8 text-right text-xs text-white/40">
+          브랜드 프로젝트 30+
+        </p>
       </div>
     </section>
   );

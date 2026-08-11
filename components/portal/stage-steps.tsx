@@ -41,7 +41,11 @@ export function StageSteps({
                     aria-hidden
                     className="size-5 fill-none stroke-current stroke-[2.5]"
                   >
-                    <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                    <path
+                      d="M5 13l4 4L19 7"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 ) : (
                   i + 1
@@ -73,7 +77,11 @@ export function StageSteps({
                   done ? "stroke-accent/45" : "stroke-line",
                 )}
               >
-                <path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M9 6l6 6-6 6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             )}
           </li>

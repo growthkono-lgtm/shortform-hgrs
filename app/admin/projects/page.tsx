@@ -26,7 +26,8 @@ export default async function AdminProjectsPage() {
 
       {rows.length === 0 ? (
         <p className="mt-8 rounded-2xl border border-line bg-paper-alt p-10 text-center text-sm text-muted">
-          아직 시작된 프로젝트가 없습니다. 신청 목록에서 [적용 시작]을 누르면 열립니다.
+          아직 시작된 프로젝트가 없습니다. 신청 목록에서 [적용 시작]을 누르면
+          열립니다.
         </p>
       ) : (
         <ul className="mt-8 space-y-3">

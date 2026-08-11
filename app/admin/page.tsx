@@ -42,27 +42,30 @@ const fmt = (iso: string) =>
 export default async function AdminInquiriesPage() {
   const admin = createAdminClient();
 
-  const [{ data: inquiries }, { data: plans }, { data: mails }] = await Promise.all([
-    admin
-      .from("inquiries")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(100),
-    admin
-      .from("plans")
-      .select("id, code, tier, label, composition, beta_price, sort_order")
-      .eq("active", true)
-      .order("code")
-      .order("sort_order"),
-    admin
-      .from("email_log")
-      .select("id, kind, to_email, status, error, created_at")
-      .order("created_at", { ascending: false })
-      .limit(8),
-  ]);
+  const [{ data: inquiries }, { data: plans }, { data: mails }] =
+    await Promise.all([
+      admin
+        .from("inquiries")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(100),
+      admin
+        .from("plans")
+        .select("id, code, tier, label, composition, beta_price, sort_order")
+        .eq("active", true)
+        .order("code")
+        .order("sort_order"),
+      admin
+        .from("email_log")
+        .select("id, kind, to_email, status, error, created_at")
+        .order("created_at", { ascending: false })
+        .limit(8),
+    ]);
 
   const rows = inquiries ?? [];
-  const waiting = rows.filter((r) => r.status !== "applied" && r.status !== "closed");
+  const waiting = rows.filter(
+    (r) => r.status !== "applied" && r.status !== "closed",
+  );
 
   return (
     <>
@@ -90,8 +93,12 @@ export default async function AdminInquiriesPage() {
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="min-w-0">
                     <p className="flex flex-wrap items-center gap-2">
-                      <span className="text-base font-bold">{row.company_name}</span>
-                      <span className="text-sm text-muted">{row.contact_name}</span>
+                      <span className="text-base font-bold">
+                        {row.company_name}
+                      </span>
+                      <span className="text-sm text-muted">
+                        {row.contact_name}
+                      </span>
                       <span className="rounded-full bg-paper-alt px-2.5 py-0.5 text-[0.6875rem] font-bold">
                         {STATUS_LABEL[row.status] ?? row.status}
                       </span>
@@ -160,13 +167,14 @@ export default async function AdminInquiriesPage() {
 
                     <ActionForm
                       action={sendBrochure}
-                      label={row.brochure_sent_at ? "소개서 재발송" : "소개서 발송"}
+                      label={
+                        row.brochure_sent_at ? "소개서 재발송" : "소개서 발송"
+                      }
                       variant="outline"
                       inline
                     >
                       <input type="hidden" name="inquiry_id" value={row.id} />
                     </ActionForm>
-
                   </div>
                 </div>
               </li>
@@ -196,7 +204,9 @@ export default async function AdminInquiriesPage() {
                 </span>
                 <span>{m.kind}</span>
                 <span className="break-all">{m.to_email}</span>
-                {m.error && <span className="w-full text-red-600">{m.error}</span>}
+                {m.error && (
+                  <span className="w-full text-red-600">{m.error}</span>
+                )}
               </li>
             ))}
           </ul>

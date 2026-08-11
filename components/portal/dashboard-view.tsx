@@ -214,7 +214,8 @@ export function DashboardView({
               <p className="text-lg font-bold">{campaign.planLabel}</p>
               <p className="text-xs text-muted">
                 {campaign.composition}
-                {campaign.startedAt && ` · ${formatDate(campaign.startedAt)} 시작`}
+                {campaign.startedAt &&
+                  ` · ${formatDate(campaign.startedAt)} 시작`}
               </p>
             </div>
 

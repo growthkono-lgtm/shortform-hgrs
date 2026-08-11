@@ -87,8 +87,9 @@ export function OnboardingFlow() {
       <p className="eyebrow">Brand Profile</p>
       <h1 className="mt-4 text-3xl font-bold">브랜드를 등록해 주세요</h1>
       <p className="mt-4 text-sm leading-[1.8] text-muted">
-        한 번만 등록하면 이후 모든 주문에서 그대로 재사용됩니다. 담당자와 제작자도 이
-        프로필을 보고 작업하기 때문에, 브랜드를 설명하는 데 드는 시간이 크게 줄어듭니다.
+        한 번만 등록하면 이후 모든 주문에서 그대로 재사용됩니다. 담당자와
+        제작자도 이 프로필을 보고 작업하기 때문에, 브랜드를 설명하는 데 드는
+        시간이 크게 줄어듭니다.
       </p>
 
       <div
@@ -110,7 +111,9 @@ export function OnboardingFlow() {
             onClick={() => setMode(tab.key)}
             className={cn(
               "rounded-full px-4 py-2 text-sm font-bold transition-colors duration-200",
-              mode === tab.key ? "bg-ink text-paper" : "text-muted hover:text-ink",
+              mode === tab.key
+                ? "bg-ink text-paper"
+                : "text-muted hover:text-ink",
             )}
           >
             {tab.label}
@@ -132,9 +135,9 @@ export function OnboardingFlow() {
               className="mt-2 w-full rounded-xl border border-line px-4 py-3 text-sm focus:border-ink focus:outline-none"
             />
             <p className="mt-2 text-xs leading-[1.7] text-muted">
-              그로스 AI가 페이지를 읽고 브랜드 소개·핵심 USP·타겟·금지 표현을 정리합니다.
-              스마트스토어·쿠팡처럼 자바스크립트로 그려지는 페이지는 내용을 못 읽을 수
-              있는데, 그럴 땐 직접 작성으로 넘어가시면 됩니다.
+              그로스 AI가 페이지를 읽고 브랜드 소개·핵심 USP·타겟·금지 표현을
+              정리합니다. 스마트스토어·쿠팡처럼 자바스크립트로 그려지는 페이지는
+              내용을 못 읽을 수 있는데, 그럴 땐 직접 작성으로 넘어가시면 됩니다.
             </p>
           </>
         ) : (
@@ -152,7 +155,9 @@ export function OnboardingFlow() {
               }
               className="mt-2 w-full resize-y rounded-xl border border-line px-4 py-3 text-sm leading-[1.7] focus:border-ink focus:outline-none"
             />
-            <p className="mt-2 text-xs text-muted">{text.length}자 (최소 50자)</p>
+            <p className="mt-2 text-xs text-muted">
+              {text.length}자 (최소 50자)
+            </p>
           </>
         )}
       </div>
@@ -176,8 +181,8 @@ export function OnboardingFlow() {
       </button>
 
       <p className="mt-6 rounded-xl border border-line bg-paper-alt px-4 py-3 text-xs leading-[1.7] text-muted">
-        브랜드덱·제품 이미지 PDF 업로드로 분석하는 방식은 준비 중입니다. 지금은 주소
-        입력이나 직접 작성을 이용해 주세요.
+        브랜드덱·제품 이미지 PDF 업로드로 분석하는 방식은 준비 중입니다. 지금은
+        주소 입력이나 직접 작성을 이용해 주세요.
       </p>
     </>
   );
@@ -263,8 +268,8 @@ function ReviewStep({
       <p className="eyebrow">Review</p>
       <h1 className="mt-4 text-3xl font-bold">확인하고 고쳐주세요</h1>
       <p className="mt-4 text-sm leading-[1.8] text-muted">
-        AI가 정리한 초안입니다. 사실과 다르거나 표현이 어색한 부분은 직접 고치셔도
-        됩니다. 확정하시면 이후 모든 주문이 이 프로필로 시작됩니다.
+        AI가 정리한 초안입니다. 사실과 다르거나 표현이 어색한 부분은 직접
+        고치셔도 됩니다. 확정하시면 이후 모든 주문이 이 프로필로 시작됩니다.
       </p>
 
       <div className="mt-10 space-y-6">

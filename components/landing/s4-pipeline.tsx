@@ -14,7 +14,8 @@ export function Pipeline() {
   return (
     <Section eyebrow="Pipeline" alt>
       <SectionHeading>
-        그래서 HGRS는 <strong className="font-bold">바이럴과 전환을 한 파이프라인</strong>
+        그래서 HGRS는{" "}
+        <strong className="font-bold">바이럴과 전환을 한 파이프라인</strong>
         으로 묶었습니다
       </SectionHeading>
 
@@ -27,7 +28,9 @@ export function Pipeline() {
             <span className="font-display text-sm font-bold text-accent">
               0{i + 1}
             </span>
-            <h3 className="mt-2 text-base leading-snug font-bold">{step.title}</h3>
+            <h3 className="mt-2 text-base leading-snug font-bold">
+              {step.title}
+            </h3>
             <div className="relative mt-5 aspect-[4/3] overflow-hidden rounded-xl bg-paper-alt">
               <Image
                 src={step.shot}

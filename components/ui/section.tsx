@@ -9,7 +9,13 @@ type SectionProps = {
   children: React.ReactNode;
 };
 
-export function Section({ id, eyebrow, alt, className, children }: SectionProps) {
+export function Section({
+  id,
+  eyebrow,
+  alt,
+  className,
+  children,
+}: SectionProps) {
   return (
     <section
       id={id}

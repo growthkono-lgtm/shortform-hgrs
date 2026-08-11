@@ -12,15 +12,30 @@
 export const SERVICE = {
   name: "해그로시 숏폼 스튜디오",
   nameEn: "HGRS Shortform Studio",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://shortform.hgrs.io",
-  parentUrl: "https://hgrs.io",
+  /**
+   * 2026-08-11 루트 도메인 이전 — 서브도메인(shortform.hgrs.io)이 아니라
+   * hgrs.io 하위 경로로 간다. 프레이머 사이트는 더 쓰지 않는다.
+   * canonical·sitemap·OG 가 전부 이 값을 본다.
+   */
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://hgrs.io",
+  /** 숏폼 랜딩의 정식 경로 (루트는 여기로 보낸다) */
+  path: "/shortform",
+} as const;
+
+/** 회사 소개 — 구조화 데이터(Organization)에 쓴다 */
+export const ORG = {
+  name: "주식회사 해그로시",
+  nameEn: "HGRS",
+  description:
+    "브랜드 SNS 채널 커뮤니케이션과 구매 전환형 숏폼 소재를 만드는 컨텐츠 그로스 집단. 전략·기획·제작·운영을 한 팀으로 붙입니다.",
+  email: "contact@hgrs.io",
+  sameAs: ["https://brunch.co.kr/brunchbook/bmaha2"],
 } as const;
 
 /**
- * 본사 IMC 프로젝트 페이지. 이 랜딩은 "숏폼 편수"를 파는 화면이라
- * 브랜드 단위 IMC 프로젝트를 찾는 방문자는 여기서 답을 못 찾는다.
+ * ⚠️ 프레이머 사이트(hgrs.io/partnership 등)로 나가는 링크는 전부 끊었다 (2026-08-11).
+ * 그 도메인이 이제 이 앱이다 — 외부 링크를 두면 자기 자신을 가리키다 404가 난다.
  */
-export const PARTNERSHIP_URL = "https://hgrs.io/partnership";
 
 /** S15 푸터 — hgrs.io 게시 실데이터 + PG 심사 요건 */
 export const COMPANY = {
@@ -62,7 +77,8 @@ export const PLAN_COPY = {
     label: "숏폼 + 인플루언서 시딩",
     sub: "소스 확보부터 함께",
     /** 아래 칸(패키지)을 한 줄로 설명하는 문장 */
-    tagline: "인플루언서 컨텐츠 가이드라인 및 소스컷 확보와 구매전환 광고를 한번에",
+    tagline:
+      "인플루언서 컨텐츠 가이드라인 및 소스컷 확보와 구매전환 광고를 한번에",
     rationale:
       "찍을 소스부터 없다면 인플루언서 시딩을 함께 붙입니다. 컨텐츠 가이드라인 → 광고용 소스컷 확보 → 부스팅 숏폼 기획제작이 논스톱으로 진행됩니다.",
   },
@@ -101,8 +117,7 @@ export const POLICY = {
   // 1편은 "믿고 거래를 트는" 자리다. 시딩은 크리에이터 모집·배포 단위라 1편에 붙일 수 없다
   trialSingle:
     "1편 단품은 결과를 먼저 보고 판단하시라고 여는 자리입니다 — 인플루언서 시딩은 포함되지 않습니다",
-  seedingBundleOnly:
-    "인플루언서 시딩은 숏폼 5편 이상 묶음부터 함께 진행됩니다",
+  seedingBundleOnly: "인플루언서 시딩은 숏폼 5편 이상 묶음부터 함께 진행됩니다",
   // 싱글과 패키지를 세로로 묶어 뒀더니 같이 사는 구성으로 읽혔다 — 택일임을 문장으로도 못 박는다
   singleOrPackage:
     "싱글과 패키지는 함께 구매하는 구성이 아닙니다 — 둘 중 하나를 고르시면 됩니다",

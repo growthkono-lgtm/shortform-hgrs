@@ -24,8 +24,8 @@ export default async function CheckoutFailPage({
       )}
 
       <p className="mt-8 rounded-xl border border-line bg-paper-alt px-4 py-3 text-xs leading-[1.7] text-muted">
-        결제가 취소된 경우 금액은 청구되지 않습니다. 같은 문제가 반복되면 채널톡으로
-        문의해 주세요.
+        결제가 취소된 경우 금액은 청구되지 않습니다. 같은 문제가 반복되면
+        채널톡으로 문의해 주세요.
       </p>
 
       <div className="mt-10 flex flex-col gap-3">

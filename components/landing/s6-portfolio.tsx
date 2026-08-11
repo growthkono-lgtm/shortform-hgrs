@@ -60,7 +60,10 @@ export function Portfolio() {
   const verticals = REELS.filter((r) => r.video);
 
   return (
-    <section id="portfolio" className="scroll-mt-16 bg-paper-alt py-20 md:py-28">
+    <section
+      id="portfolio"
+      className="scroll-mt-16 bg-paper-alt py-20 md:py-28"
+    >
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <p className="eyebrow">Portfolio</p>
         <SectionHeading className="mt-5">
@@ -88,15 +91,18 @@ export function Portfolio() {
               {featured.caption}
             </p>
             <p className="mt-5 max-w-xl text-sm leading-[1.85] text-muted sm:text-base">
-              같은 제품이라도 훅을 바꾸면 성과가 갈립니다. 후기·실험·비포애프터처럼
-              구조가 다른 소재를 여러 벌 만들어 돌리고, 그중 이긴 소재를 남깁니다.
-              아래는 실제로 집행된 소재들입니다.
+              같은 제품이라도 훅을 바꾸면 성과가 갈립니다.
+              후기·실험·비포애프터처럼 구조가 다른 소재를 여러 벌 만들어 돌리고,
+              그중 이긴 소재를 남깁니다. 아래는 실제로 집행된 소재들입니다.
             </p>
 
             <dl className="mt-8 flex flex-wrap gap-x-10 gap-y-5">
               {[
                 { v: "6", l: "브랜드" },
-                { v: `${WALL_SQUARE.length + WALL_WIDE.length + WALL_MISC.length}+`, l: "게시 소재" },
+                {
+                  v: `${WALL_SQUARE.length + WALL_WIDE.length + WALL_MISC.length}+`,
+                  l: "게시 소재",
+                },
                 { v: "300+", l: "유튜브 영상 제작" },
               ].map((stat) => (
                 <div key={stat.l}>
@@ -199,8 +205,12 @@ export function Portfolio() {
               <p className="font-display mt-3 text-[0.6875rem] tracking-[0.02em] text-accent uppercase">
                 {item.channel}
               </p>
-              <p className="mt-1 text-sm leading-snug font-bold">{item.title}</p>
-              <p className="mt-1 text-xs leading-[1.6] text-muted">{item.role}</p>
+              <p className="mt-1 text-sm leading-snug font-bold">
+                {item.title}
+              </p>
+              <p className="mt-1 text-xs leading-[1.6] text-muted">
+                {item.role}
+              </p>
               <a
                 href={youtubeWatch(item.id)}
                 target="_blank"

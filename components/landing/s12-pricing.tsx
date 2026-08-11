@@ -104,7 +104,6 @@ function PlanCard({
             </span>
           </span>
         )}
-
       </label>
 
       <div className="p-6 pt-5">
@@ -162,8 +161,16 @@ export function Pricing() {
         className="mt-5 inline-flex items-center gap-2 rounded-full border border-line bg-paper px-4 py-2.5 text-xs font-bold transition-colors duration-200 hover:border-ink"
       >
         어떤 구성이 맞을지 모르겠다면 · 30초 진단
-        <svg viewBox="0 0 24 24" aria-hidden className="size-3.5 fill-none stroke-current stroke-2">
-          <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden
+          className="size-3.5 fill-none stroke-current stroke-2"
+        >
+          <path
+            d="M5 12h14M13 6l6 6-6 6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </Link>
 

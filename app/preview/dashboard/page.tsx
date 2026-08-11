@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import { DashboardView, type DashboardData } from "@/components/portal/dashboard-view";
+import {
+  DashboardView,
+  type DashboardData,
+} from "@/components/portal/dashboard-view";
 import { SERVICE } from "@/lib/constants";
 
 /**

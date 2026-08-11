@@ -11,18 +11,15 @@ import { GROWTH_CASES } from "@/lib/cases";
  */
 export function GrowthCases() {
   return (
-    <section
-      id="cases"
-      className="on-dark scroll-mt-16 bg-night text-white"
-    >
+    <section id="cases" className="on-dark scroll-mt-16 bg-night text-white">
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         {/* 성과의 출처를 사례보다 먼저 밝힌다. 이 줄이 없으면 아래 네 덩어리가
             "이 패키지를 사면 나는 결과"로 읽힌다 — 사실이 아니고, 검증 단계에서
             제일 먼저 깨지는 대목이다. */}
         <div className="pt-16 pb-14 md:pt-20 md:pb-16">
           <p className="max-w-3xl border-l-2 border-gold pl-4 text-[0.9375rem] leading-[1.8] text-white/55 sm:pl-5 sm:text-base">
-            아래 성과는 소재 제작을 포함한 풀 프로젝트 수행에서 나온 결과입니다. 이
-            패키지는 그 프로젝트의 소재 제작 시스템을 동일하게 사용합니다.
+            아래 성과는 소재 제작을 포함한 풀 프로젝트 수행에서 나온 결과입니다.
+            이 패키지는 그 프로젝트의 소재 제작 시스템을 동일하게 사용합니다.
           </p>
         </div>
 
@@ -47,7 +44,11 @@ export function GrowthCases() {
                     style={{ aspectRatio: m.aspect }}
                   >
                     {m.video ? (
-                      <LoopVideo src={m.video} poster={m.poster} alt={c.title} />
+                      <LoopVideo
+                        src={m.video}
+                        poster={m.poster}
+                        alt={c.title}
+                      />
                     ) : (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img

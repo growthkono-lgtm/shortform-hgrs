@@ -18,19 +18,27 @@ import { CREW_FACTS, CREW_ROLES, CREW_SHOTS } from "@/lib/crew";
  */
 export function Crew() {
   return (
-    <section id="crew" className="on-dark scroll-mt-16 bg-night py-20 text-white md:py-28">
+    <section
+      id="crew"
+      className="on-dark scroll-mt-16 bg-night py-20 text-white md:py-28"
+    >
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <p className="eyebrow">Crew</p>
         <h2 className="mt-5 max-w-3xl text-[1.5rem] leading-[1.35] font-bold sm:text-[2.125rem] sm:leading-[1.3] lg:text-[2.75rem]">
           30여 브랜드의 그로스·컨텐츠 프로젝트로
           <br />
-          <strong className="font-bold">마케팅 성과 사이클을 이해하는 팀</strong>이
-          만듭니다
+          <strong className="font-bold">
+            마케팅 성과 사이클을 이해하는 팀
+          </strong>
+          이 만듭니다
         </h2>
         <p className="mt-5 max-w-2xl text-[0.9375rem] leading-[1.8] text-white/60 sm:text-base">
-          프리랜서 한 명에게 넘기고 연락을 기다리는 방식이 아닙니다. 기획·촬영·편집·모션·퍼포먼스가
-          각자 담당으로 붙는 <strong className="font-bold text-white">팀 시스템 안에서
-          안정적으로 진행</strong>되고, 담당 한 명이 빠져도 일정이 멈추지 않습니다.
+          프리랜서 한 명에게 넘기고 연락을 기다리는 방식이 아닙니다.
+          기획·촬영·편집·모션·퍼포먼스가 각자 담당으로 붙는{" "}
+          <strong className="font-bold text-white">
+            팀 시스템 안에서 안정적으로 진행
+          </strong>
+          되고, 담당 한 명이 빠져도 일정이 멈추지 않습니다.
         </p>
 
         {/* 사진이 이 섹션의 첫 근거다 — 역할표·숫자보다 먼저 온다.
@@ -69,10 +77,14 @@ export function Crew() {
         <dl className="mt-12 grid gap-px overflow-hidden rounded-2xl bg-white/10 sm:grid-cols-3">
           {CREW_FACTS.map((f) => (
             <div key={f.label} className="bg-night px-6 py-7">
-              <dt className="stat-figure text-3xl text-gold sm:text-4xl">{f.figure}</dt>
+              <dt className="stat-figure text-3xl text-gold sm:text-4xl">
+                {f.figure}
+              </dt>
               <dd className="mt-3">
                 <p className="text-sm font-bold">{f.label}</p>
-                <p className="mt-1.5 text-xs leading-[1.7] text-white/50">{f.note}</p>
+                <p className="mt-1.5 text-xs leading-[1.7] text-white/50">
+                  {f.note}
+                </p>
               </dd>
             </div>
           ))}
@@ -111,7 +123,6 @@ export function Crew() {
           ))}
         </ul>
       </div>
-
     </section>
   );
 }

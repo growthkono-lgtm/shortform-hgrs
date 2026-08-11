@@ -25,7 +25,8 @@ export function WhyHgrs() {
   return (
     <Section eyebrow="Why HGRS" alt>
       <SectionHeading>
-        숏폼 외주가 아니라, <strong className="font-bold">전략 집단의 시스템</strong>
+        숏폼 외주가 아니라,{" "}
+        <strong className="font-bold">전략 집단의 시스템</strong>
         입니다
       </SectionHeading>
 
@@ -36,8 +37,12 @@ export function WhyHgrs() {
             <span className="font-display text-2xl leading-none font-bold text-accent">
               {i + 1}
             </span>
-            <h3 className="mt-4 text-lg leading-snug font-bold">{pillar.title}</h3>
-            <p className="mt-3 text-sm leading-[1.8] text-muted">{pillar.body}</p>
+            <h3 className="mt-4 text-lg leading-snug font-bold">
+              {pillar.title}
+            </h3>
+            <p className="mt-3 text-sm leading-[1.8] text-muted">
+              {pillar.body}
+            </p>
           </li>
         ))}
       </ol>

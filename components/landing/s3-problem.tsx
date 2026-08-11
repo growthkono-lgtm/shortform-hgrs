@@ -20,7 +20,8 @@ export function Problem() {
   return (
     <Section eyebrow="Problem">
       <SectionHeading>
-        시딩 돌렸는데, <strong className="font-bold">매출은 왜 그대로</strong>일까요?
+        시딩 돌렸는데, <strong className="font-bold">매출은 왜 그대로</strong>
+        일까요?
       </SectionHeading>
 
       <div className="mt-12 grid gap-5 sm:grid-cols-3">
