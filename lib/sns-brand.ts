@@ -347,7 +347,7 @@ export const METHOD = {
     },
     {
       no: "03",
-      title: "성과 판독 & 편성 조정",
+      title: "브랜드 CRM 퍼널 연결",
       body: "조회수·팔로워가 아니라 리드, 전환, 매출 기여로 판독합니다. 월간 리포트가 다음 달 편성의 근거가 됩니다.",
       shot: {
         src: "/sns/lovedy-result.png",
@@ -367,10 +367,11 @@ export const METHOD = {
  */
 export const TEAM = {
   title: "한 명이 아니라, 네 개 팀이 붙습니다",
-  lead: "인하우스에서 1명 채용하는 것보다 <em>2배 정도의 인력이 온보딩 기간 거의 없이</em> 빠르고 깊이 있게 투입합니다. 최소 2명에서 최대 10명까지 팀이 움직인 경험들을 보유합니다.",
+  lead: "<em>분기별 신규 4-5개 프로젝트에만 투입합니다.</em>",
   teams: [
     {
       tag: "PM",
+      photo: "/sns/team-pm.jpg",
       name: "PM팀",
       items: [
         "프로젝트 마일스톤 관리",
@@ -381,6 +382,7 @@ export const TEAM = {
     },
     {
       tag: "CT",
+      photo: "/sns/team-ct.jpg",
       name: "컨텐츠팀",
       items: [
         "브랜딩 크리에이티브",
@@ -391,6 +393,7 @@ export const TEAM = {
     },
     {
       tag: "FN",
+      photo: "/sns/team-fn.jpg",
       name: "퍼널팀",
       items: [
         "AARRR 전환율 고도화",
@@ -401,6 +404,7 @@ export const TEAM = {
     },
     {
       tag: "PF",
+      photo: "/sns/team-pf.jpg",
       name: "퍼포먼스팀",
       items: [
         "매출 지표 스케일업",
@@ -421,7 +425,7 @@ export const TEAM = {
  */
 export const ENGAGEMENT = {
   title: "월 단위로 갈아타는 대행이 아니라, 연 단위로 쌓는 파트너십",
-  lead: "채널은 3개월로 증명되지 않습니다. 컨텐츠가 쌓이고 알고리즘이 붙고 CRM이 도는 데 필요한 시간을 계약 기간에 반영합니다.",
+  lead: "연 단위로 보면 월·시즌·브랜드 이벤트·테마에 따라 초기에 장기 편성 계획을 세운 뒤, 상황에 맞춰 유연하게 대응하며 채널 성과를 부스팅합니다.",
   rows: [
     {
       k: "시작",
@@ -477,7 +481,10 @@ export const FAQ: { q: string; a: string }[] = [
 ];
 
 export const FINAL_CTA = {
-  title: ["채널을 맡길 곳이 아니라,", "같이 굴릴 팀을 찾고 계시다면"],
+  title: [
+    "브랜딩부터 고객 마케팅까지",
+    "시너지를 내는 SNS 채널 활성화가 필요하시다면",
+  ],
   body: "지금 채널 현황과 6개월 뒤 목표만 알려주세요. 세 모듈 전부가 필요한 상황이 아니라면 그렇게 말씀드립니다.",
 } as const;
 
@@ -487,6 +494,15 @@ export const ARCHIVE = {
   body: "만약, 여러분 브랜드를 세심하게 챙겨줄 검증된 마케팅팀이 필요하다면 잠시 쉬어 가세요. 어쩌면 공감 가고, 조금은 궁금한 마케팅 노하우가 녹아 있을지도 모릅니다.",
   href: "https://brunch.co.kr/brunchbook/bmaha2",
   cta: "브런치북으로 읽기",
+} as const;
+
+/** 사례 섹션 머리말 */
+export const CASES = {
+  title: [
+    "브랜드 전략의 핵심은",
+    "팬덤과 소통하는 노련한 컨텐츠 커뮤니케이션입니다",
+  ],
+  lead: "해그로시가 직접 채널을 기획·제작·운영한 프로젝트입니다. 성과 요약만 보셔도 되고, 어떻게 그 숫자가 나왔는지 궁금하시면 각 카드를 펼쳐 전문을 읽으실 수 있습니다.",
 } as const;
 
 export const CONTACT = {
@@ -500,52 +516,95 @@ export const CONTACT = {
    문안은 원문 그대로다. 손대지 말 것.
    ──────────────────────────────────────────────────────────── */
 
-/** 역량 — "브랜드의 지속성에는 임팩트 있는 역량들의 연결과 전문 스킬이 필요합니다." */
+/**
+ * 역량 — hgrs.io/partnership "브랜드의 지속성에는…" 섹션.
+ * 원본은 카드 **여섯 장**이 한 트랙에 이어 붙어 가로로 흐른다. 앞의 셋만 옮겼다가
+ * 나머지 셋(숏폼·데이터·CRM)을 트랙에 합쳤다 — 원본과 같은 구성이다.
+ */
 export const CAPABILITY = {
   title: [
     "브랜드의 <em>지속성</em>에는",
     "임팩트 있는 <em>역량</em>들의",
     "연결과 전문 스킬이 <em>필요</em>합니다.",
   ],
-  /** 앞 3개 — 원문 상단 3분할 */
-  primary: [
-    { head: "고객 퍼널의 그로스 여정", tail: "으로 ROI를 개선" },
-    { head: "유튜브 컨텐츠 기획제작", tail: "으로 오가닉 브랜드 육성" },
-    { head: "광고 스케일업", tail: "은 브랜드 결을 지키며 완성" },
+  cards: [
+    {
+      id: "funnel",
+      head: "고객 퍼널의 그로스 여정",
+      tail: "으로 ROI를 개선",
+      kind: "chart" as const,
+      figure: 200,
+      suffix: "%+",
+      note: null as string | null,
+      labelSide: true,
+    },
+    {
+      id: "youtube",
+      head: "유튜브 컨텐츠 기획제작",
+      tail: "으로 오가닉 브랜드 육성",
+      kind: "youtube" as const,
+      figure: 88,
+      suffix: "%+",
+      note: null as string | null,
+      labelSide: false,
+    },
+    {
+      id: "scale",
+      head: "광고 스케일업",
+      tail: "은 브랜드 결을 지키며 완성",
+      kind: "chart-green" as const,
+      figure: 163,
+      suffix: "%+",
+      note: "ROAS 초과 달성",
+      labelSide: false,
+    },
+    {
+      id: "shorts",
+      head: "숏폼 전문 기획제작력",
+      tail: "과 미디어 광고 전략화",
+      kind: "vertical" as const,
+      figure: null,
+      suffix: "",
+      note: null as string | null,
+      labelSide: false,
+    },
+    {
+      id: "data",
+      head: "GA4, 믹스패널, 데이터라이즈",
+      tail: " 등 전문 데이터 마케팅",
+      kind: "metrics" as const,
+      figure: null,
+      suffix: "",
+      note: null as string | null,
+      labelSide: false,
+      /** L브랜드 원문에서 그대로 온 값 — "예산 10배+ 증액, CPA 30원대, DAU 30% 상승" */
+      metrics: [
+        { k: "DAU", v: "30", u: "%+" },
+        { k: "광고예산", v: "10", u: "배+" },
+        { k: "CPA", v: "30", u: "원대 달성" },
+      ],
+    },
+    {
+      id: "crm",
+      head: "CRM의 전환율",
+      tail: "을 개선하는 시나리오화 캠페인 자동화",
+      kind: "metrics" as const,
+      figure: null,
+      suffix: "",
+      note: null as string | null,
+      labelSide: false,
+      /** 럽디 원문 — "퍼널 리드 600%P 성장과 세일즈 CRM 전환율 60%" */
+      metrics: [
+        { k: "퍼널 리드", v: "600", u: "%P" },
+        { k: "CRM 전환율", v: "60", u: "%" },
+        { k: "신사업 매출", v: "2", u: "억+" },
+      ],
+    },
   ],
-  /** 뒤 3개 — 원문 하단 전문성 박스 */
-  secondary: [
-    { head: "숏폼 전문 기획제작력", tail: "과 미디어 광고 전략화" },
-    { head: "GA4, 믹스패널, 데이터라이즈", tail: " 등 전문 데이터 마케팅" },
-    { head: "CRM의 전환율", tail: "을 개선하는 시나리오화 캠페인 자동화" },
-  ],
-  figures: [
-    { figure: "163%", label: "ROAS 초과 달성" },
-    { figure: "200%+", label: "고객 퍼널 그로스 개선" },
-  ],
-  /** ⚠ 아래 funnel/band 는 2026-08-11 화면에서 내렸다 — 채널 페이지 맥락에서
-      퍼널 깔때기와 파트너십 밴드가 문맥 없이 튀어나온다는 지적. 데이터만 남겨 둔다.
-      퍼널 5단계 — 원문 그대로의 순서 */
-  funnel: {
-    steps: [
-      "사이트 첫 진입",
-      "장바구니 담기 회원",
-      "첫 구매 고려 고객",
-      "가입 후 미구매 회원",
-      "미회원 유저",
-    ],
-    result: "누적 전환율 성과",
-  },
-  band: "브랜드에 꼭 필요한 우선순위만을 전략화해서 스케일업 여정을 완성합니다.",
-  bandCta: "파트너십 문의",
 } as const;
 
-/**
- * 통합 마케팅 액션의 주요 예시 — 브랜드별 원형 다이어그램 8건.
- * 브랜드명은 원문 그대로 이니셜 표기를 유지한다. 마스킹된 값("예산 00억")도 그대로 둔다.
- */
 export const ACTIONS = {
-  title: "통합 브랜드 액션의 주요 예시",
+  title: "통합 브랜드 액션의 주요 사례",
   items: [
     {
       brand: "G",
@@ -655,5 +714,6 @@ export const ACTIONS = {
       ],
     },
   ],
+  lead: "SNS 채널 기획운영과 더불어 실질적인 브랜드 퍼널의 성장을 만듭니다.",
   more: "... And More",
 } as const;

@@ -11,6 +11,9 @@ import { Rich } from "./rich";
  *
  * 배경도 라이트에서 다크(브랜드 그라디언트)로 바꿨다. 이 페이지에서 유일하게
  * "우리가 누구인가"만 말하는 자리라 집중도가 필요하다.
+ *
+ * 2026-08-11(2차): 오른쪽에 세워 뒀던 4축 표를 뺐다 — 다크 위에서 잘 안 읽혔고,
+ * 팀 구성은 바로 아래 Team 섹션이 사진과 함께 제대로 보여준다. 여기서는 선언만 한다.
  */
 export function Pov() {
   return (
@@ -31,38 +34,21 @@ export function Pov() {
           {POV.sub}
         </p>
 
-        <div className="mt-14 grid gap-12 lg:grid-cols-[minmax(0,6fr)_minmax(0,6fr)] lg:gap-16">
-          <div className="min-w-0 space-y-5">
-            {POV.body.map((para) => (
-              <Rich
-                key={para.slice(0, 14)}
-                html={para}
-                className="text-[0.9375rem] leading-[1.95] text-white/65 sm:text-base"
-              />
-            ))}
+        <div className="mt-14 max-w-3xl space-y-5">
+          {POV.body.map((para) => (
+            <Rich
+              key={para.slice(0, 14)}
+              html={para}
+              className="text-[0.9375rem] leading-[1.95] text-white/70 sm:text-[1.0625rem]"
+            />
+          ))}
 
-            <blockquote className="!mt-10 border-l-2 border-gold pl-5 text-[1.0625rem] leading-[1.7] font-bold text-white sm:text-xl">
-              “{POV.quote}”
-              <cite className="mt-3 block text-xs font-normal not-italic text-white/40">
-                — {POV.quoteNote}
-              </cite>
-            </blockquote>
-          </div>
-
-          {/* 우리 축만 세운다 — 남과 비교하는 칸은 두지 않는다 */}
-          <dl className="grid min-w-0 gap-px overflow-hidden rounded-2xl bg-white/10">
-            {POV.pillars.map((pillar) => (
-              <div
-                key={pillar.k}
-                className="grid gap-1 bg-night px-6 py-6 sm:grid-cols-[72px_minmax(0,1fr)] sm:items-baseline sm:gap-5"
-              >
-                <dt className="eyebrow !text-[0.6875rem]">{pillar.k}</dt>
-                <dd className="text-[0.9375rem] leading-[1.6] font-bold text-white sm:text-base">
-                  {pillar.v}
-                </dd>
-              </div>
-            ))}
-          </dl>
+          <blockquote className="!mt-12 border-l-2 border-gold pl-6 text-[1.125rem] leading-[1.6] font-bold text-white sm:text-2xl sm:leading-[1.55]">
+            “{POV.quote}”
+            <cite className="mt-4 block text-xs font-normal text-white/40 not-italic">
+              — {POV.quoteNote}
+            </cite>
+          </blockquote>
         </div>
       </div>
     </section>

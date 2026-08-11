@@ -23,9 +23,7 @@ export function Actions() {
           {ACTIONS.title}
         </h2>
         <p className="mt-5 max-w-2xl text-[0.9375rem] leading-[1.85] text-white/55 sm:text-base">
-          채널·컨텐츠·광고·CRM은 따로 굴러가면 각자의 지표만 남습니다.
-          브랜드마다 어떤 파트를 붙여 하나의 전략으로 묶었는지, 그리고 무엇이
-          남았는지만 정리했습니다.
+          {ACTIONS.lead}
         </p>
       </div>
 

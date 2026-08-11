@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Section, SectionHeading } from "@/components/ui/section";
 import {
+  CASES,
   FEATURES,
   SHORT_FEATURE,
   type Feature,
@@ -229,14 +230,12 @@ export function Cases() {
   return (
     <Section eyebrow="Cases" id="cases">
       <SectionHeading>
-        브랜드마다 다른 문제,
+        {CASES.title[0]}
         <br />
-        <strong className="font-bold">그래서 다르게 붙었습니다</strong>
+        <strong className="font-bold">{CASES.title[1]}</strong>
       </SectionHeading>
       <p className="mt-5 max-w-2xl text-[0.9375rem] leading-[1.8] text-muted sm:text-base">
-        아래 네 건은 해그로시가 직접 채널을 기획·제작·운영한 프로젝트입니다.
-        성과 요약만 보셔도 되고, 어떻게 그 숫자가 나왔는지 궁금하시면 각 카드를
-        펼쳐 프로젝트 전문을 읽으실 수 있습니다.
+        {CASES.lead}
       </p>
 
       <div className="mt-12 space-y-5">

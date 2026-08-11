@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { CREW_SHOTS } from "@/lib/crew";
 import { ENGAGEMENT, TEAM } from "@/lib/sns-brand";
 import { Rich } from "./rich";
@@ -27,23 +29,46 @@ export function Team() {
           className="mt-5 max-w-2xl text-[0.9375rem] leading-[1.85] text-white/60 sm:text-base"
         />
 
-        <ul className="mt-12 grid gap-px overflow-hidden rounded-2xl bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="mt-12 grid gap-4 sm:grid-cols-2">
           {TEAM.teams.map((team) => (
-            <li key={team.tag} className="bg-night p-6 sm:p-7">
-              <span className="stat-figure grid size-9 place-items-center rounded-full bg-white/10 text-[0.6875rem] text-white">
-                {team.tag}
-              </span>
-              <h3 className="mt-4 text-base font-bold">{team.name}</h3>
-              <ul className="mt-4 space-y-2">
-                {team.items.map((item) => (
+            <li
+              key={team.tag}
+              className="flex gap-5 rounded-2xl border border-white/12 bg-white/[0.03] p-5 sm:gap-6 sm:p-6"
+            >
+              {/* 인물 사진 — 원본 팀 소개 카드와 같은 구성. 이름표는 사진 위에 얹는다 */}
+              <div className="relative aspect-[3/4] w-[6.5rem] shrink-0 overflow-hidden rounded-xl bg-night-soft sm:w-[8.5rem]">
+                <Image
+                  src={team.photo}
+                  alt={team.name}
+                  fill
+                  sizes="136px"
+                  className="object-cover"
+                />
+                <span
+                  aria-hidden
+                  className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/75 to-transparent"
+                />
+                <span className="absolute bottom-3 left-3 text-sm font-bold text-white sm:text-base">
+                  {team.name}
+                </span>
+              </div>
+
+              <ul className="min-w-0 flex-1 space-y-2.5 self-center">
+                {team.items.map((item, i) => (
                   <li
                     key={item}
-                    className="flex gap-2 text-[0.8125rem] leading-[1.7] text-white/60"
+                    className={
+                      i === 0
+                        ? "text-[0.9375rem] leading-[1.5] font-bold text-white"
+                        : "flex gap-2 text-[0.8125rem] leading-[1.7] text-white/60"
+                    }
                   >
-                    <span
-                      aria-hidden
-                      className="mt-1.5 size-1 shrink-0 rounded-full bg-gold"
-                    />
+                    {i > 0 && (
+                      <span
+                        aria-hidden
+                        className="mt-1.5 size-1 shrink-0 rounded-full bg-gold"
+                      />
+                    )}
                     {item}
                   </li>
                 ))}
