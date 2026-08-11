@@ -19,6 +19,22 @@ import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { PLANS, POLICY, COMPANY, SERVICE, formatKRW } from "@/lib/constants";
 import { SEEDING_STAGES, SHORTS_STAGES } from "@/lib/stages";
+/**
+ * 소개서의 SNS·종합 파트는 **랜딩(/sns-brand)과 같은 데이터를 읽는다.**
+ * 예전엔 여기서 문안을 새로 지어 썼는데, 사이트와 내용이 갈라져 두 번 고쳐야 했다.
+ * 화면에 있는 걸 그대로 문서로 옮기는 게 맞다.
+ */
+import {
+  ACTIONS,
+  CASES as SNS_CASES,
+  FEATURES,
+  PORTFOLIO,
+  PROCESS,
+  TEAM,
+} from "@/lib/sns-brand";
+
+/** <em> 강조 태그를 문서에서는 제거한다 (PDF 조판에는 밑줄 강조를 쓰지 않는다) */
+const plain = (t: string) => t.replace(/<\/?em>/g, "");
 
 const ROOT = resolve(import.meta.dirname, "..");
 const BASE = process.env.DECK_BASE ?? `file://${ROOT}`;
@@ -302,7 +318,7 @@ pages.push(
   ),
 );
 
-// 02-4 SNS 채널 — 무엇을 하나
+// 02-4 SNS 종합 브랜드 마케팅 시스템 (랜딩 Process 섹션 그대로)
 
 
 
@@ -310,49 +326,24 @@ pages.push(
 
 pages.push(
   slide(`
-${head("SNS 종합 브랜드 마케팅 시스템", "SNS 채널 연간 기획운영으로 진행하되, 필요 시 추가 범위를 협의합니다")}
-<div class="flow">
-${[
-  ["01", "인스타그램 · 유튜브", "메인 채널을 둘 중 선정 후 그 외 채널에는 컨텐츠 미러링을 병행"],
-  ["02", "광고 부스팅", "챔피언성 인기 피드에 퍼포먼스마케팅 및 채널 자체 트래픽을 붓습니다"],
-  ["03", "인플루언서 게스트 콜라보", "유튜버·연예인·인플루언서·스트리머 콜라보 시 협업을 매니징"],
-  ["04", "브랜드 CRM 퍼널 연결", "고객 DB로의 연결이 필요할 때 그 시스템을 함께 구축·관리"],
-].map(
-  ([n, t, d]) => `<div class="flow-row">
-  <span class="flow-no">${n}</span>
-  <div><p class="flow-t">${esc(t)}</p><p class="flow-d">${esc(d)}</p></div>
+${head(PROCESS.title, PROCESS.lead)}
+<div class="cards4">
+${PROCESS.items
+  .map(
+    (it) => `<div class="card4">
+  <img class="card4-img" src="${asset(it.shot.src)}" alt="">
+  <div class="card4-body">
+    <span class="card4-no">${it.no}</span>
+    <p class="card4-t">${esc(it.title)}</p>
+    <p class="card4-d">${esc(it.body)}</p>
+  </div>
 </div>`,
-).join("")}
-</div>
-<div class="oneline">전략과 컨텐츠와 에디팅을 한번에 — 최소 6개월, 기본 1년 단위 파트너십</div>`),
-);
-
-// 02-5 SNS 채널 — 어떤 팀이 붙나
-
-
-
-
-
-pages.push(
-  slide(`
-${head("투입 조직", "분기별 신규 4-5개 프로젝트만 추가로 진행합니다")}
-<div class="teams">
-${[
-  ["PM/CP", "기획총괄", ["프로젝트 마일스톤 관리", "전략 기획 및 세부 지표 싱크", "브랜드 종합 목표 달성 체크"]],
-  ["CT", "컨텐츠팀", ["브랜딩 크리에이티브", "시니어 출신 촬영 감독진", "방송/예능/유튜브/마케팅 PD"]],
-  ["FN", "퍼널팀", ["AARRR 전환율 고도화", "AEO/SEO/리드 제너레이션", "GA4 및 CRM 그로스툴 최적화"]],
-  ["PF", "퍼포먼스팀", ["매출 지표 스케일업", "구매 전환형 숏폼 기획제작", "인플루언서 리뷰 시딩 바이럴"]],
-].map(
-  ([tag, name, items]) => `<div class="team">
-  <span class="team-tag">${tag}</span>
-  <p class="team-name">${name}</p>
-  <ul class="team-list">${(items as string[]).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
-</div>`,
-).join("")}
+  )
+  .join("")}
 </div>`),
 );
 
-// 02-6 SNS 채널 — 성과
+// 02-5 투입 조직 (랜딩 Team 섹션 그대로)
 
 
 
@@ -360,26 +351,66 @@ ${[
 
 pages.push(
   slide(`
-${head("채널 성과", "실제로 채널을 기획·제작·운영한 프로젝트 기록입니다")}
+${head("투입 조직", plain(TEAM.lead))}
+<div class="teams">
+${TEAM.teams
+  .map(
+    (t) => `<div class="team">
+  <img class="team-img" src="${asset(t.photo)}" alt="">
+  <p class="team-name">${esc(t.name)}</p>
+  <ul class="team-list">${t.items.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+</div>`,
+  )
+  .join("")}
+</div>
+<p class="foot-note">${esc(plain(TEAM.footnote))}</p>`),
+);
+
+// 02-6 채널 성과 (랜딩 Cases 섹션 그대로)
+
+
+
+
+
+pages.push(
+  slide(`
+${head(SNS_CASES.title.join(" "), SNS_CASES.lead)}
 <div class="cases">
-${[
-  { no: "01", brand: "크래프톤 배틀그라운드", scale: "12개월 · 이스포츠", role: "공식 SNS 5개 채널 IMC", img: "/sns/krafton-contents.jpg", stats: [["300편", "유튜브 기획제작"], ["5개", "공식 채널 운영"]] },
-  { no: "02", brand: "럽디 연애상담", scale: "12개월 · 서비스", role: "온드 유튜브 인물 브랜딩", img: "/sns/lovedy-funnel.png", stats: [["600%P", "퍼널 리드 성장"], ["60%", "CRM 전환율"]] },
-  { no: "03", brand: "열다 옷장정리", scale: "4개월 · 스타트업", role: "인물 브랜딩 + 광고 Multi-Use", img: "/sns/yeolda-shoot.jpg", stats: [["17%P", "CAC 개선"], ["1화", "알고리즘 노출"]] },
-  { no: "04", brand: "트러스티푸드", scale: "펫푸드 커머스", role: "컨텐츠 기반 IMC", img: "/sns/trusty-product.jpg", stats: [["1.4배", "예산 증액"], ["100%P+", "ROAS 상승"]] },
-].map(
-  (c) => `<div class="case">
-  <img class="case-img" src="${asset(c.img)}" alt="">
+${FEATURES.map(
+  (f, i) => `<div class="case">
+  <img class="case-img" src="${asset(f.hero.src)}" alt="">
   <div class="case-head">
-    <span class="case-no">${c.no}</span>
-    <div><p class="case-brand">${esc(c.brand)}</p><p class="case-scale">${esc(c.scale)}</p></div>
+    <span class="case-no">0${i + 1}</span>
+    <div><p class="case-brand">${esc(f.meta.split(" (")[0])}</p><p class="case-scale">${esc(f.category)}</p></div>
   </div>
-  <div class="case-stats">${c.stats.map(([v, l]) => `<div><strong>${v}</strong><span>${l}</span></div>`).join("")}</div>
-  <p class="case-role">${esc(c.role)}</p>
+  <ul class="case-facts">${f.stats
+    .map((st) => `<li>${esc(st.v)}${st.note ? `<span>(${esc(st.note)})</span>` : ""}</li>`)
+    .join("")}</ul>
+  <p class="case-role">${esc(f.title)}</p>
 </div>`,
 ).join("")}
 </div>
-<div class="oneline">연 단위로 월·시즌·브랜드 이벤트에 맞춰 편성하고, 상황에 따라 유연하게 대응합니다</div>`),
+<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
+);
+
+// 02-6-1 최근 주요 포트폴리오 (랜딩 Portfolio 섹션)
+
+
+
+
+
+pages.push(
+  slide(`
+${head(PORTFOLIO.title, "실제로 편성·제작한 롱폼 컨텐츠입니다")}
+<div class="thumbs">
+${PORTFOLIO.videos
+  .slice(0, 12)
+  .map(
+    (v) => `<div class="thumb"><img src="https://i.ytimg.com/vi/${v.id}/mqdefault.jpg" alt=""><span>${esc(v.title)}</span></div>`,
+  )
+  .join("")}
+</div>
+<p class="foot-note">${esc(PORTFOLIO.note)}</p>`),
 );
 
 // 02-7 PART 2 표지 — 숏폼
@@ -727,7 +758,7 @@ pages.push(
   ),
 );
 
-// 15-5 통합 브랜드 액션
+// 15-5 통합 브랜드 액션 (랜딩 Actions 섹션 그대로)
 
 
 
@@ -735,22 +766,18 @@ pages.push(
 
 pages.push(
   slide(`
-${head("통합 브랜드 액션", "브랜드마다 필요한 파트를 붙여 하나의 전략으로 묶어 왔습니다")}
+${head(ACTIONS.title, ACTIONS.lead)}
 <div class="acts">
-${[
-  ["G 브랜드", "CRM 멤버십 · AARRR 퍼널 시나리오 · 브랜드 마케팅 · 종합 마케팅 전략", "ROAS 500% 개선, CPA 45% 절감"],
-  ["K 브랜드", "브랜드 세계관 기획 · 팬덤 컨텐츠 · 커뮤니티 바이럴 · 5개 온드 채널", "유튜브 300편 제작, 공식 SNS 5개 채널 IMC"],
-  ["W 브랜드", "오가닉 SEO · 리드 세일즈 구축 · GA4 데이터 마케팅 · 블로그 최적화", "B2B SEO 도메인 최적화부터 억대 세일즈 연결"],
-  ["L 브랜드", "노코드툴 그로스 · 온드 채널 매출 구조화 · 페이드 스케일업 · AARRR", "예산 10배+ 증액, CPA 30원대, DAU 30% 상승"],
-  ["M 브랜드", "런칭마케팅기획 · SNS바이럴 · 퍼포먼스마케팅 · 유튜브 PPL", "ROAS 3배+, 광고 예산 4배+ 스케일업"],
-  ["J 브랜드", "자사몰 최적화 · 퍼포먼스마케팅 · 숏폼 촬영 · 이벤트 프로모션", "제품 컨셉 개편과 세일즈 퍼널 구축으로 ROI 개선"],
-].map(
-  ([brand, parts, result]) => `<div class="act">
-  <p class="act-b">${esc(brand)}</p>
-  <p class="act-p">${esc(parts)}</p>
-  <p class="act-r">${esc(result)}</p>
+${ACTIONS.items
+  .slice(0, 6)
+  .map(
+    (a) => `<div class="act">
+  <p class="act-b">${esc(a.brand)} 브랜드${a.period ? ` · ${esc(a.period)}` : ""}</p>
+  <p class="act-p">${a.items.map((x) => esc(x)).join(" · ")}</p>
+  <p class="act-r">${esc(a.results[a.results.length - 1])}</p>
 </div>`,
-).join("")}
+  )
+  .join("")}
 </div>
 <p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
 );
@@ -1064,6 +1091,26 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .terms{display:flex;flex-direction:column;gap:3mm}
 .term{border-left:4px solid var(--gold);background:var(--alt);border-radius:0 2mm 2mm 0;padding:5mm 6mm;font-size:9pt;line-height:1.7;color:var(--muted)}
 
+/* 케이스 성과 — 문장 그대로 (숫자만 뽑아 쪼개면 문맥이 깨진다) */
+.case-facts{margin:4mm 6mm 0;display:flex;flex-direction:column;gap:2.5mm}
+.case-facts li{font-size:8.5pt;line-height:1.5;font-weight:700;color:var(--ink)}
+.case-facts li span{display:block;font-size:7pt;font-weight:400;color:var(--muted);margin-top:1mm}
+
+/* 4분할 카드 (이미지 + 본문) */
+.cards4{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;flex:1}
+.card4{border:1px solid var(--line);border-radius:3mm;display:flex;flex-direction:column;overflow:hidden}
+.card4-img{width:100%;height:34mm;object-fit:cover;display:block;border-bottom:1px solid var(--line)}
+.card4-body{padding:6mm}
+.card4-no{font-size:7.5pt;font-weight:700;color:#fff;background:var(--indigo);border-radius:50%;width:7mm;height:7mm;display:flex;align-items:center;justify-content:center}
+.card4-t{font-size:11pt;font-weight:700;margin-top:4mm}
+.card4-d{font-size:8.5pt;line-height:1.75;color:var(--muted);margin-top:3mm}
+
+/* 영상 썸네일 그리드 */
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:3.5mm;flex:1;align-content:start}
+.thumb{border-radius:2.5mm;overflow:hidden;background:var(--alt)}
+.thumb img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.thumb span{display:block;font-size:7.5pt;line-height:1.5;color:var(--muted);padding:3mm 3.5mm}
+
 /* 관점 선언 (전면) */
 .stmt{height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 26mm}
 .stmt-k{font-size:8pt;letter-spacing:.18em;color:var(--gold)}
@@ -1086,9 +1133,10 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 
 /* 팀 4분할 */
 .teams{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;flex:1}
-.team{border:1px solid var(--line);border-radius:3mm;padding:8mm 7mm;display:flex;flex-direction:column}
-.team-tag{font-size:7.5pt;font-weight:700;color:#fff;background:var(--night);border-radius:99mm;padding:2mm 4.5mm;align-self:flex-start}
-.team-name{font-size:11.5pt;font-weight:700;margin-top:5mm}
+.team{border:1px solid var(--line);border-radius:3mm;padding:0 0 7mm;display:flex;flex-direction:column;overflow:hidden}
+.team-img{width:100%;height:38mm;object-fit:cover;display:block}
+.team-name{font-size:11.5pt;font-weight:700;margin:5mm 6mm 0}
+.team-list{margin:4mm 6mm 0 !important}
 .team-list{margin-top:5mm;display:flex;flex-direction:column;gap:3mm}
 .team-list li{font-size:8.5pt;line-height:1.65;color:var(--muted);padding-left:4mm;position:relative}
 .team-list li:before{content:"";position:absolute;left:0;top:2.6mm;width:1.6mm;height:1.6mm;border-radius:50%;background:var(--gold)}

@@ -174,10 +174,6 @@ export const brochureUrl = `${PUBLIC_ORIGIN}/${BROCHURE.file}`;
  * PDF 는 첨부와 링크를 함께 건다 — 첨부를 막아 둔 메일 환경이 적지 않다.
  */
 export function brochureMail(inquiry: BrochureInquiry) {
-  const name = inquiry.company_name
-    ? `${inquiry.company_name} ${inquiry.contact_name}님`
-    : `${inquiry.contact_name}님`;
-
   const para = (t: string) =>
     `<p style="font-size:14px;line-height:1.9;margin:0 0 16px">${t}</p>`;
 
@@ -191,7 +187,7 @@ export function brochureMail(inquiry: BrochureInquiry) {
 </td></tr>`;
 
   return {
-    subject: `[${SERVICE.name}] ${name}께 드리는 종합 소개서입니다`,
+    subject: `[${SERVICE.name}] 프로젝트 소개서를 전달 드립니다.`,
     html: mailShell(`
 <p style="font-size:16px;font-weight:700;line-height:1.65;margin:0 0 20px">요즘 브랜드는 컨텐츠에서 시작해<br>고객으로 전환시키는 그로스 퍼널로 끝납니다.</p>
 
@@ -208,18 +204,18 @@ ${para(
 <p style="font-size:15px;font-weight:700;margin:24px 0 12px">지금 어느 쪽이 필요하신가요?</p>
 <table style="width:100%;border-collapse:collapse;margin:0 0 20px">
 ${choice(
-  "구매 전환형 숏폼이 필요하다",
+  "매출 스케일업 구매 전환형 숏폼",
   "인플루언서 시딩과 2차 활용 소스로 광고 소재를 편수 단위로",
   `${PUBLIC_ORIGIN}/shortform`,
 )}
 ${choice(
-  "SNS 채널 활성화가 필요하다",
+  "브랜드 SNS 채널 컨텐츠 활성화",
   "유튜브·인스타그램 채널의 기획·전략·운영을 연 단위로",
   `${PUBLIC_ORIGIN}/sns-brand`,
 )}
 ${choice(
-  "종합 브랜드 마케팅이 필요하다",
-  "채널·컨텐츠·광고·이벤트·CRM을 하나의 전략으로",
+  "종합 브랜드 마케팅 전개",
+  "채널·컨텐츠·광고에 이벤트·프로모션·CRM 까지 하나의 전략으로",
   `${PUBLIC_ORIGIN}/portfolio`,
 )}
 </table>
