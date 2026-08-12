@@ -12,6 +12,10 @@ import { PORTFOLIO } from "@/lib/sns-brand";
  *
  * 감속 설정(prefers-reduced-motion)이 켜져 있으면 자동재생하지 않고 썸네일만 둔다 —
  * 자동재생 영상이 17개 도는 화면은 그 설정을 켠 사람에게 특히 괴롭다.
+ *
+ * 2026-08-12: **모바일도 자동재생을 끈다.** 한 줄로 내려오다 보니 로딩 중인
+ * iframe 아래로 썸네일이 비쳐 같은 컷이 겹쳐 보였고(사장님 지적), 셀룰러에서
+ * 영상이 줄줄이 도는 것도 곤란하다. 좁은 화면에서는 눌러서 유튜브로 보낸다.
  */
 function VideoTile({ id, title }: { id: string; title: string }) {
   const ref = useRef<HTMLLIElement>(null);
@@ -22,6 +26,7 @@ function VideoTile({ id, title }: { id: string; title: string }) {
     const node = ref.current;
     if (!node) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!window.matchMedia("(min-width: 640px)").matches) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -59,17 +64,31 @@ function VideoTile({ id, title }: { id: string; title: string }) {
         />
       )}
 
-      {/* 제목은 아래에 얇게 — 영상이 주인공이라 위에 덮지 않는다 */}
+      {/* 제목은 아래에 얇게 — 영상이 주인공이라 위에 덮지 않는다.
+          모바일에서는 아예 띄우지 않는다: 썸네일에 이미 큰 자막이 박혀 있어
+          그 위에 우리 제목을 겹치면 둘 다 안 읽힌다. */}
       <a
         href={`https://www.youtube.com/watch?v=${id}`}
         target="_blank"
         rel="noreferrer"
-        className="absolute inset-0 flex items-end bg-gradient-to-t from-black/70 via-transparent to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="absolute inset-0 flex items-end bg-gradient-to-t from-black/70 via-transparent to-transparent p-3 opacity-0 transition-opacity duration-300 sm:group-hover:opacity-100"
       >
         <span className="text-xs leading-[1.5] font-bold text-white">
           {title}
         </span>
       </a>
+
+      {/* 모바일 재생 표시 — 자동재생이 없으니 눌러야 열린다는 걸 알려준다 */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 grid place-items-center sm:hidden"
+      >
+        <span className="grid size-10 place-items-center rounded-full bg-black/55 text-white backdrop-blur-sm">
+          <svg viewBox="0 0 24 24" className="ml-0.5 size-4" fill="currentColor">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </span>
+      </span>
     </li>
   );
 }
@@ -86,7 +105,8 @@ export function Portfolio() {
           {PORTFOLIO.title}
         </h2>
 
-        <ul className="mt-12 grid gap-4 sm:grid-cols-2">
+        {/* 모바일도 2열 — 한 줄로 세우면 14편이 끝없이 이어져 페이지가 늘어진다 */}
+        <ul className="mt-12 grid grid-cols-2 gap-2.5 sm:gap-4">
           {PORTFOLIO.videos.map((video) => (
             <VideoTile key={video.id} id={video.id} title={video.title} />
           ))}

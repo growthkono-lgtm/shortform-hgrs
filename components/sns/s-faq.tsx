@@ -12,7 +12,9 @@ export function BrunchCard({ className = "" }: { className?: string }) {
       href={ARCHIVE.href}
       target="_blank"
       rel="noreferrer"
-      className={`group flex flex-wrap items-center gap-5 rounded-2xl border border-line bg-paper px-6 py-6 transition-colors duration-200 hover:border-ink/25 ${className}`}
+      /* 모바일은 세로로 쌓는다 — flex-wrap 으로 두면 제목이 아이콘과 링크 사이
+         좁은 틈에 끼어 세 줄로 접힌다 */
+      className={`group flex flex-col items-start gap-4 rounded-2xl border border-line bg-paper px-6 py-6 transition-colors duration-200 hover:border-ink/25 sm:flex-row sm:items-center sm:gap-5 ${className}`}
     >
       <span
         aria-hidden
@@ -36,7 +38,7 @@ export function BrunchCard({ className = "" }: { className?: string }) {
         </svg>
       </span>
 
-      <span className="min-w-0 flex-1">
+      <span className="min-w-0 sm:flex-1">
         <span className="eyebrow block">Archive</span>
         <span className="mt-1.5 block text-base font-bold group-hover:underline group-hover:underline-offset-4">
           {ARCHIVE.title}

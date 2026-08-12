@@ -25,13 +25,15 @@ export function Process() {
             key={item.no}
             className="overflow-hidden rounded-2xl border border-line bg-paper"
           >
-            <figure className="relative aspect-[16/10] border-b border-line bg-paper-alt">
+            {/* 도면·페르소나표가 섞여 있어 contain 으로 둔다 — cover 로 채우면
+                한 장에 담긴 설명이 잘려 무슨 그림인지 알 수 없게 된다 */}
+            <figure className="relative aspect-[16/10] border-b border-line bg-paper-alt p-2">
               <Image
                 src={item.shot.src}
                 alt={item.shot.cap}
                 fill
                 sizes="(min-width: 1024px) 280px, (min-width: 640px) 50vw, 100vw"
-                className="object-cover"
+                className="object-contain"
               />
             </figure>
             <div className="p-6 sm:p-7">

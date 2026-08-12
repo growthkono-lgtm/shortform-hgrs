@@ -38,7 +38,11 @@ function PlateSwiper({ figures }: { figures: Figure[] }) {
 
   return (
     <figure>
-      <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-white/12 bg-night-soft">
+      {/* object-contain — 여기 오는 도판은 기획안·퍼널 설계처럼 글자가 박힌
+          그림이 섞여 있다. cover 로 채우면 1:1 사진에 맞춘 4:3 틀에 와이드
+          도면이 잘려 오른쪽 라벨이 통째로 날아간다("이미지 다 잘리잖아").
+          여백이 조금 남더라도 도면은 온전히 보이는 쪽이 맞다. */}
+      <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-white/12 bg-night-soft p-2">
         {figures.map((f, idx) => (
           <Image
             key={f.src}
@@ -46,7 +50,7 @@ function PlateSwiper({ figures }: { figures: Figure[] }) {
             alt={f.caption}
             fill
             sizes="(min-width: 1024px) 520px, 100vw"
-            className={`object-cover transition-opacity duration-700 ${
+            className={`object-contain transition-opacity duration-700 ${
               idx === i ? "opacity-100" : "opacity-0"
             }`}
           />

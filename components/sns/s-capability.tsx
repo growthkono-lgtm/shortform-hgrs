@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { type CSSProperties, useState } from "react";
 
 import { useCountUp, countUpText } from "@/components/ui/use-count-up";
 import { CAPABILITY } from "@/lib/sns-brand";
@@ -108,9 +108,11 @@ function ShortsSlider({ ids }: { ids: readonly string[] }) {
 }
 
 function Visual({ card }: { card: Card }) {
+  // 카드 폭은 전부 19rem 이하로 잡았다 — 360px 화면(좌우 여백 20px씩)에
+  // 그대로 들어가야 모바일에서 트랙을 세로로 풀었을 때 잘리지 않는다.
   if (card.kind === "youtube") {
     return (
-      <div className="relative flex w-[20rem] items-stretch overflow-hidden rounded-2xl bg-night pb-14 sm:w-[27rem]">
+      <div className="relative flex w-[19rem] items-stretch overflow-hidden rounded-2xl bg-night pb-14 sm:w-[27rem]">
         <a
           href="https://www.youtube.com/watch?v=63_0QN5MUXY"
           target="_blank"
@@ -410,13 +412,18 @@ export function Capability() {
   // **sticky 구간**으로 바꿨다. 그냥 스크롤에 맞춰 밀면 섹션이 짧아서
   // 오른쪽 카드를 다 보기 전에 페이지가 넘어가 버린다. 키 큰 래퍼가 지나가는
   // 동안 화면을 붙잡아 두고, 그 사이에 트랙이 끝까지 흐르게 한다.
+  //
+  // 단 **lg 이상에서만** 그렇게 한다. 모바일에서는 카드 한 장(라벨 옆에 붙는
+  // 첫 카드는 460px)이 화면보다 넓어서, 가로 트랙을 유지하는 한 무슨 수를 써도
+  // 잘린다. 좁은 화면에서는 트랙을 풀어 세로로 쌓는다 — 카드 폭은 전부
+  // 화면 안에 들어오는 치수라 그대로 두면 된다.
   const track = useStickyProgress<HTMLDivElement>();
 
   return (
     <section id="capability" className="scroll-mt-16 bg-paper">
-      {/* 스크롤 길이 확보용 래퍼 — 이 높이만큼 트랙이 흐른다 */}
-      <div ref={track.ref} className="relative h-[300vh]">
-        <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-16">
+      {/* 스크롤 길이 확보용 래퍼 — 이 높이만큼 트랙이 흐른다 (데스크톱 한정) */}
+      <div ref={track.ref} className="relative lg:h-[300vh]">
+        <div className="py-16 lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:overflow-hidden">
           <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
             <p className="eyebrow">Capability</p>
             <h2 className="mt-4 max-w-3xl text-[1.375rem] leading-[1.4] font-bold sm:text-[1.875rem] sm:leading-[1.35] lg:text-[2.25rem]">
@@ -426,20 +433,24 @@ export function Capability() {
             </h2>
           </div>
 
-          <div className="mt-10 overflow-hidden">
+          <div className="mt-10 lg:overflow-hidden">
             <div
-              className="flex w-max items-start gap-6 px-5 will-change-transform sm:px-8 lg:gap-10"
-              style={{
-                transform: `translateX(calc(-72% * ${track.p}))`,
-              }}
+              className="flex flex-col items-start gap-12 px-5 sm:px-8 lg:w-max lg:flex-row lg:gap-10 lg:will-change-transform lg:[transform:translateX(var(--track-x))]"
+              style={
+                { "--track-x": `calc(-72% * ${track.p})` } as CSSProperties
+              }
             >
               {CAPABILITY.cards.map((card) =>
                 card.labelSide ? (
+                  // 라벨이 옆에 붙는 첫 카드 — 모바일에서는 아래로 내린다
                   <div
                     key={card.id}
-                    className="flex shrink-0 items-start gap-5"
+                    className="flex shrink-0 flex-col-reverse items-start gap-4 lg:flex-row lg:items-start lg:gap-5"
                   >
-                    <Label card={card} className="w-[7.5rem] pt-1 sm:w-40" />
+                    <Label
+                      card={card}
+                      className="max-w-[17rem] pl-1 lg:w-40 lg:max-w-none lg:pt-1 lg:pl-0"
+                    />
                     <Visual card={card} />
                   </div>
                 ) : (
@@ -449,7 +460,7 @@ export function Capability() {
                   </div>
                 ),
               )}
-              <div aria-hidden className="w-5 shrink-0 sm:w-8" />
+              <div aria-hidden className="hidden shrink-0 lg:block lg:w-8" />
             </div>
           </div>
         </div>

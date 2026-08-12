@@ -36,10 +36,15 @@ export function BrandOrbit({
   size?: Size;
 }) {
   const lg = size === "lg";
-  // 큰 도형은 천천히(오래 걸쳐) 모이게 — 그림이 커서 같은 구간이면 순식간에 끝난다
-  const { ref, p } = useViewProgress<HTMLDivElement>(
-    lg ? { from: 0.95, to: 0.3 } : { from: 0.92, to: 0.55 },
-  );
+  // 큰 도형은 천천히(오래 걸쳐) 모이게 — 그림이 커서 같은 구간이면 순식간에 끝난다.
+  //
+  // minWidth: 폰에서는 아예 모인 상태로 그린다. 좁은 화면에서는 출발 위치
+  // (오른쪽 224%)가 화면 밖이라, 스크롤 중간 상태가 "위성 서넛이 오른쪽에
+  // 겹쳐 글자가 포개진 그림"으로 멈춰 보인다 — 연출이 아니라 고장으로 읽힌다.
+  const { ref, p } = useViewProgress<HTMLDivElement>({
+    ...(lg ? { from: 0.95, to: 0.3 } : { from: 0.92, to: 0.55 }),
+    minWidth: 1024,
+  });
 
   return (
     <div

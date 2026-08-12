@@ -17,7 +17,13 @@ export function useViewProgress<T extends HTMLElement = HTMLDivElement>({
   /** 진행 구간 — 요소 상단이 뷰포트 이 지점(0=바닥, 1=천장)을 지날 때 0 → 1 */
   from = 0.95,
   to = 0.45,
-}: { from?: number; to?: number } = {}) {
+  /**
+   * 이 폭 미만에서는 재지 않는다 → p 가 1(완성 상태)로 남는다.
+   * 도형이 화면 밖에서 날아 들어오는 연출은 좁은 화면에서 중간 상태가
+   * 그냥 "겹쳐서 깨진 그림"으로 보인다. 폰에서는 완성형만 보여준다.
+   */
+  minWidth = 0,
+}: { from?: number; to?: number; minWidth?: number } = {}) {
   const ref = useRef<T>(null);
   const [p, setP] = useState(1);
 
@@ -25,6 +31,7 @@ export function useViewProgress<T extends HTMLElement = HTMLDivElement>({
     const node = ref.current;
     if (!node) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (minWidth && window.innerWidth < minWidth) return;
 
     let raf = 0;
     let running = false;
@@ -64,7 +71,7 @@ export function useViewProgress<T extends HTMLElement = HTMLDivElement>({
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(raf);
     };
-  }, [from, to]);
+  }, [from, to, minWidth]);
 
   return { ref, p };
 }

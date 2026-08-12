@@ -125,12 +125,7 @@ export const FEATURES: Feature[] = [
         height: 901,
         caption: "상담사를 각 주제의 대표 전문가로 세운 온드 유튜브",
       },
-      {
-        src: "/sns/lovedy-result.png",
-        width: 1600,
-        height: 1064,
-        caption: "컨텐츠 그로스가 만든 DB·전환 지표 변화",
-      },
+      /* 전환 지표 컷(lovedy-result)은 아래 CRM 퍼널링 항목이 가져갔다 — 같은 페이지에 두 번 뜨지 않게 */
     ],
   },
   {
@@ -190,11 +185,16 @@ export const FEATURES: Feature[] = [
       { v: "댕터뷰-블라인드 시식대회" },
       { v: "종합 IMC 프로젝트" },
     ],
+    /**
+     * 제품 컷을 쓴다. 아래 영상(LCQywT3a2pQ)의 썸네일이 수의사 컷이라,
+     * 히어로까지 수의사 컷이면 한 화면에 같은 프레임이 두 번 뜬다.
+     * 소개서(scripts/build-deck.ts)는 영상 카드가 없어 수의사 컷으로 갈아 끼운다.
+     */
     hero: {
-      src: "/sns/trusty-vet.jpg",
-      width: 1280,
-      height: 720,
-      caption: "수의사가 직접 나오는 롱폼 — 처방식 라인까지 잇는 컨텐츠",
+      src: "/sns/trusty-product.jpg",
+      width: 1600,
+      height: 1066,
+      caption: "생식·동결건조 라인 — 컨텐츠가 곧 상세페이지가 되는 제품 컷",
     },
     figures: [],
     videos: [
@@ -210,24 +210,24 @@ export const FEATURES: Feature[] = [
  * 최근 주요 포트폴리오 — 실제 편성·제작한 **롱폼 영상**.
  * 사장님이 준 영상 링크 목록(영상모음2/영상링크.docx)과 트러스티랩스 채널에서
  * 지정한 편들이다. 쇼츠·정지 이미지는 뺐다 — 이 자리는 롱폼만 튼다.
+ *
+ * 위 사례 섹션에서 이미 튼 편(Bsp_HBS8ckM·XmX0iYOTUGE·LCQywT3a2pQ)은 여기서 뺐다.
+ * 같은 페이지에서 같은 썸네일이 두 번 지나가면 편수가 적어 보인다.
  */
 export const PORTFOLIO = {
   title: "최근 주요 포트폴리오",
   /** 마지막 빈 칸에 넣는 한 줄 — 여기 있는 게 전부가 아니라는 표시 */
   note: "(다수 숏폼 생략)",
   videos: [
-    { id: "Bsp_HBS8ckM", title: "배그극장" },
     { id: "aEbmZ3H5EWo", title: "배그극장" },
     { id: "f5QK9Hik2C8", title: "PNC" },
     { id: "_h3PLQlhs1s", title: "PNC" },
     { id: "yNsu5XfTN1E", title: "이스포츠 스케치" },
     { id: "kN57OTVMSD0", title: "이스포츠 하이라이트" },
     { id: "Yy9K61hUC3Y", title: "핏플렉스 브랜드 캠페인" },
-    { id: "XmX0iYOTUGE", title: "열다 옷장정리" },
     { id: "EU26OQv6ATE", title: "열다 옷장정리" },
     { id: "6gfORrmxY2Q", title: "열다 옷장정리" },
     { id: "Th4pjIRJUz8", title: "우리 강아지 비만·피부염 해결 (후편)" },
-    { id: "LCQywT3a2pQ", title: "강아지 사료 솔루션 — 짱구 이야기 (전편)" },
     { id: "IzXDfxBQw5A", title: "노아만을 위한 식단 (전편)" },
     { id: "ta2ILzOdiOQ", title: "영양수의사가 답합니다 (후편)" },
     { id: "L3W_Uif3sjo", title: "수의사가 경고하는 강아지 간식의 숨겨진 위험" },
@@ -239,6 +239,10 @@ export const PORTFOLIO = {
 /**
  * SNS 채널 기본 프로세스 — 2026-08-11 피그마 문안.
  * 기존 3모듈("덕션 시스템")을 이 네 항목으로 갈아 끼웠다.
+ *
+ * 2026-08-12: 네 장 모두 위 사례 섹션에서 이미 쓴 이미지였다. 데스크톱에서는
+ * 멀리 떨어져 있어 티가 덜 났지만 모바일은 한 줄로 내려오면서 같은 컷이
+ * 두 번 지나간다. **이 페이지 안에서 이미지는 한 번씩만 쓴다**로 정리했다.
  */
 export const PROCESS = {
   title: "SNS 종합 브랜드 마케팅 시스템",
@@ -249,10 +253,10 @@ export const PROCESS = {
       title: "인스타그램 · 유튜브",
       body: "메인 채널을 둘 중 선정 후 그 외 채널에는 컨텐츠 미러링을 병행해 드립니다.",
       shot: {
-        src: "/sns/krafton-contents.jpg",
-        w: 1080,
-        h: 1080,
-        cap: "채널별로 갈아 편성한 컨텐츠",
+        src: "/sns/krafton-3c.png",
+        w: 1600,
+        h: 900,
+        cap: "메인 채널과 타겟을 먼저 가르는 3C 채널 전략 설계",
       },
     },
     {
@@ -260,10 +264,10 @@ export const PROCESS = {
       title: "광고 부스팅",
       body: "챔피언성 인기 피드는 퍼포먼스마케팅 및 채널 자체 트래픽을 붓습니다.",
       shot: {
-        src: "/sns/krafton-funnel.png",
+        src: "/sns/lovedy-contents.jpg",
         w: 1600,
-        h: 897,
-        cap: "유입 경로와 부스팅 지점을 그린 퍼널 설계",
+        h: 771,
+        cap: "부스팅을 붙일 대상을 가르는 페르소나 분류",
       },
     },
     {
@@ -271,10 +275,10 @@ export const PROCESS = {
       title: "인플루언서 게스트 콜라보",
       body: "유튜버, 연예인, 인플루언서, 스트리머 등과 콜라보 시 협업을 매니징합니다.",
       shot: {
-        src: "/sns/yeolda-shoot.jpg",
-        w: 1600,
-        h: 900,
-        cap: "인물 섭외부터 촬영까지 직접 — 브랜드 채널 촬영 현장",
+        src: "/sns/trusty-vet.jpg",
+        w: 1280,
+        h: 720,
+        cap: "수의사 등 전문가 게스트가 직접 출연하는 브랜드 롱폼",
       },
     },
     {

@@ -576,6 +576,13 @@ ${PROCESS.items
 
 
 
+/**
+ * 소개서에서만 갈아 끼우는 대표 컷.
+ * 랜딩은 히어로 아래에 영상 카드가 붙어서 같은 프레임이 겹치지만,
+ * 소개서는 장표 하나에 이미지 한 장이라 사장님이 지정한 수의사 롱폼 컷을 쓴다.
+ */
+const DECK_HERO: Record<string, string> = { trusty: "/sns/trusty-vet.jpg" };
+
 FEATURES.forEach((f) => {
   pages.push(
     slide(`
@@ -596,7 +603,7 @@ FEATURES.forEach((f) => {
     ${f.body.map((t) => `<p class="bc-p">${esc(plain(t))}</p>`).join("")}
   </div>
   <div class="bc-media">
-    <img src="${asset(f.hero.src)}" alt="">
+    <img src="${asset(DECK_HERO[f.id] ?? f.hero.src)}" alt="">
   </div>
 </div>`),
   );
