@@ -19,7 +19,16 @@ export const NAV = [
   { href: "/shortform", label: "숏폼 스튜디오" },
   { href: "/sns-brand", label: "브랜드 SNS 채널" },
   { href: "/portfolio", label: "성과 사례" },
-  { href: "/blog", label: "블로그" },
+  /**
+   * 브런치북. 자체 /blog 는 2026-08-12 에 접었다 — 기획-제작-발행 자동화를
+   * 제대로 설계하기 전까지는 이미 글이 쌓여 있는 브런치가 낫다.
+   * next.config 의 /blog 리다이렉트도 같은 곳을 본다.
+   */
+  {
+    href: "https://brunch.co.kr/brunchbook/bmaha2",
+    label: "블로그",
+    external: true,
+  },
 ] as const;
 
 export function SiteNav({
@@ -46,15 +55,27 @@ export function SiteNav({
   return (
     <>
       <nav className="hidden flex-1 items-center justify-center gap-7 text-sm lg:flex">
-        {NAV.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`whitespace-nowrap transition-colors ${linkTone}`}
-          >
-            {item.label}
-          </Link>
-        ))}
+        {NAV.map((item) =>
+          "external" in item ? (
+            <a
+              key={item.href}
+              href={item.href}
+              target="_blank"
+              rel="noreferrer"
+              className={`whitespace-nowrap transition-colors ${linkTone}`}
+            >
+              {item.label}
+            </a>
+          ) : (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`whitespace-nowrap transition-colors ${linkTone}`}
+            >
+              {item.label}
+            </Link>
+          ),
+        )}
       </nav>
 
       <div className="flex shrink-0 items-center gap-2.5 sm:gap-3.5">
@@ -119,20 +140,27 @@ export function SiteNav({
             </div>
 
             <ul className="mt-4 divide-y divide-line border-y border-line">
-              {NAV.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    className="flex items-center justify-between py-4 text-base font-bold"
-                  >
-                    {item.label}
-                    <span aria-hidden className="text-muted">
-                      →
-                    </span>
-                  </Link>
-                </li>
-              ))}
+              {NAV.map((item) => {
+                const external = "external" in item;
+                const Tag = external ? "a" : Link;
+                return (
+                  <li key={item.href}>
+                    <Tag
+                      href={item.href}
+                      {...(external
+                        ? { target: "_blank", rel: "noreferrer" }
+                        : {})}
+                      onClick={() => setOpen(false)}
+                      className="flex items-center justify-between py-4 text-base font-bold"
+                    >
+                      {item.label}
+                      <span aria-hidden className="text-muted">
+                        {external ? "↗" : "→"}
+                      </span>
+                    </Tag>
+                  </li>
+                );
+              })}
             </ul>
 
             <Link

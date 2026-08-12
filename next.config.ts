@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 
+/** 마케팅 노하우 연재 — 자체 블로그 대신 여기로 보낸다 */
+const BRUNCH_URL = "https://brunch.co.kr/brunchbook/bmaha2";
+
 /**
  * 프레이머 시절 hgrs.io 경로를 살려 준다 (2026-08-11 도메인 이전).
  *
@@ -50,8 +53,20 @@ const nextConfig: NextConfig = {
         destination: "/sns-brand#contact",
         permanent: true,
       },
-      // 프레이머 시절 블로그 경로 → 새 블로그 자리
-      { source: "/article", destination: "/blog", permanent: true },
+      /**
+       * 블로그는 브런치북으로 보낸다.
+       *
+       * 2026-08-12: 자체 /blog 를 접었다. 글·이미지·구성 품질이 발행할 수준이
+       * 아니었고, 제대로 하려면 기획-제작-발행 자동화를 따로 설계해야 한다.
+       * 그때까지 이 경로들은 전부 이미 쌓여 있는 브런치북으로 넘긴다 —
+       * 빈 페이지를 남기거나 404 를 내는 것보다 낫다.
+       *
+       * permanent: false (307/308 아님) — 자체 블로그를 다시 열 때
+       * 브라우저·검색엔진에 영구 이전으로 굳어 있으면 되돌리기 어렵다.
+       */
+      { source: "/article", destination: BRUNCH_URL, permanent: false },
+      { source: "/blog", destination: BRUNCH_URL, permanent: false },
+      { source: "/blog/:path*", destination: BRUNCH_URL, permanent: false },
     ];
   },
 };
