@@ -216,6 +216,33 @@ export default async function BlogPost({
             </div>
           </section>
 
+          {/* 출처 — 남의 채널 수치를 인용한 글에서는 이게 신뢰의 전부다.
+              생성형 검색도 출처가 달린 문단을 우선 인용한다. */}
+          {post.sources && post.sources.length > 0 && (
+            <section className="mt-16">
+              <h2 className="text-[1.375rem] leading-[1.4] font-bold sm:text-[1.625rem]">
+                참고한 자료
+              </h2>
+              <ul className="mt-6 space-y-4">
+                {post.sources.map((s) => (
+                  <li key={s.href} className="text-sm leading-[1.8]">
+                    <a
+                      href={s.href}
+                      target="_blank"
+                      rel="noreferrer nofollow"
+                      className="font-bold text-ink underline underline-offset-4 decoration-line hover:decoration-ink"
+                    >
+                      {s.label}
+                    </a>
+                    <span className="mt-1 block text-xs text-muted">
+                      {s.note}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           <aside className="hero-night on-dark mt-16 rounded-2xl px-8 py-10 text-white sm:px-10">
             <p className="eyebrow">Contact</p>
             <p className="mt-4 text-[1.25rem] leading-[1.45] font-bold sm:text-2xl">
