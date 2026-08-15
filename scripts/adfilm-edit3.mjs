@@ -148,12 +148,20 @@ run(["-y", "-f", "concat", "-safe", "0", "-i", vlist, "-c", "copy", joined]);
 /* ── 3) 자막 한 층 ─────────────────────────────────────────────────── */
 const draws = (plan.lines ?? []).map((l, i) => {
   const pt = fitSize(l.text);
+  /* 자막 디자인 — 2026-08-16. 사장님: "자막 위치는 딱 좋아. 근데 디자인 조금 더 이쁘게."
+     테두리만 두르면 밝은 배경에서 뭉개진다. 반투명 검은 판을 뒤에 깔고
+     테두리를 얇게 줄여 글자 획이 살아나게 한다. 판은 글자 크기에 비례해
+     여백을 잡아 어떤 길이에서도 비율이 유지된다. */
+  const tf = T(`ln${i}`, l.text);
+  const y = l.y ?? CAPTION_Y;
   return (
-    `drawtext=fontfile='${FONT}':textfile='${T(`ln${i}`, l.text)}'` +
+    `drawtext=fontfile='${FONT}':textfile='${tf}'` +
     `:fontsize=${pt}:fontcolor=${l.hi ? HI : "white"}` +
-    `:x=(w-text_w)/2:y=h*${l.y ?? CAPTION_Y}` +
-    `:borderw=${Math.max(3, Math.round(pt * 0.08))}:bordercolor=black` +
-    `:shadowx=0:shadowy=2:shadowcolor=black@0.4` +
+    `:x=(w-text_w)/2:y=h*${y}` +
+    `:box=1:boxcolor=black@0.55:boxborderw=${Math.round(pt * 0.42)}|${Math.round(pt * 0.30)}` +
+    `:borderw=${Math.max(2, Math.round(pt * 0.05))}:bordercolor=black@0.85` +
+    `:shadowx=0:shadowy=2:shadowcolor=black@0.35` +
+    `:line_spacing=${Math.round(pt * 0.25)}` +
     `:enable='between(t,${l.at},${l.until})'`
   );
 });
