@@ -1,0 +1,18 @@
+{
+  "endpoint": "bytedance/seedance-2.0/reference-to-video",
+  "body": {
+    "prompt": "제품은 [Image1] 의 패키지와 [Image2] 의 디퓨저 본체 형태를 그대로 유지한다. 라벨의 색과 배치가 바뀌지 않는다.\n세로 9:16. 한국 가정집 거실, 낮의 자연광. 제품이 화면을 채운다. 얕은 심도.\n카메라: 낮은 각도에서 벽면 콘센트로 천천히 다가간다.\n동작: 여성의 손이 [Image2] 의 디퓨저를 콘센트에 꽂고 손을 뗀다. 얼굴은 나오지 않는다.\n이 컷에 반드시 담긴다: 디퓨저가 콘센트에 꽂힌 상태가 마지막 1초 동안 정면으로 보인다.\n화면에 글자·자막·로고를 넣지 않는다. 실존 인물을 등장시키지 않는다.",
+    "resolution": "720p",
+    "duration": "5",
+    "aspect_ratio": "9:16",
+    "generate_audio": false,
+    "seed": 20260816,
+    "image_urls": [
+      "https://v3b.fal.media/files/b/0aa6726e/E0q6VG7Z06AxuK1LK0hGt_pkg.png",
+      "https://v3b.fal.media/files/b/0aa6726e/j5ij0Auhcd7cp9x05PE8z_device.png"
+    ]
+  },
+  "seed": 20260816,
+  "videoUrl": "https://v3b.fal.media/files/b/0aa6727d/URXPfqw2dzh2KaTJeRhKM_video.mp4",
+  "spent": 1.525
+}

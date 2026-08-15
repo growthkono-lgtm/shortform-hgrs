@@ -1,0 +1,62 @@
+{
+  "out": "feliway-v2.mp4",
+  "product": "pkg.png",
+  "productAt": 25.5,
+  "productUntil": 31.5,
+  "headline": "고양이가 자꾸 숨나요?",
+
+  "cuts": [
+    { "src": "raw-36s.mp4", "from": 0.0,  "dur": 3.0 },
+    { "src": "raw-36s.mp4", "from": 4.2,  "dur": 2.5 },
+    { "src": "raw-36s.mp4", "from": 8.6,  "dur": 2.5 },
+    { "src": "raw-36s.mp4", "from": 20.0, "dur": 2.5 },
+    { "src": "raw-36s.mp4", "from": 12.2, "dur": 3.0 },
+    { "src": "raw-36s.mp4", "from": 15.6, "dur": 2.5 },
+    { "src": "raw-36s.mp4", "from": 18.4, "dur": 3.0 },
+    { "src": "raw-36s.mp4", "from": 24.0, "dur": 3.0 },
+    { "src": "raw-36s.mp4", "from": 28.0, "dur": 3.0 },
+    { "src": "raw-36s.mp4", "from": 31.0, "dur": 3.0 },
+    { "src": "raw-36s.mp4", "from": 33.2, "dur": 2.8 }
+  ],
+
+  "emphasis": [
+    {
+      "at": 3.4, "until": 7.6, "step": 0.75, "y": 0.28,
+      "lines": [
+        { "text": "숨고", "color": "white" },
+        { "text": "긁고", "color": "white" },
+        { "text": "아무 데나 마킹하고", "color": "#FF4D4D" }
+      ]
+    },
+    {
+      "at": 11.8, "until": 16.4, "step": 0.9, "y": 0.26,
+      "lines": [
+        { "text": "리필 끼우고", "color": "white" },
+        { "text": "콘센트에 꽂으면 끝", "color": "white" },
+        { "text": "30일 지속", "color": "#FFD400", "big": true }
+      ]
+    },
+    {
+      "at": 21.8, "until": 26.2, "step": 0.8, "y": 0.26,
+      "lines": [
+        { "text": "수의사 추천", "color": "white" },
+        { "text": "진정제 아님", "color": "#FFD400", "big": true },
+        { "text": "사람·강아지는 못 느껴요", "color": "white" }
+      ]
+    },
+    {
+      "at": 27.0, "until": 31.5, "step": 0.8, "y": 0.27,
+      "lines": [{ "text": "리뷰 288개", "color": "#FFD400", "big": true }]
+    }
+  ],
+
+  "speech": [
+    { "at": 0.3,  "dur": 2.4,  "audio": "v1.mp3",  "text": "우리 고양이, 자꾸 숨어요" },
+    { "at": 3.2,  "dur": 4.15, "audio": "v2.mp3",  "text": "소파 밑에서 안 나오고\n벽지는 다 긁어놨고" },
+    { "at": 8.2,  "dur": 2.95, "audio": "v4.mp3",  "text": "그러다 알게 된 게\n페로몬 디퓨저예요" },
+    { "at": 11.6, "dur": 4.85, "audio": "v6.mp3",  "text": "리필 끼우고 콘센트에 꽂으면 끝" },
+    { "at": 17.0, "dur": 4.01, "audio": "v8.mp3",  "text": "2주쯤 지나니까\n소파 밑에서 나오더라고요" },
+    { "at": 21.6, "dur": 4.61, "audio": "v10.mp3", "text": "진정제 아니에요" },
+    { "at": 26.8, "dur": 4.25, "audio": "v11.mp3", "text": "콘센트 하나면 됩니다" }
+  ]
+}

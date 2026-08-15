@@ -1,0 +1,251 @@
+{
+  "out": "feliway-v4.mp4",
+  "product": "pkg.png",
+  "productAt": 35.53,
+  "productUntil": 38.53,
+  "speechClips": [
+    {
+      "src": "sora-korean-test.mp4",
+      "from": 0,
+      "dur": 10.65
+    },
+    {
+      "src": "c2.mp4",
+      "from": 0,
+      "dur": 10.31
+    },
+    {
+      "src": "c3.mp4",
+      "from": 0,
+      "dur": 10.55
+    },
+    {
+      "src": "c4.mp4",
+      "from": 0,
+      "dur": 3.74
+    },
+    {
+      "src": "c4.mp4",
+      "from": 8.14,
+      "dur": 3.28
+    }
+  ],
+  "screen": [
+    {
+      "clip": 0,
+      "dur": 2.3
+    },
+    {
+      "broll": "addA.mp4",
+      "from": 0.4,
+      "dur": 1.67
+    },
+    {
+      "broll": "addA.mp4",
+      "from": 5,
+      "dur": 1.67
+    },
+    {
+      "broll": "addA.mp4",
+      "from": 9.3,
+      "dur": 1.67
+    },
+    {
+      "broll": "raw-36s.mp4",
+      "from": 1.2,
+      "dur": 1.67
+    },
+    {
+      "broll": "raw-36s.mp4",
+      "from": 7.2,
+      "dur": 1.67
+    },
+    {
+      "clip": 1,
+      "dur": 2.3
+    },
+    {
+      "broll": "raw-36s.mp4",
+      "from": 10.2,
+      "dur": 2
+    },
+    {
+      "broll": "addB.mp4",
+      "from": 0.5,
+      "dur": 2
+    },
+    {
+      "broll": "addB.mp4",
+      "from": 9.2,
+      "dur": 2
+    },
+    {
+      "broll": "addB.mp4",
+      "from": 10.8,
+      "dur": 2
+    },
+    {
+      "clip": 2,
+      "dur": 2.3
+    },
+    {
+      "broll": "addB.mp4",
+      "from": 1.8,
+      "dur": 2.06
+    },
+    {
+      "broll": "addB.mp4",
+      "from": 5.4,
+      "dur": 2.06
+    },
+    {
+      "broll": "addA.mp4",
+      "from": 5.2,
+      "dur": 2.06
+    },
+    {
+      "broll": "raw-36s.mp4",
+      "from": 16.3,
+      "dur": 2.06
+    },
+    {
+      "clip": 3,
+      "dur": 1.31
+    },
+    {
+      "broll": "raw-36s.mp4",
+      "from": 19,
+      "dur": 2.43
+    },
+    {
+      "clip": 4,
+      "dur": 1.15
+    },
+    {
+      "broll": "raw-36s.mp4",
+      "from": 34.2,
+      "dur": 2.13
+    }
+  ],
+  "lines": [
+    {
+      "at": 0,
+      "until": 1.78,
+      "text": "이사하고 3일째인데"
+    },
+    {
+      "at": 1.78,
+      "until": 3.55,
+      "text": "밥을 아예 안 먹어요"
+    },
+    {
+      "at": 3.55,
+      "until": 5.33,
+      "text": "소리만 나면 후다닥"
+    },
+    {
+      "at": 5.33,
+      "until": 7.1,
+      "text": "옷장으로 숨어버리고"
+    },
+    {
+      "at": 7.1,
+      "until": 8.88,
+      "text": "좋아하던 숨숨집도"
+    },
+    {
+      "at": 8.88,
+      "until": 10.65,
+      "text": "이제 안 들어가요"
+    },
+    {
+      "at": 10.65,
+      "until": 12.12,
+      "text": "제가 데려온 건데"
+    },
+    {
+      "at": 12.12,
+      "until": 13.6,
+      "text": "다 제 탓 같았어요"
+    },
+    {
+      "at": 13.6,
+      "until": 15.07,
+      "text": "그러다 알게 된 게"
+    },
+    {
+      "at": 15.07,
+      "until": 16.54,
+      "text": "고양이 페로몬 디퓨저",
+      "hi": true
+    },
+    {
+      "at": 16.54,
+      "until": 18.01,
+      "text": "고양이가 안심할 때"
+    },
+    {
+      "at": 18.01,
+      "until": 19.49,
+      "text": "얼굴 비벼 남기는"
+    },
+    {
+      "at": 19.49,
+      "until": 20.96,
+      "text": "바로 그 표식이래요"
+    },
+    {
+      "at": 20.96,
+      "until": 22.72,
+      "text": "진정제가 아니에요",
+      "hi": true
+    },
+    {
+      "at": 22.72,
+      "until": 24.48,
+      "text": "먹이는 것도 아니고"
+    },
+    {
+      "at": 24.48,
+      "until": 26.23,
+      "text": "리필 끼우기만 하면"
+    },
+    {
+      "at": 26.23,
+      "until": 27.99,
+      "text": "콘센트에 꽂으면 끝"
+    },
+    {
+      "at": 27.99,
+      "until": 29.75,
+      "text": "웅크리고 자던 애가"
+    },
+    {
+      "at": 29.75,
+      "until": 31.51,
+      "text": "대자로 뻗어서 자요",
+      "hi": true
+    },
+    {
+      "at": 31.51,
+      "until": 33.38,
+      "text": "천 마리 넘게 실험해서"
+    },
+    {
+      "at": 33.38,
+      "until": 35.25,
+      "text": "7일째부터 달라져요",
+      "hi": true
+    },
+    {
+      "at": 35.25,
+      "until": 36.89,
+      "text": "이사·합사 앞두고 있다면"
+    },
+    {
+      "at": 36.89,
+      "until": 38.53,
+      "text": "지금 미리 꽂아두세요"
+    }
+  ]
+}
