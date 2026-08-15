@@ -151,8 +151,16 @@ export async function generateShots(formData: FormData) {
   }
 
   // ── 돈. 부르기 전에 막는다
+  const willChain = f.chaining === "chain";
   const about = compiled.prompts.reduce(
-    (s, p) => s + shotCost({ seconds: p.seconds, tier, hasVideoRef: false }),
+    (s, p, i) =>
+      s +
+      shotCost({
+        seconds: p.seconds,
+        tier,
+        // 체인은 첫 컷만 독립이고 나머지는 비디오 레퍼런스가 붙어 0.6배다
+        hasVideoRef: willChain && i > 0,
+      }),
     0,
   );
   assertWithinBudget({
@@ -161,8 +169,24 @@ export async function generateShots(formData: FormData) {
     aboutToSpend: about,
   });
 
+  /**
+   * ⚠️ **체인 유형은 직전 컷을 이어받는다.** (2026-08-16)
+   *
+   * v9 에서 8컷을 전부 독립 생성했더니 화자가 컷마다 바뀌고 발음이 로봇 같아졌다.
+   * 얼굴 레퍼런스 3장으로도 안 잡힌다 — 독립 생성은 매번 처음부터 만들기 때문이다.
+   *
+   * Seedance 는 `video_urls` 에 직전 컷을 넣으면 움직임·조명·구도의 궤적을 읽어
+   * 이어 붙인다. 그래서 첫 컷만 독립으로 만들고 나머지는 앞 컷을 물린다.
+   * 단가도 0.6배가 된다.
+   *
+   * 다만 **앞 컷이 완성돼야 뒤 컷을 걸 수 있다.** 그래서 체인 유형은 여기서
+   * 첫 컷만 큐에 넣고, 나머지는 `collectShots()` 가 앞 컷을 거둘 때 이어 건다.
+   */
+  const chained = f.chaining === "chain";
+  const queue = chained ? compiled.prompts.slice(0, 1) : compiled.prompts;
+
   const jobs: unknown[] = [];
-  for (const p of compiled.prompts) {
+  for (const p of queue) {
     const job = await submitShot({
       prompt: p.prompt,
       seconds: p.seconds,
@@ -182,9 +206,20 @@ export async function generateShots(formData: FormData) {
     });
   }
 
+  // 체인이면 아직 안 건 컷을 '대기'로 적어 둔다. collectShots 가 앞 컷을 거둘 때 건다
+  const pending = chained
+    ? compiled.prompts.slice(1).map((p) => ({
+        no: p.no,
+        prompt: p.prompt,
+        line: p.line,
+        seconds: p.seconds,
+        waiting: true,
+      }))
+    : [];
+
   await adfilmTable()
     .update({
-      shots: jobs as never,
+      shots: [...jobs, ...pending] as never,
       stage: "generating",
       seconds: sourceSeconds(f),
       cost_usd: Number((Number(film.cost_usd ?? 0) + about).toFixed(4)),
@@ -382,18 +417,22 @@ export async function collectShots(formData: FormData) {
     .maybeSingle();
   if (!film) throw new Error("편을 찾지 못했습니다.");
 
-  const shots = (film.shots ?? []) as {
+  type Shot = {
     no: number;
-    requestId: string;
-    statusUrl: string;
-    responseUrl: string;
-    endpoint: string;
+    requestId?: string;
+    statusUrl?: string;
+    responseUrl?: string;
+    endpoint?: string;
     prompt: string;
     line?: string;
+    seconds?: number;
     videoUrl?: string;
     seed?: number | null;
     status?: string;
-  }[];
+    /** 체인 유형에서 앞 컷을 기다리는 중 */
+    waiting?: boolean;
+  };
+  const shots = (film.shots ?? []) as Shot[];
   if (!shots.length) throw new Error("생성된 작업이 없습니다.");
 
   let done = 0;
@@ -403,22 +442,23 @@ export async function collectShots(formData: FormData) {
       done += 1;
       continue; // 이미 거둔 것은 다시 묻지 않는다
     }
+    if (s.waiting) continue; // 아직 안 건 컷. 아래에서 앞 컷이 끝났으면 건다
     try {
       const st = await shotStatus({
-        requestId: s.requestId,
-        statusUrl: s.statusUrl,
-        responseUrl: s.responseUrl,
-        endpoint: s.endpoint,
+        requestId: s.requestId!,
+        statusUrl: s.statusUrl!,
+        responseUrl: s.responseUrl!,
+        endpoint: s.endpoint!,
         estimatedCost: 0,
       });
       s.status = st.status;
       if (st.status === "COMPLETED") {
         const r = await shotResult(
           {
-            requestId: s.requestId,
-            statusUrl: s.statusUrl,
-            responseUrl: s.responseUrl,
-            endpoint: s.endpoint,
+            requestId: s.requestId!,
+            statusUrl: s.statusUrl!,
+            responseUrl: s.responseUrl!,
+            endpoint: s.endpoint!,
             estimatedCost: 0,
           },
           s.prompt,
@@ -432,6 +472,43 @@ export async function collectShots(formData: FormData) {
     } catch (e) {
       // 한 컷 조회 실패로 전체를 버리지 않는다. 다음 호출에서 다시 묻는다
       s.status = `조회 실패: ${(e as Error).message.slice(0, 80)}`;
+    }
+  }
+
+  /**
+   * ── 체인 이어 걸기 ──────────────────────────────────────────────────
+   * 앞 컷이 완성됐으면 그 영상을 `videoUrls` 로 물려 다음 컷을 건다.
+   * 이렇게 해야 화자·조명·톤이 유지된다(v9 에서 이걸 안 해서 사람이 바뀌었다).
+   */
+  const { data: meta } = await adfilmTable()
+    .select("format, brief")
+    .eq("id", id)
+    .maybeSingle();
+  const fmt = adFormat((meta?.format as string) ?? "ugc");
+
+  if (fmt.chaining === "chain") {
+    const ordered = [...shots].sort((a, b) => a.no - b.no);
+    for (let i = 1; i < ordered.length; i += 1) {
+      const cur = ordered[i];
+      const prev = ordered[i - 1];
+      if (!cur.waiting || !prev.videoUrl) continue;
+      try {
+        const job = await submitShot({
+          prompt: cur.prompt,
+          seconds: cur.seconds ?? 5,
+          videoUrls: [prev.videoUrl], // ← 직전 컷을 이어받는다
+          generateAudio: fmt.audio === "onscreen",
+        });
+        cur.requestId = job.requestId;
+        cur.statusUrl = job.statusUrl;
+        cur.responseUrl = job.responseUrl;
+        cur.endpoint = job.endpoint;
+        cur.waiting = false;
+        cur.status = "IN_QUEUE";
+      } catch (e) {
+        cur.status = `이어걸기 실패: ${(e as Error).message.slice(0, 80)}`;
+      }
+      break; // 한 번에 한 컷만 — 순서를 지켜야 궤적이 이어진다
     }
   }
 

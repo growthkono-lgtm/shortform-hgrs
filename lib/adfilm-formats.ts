@@ -37,6 +37,35 @@
  */
 export type Labeling = "ai" | "ai+virtual";
 
+/**
+ * 컷을 어떻게 이어 만드는가 — 2026-08-16 신설. **이번 실패의 핵심이다.**
+ *
+ * ── 무슨 일이 있었나 ──────────────────────────────────────────────────
+ * v9(펠리웨이 40초)를 5초 컷 8개로 만들었는데, 컷마다 **독립 생성**했다.
+ * 결과: 사장님 지적 — *"사람이 한 사람이 말하고 이어야 되는 거 아니야?
+ * 갑자기 다른 사람이 나오는 것 같네"*, *"발음이 글자와 다르고 자연스럽게
+ * 끊어 읽는 게 아니라 로봇 같아."*
+ *
+ * 얼굴 레퍼런스를 3장 넣어도 안 잡힌다. 독립 생성은 매번 처음부터 만드니까
+ * 조금씩 다른 사람이 조금씩 다르게 말한다. **프롬프트로 못 고치는 문제다.**
+ *
+ * ── 해법: 체인 ────────────────────────────────────────────────────────
+ * Seedance 2.0 은 `reference-to-video` 에 `video_urls` 로 직전 컷을 넣으면
+ * *"마지막 프레임뿐 아니라 움직임·조명·구도의 궤적 전체를 읽어"* 이어 붙인다.
+ * sora-2 의 `extensions` 와 같은 물건이고, 우리가 안 쓰고 있었다.
+ *
+ * 덤으로 **비디오 레퍼런스가 붙으면 단가가 0.6배**다($0.30→$0.18/초).
+ * 품질은 오르고 값은 내려간다.
+ *
+ * ⚠️ 그래서 이건 취향이 아니라 **유형의 필수 속성**이다. 사람이 말하는
+ * 유형에서 체인을 안 쓰면 상품이 안 된다.
+ */
+export type ShotChaining =
+  /** 첫 컷만 독립 생성하고, 나머지는 직전 컷을 이어받는다. 화자·조명·톤이 유지된다 */
+  | "chain"
+  /** 컷마다 독립 생성. 장면이 서로 달라도 되는 유형에서만 */
+  | "independent";
+
 /** 화면의 소리가 어디서 오는가 — 립싱크 필요 여부를 이게 정한다 */
 export type AudioMode =
   /** 화면 속 인물이 직접 말한다. 립싱크가 맞아야 한다 */
@@ -75,6 +104,8 @@ export type AdFormat = {
   minSeconds: number;
   maxSeconds: number;
   audio: AudioMode;
+  /** 컷을 이어 만드는가. 사람이 말하는 유형은 chain 이 아니면 화자가 바뀐다 */
+  chaining: ShotChaining;
   labeling: Labeling;
   refs: RefSlot[];
   shots: ShotSlot[];
@@ -139,6 +170,7 @@ export const AD_FORMATS: AdFormat[] = [
     minSeconds: 25,
     maxSeconds: 40,
     audio: "onscreen",
+    chaining: "chain",
     labeling: "ai+virtual",
     refs: [...PRODUCT_REFS, TALENT_REF, SPACE_REF],
     shots: [
@@ -165,6 +197,7 @@ export const AD_FORMATS: AdFormat[] = [
     minSeconds: 15,
     maxSeconds: 30,
     audio: "voiceover",
+    chaining: "independent",
     labeling: "ai",
     refs: [...PRODUCT_REFS, SPACE_REF],
     shots: [
@@ -188,6 +221,7 @@ export const AD_FORMATS: AdFormat[] = [
     minSeconds: 25,
     maxSeconds: 40,
     audio: "voiceover",
+    chaining: "chain",
     labeling: "ai",
     refs: [...PRODUCT_REFS, SPACE_REF],
     shots: [
@@ -210,6 +244,7 @@ export const AD_FORMATS: AdFormat[] = [
     minSeconds: 15,
     maxSeconds: 30,
     audio: "voiceover",
+    chaining: "independent",
     labeling: "ai",
     refs: [
       PRODUCT_REFS[1],
@@ -239,6 +274,7 @@ export const AD_FORMATS: AdFormat[] = [
     minSeconds: 20,
     maxSeconds: 35,
     audio: "voiceover",
+    chaining: "independent",
     labeling: "ai",
     refs: [PRODUCT_REFS[1]],
     shots: [
@@ -261,6 +297,7 @@ export const AD_FORMATS: AdFormat[] = [
     minSeconds: 60,
     maxSeconds: 90,
     audio: "onscreen",
+    chaining: "chain",
     labeling: "ai+virtual",
     refs: [...PRODUCT_REFS, TALENT_REF, SPACE_REF],
     shots: [
