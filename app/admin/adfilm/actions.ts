@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/supabase/auth";
 import { adfilmTable } from "@/lib/adfilm-db";
 import { adFormat, sourceSeconds } from "@/lib/adfilm-formats";
+import { analyzeProductUrl } from "@/lib/adfilm-detail";
 import {
   blankBrief,
   briefBlocked,
@@ -184,6 +185,91 @@ export async function generateShots(formData: FormData) {
       stage: "generating",
       seconds: sourceSeconds(f),
       cost_usd: Number((Number(film.cost_usd ?? 0) + about).toFixed(4)),
+      last_error: null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+
+  revalidatePath(`/admin/adfilm/${id}`);
+}
+
+/**
+ * 링크 하나로 기획안 채우기. (2026-08-16 신설)
+ *
+ * ── 이 버튼이 이 제품의 전부다 ────────────────────────────────────────
+ * 사장님 지시: *"상세페이지 링크 하나 주고 브랜드 정보 입력해서 주고
+ * 영상 유형과 제작 목표 이렇게 칸에 각각 넣어주면 상세페이지 분석해서
+ * 컨셉이니 USP니 특장점이니 해서 기획안 최종 잡고, 그거 정리해서
+ * 스토리보드 혹은 콘티로 구성한 다음에 영상 제작으로 들어가라고."*
+ *
+ * 그 전에는 내가 상세페이지를 텍스트로만 긁어 보고 "이미지라 정보가 없다"며
+ * 넘어갔다. 국내 상세페이지는 거의 전부 이미지라 그렇게 하면 아무것도 못 읽는다.
+ * `lib/adfilm-detail.ts` 가 이미지를 받아 판독한다 —
+ * 2026-08-16 실측에서 23장을 읽어 임상 수치(+41%)까지 뽑아냈다.
+ *
+ * **덮어쓰지 않는다.** 사람이 이미 적은 칸은 그대로 두고 빈 칸만 채운다.
+ * 사장님 디렉션이 자동 분석에 지워지면 안 된다.
+ */
+export async function fillBriefFromUrl(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  const url = String(formData.get("productUrl") ?? "").trim();
+  const goal = String(formData.get("goal") ?? "").trim();
+  if (!id) throw new Error("id 가 없습니다.");
+  if (!/^https?:\/\//.test(url)) throw new Error("상세페이지 주소를 넣어 주세요.");
+
+  const { data: film } = await adfilmTable()
+    .select("id, brief, format")
+    .eq("id", id)
+    .maybeSingle();
+  if (!film) throw new Error("편을 찾지 못했습니다.");
+
+  const { analysis } = await analyzeProductUrl(url, { goal });
+  const brief = film.brief as AdBrief;
+  const f = adFormat(film.format);
+
+  /** 사람이 적은 값이 있으면 손대지 않는다 */
+  const keep = (mine: string | undefined, auto: string) =>
+    mine && mine.trim() ? mine : auto;
+
+  /**
+   * 팩트를 대사 검사에 걸리는 형태로 옮긴다.
+   * `mustSay` 를 켜 두는 것이 핵심이다 — 그래야 "제품 설명이 없다" 가 재발하지 않는다.
+   * 판정 낱말은 값에서 뽑되, 사람이 화면에서 고칠 수 있다.
+   */
+  const autoFacts = [
+    ...analysis.functions.slice(0, 2).map((v) => ({ label: "기능", value: v })),
+    ...analysis.facts.slice(0, 6),
+    ...analysis.trust.slice(0, 3).map((v) => ({ label: "신뢰", value: v })),
+  ].map((x) => ({
+    label: x.label,
+    value: x.value,
+    source: "상세페이지",
+    mustSay: true,
+    // 값에서 두 글자 이상 낱말을 추려 판정어로 쓴다
+    keywords: (x.value.match(/[가-힣A-Za-z0-9]{2,}/g) ?? []).slice(0, 4),
+  }));
+
+  const filled: AdBrief = {
+    ...brief,
+    format: f.key,
+    product: keep(brief.product, analysis.what.slice(0, 80)),
+    usp: keep(brief.usp, analysis.headline),
+    audience: keep(brief.audience, analysis.audience.join(" · ")),
+    evidence: keep(brief.evidence, analysis.trust.join(" / ")),
+    tpo: keep(brief.tpo, analysis.problems.slice(0, 4).join(" · ")),
+    facts: brief.facts?.length ? brief.facts : autoFacts,
+    climax: {
+      before: keep(brief.climax?.before, analysis.problems[0] ?? ""),
+      after: keep(brief.climax?.after, "안정감을 느끼는 모습"),
+    },
+  };
+
+  await adfilmTable()
+    .update({
+      brief: filled as never,
+      // 분석 원문을 남긴다 — 나중에 "이 문구 어디서 왔냐" 를 추적할 수 있어야 한다
       last_error: null,
       updated_at: new Date().toISOString(),
     })

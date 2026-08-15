@@ -12,7 +12,12 @@ import {
 } from "@/lib/adfilm-brief";
 import { GEN_COST, shotCost } from "@/lib/adfilm-gen";
 import { BriefForm } from "./brief-form";
-import { deleteFilm, generateShots, saveBrief } from "../actions";
+import {
+  deleteFilm,
+  fillBriefFromUrl,
+  generateShots,
+  saveBrief,
+} from "../actions";
 
 /**
  * /admin/adfilm/[id] — 기획안 한 편.
@@ -75,6 +80,40 @@ export default async function AdFilmPage(props: {
           {film.last_error}
         </p>
       )}
+
+      {/* ── ① 링크 하나로 시작 ──────────────────────────────────────
+          국내 상세페이지는 거의 전부 이미지라 텍스트만 긁으면 아무것도 없다.
+          이미지를 받아 판독한다 — 실측에서 23장을 읽어 임상 수치까지 뽑았다 */}
+      <form
+        action={fillBriefFromUrl}
+        className="rounded-xl border border-accent/40 bg-accent/[0.04] p-4"
+      >
+        <input type="hidden" name="id" value={film.id} />
+        <h2 className="text-sm font-bold">① 상세페이지 링크로 기획안 채우기</h2>
+        <p className="mt-1 text-xs text-muted">
+          링크만 넣으면 상세 이미지를 전부 읽어 제품 팩트·기능·타겟·신뢰 지표를
+          자동으로 채웁니다. <strong>이미 적어 둔 칸은 덮어쓰지 않습니다.</strong>
+        </p>
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+          <input
+            name="productUrl"
+            required
+            placeholder="https://… 제품 상세페이지 주소"
+            className="flex-1 rounded-lg border border-line bg-paper px-3 py-2 text-sm"
+          />
+          <input
+            name="goal"
+            placeholder="제작 목표 (예: 구매 전환)"
+            className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm sm:w-52"
+          />
+          <button
+            type="submit"
+            className="rounded-lg bg-ink px-4 py-2 text-sm font-medium whitespace-nowrap text-paper"
+          >
+            분석해서 채우기
+          </button>
+        </div>
+      </form>
 
       {/* ── 검사 결과 — 무엇 때문에 잠겨 있는지 먼저 보여 준다 ── */}
       <section
