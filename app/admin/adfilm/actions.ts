@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { requireAdmin } from "@/lib/supabase/auth";
 import { adfilmTable } from "@/lib/adfilm-db";
+import { createAdminClient } from "@/lib/supabase/server";
 import { adFormat, sourceSeconds } from "@/lib/adfilm-formats";
 import { analyzeProductUrl } from "@/lib/adfilm-detail";
 import {
@@ -270,6 +271,84 @@ export async function fillBriefFromUrl(formData: FormData) {
     .update({
       brief: filled as never,
       // 분석 원문을 남긴다 — 나중에 "이 문구 어디서 왔냐" 를 추적할 수 있어야 한다
+      last_error: null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+
+  revalidatePath(`/admin/adfilm/${id}`);
+}
+
+/**
+ * 클라이언트가 적어 낸 것을 기획안으로 끌어온다. (2026-08-16 신설)
+ *
+ * ── 사장님이 그린 흐름 ────────────────────────────────────────────────
+ * *"클라가 AI영상을 구매하면 브랜드정보 제품 등 입력해 넣을 거고, 그럼 너는
+ * 기획안을 프롬프트화 할 수 있게끔 구성해야 하고 … 물론 클라가 입력하는 것
+ * 외에 나도 디렉션 줄 거고."*
+ *
+ * 클라 입력은 이미 `project_guidelines` 표에 있다(브랜드 소개·타겟·USP·톤·
+ * 금지사항·레퍼런스). 새 표를 만들 이유가 없다 — 그 값을 기획안 칸으로 옮긴다.
+ *
+ * **상세페이지 자동 분석과 순서가 중요하다.**
+ *   ① 링크 분석  → 제품 팩트·기능·신뢰 (브랜드가 파는 것)
+ *   ② 클라 입력  → 톤·금지사항·타겟 (브랜드가 원하는 것)
+ * 클라가 직접 적은 값이 자동 분석보다 세다. 그래서 이 함수가 나중에 덮는다.
+ */
+export async function pullClientBrief(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  const projectId = String(formData.get("projectId") ?? "").trim();
+  if (!id) throw new Error("id 가 없습니다.");
+  if (!projectId) throw new Error("프로젝트를 지정해 주세요.");
+
+  const supabase = createAdminClient();
+  const { data: g } = await supabase
+    .from("project_guidelines")
+    .select("brand_intro, target, usp, tone, forbidden, reference_urls, extra")
+    .eq("project_id", projectId)
+    .maybeSingle();
+  if (!g) throw new Error("이 프로젝트에 클라이언트 입력이 아직 없습니다.");
+
+  const { data: film } = await adfilmTable()
+    .select("id, brief")
+    .eq("id", id)
+    .maybeSingle();
+  if (!film) throw new Error("편을 찾지 못했습니다.");
+
+  const brief = film.brief as AdBrief;
+  const take = (v: string | null, fallback: string) =>
+    v && v.trim() ? v.trim() : fallback;
+
+  const merged: AdBrief = {
+    ...brief,
+    // 클라가 적은 값이 있으면 그걸 쓴다 — 자동 분석보다 세다
+    audience: take(g.target, brief.audience),
+    usp: take(g.usp, brief.usp),
+    product: take(g.brand_intro, brief.product),
+    talent: brief.talent,
+  };
+
+  /**
+   * 금지사항은 팩트가 아니라 **제약**이다. 팩트 칸에 섞으면 대사에 들어가라는
+   * 뜻이 되어 버린다. 톤·금지는 T.P.O 뒤에 붙여 프롬프트에 실린다.
+   */
+  const constraints = [
+    g.tone ? `톤: ${g.tone}` : "",
+    g.forbidden ? `금지: ${g.forbidden}` : "",
+    g.extra ? `요청: ${g.extra}` : "",
+  ]
+    .filter(Boolean)
+    .join(" / ");
+  if (constraints) {
+    merged.tpo = brief.tpo ? `${brief.tpo} · ${constraints}` : constraints;
+  }
+
+  await adfilmTable()
+    .update({
+      brief: merged as never,
+      project_id: projectId,
       last_error: null,
       updated_at: new Date().toISOString(),
     })

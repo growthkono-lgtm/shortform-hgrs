@@ -16,6 +16,7 @@ import {
   deleteFilm,
   fillBriefFromUrl,
   generateShots,
+  pullClientBrief,
   saveBrief,
 } from "../actions";
 
@@ -111,6 +112,36 @@ export default async function AdFilmPage(props: {
             className="rounded-lg bg-ink px-4 py-2 text-sm font-medium whitespace-nowrap text-paper"
           >
             분석해서 채우기
+          </button>
+        </div>
+      </form>
+
+      {/* ── ② 클라이언트가 적어 낸 것 끌어오기 ──────────────────────
+          클라 입력은 이미 project_guidelines 표에 있다. 새 표를 만들지 않는다.
+          ①(상세페이지)보다 나중에 덮는다 — 클라가 직접 적은 값이 더 세다 */}
+      <form
+        action={pullClientBrief}
+        className="rounded-xl border border-line p-4"
+      >
+        <input type="hidden" name="id" value={film.id} />
+        <h2 className="text-sm font-bold">② 클라이언트 입력 끌어오기</h2>
+        <p className="mt-1 text-xs text-muted">
+          프로젝트 id 를 넣으면 클라가 적은 브랜드 소개·타겟·USP·톤·금지사항을
+          기획안에 옮깁니다. <strong>톤·금지는 팩트가 아니라 제약</strong>이라
+          T.P.O 뒤에 붙습니다.
+        </p>
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+          <input
+            name="projectId"
+            required
+            placeholder="프로젝트 id (uuid)"
+            className="flex-1 rounded-lg border border-line bg-paper px-3 py-2 text-sm"
+          />
+          <button
+            type="submit"
+            className="rounded-lg border border-line px-4 py-2 text-sm font-medium whitespace-nowrap"
+          >
+            끌어오기
           </button>
         </div>
       </form>
