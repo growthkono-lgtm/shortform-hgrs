@@ -28,12 +28,17 @@ import path from "node:path";
 
 import ffmpeg from "ffmpeg-static";
 
-const FONT = "/System/Library/Fonts/AppleSDGothicNeo.ttc";
+/* 자막 규격 — lib/adfilm-spec.ts 의 CAPTION_SPEC 과 같은 값. 한쪽을 고치면 둘 다 고칠 것.
+   2026-08-16 개정: 상단 90%/88pt 는 레퍼런스 한 편의 스타일이었지 일반 규격이 아니었다.
+   사장님 지적("유튜브 자막 생각하면 되는 거 아니야? 비율이 엉망이야")대로
+   하단 자막바 · 가로 78% · 세로 해상도의 3.5~4.5% 로 되돌린다. */
+const FONT = "assets/fonts/Pretendard-Bold.otf";
 const W = 720;
 const H = 1280;
-const FILL = 0.9;
-const MAX_PT = 88;
-const MIN_PT = 34;
+const FILL = 0.78;
+const MAX_PT = 58;
+const MIN_PT = 40;
+const CAPTION_Y = 0.82;   // 하단 자막바. 화면 끝에 붙이지 않는다
 const HI = "0xFFE24D";
 
 const dir = process.argv[2];
@@ -146,9 +151,9 @@ const draws = (plan.lines ?? []).map((l, i) => {
   return (
     `drawtext=fontfile='${FONT}':textfile='${T(`ln${i}`, l.text)}'` +
     `:fontsize=${pt}:fontcolor=${l.hi ? HI : "white"}` +
-    `:x=(w-text_w)/2:y=h*${l.y ?? 0.27}` +
-    `:borderw=${Math.max(4, Math.round(pt * 0.11))}:bordercolor=black` +
-    `:shadowx=0:shadowy=3:shadowcolor=black@0.45` +
+    `:x=(w-text_w)/2:y=h*${l.y ?? CAPTION_Y}` +
+    `:borderw=${Math.max(3, Math.round(pt * 0.08))}:bordercolor=black` +
+    `:shadowx=0:shadowy=2:shadowcolor=black@0.4` +
     `:enable='between(t,${l.at},${l.until})'`
   );
 });
