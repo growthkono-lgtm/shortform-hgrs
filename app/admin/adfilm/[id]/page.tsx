@@ -14,6 +14,7 @@ import { GEN_COST, shotCost } from "@/lib/adfilm-gen";
 import { BriefForm } from "./brief-form";
 import {
   deleteFilm,
+  collectShots,
   fillBriefFromUrl,
   generateShots,
   pullClientBrief,
@@ -228,19 +229,50 @@ export default async function AdFilmPage(props: {
         </button>
       </form>
 
-      {/* ── 생성 결과 ── */}
+      {/* ── 생성 결과 — 큐에 넣기만 했으므로 거두는 손이 따로 필요하다 ── */}
       {Array.isArray(film.shots) && film.shots.length > 0 && (
         <section className="rounded-xl border border-line p-4">
-          <h2 className="text-sm font-bold">생성 작업 {film.shots.length}건</h2>
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="text-sm font-bold">생성 작업 {film.shots.length}건</h2>
+            <form action={collectShots}>
+              <input type="hidden" name="id" value={film.id} />
+              <button
+                type="submit"
+                className="rounded-lg border border-line px-3 py-1.5 text-xs font-medium"
+              >
+                상태 확인 · 완성본 거둬오기
+              </button>
+            </form>
+          </div>
           <ul className="mt-2 flex flex-col gap-1 text-xs text-muted">
-            {(film.shots as { no: number; requestId: string; line?: string }[]).map(
-              (s) => (
-                <li key={s.requestId}>
-                  샷 {s.no} · {s.requestId.slice(0, 8)}…
-                  {s.line ? ` · “${s.line}”` : ""}
-                </li>
-              ),
-            )}
+            {(
+              film.shots as {
+                no: number;
+                requestId: string;
+                line?: string;
+                videoUrl?: string;
+                seed?: number | null;
+                status?: string;
+              }[]
+            ).map((s) => (
+              <li key={s.requestId}>
+                샷 {s.no} ·{" "}
+                {s.videoUrl ? (
+                  <a
+                    href={s.videoUrl}
+                    target="_blank"
+                    rel="noopener"
+                    className="text-accent-deep underline-offset-2 hover:underline"
+                  >
+                    완성본 열기
+                  </a>
+                ) : (
+                  (s.status ?? "대기")
+                )}
+                {s.seed != null ? ` · seed ${s.seed}` : ""}
+                {s.line ? ` · “${s.line}”` : ""}
+              </li>
+            ))}
           </ul>
         </section>
       )}

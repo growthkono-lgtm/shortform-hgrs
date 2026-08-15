@@ -19,6 +19,8 @@ import {
   GEN_COST,
   assertWithinBudget,
   shotCost,
+  shotResult,
+  shotStatus,
   submitShot,
   type Tier,
 } from "@/lib/adfilm-gen";
@@ -350,6 +352,95 @@ export async function pullClientBrief(formData: FormData) {
       brief: merged as never,
       project_id: projectId,
       last_error: null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+
+  revalidatePath(`/admin/adfilm/${id}`);
+}
+
+/**
+ * 생성 상태를 확인하고 끝난 것을 거둬들인다. (2026-08-16 신설)
+ *
+ * `generateShots()` 는 큐에 넣기만 하고 기다리지 않는다(한 컷이 2~15분이라
+ * 서버 액션이 붙들면 함수 제한에 걸린다). 그래서 **거두는 손이 따로 필요하다.**
+ * 어드민에서 이 버튼을 누르면 각 요청의 상태를 물어보고, 완성된 것의 영상 주소와
+ * seed 를 표에 적는다.
+ *
+ * seed 를 남기는 이유: **같은 컷을 다시 뽑을 수 있어야 상품이 된다.**
+ * 클라이언트가 "저 컷만 다시" 라고 할 때 나머지를 안 건드리려면 이 값이 있어야 한다.
+ */
+export async function collectShots(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) throw new Error("id 가 없습니다.");
+
+  const { data: film } = await adfilmTable()
+    .select("id, shots")
+    .eq("id", id)
+    .maybeSingle();
+  if (!film) throw new Error("편을 찾지 못했습니다.");
+
+  const shots = (film.shots ?? []) as {
+    no: number;
+    requestId: string;
+    statusUrl: string;
+    responseUrl: string;
+    endpoint: string;
+    prompt: string;
+    line?: string;
+    videoUrl?: string;
+    seed?: number | null;
+    status?: string;
+  }[];
+  if (!shots.length) throw new Error("생성된 작업이 없습니다.");
+
+  let done = 0;
+  let failed = 0;
+  for (const s of shots) {
+    if (s.videoUrl) {
+      done += 1;
+      continue; // 이미 거둔 것은 다시 묻지 않는다
+    }
+    try {
+      const st = await shotStatus({
+        requestId: s.requestId,
+        statusUrl: s.statusUrl,
+        responseUrl: s.responseUrl,
+        endpoint: s.endpoint,
+        estimatedCost: 0,
+      });
+      s.status = st.status;
+      if (st.status === "COMPLETED") {
+        const r = await shotResult(
+          {
+            requestId: s.requestId,
+            statusUrl: s.statusUrl,
+            responseUrl: s.responseUrl,
+            endpoint: s.endpoint,
+            estimatedCost: 0,
+          },
+          s.prompt,
+        );
+        s.videoUrl = r.videoUrl;
+        s.seed = r.seed;
+        done += 1;
+      } else if (st.status === "FAILED") {
+        failed += 1;
+      }
+    } catch (e) {
+      // 한 컷 조회 실패로 전체를 버리지 않는다. 다음 호출에서 다시 묻는다
+      s.status = `조회 실패: ${(e as Error).message.slice(0, 80)}`;
+    }
+  }
+
+  const all = done === shots.length;
+  await adfilmTable()
+    .update({
+      shots: shots as never,
+      stage: all ? "composing" : failed ? "failed" : "generating",
+      last_error: failed ? `${failed}개 컷이 생성에 실패했습니다` : null,
       updated_at: new Date().toISOString(),
     })
     .eq("id", id);
