@@ -52,17 +52,52 @@ export type BriefShot = {
   line: string;
 };
 
+/**
+ * 제품 팩트 한 줄 — 기획안 칸 1.
+ *
+ * `mustSay: true` 면 **이 팩트가 대사 어딘가에 나와야 한다.** 안 나오면
+ * `validateBrief()` 가 생성을 막는다.
+ *
+ * ── 왜 이 장치가 생겼나 (2026-08-16) ──────────────────────────────────
+ * 사장님 지적: *"왜 자꾸 제품을 먹이는 거 아니다 안정제 아니다 라고 하고
+ * 제품에 대한 설명은 안 해?"*
+ *
+ * 원인은 기획안 칸 1(제품 팩트)이 대사로 내려가는 길이 없었던 것이다.
+ * 펠리웨이 패키지에 기능이 넷(긁기·소변마킹·숨기·환경변화) 인쇄돼 있는데
+ * 원고에 하나도 안 들어가고 부정형("~아니다")만 두 번 반복됐다.
+ * 사람이 기억해서 넣는 구조면 또 빠진다. 그래서 센다.
+ */
+export type ProductFact = {
+  label: string;
+  value: string;
+  /** 근거 — 패키지·공식·임상 중 어디서 왔는가. 비면 검증에서 경고 */
+  source: string;
+  /** 대사에 반드시 등장해야 하는가 */
+  mustSay: boolean;
+  /** 대사에 등장했는지 판정할 낱말들. 하나라도 걸리면 통과 */
+  keywords: string[];
+};
+
 export type AdBrief = {
   /** 영상 유형 key */
   format: string;
   /** 브랜드·제품명 (프롬프트에는 안 들어간다 — 상표를 그리게 하지 않는다) */
   product: string;
-  /** 이 영상이 파는 단 하나 */
+  /** 칸 1 — 제품 팩트. mustSay 인 것은 대사에 나와야 한다 */
+  facts: ProductFact[];
+  /** 칸 2 — 근거(임상·수치). 지어내지 않는다 */
+  evidence: string;
+  /** 칸 4 — 이 영상이 파는 단 하나 */
   usp: string;
-  /** 누가 보는가 */
+  /** 칸 3 — 누가 보는가 */
   audience: string;
   /** 언제·어디서·어떤 상황 */
   tpo: string;
+  /**
+   * 칸 5 — 비주얼 클라이맥스. **비포와 애프터를 한 쌍으로 적는다.**
+   * 사장님 지시(2026-08-16): *"비포애프터 명확히."*
+   */
+  climax: { before: string; after: string };
   /** 화자 설정. 얼굴이 나오는 유형에서만 쓴다 */
   talent?: { age: string; gender: string; tone: string };
   assets: BriefAsset[];
@@ -295,6 +330,51 @@ export function validateBrief(brief: AdBrief): BriefIssue[] {
     }
   }
 
+  /**
+   * ── 제품 팩트가 대사에 실렸는가 (2026-08-16 신설) ─────────────────
+   *
+   * 이 검사가 없어서 원고가 부정형("진정제 아니다·먹이는 것 아니다")만
+   * 반복하고 **제품이 무엇을 해 주는지는 한 줄도 없이** 나갔다.
+   * 기획안 칸 1 을 채워 놓고 대사에 안 옮기면 그건 채운 게 아니다.
+   */
+  const script = brief.shots.map((s) => s.line ?? "").join(" ");
+  const mustSay = brief.facts.filter((x) => x.mustSay);
+  const missed = mustSay.filter(
+    (x) => !x.keywords.some((k) => k.trim() && script.includes(k.trim())),
+  );
+  if (missed.length) {
+    issues.push({
+      level: "block",
+      message:
+        `대사에 안 실린 제품 팩트 ${missed.length}개: ` +
+        missed.map((x) => `${x.label}(${x.value})`).join(" · ") +
+        " — 부정형 표현만 남기지 말고 제품이 무엇을 해 주는지 말하세요",
+    });
+  }
+  if (mustSay.length < 3) {
+    issues.push({
+      level: "warn",
+      message: `대사에 넣기로 한 팩트가 ${mustSay.length}개입니다 — 제품 기능은 3~4개 이상 말해야 합니다`,
+    });
+  }
+  for (const x of brief.facts) {
+    if (!x.source?.trim()) {
+      issues.push({
+        level: "warn",
+        message: `팩트 '${x.label}' 에 근거가 없습니다 — 패키지·공식·임상 중 어디서 왔는지 적으세요`,
+      });
+    }
+  }
+
+  // ── 비포/애프터가 한 쌍으로 서 있는가 (칸 5)
+  if (!brief.climax?.before?.trim() || !brief.climax?.after?.trim()) {
+    issues.push({
+      level: "block",
+      message:
+        "비주얼 클라이맥스의 비포·애프터를 둘 다 적으세요 — 한쪽만 있으면 대비가 성립하지 않습니다",
+    });
+  }
+
   return issues;
 }
 
@@ -308,9 +388,12 @@ export function blankBrief(formatKey: string): AdBrief {
   return {
     format: f.key,
     product: "",
+    facts: [],
+    evidence: "",
     usp: "",
     audience: "",
     tpo: "",
+    climax: { before: "", after: "" },
     ...(f.refs.some((r) => r.key === "talent_face")
       ? { talent: { age: "", gender: "", tone: "" } }
       : {}),
