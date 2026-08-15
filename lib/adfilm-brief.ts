@@ -1,0 +1,351 @@
+/**
+ * 기획안 규격 — 2026-08-15 신설. 이번 개편의 심장이다.
+ *
+ * ── 사장님 요구 ───────────────────────────────────────────────────────
+ *   *"난 어떤 기획안이 필요한지, 그리고 기획안에 따라 완벽하게 의도한 대로
+ *    영상이 나오길 원해."*
+ *
+ * ── 지금까지 왜 안 그랬나 ─────────────────────────────────────────────
+ * `adfilm-spec.ts` 에 `REQUIRED_BRIEF` 8항목이 있다. 그런데 `blankStoryboard()`
+ * 는 컷 5개를 **`prompt: ""` 로 반환한다.** 사람이 그 빈칸을 손으로 채운다.
+ *
+ * 즉 **기획안에서 프롬프트로 가는 길이 아예 없었다.** 사장님이 주신 정보는
+ * 기획안 칸에 적히고, 프롬프트는 그와 무관하게 손으로 쓰였다. 그래서
+ * *"내가 정보를 다 준 것들, 요청한 것들이 제대로 반영 안 된다"* 가 나왔다.
+ * 프롬프트 문장력의 문제가 아니라 **배관이 없었던 것**이다.
+ *
+ * ── 그래서 이 파일이 하는 일 ──────────────────────────────────────────
+ * 기획안을 채우면 **프롬프트가 생성된다.** 사람이 프롬프트를 따로 쓰지 않는다.
+ * 그리고 칸이 비면 `validateBrief()` 가 생성을 막는다 — 만들고 나서
+ * "이게 빠졌네" 를 발견하면 그때는 영상값을 이미 다 쓴 뒤다.
+ *
+ * ── 왜 레퍼런스 태그인가 ──────────────────────────────────────────────
+ * Seedance 2.5 는 프롬프트 안에서 `[Image1]`·`[Video1]`·`[Audio1]` 로 레퍼런스를
+ * 지목한다(이미지 30 / 비디오 10 / 오디오 10). **"의도한 대로"를 만드는 유일한
+ * 메커니즘이 이것**이라 파일 순서를 여기서 결정론적으로 고정한다. 순서가 흔들리면
+ * 같은 기획안이 다른 영상을 낸다.
+ */
+
+import { adFormat, disclosureText, type AdFormat } from "./adfilm-formats";
+
+/** 기획안에 붙는 자산 한 건 */
+export type BriefAsset = {
+  /** 레퍼런스 슬롯 key (adfilm-formats 의 RefSlot.key) */
+  slot: string;
+  /** 작업 폴더 기준 파일명 */
+  file: string;
+};
+
+/** 샷 하나에 기획자가 적는 것 */
+export type BriefShot = {
+  no: number;
+  /** 카메라 — 어떻게 잡는가 */
+  camera: string;
+  /** 인물·사물이 무엇을 하는가 */
+  action: string;
+  /**
+   * **화면에 반드시 보여야 하는 것.** 이 줄이 "의도한 대로"의 전부다.
+   * 비면 검증에서 막는다 — 모델은 안 적힌 걸 알아서 넣어 주지 않는다.
+   */
+  must: string;
+  /** 이 샷에서 인물이 하는 말. 없으면 빈 문자열 */
+  line: string;
+};
+
+export type AdBrief = {
+  /** 영상 유형 key */
+  format: string;
+  /** 브랜드·제품명 (프롬프트에는 안 들어간다 — 상표를 그리게 하지 않는다) */
+  product: string;
+  /** 이 영상이 파는 단 하나 */
+  usp: string;
+  /** 누가 보는가 */
+  audience: string;
+  /** 언제·어디서·어떤 상황 */
+  tpo: string;
+  /** 화자 설정. 얼굴이 나오는 유형에서만 쓴다 */
+  talent?: { age: string; gender: string; tone: string };
+  assets: BriefAsset[];
+  shots: BriefShot[];
+  /** 마지막에 화면에 박히는 행동 문구 */
+  cta: string;
+};
+
+/* ── 촬영 톤 ──────────────────────────────────────────────────────────
+ * 유형별로 갈린다. 예전엔 `FILM_TONE` 한 줄로 전부 실사 UGC 였다. */
+const TONE: Record<string, string> = {
+  ugc: "세로 9:16. 한국 실내 일상 공간, 자연광. 손에 든 스마트폰으로 찍은 듯한 미세한 흔들림. 브이로그 톤. 과도한 색보정·시네마틱 조명·슬로우모션 금지.",
+  product:
+    "세로 9:16. 제품이 화면을 채운다. 부드러운 자연광과 얕은 심도. 손 외에 인물이 등장하지 않는다.",
+  demo: "세로 9:16. 한국 실내. 고정된 카메라, 같은 각도를 유지한다. 손 외에 인물이 등장하지 않는다.",
+  ingredient:
+    "세로 9:16. 사진 같지 않은 3D 렌더 룩. 어두운 배경에 떠 있는 입체 오브젝트. 실사를 흉내내지 않는다.",
+  infographic:
+    "세로 9:16. 평면적인 그래픽 룩. 단색 배경과 단순한 도형. 실사를 흉내내지 않는다.",
+  story:
+    "세로 9:16. 한국 실내·실외. 자연광 중심의 차분한 톤. 컷 사이 인물과 의상이 유지된다.",
+};
+
+/**
+ * 어느 프롬프트에도 공통으로 깔린다.
+ * 글자·상표를 모델에게 맡기지 않는 게 핵심이다 — 한글은 자모가 깨지고
+ * 상표는 매번 달라진다. 둘 다 편집에서 실물로 얹는다.
+ */
+const COMMON_RULES = [
+  "화면에 글자·자막·로고를 넣지 않는다.",
+  "제품의 상표·라벨을 그리지 않는다. 라벨은 편집에서 실물 이미지로 합성한다.",
+  "실존 브랜드명·실존 인물을 등장시키지 않는다.",
+  "의학적 효능을 단정하는 장면을 만들지 않는다.",
+].join(" ");
+
+/**
+ * 레퍼런스 매니페스트 — 자산을 `[Image1]` 번호에 결정론적으로 배정한다.
+ *
+ * 정렬 기준을 **유형의 슬롯 순서 → 파일명** 으로 고정한다. 기획자가 파일을
+ * 추가한 순서에 의존하면 같은 기획안이 다른 번호를 받고, 그러면 같은 기획안이
+ * 다른 영상을 낸다. 재현성이 상품성이라 여기서부터 못을 박는다.
+ */
+export type RefTag = { tag: string; file: string; slot: string; label: string };
+
+export function referenceManifest(brief: AdBrief): RefTag[] {
+  const f = adFormat(brief.format);
+  const order = new Map(f.refs.map((r, i) => [r.key, i]));
+
+  const sorted = [...brief.assets].sort((a, b) => {
+    const oa = order.get(a.slot) ?? 999;
+    const ob = order.get(b.slot) ?? 999;
+    return oa !== ob ? oa - ob : a.file.localeCompare(b.file);
+  });
+
+  const counters: Record<string, number> = { image: 0, video: 0, audio: 0 };
+  return sorted.map((asset) => {
+    const slot = f.refs.find((r) => r.key === asset.slot);
+    const kind = slot?.kind ?? "image";
+    counters[kind] += 1;
+    const name = kind === "image" ? "Image" : kind === "video" ? "Video" : "Audio";
+    return {
+      tag: `[${name}${counters[kind]}]`,
+      file: asset.file,
+      slot: asset.slot,
+      label: slot?.label ?? asset.slot,
+    };
+  });
+}
+
+/**
+ * 샷 하나의 프롬프트. **기획안 칸이 그대로 문장이 된다.**
+ *
+ * 레퍼런스 태그를 문장 앞에 세우는 이유: 모델은 앞쪽 토큰을 강하게 따른다.
+ * 제품과 인물을 먼저 못 박고 그 다음에 행동을 지시해야 형태가 안 흔들린다.
+ */
+export function buildShotPrompt(brief: AdBrief, shotNo: number): string {
+  const f = adFormat(brief.format);
+  const shot = brief.shots.find((s) => s.no === shotNo);
+  if (!shot) throw new Error(`샷 ${shotNo} 이 기획안에 없습니다`);
+
+  const refs = referenceManifest(brief);
+  const productTags = refs
+    .filter((r) => r.slot.startsWith("product"))
+    .map((r) => r.tag)
+    .join("");
+  const talentTags = refs
+    .filter((r) => r.slot === "talent_face")
+    .map((r) => r.tag)
+    .join("");
+  const spaceTags = refs
+    .filter((r) => r.slot === "space")
+    .map((r) => r.tag)
+    .join("");
+
+  const lines: string[] = [];
+
+  if (productTags) lines.push(`제품은 ${productTags} 와 동일한 형태를 유지한다.`);
+  if (talentTags) {
+    const t = brief.talent;
+    lines.push(
+      `등장인물은 ${talentTags} 와 동일 인물이다.` +
+        (t ? ` ${t.age} ${t.gender}, ${t.tone}.` : ""),
+    );
+  }
+  if (spaceTags) lines.push(`장소는 ${spaceTags} 와 같은 공간이다.`);
+
+  lines.push(TONE[f.key] ?? TONE.ugc);
+  lines.push(`상황: ${brief.tpo}`);
+  lines.push(`카메라: ${shot.camera}`);
+  lines.push(`동작: ${shot.action}`);
+  lines.push(`이 컷에 반드시 담긴다: ${shot.must}`);
+
+  if (shot.line && f.audio === "onscreen") {
+    // 대사는 따옴표로 감싸 모델이 지문과 구분하게 한다.
+    // Seedance 는 언어 태그와 문장 자체로 입모양을 만든다
+    lines.push(`인물이 한국어로 말한다(자연스러운 구어, 또박또박): "${shot.line}"`);
+  }
+
+  lines.push(COMMON_RULES);
+  return lines.join("\n");
+}
+
+/* ── 검증 ─────────────────────────────────────────────────────────────
+ * 만들기 전에 막는다. 생성은 초당 과금이라 만들고 나서 발견하면 늦다. */
+
+/**
+ * 한국어 대사 길이. Seedance 실측 보고에 *"Japanese and Korean work but
+ * occasionally drift on longer phrases"* 가 있고 권장이 한 줄 5~10단어다.
+ * 그리고 한국어는 중립 어미가 없어서 **격식체를 쓰면 어미가 음절을 잡아먹는다.**
+ * 그래서 해요체를 쓰고 어절 수로 자른다.
+ */
+const LINE_MAX_WORDS = 10;
+const LINE_MIN_WORDS = 3;
+
+export type BriefIssue = { level: "block" | "warn"; message: string };
+
+export function validateBrief(brief: AdBrief): BriefIssue[] {
+  const issues: BriefIssue[] = [];
+  let f: AdFormat;
+  try {
+    f = adFormat(brief.format);
+  } catch (e) {
+    return [{ level: "block", message: (e as Error).message }];
+  }
+
+  // ── 필수 서술
+  const required: [keyof AdBrief, string][] = [
+    ["product", "제품명"],
+    ["usp", "핵심 USP"],
+    ["audience", "독자·타겟"],
+    ["tpo", "T.P.O(언제·어디서·어떤 상황)"],
+    ["cta", "행동 문구"],
+  ];
+  for (const [key, label] of required) {
+    if (!String(brief[key] ?? "").trim()) {
+      issues.push({ level: "block", message: `${label} 이(가) 비어 있습니다` });
+    }
+  }
+
+  // ── 레퍼런스 슬롯. 이게 "의도한 대로" 의 재료다
+  for (const slot of f.refs) {
+    const n = brief.assets.filter((a) => a.slot === slot.key).length;
+    if (n < slot.min) {
+      issues.push({
+        level: "block",
+        message: `${slot.label} ${n}/${slot.min}장 — ${slot.why}`,
+      });
+    } else if (n > slot.max) {
+      issues.push({
+        level: "warn",
+        message: `${slot.label} ${n}장 (권장 ${slot.max}장 이하)`,
+      });
+    }
+  }
+
+  // ── 샷. 유형이 정한 개수와 역할이 그대로 있어야 한다
+  if (brief.shots.length !== f.shots.length) {
+    issues.push({
+      level: "block",
+      message: `샷 ${brief.shots.length}개 (${f.label} 은 ${f.shots.length}개)`,
+    });
+  }
+  for (const slot of f.shots) {
+    const shot = brief.shots.find((s) => s.no === slot.no);
+    if (!shot) {
+      issues.push({ level: "block", message: `샷 ${slot.no}(${slot.role}) 이 없습니다` });
+      continue;
+    }
+    if (!shot.must?.trim()) {
+      issues.push({
+        level: "block",
+        message: `샷 ${slot.no}: '화면에 반드시 담길 것' 이 비었습니다 — 참고: ${slot.must}`,
+      });
+    }
+    if (!shot.camera?.trim() || !shot.action?.trim()) {
+      issues.push({ level: "block", message: `샷 ${slot.no}: 카메라·동작을 채우세요` });
+    }
+    if (f.audio === "onscreen") {
+      const words = shot.line.trim().split(/\s+/).filter(Boolean).length;
+      if (!words) {
+        issues.push({ level: "block", message: `샷 ${slot.no}: 대사가 비었습니다` });
+      } else if (words > LINE_MAX_WORDS) {
+        issues.push({
+          level: "block",
+          message: `샷 ${slot.no}: 대사 ${words}어절 (${LINE_MAX_WORDS}어절 이하). 길면 립싱크가 어긋납니다`,
+        });
+      } else if (words < LINE_MIN_WORDS) {
+        issues.push({
+          level: "warn",
+          message: `샷 ${slot.no}: 대사 ${words}어절 — 너무 짧으면 컷이 빕니다`,
+        });
+      }
+      if (/[다까요]습니다$|습니다[.!?]?$/.test(shot.line.trim())) {
+        issues.push({
+          level: "warn",
+          message: `샷 ${slot.no}: 격식체입니다. 한국어는 어미가 음절을 잡아먹으니 해요체로 줄이세요`,
+        });
+      }
+    }
+  }
+
+  // ── 파일이 슬롯에 안 맞게 붙었는가
+  const known = new Set(f.refs.map((r) => r.key));
+  for (const a of brief.assets) {
+    if (!known.has(a.slot)) {
+      issues.push({
+        level: "warn",
+        message: `'${a.slot}' 은 ${f.label} 이 쓰지 않는 슬롯입니다 (${a.file})`,
+      });
+    }
+  }
+
+  return issues;
+}
+
+export function briefBlocked(issues: BriefIssue[]): boolean {
+  return issues.some((i) => i.level === "block");
+}
+
+/** 유형에 맞는 빈 기획안 한 벌. 기획자는 이 위에 채우기만 한다 */
+export function blankBrief(formatKey: string): AdBrief {
+  const f = adFormat(formatKey);
+  return {
+    format: f.key,
+    product: "",
+    usp: "",
+    audience: "",
+    tpo: "",
+    ...(f.refs.some((r) => r.key === "talent_face")
+      ? { talent: { age: "", gender: "", tone: "" } }
+      : {}),
+    assets: [],
+    shots: f.shots.map((s) => ({
+      no: s.no,
+      camera: "",
+      action: "",
+      must: "", // 유형의 s.must 가 참고 문구로 화면에 보인다
+      line: "",
+    })),
+    cta: "",
+  };
+}
+
+/**
+ * 기획안 한 벌 → 샷별 프롬프트 전체. 생성기에 그대로 넘긴다.
+ * 고지 문구는 편집에서 얹으므로 여기서 같이 내보낸다.
+ */
+export function compileBrief(brief: AdBrief): {
+  format: AdFormat;
+  refs: RefTag[];
+  prompts: { no: number; seconds: number; prompt: string; line: string }[];
+  disclosure: string;
+} {
+  const f = adFormat(brief.format);
+  return {
+    format: f,
+    refs: referenceManifest(brief),
+    prompts: f.shots.map((slot) => ({
+      no: slot.no,
+      seconds: slot.seconds,
+      prompt: buildShotPrompt(brief, slot.no),
+      line: brief.shots.find((s) => s.no === slot.no)?.line ?? "",
+    })),
+    disclosure: disclosureText(f),
+  };
+}
