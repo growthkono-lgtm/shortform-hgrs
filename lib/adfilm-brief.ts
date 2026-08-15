@@ -78,9 +78,55 @@ export type ProductFact = {
   keywords: string[];
 };
 
+/**
+ * 타겟 한 명 — 2026-08-16 신설.
+ *
+ * ── 왜 여러 명인가 ────────────────────────────────────────────────────
+ * `audience` 는 문자열 한 칸이었다. 그래서 "문제행동으로 힘든 집사"처럼
+ * 뭉뚱그린 한 줄이 들어갔고, 그 한 줄로 광고 하나를 만들었다.
+ *
+ * 실제로는 **같은 제품도 사는 이유가 다르다.** 펠리웨이만 해도 상세페이지가
+ * 추천 대상을 8가지로 나눠 놓았다(오줌 스프레이·스크래칭·숨기·이동 불안·
+ * 새 공간 두려움·진료 안정·다묘 다툼·동물병원). 이 사람들은 겪는 장면도,
+ * 검색어도, 설득 각도도 다르다. 하나로 묶으면 아무에게도 안 맞는다.
+ *
+ * 그래서 타겟을 여러 개 세우고 **한 편이 한 타겟을 정조준**한다.
+ * 소재를 여러 편 뽑을 때 각 편이 다른 타겟을 맡으면 그 자체로 A/B 가 된다.
+ */
+export type AdTarget = {
+  /** 화면에 뜨는 이름. 예: "이사 앞둔 집사" */
+  label: string;
+  /** 이 사람이 지금 겪고 있는 장면 한 문단. 광고의 훅이 여기서 나온다 */
+  situation: string;
+  /** 왜 이 사람인가 — 판단 근거. 지어내지 않고 상세페이지·리뷰에서 가져온다 */
+  reason: string;
+  /** 이 편이 정조준하는 타겟인가. 정확히 하나만 true */
+  primary: boolean;
+};
+
+/**
+ * 소구점 — 타겟을 설득하는 논리 하나.
+ *
+ * **핵심 하나 + 보조 여럿** 구조다. 핵심을 중심으로 광고가 짜이고,
+ * 보조는 반론을 지우거나 신뢰를 보태는 자리에만 들어간다.
+ * 다 핵심이면 아무것도 핵심이 아니다.
+ */
+export type SellingPoint = {
+  label: string;
+  /** 무엇을 말하는가 */
+  body: string;
+  /** 근거 — 상세페이지·임상·패키지 중 어디서 왔는가 */
+  source: string;
+  rank: "core" | "support" | "off";
+};
+
 export type AdBrief = {
   /** 영상 유형 key */
   format: string;
+  /** 칸 3 — 타겟 후보들. 정확히 하나가 primary */
+  targets: AdTarget[];
+  /** 칸 4 — 소구점. 정확히 하나가 core */
+  points: SellingPoint[];
   /** 브랜드·제품명 (프롬프트에는 안 들어간다 — 상표를 그리게 하지 않는다) */
   product: string;
   /** 칸 1 — 제품 팩트. mustSay 인 것은 대사에 나와야 한다 */
@@ -366,6 +412,53 @@ export function validateBrief(brief: AdBrief): BriefIssue[] {
     }
   }
 
+  /**
+   * ── 타겟과 소구점 (2026-08-16 신설) ─────────────────────────────────
+   *
+   * 한 편은 **한 타겟을 정조준**한다. 여러 타겟에 두루 맞는 광고는
+   * 아무에게도 안 맞는다. 소구점도 마찬가지 — 핵심이 여럿이면 없는 것과 같다.
+   */
+  const primaries = brief.targets?.filter((t) => t.primary) ?? [];
+  if (!brief.targets?.length) {
+    issues.push({ level: "block", message: "타겟이 없습니다 — 최소 1명을 세우세요" });
+  } else if (primaries.length !== 1) {
+    issues.push({
+      level: "block",
+      message: `정조준 타겟이 ${primaries.length}명입니다 — 한 편은 한 명만 겨냥합니다`,
+    });
+  }
+  for (const t of brief.targets ?? []) {
+    if (!t.situation?.trim()) {
+      issues.push({
+        level: "block",
+        message: `타겟 '${t.label || "(이름 없음)"}' 에 상황이 없습니다 — 훅이 여기서 나옵니다`,
+      });
+    }
+    if (!t.reason?.trim()) {
+      issues.push({
+        level: "warn",
+        message: `타겟 '${t.label}' 에 선정 근거가 없습니다`,
+      });
+    }
+  }
+
+  const cores = brief.points?.filter((x) => x.rank === "core") ?? [];
+  const supports = brief.points?.filter((x) => x.rank === "support") ?? [];
+  if (!brief.points?.length) {
+    issues.push({ level: "block", message: "소구점이 없습니다" });
+  } else if (cores.length !== 1) {
+    issues.push({
+      level: "block",
+      message: `핵심 소구점이 ${cores.length}개입니다 — 정확히 1개여야 광고가 한 방향으로 섭니다`,
+    });
+  }
+  if (supports.length > 3) {
+    issues.push({
+      level: "warn",
+      message: `보조 소구점 ${supports.length}개 — 3개를 넘기면 메시지가 흩어집니다`,
+    });
+  }
+
   // ── 비포/애프터가 한 쌍으로 서 있는가 (칸 5)
   if (!brief.climax?.before?.trim() || !brief.climax?.after?.trim()) {
     issues.push({
@@ -387,6 +480,8 @@ export function blankBrief(formatKey: string): AdBrief {
   const f = adFormat(formatKey);
   return {
     format: f.key,
+    targets: [],
+    points: [],
     product: "",
     facts: [],
     evidence: "",

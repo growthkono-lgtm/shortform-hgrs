@@ -3,7 +3,12 @@
 import { useMemo, useState } from "react";
 
 import type { AdFormat } from "@/lib/adfilm-formats";
-import type { AdBrief, ProductFact } from "@/lib/adfilm-brief";
+import type {
+  AdBrief,
+  AdTarget,
+  ProductFact,
+  SellingPoint,
+} from "@/lib/adfilm-brief";
 
 /**
  * 기획안 입력 폼 — 어드민의 "칸".
@@ -31,6 +36,18 @@ export function BriefForm({
     setBrief((b) => ({
       ...b,
       shots: b.shots.map((s) => (s.no === no ? { ...s, ...patch } : s)),
+    }));
+
+  const setTarget = (i: number, patch: Partial<AdTarget>) =>
+    setBrief((b) => ({
+      ...b,
+      targets: b.targets.map((t, n) => (n === i ? { ...t, ...patch } : t)),
+    }));
+
+  const setPoint = (i: number, patch: Partial<SellingPoint>) =>
+    setBrief((b) => ({
+      ...b,
+      points: b.points.map((x, n) => (n === i ? { ...x, ...patch } : x)),
     }));
 
   const setFact = (i: number, patch: Partial<ProductFact>) =>
@@ -151,6 +168,192 @@ export function BriefForm({
             }
           >
             + 팩트 추가
+          </button>
+        </div>
+      </section>
+
+      {/* ── 칸 3 · 타겟 ──────────────────────────────────────────────
+          한 편은 한 타겟을 정조준한다. 여러 명에 두루 맞는 광고는
+          아무에게도 안 맞는다. 나머지 타겟은 다음 편이 맡는다 */}
+      <section className="rounded-xl border border-line p-4">
+        <div className="flex items-baseline justify-between">
+          <h2 className="text-sm font-bold">칸 3 · 광고 타겟</h2>
+          <span className="text-xs text-muted">
+            정조준 <strong>한 명</strong>만 고릅니다. 나머지는 다음 편에 씁니다
+          </span>
+        </div>
+        <div className="mt-3 flex flex-col gap-2">
+          {(brief.targets ?? []).map((t, i) => (
+            <div
+              key={i}
+              className={`rounded-lg border p-3 ${t.primary ? "border-accent bg-accent/[0.05]" : "border-line"}`}
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  className={`rounded-md px-2.5 py-1 text-xs font-medium ${
+                    t.primary ? "bg-accent text-paper" : "border border-line"
+                  }`}
+                  onClick={() =>
+                    set(
+                      "targets",
+                      brief.targets.map((x, n) => ({ ...x, primary: n === i })),
+                    )
+                  }
+                >
+                  {t.primary ? "정조준" : "후보"}
+                </button>
+                <input
+                  className={`${box} flex-1`}
+                  placeholder="타겟 이름 (예: 이사 앞둔 집사)"
+                  value={t.label}
+                  onChange={(e) => setTarget(i, { label: e.target.value })}
+                />
+                <button
+                  type="button"
+                  className="text-xs text-muted hover:text-ink"
+                  onClick={() =>
+                    set(
+                      "targets",
+                      brief.targets.filter((_, n) => n !== i),
+                    )
+                  }
+                >
+                  ✕
+                </button>
+              </div>
+              <textarea
+                className={`${box} mt-2`}
+                rows={2}
+                placeholder="이 사람이 지금 겪는 장면 — 광고의 훅이 여기서 나옵니다"
+                value={t.situation}
+                onChange={(e) => setTarget(i, { situation: e.target.value })}
+              />
+              <input
+                className={`${box} mt-2`}
+                placeholder="왜 이 사람인가 — 근거 (상세페이지·리뷰)"
+                value={t.reason}
+                onChange={(e) => setTarget(i, { reason: e.target.value })}
+              />
+            </div>
+          ))}
+          <button
+            type="button"
+            className="self-start rounded-lg border border-line px-3 py-1.5 text-xs"
+            onClick={() =>
+              set("targets", [
+                ...(brief.targets ?? []),
+                {
+                  label: "",
+                  situation: "",
+                  reason: "",
+                  primary: !(brief.targets ?? []).length,
+                },
+              ])
+            }
+          >
+            + 타겟 추가
+          </button>
+        </div>
+      </section>
+
+      {/* ── 칸 4 · 소구점 ────────────────────────────────────────────
+          핵심 하나 + 보조 여럿. 다 핵심이면 아무것도 핵심이 아니다 */}
+      <section className="rounded-xl border border-line p-4">
+        <div className="flex items-baseline justify-between">
+          <h2 className="text-sm font-bold">칸 4 · 소구점</h2>
+          <span className="text-xs text-muted">
+            <strong>핵심 1개</strong> · 보조 3개 이하
+          </span>
+        </div>
+        <div className="mt-3 flex flex-col gap-2">
+          {(brief.points ?? []).map((pt, i) => (
+            <div
+              key={i}
+              className={`rounded-lg border p-3 ${pt.rank === "core" ? "border-accent bg-accent/[0.05]" : "border-line"}`}
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex overflow-hidden rounded-md border border-line text-xs">
+                  {(["core", "support", "off"] as const).map((r) => (
+                    <button
+                      key={r}
+                      type="button"
+                      className={`px-2.5 py-1 ${
+                        pt.rank === r
+                          ? r === "core"
+                            ? "bg-accent text-paper"
+                            : "bg-ink text-paper"
+                          : ""
+                      }`}
+                      onClick={() =>
+                        set(
+                          "points",
+                          brief.points.map((x, n) =>
+                            n === i
+                              ? { ...x, rank: r }
+                              : r === "core" && x.rank === "core"
+                                ? { ...x, rank: "support" as const }
+                                : x,
+                          ),
+                        )
+                      }
+                    >
+                      {r === "core" ? "핵심" : r === "support" ? "보조" : "제외"}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  className={`${box} flex-1`}
+                  placeholder="이름 (예: 기능 · 신뢰 · 안심)"
+                  value={pt.label}
+                  onChange={(e) => setPoint(i, { label: e.target.value })}
+                />
+                <button
+                  type="button"
+                  className="text-xs text-muted hover:text-ink"
+                  onClick={() =>
+                    set(
+                      "points",
+                      brief.points.filter((_, n) => n !== i),
+                    )
+                  }
+                >
+                  ✕
+                </button>
+              </div>
+              <textarea
+                className={`${box} mt-2`}
+                rows={2}
+                placeholder="무엇을 말하는가"
+                value={pt.body}
+                onChange={(e) => setPoint(i, { body: e.target.value })}
+              />
+              <input
+                className={`${box} mt-2`}
+                placeholder="근거 (상세페이지·임상·패키지)"
+                value={pt.source}
+                onChange={(e) => setPoint(i, { source: e.target.value })}
+              />
+            </div>
+          ))}
+          <button
+            type="button"
+            className="self-start rounded-lg border border-line px-3 py-1.5 text-xs"
+            onClick={() =>
+              set("points", [
+                ...(brief.points ?? []),
+                {
+                  label: "",
+                  body: "",
+                  source: "",
+                  rank: (brief.points ?? []).some((x) => x.rank === "core")
+                    ? ("support" as const)
+                    : ("core" as const),
+                },
+              ])
+            }
+          >
+            + 소구점 추가
           </button>
         </div>
       </section>

@@ -289,8 +289,47 @@ export async function fillBriefFromUrl(formData: FormData) {
     keywords: (x.value.match(/[가-힣A-Za-z0-9]{2,}/g) ?? []).slice(0, 4),
   }));
 
+  /**
+   * 타겟·소구점을 **여러 개** 세운다. (2026-08-16)
+   * 상세페이지의 추천 대상이 곧 타겟 후보다 — 펠리웨이는 8가지였다.
+   * 사람이 그중 하나를 정조준으로 고르고 나머지는 다음 편에 쓴다.
+   */
+  const autoTargets = brief.targets?.length
+    ? brief.targets
+    : analysis.audience.slice(0, 6).map((a, i) => ({
+        label: a.length > 24 ? a.slice(0, 24) + "…" : a,
+        situation: analysis.problems[i] ?? analysis.problems[0] ?? "",
+        reason: "상세페이지 추천 대상",
+        primary: i === 0,
+      }));
+
+  const autoPoints = brief.points?.length
+    ? brief.points
+    : [
+        ...analysis.functions.slice(0, 2).map((v, i) => ({
+          label: "기능",
+          body: v,
+          source: "상세페이지",
+          rank: (i === 0 ? "core" : "support") as "core" | "support" | "off",
+        })),
+        ...analysis.trust.slice(0, 2).map((v) => ({
+          label: "신뢰",
+          body: v,
+          source: "상세페이지",
+          rank: "support" as const,
+        })),
+        ...analysis.caveats.slice(0, 1).map((v) => ({
+          label: "안심",
+          body: v,
+          source: "상세페이지",
+          rank: "support" as const,
+        })),
+      ];
+
   const filled: AdBrief = {
     ...brief,
+    targets: autoTargets,
+    points: autoPoints,
     format: f.key,
     product: keep(brief.product, analysis.what.slice(0, 80)),
     usp: keep(brief.usp, analysis.headline),
