@@ -31,30 +31,30 @@ export const GET = cronRoute("report", async (now, request) => {
    */
   const force = new URL(request.url).searchParams.get("force") === "1";
 
-  if (!force && !isReportDay(now)) {
-    return { body: { skipped: "편성일이 아닙니다" } };
-  }
-  if (!force && kstParts(now).hour < REPORT_HOUR) {
-    return { body: { skipped: `${REPORT_HOUR}시 전` } };
-  }
-
   /**
-   * 성적 측정을 리포트보다 **먼저** 돌린다. (2026-08-18)
+   * 성적 측정은 **조기 반환보다 위**에 둔다. (2026-08-18)
    *
-   * 순서가 중요하다 — 오늘 D+7·21·60 을 맞은 글이 있으면 그 값이 오늘 리포트에
-   * 실려야 한다. 뒤에 두면 하루 늦게 보고된다.
+   * 처음에 리포트 발송 직전에 뒀다가 한 번도 안 돌았다 — 이 라우트는 하루
+   * 대부분 "18시 전" 으로 즉시 빠져나가기 때문이다. 리포트는 하루 한 통이면
+   * 되지만 측정은 **그날 안에** 돌아야 하고, 놓친 측정은 영영 못 되살린다.
    *
-   * 리포트 발송 자물쇠 **바깥**에 둔 것도 일부러다. 리포트가 이미 나갔거나
-   * 발송에 실패해도 측정은 돌아야 한다 — 놓친 측정은 영영 못 되살린다.
+   * 잴 차례인 글이 없으면 DB 조회 두 번으로 끝난다. 매 틱 불려도 싸다.
    */
   const metrics = await recordDueMetrics(now);
+  const metricNote = metrics.measured
+    ? `성적 측정 ${metrics.measured}건 — ${metrics.note}`
+    : undefined;
+
+  if (!force && !isReportDay(now)) {
+    return { note: metricNote, body: { skipped: "편성일이 아닙니다", metrics } };
+  }
+  if (!force && kstParts(now).hour < REPORT_HOUR) {
+    return { note: metricNote, body: { skipped: `${REPORT_HOUR}시 전`, metrics } };
+  }
 
   const result = await sendDailyReport(now);
   return {
-    note: [
-      result.sent ? result.reason : null,
-      metrics.measured ? `성적 측정 ${metrics.measured}건 — ${metrics.note}` : null,
-    ]
+    note: [result.sent ? result.reason : null, metricNote]
       .filter(Boolean)
       .join(" · ") || undefined,
     body: { ...result, metrics } as unknown as Record<string, unknown>,

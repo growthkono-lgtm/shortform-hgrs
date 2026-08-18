@@ -159,7 +159,16 @@ ${seen.length ? `[이미 쓴 소식 — 다시 가져오지 않는다]\n${seen.m
       angle: c.angle.slice(0, 500),
     }));
 
-  if (!rows.length) return { added: 0, note: "기준에 맞는 소식이 없었습니다" };
+  if (!rows.length) {
+    // 0 건이 "안 돌았다" 인지 "쓸 게 없었다" 인지 구분되게 적는다
+    const raw = parsed.candidates?.length ?? 0;
+    return {
+      added: 0,
+      note:
+        `후보 ${raw}건 · 검색 ${USAGE.webSearches}회 — ` +
+        (raw ? "출처 URL 이 없어 전부 버렸습니다" : "기준에 맞는 소식이 없었습니다"),
+    };
+  }
 
   // 같은 복합키워드는 유니크 인덱스가 막는다. 충돌은 무시하고 새 것만 넣는다
   const { data: inserted } = await supabase
