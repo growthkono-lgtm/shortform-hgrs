@@ -17,6 +17,7 @@ import {
   kstDate,
   kstParts,
 } from "@/lib/blog-schedule";
+import { SEASONAL_WEEKDAYS, takeTrend } from "@/lib/blog-trends";
 import { DIFFICULTY_BY_WEEKDAY } from "@/lib/keyword-filter";
 import { isDomestic, verifySources, type Source } from "@/lib/blog-sources";
 import { format, type FormatKey, type PillarKey, type SegmentKey } from "@/lib/blog-spec";
@@ -230,9 +231,43 @@ export async function ensureJobForToday(now = new Date()): Promise<JobRow | null
    *
    * 해당 난이도가 동나면 남은 것 아무거나 쓴다 — 그날을 통째로 비우는 것보다 낫다.
    */
+  /**
+   * 월·목은 **시의성 슬롯**이다. (2026-08-18 사장님 제안)
+   *
+   * 뉴스·급상승 소식을 우리 니치 검색어와 곱한 복합키워드는 며칠이면 순위가
+   * 붙는다(니치는 2~8주). 도메인 1년 3개월에 노출 2회인 지금, 이 상태를
+   * 깨는 가장 빠른 길이다.
+   *
+   * 주 2편만인 이유: 시의성 키워드는 3개월이면 트래픽이 0 이 되어 자산이
+   * 안 쌓이고, 전부를 뉴스로 채우면 매거진 포지션이 무너진다.
+   *
+   * **후보가 없으면 평소대로 니치 풀을 쓴다.** 이번 주에 쓸 만한 소식이
+   * 없는 것은 고장이 아니다. 새 기능이 기존 편성을 멈춰 세우면 안 된다.
+   */
+  if (SEASONAL_WEEKDAYS.has(weekday)) {
+    try {
+      const trend = await takeTrend(now);
+      if (trend && !taken.has(trend.combined_term)) {
+        next = {
+          pillar: trend.pillar,
+          angle: trend.angle,
+          segment: null,
+          term: trend.combined_term,
+          difficulty: "니치",
+        };
+      }
+    } catch {
+      // 시의성 수집이 죽어도 그날 편은 나가야 한다
+    }
+  }
+
+  /** 그날 요일이 원하는 난이도. 시의성 슬롯이 비면 이 기준으로 니치 풀을 뒤진다 */
   const want = DIFFICULTY_BY_WEEKDAY[weekday];
-  const fresh = TOPIC_QUEUE.filter((t) => !taken.has(t.term));
-  next = fresh.find((t) => t.difficulty === want) ?? fresh[0] ?? null;
+
+  if (!next) {
+    const fresh = TOPIC_QUEUE.filter((t) => !taken.has(t.term));
+    next = fresh.find((t) => t.difficulty === want) ?? fresh[0] ?? null;
+  }
 
   /**
    * 큐가 마르면 키워드 보드에서 이어 받는다. (2026-08-14)

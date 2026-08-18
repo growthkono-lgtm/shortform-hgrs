@@ -35,7 +35,44 @@ const FROM =
   `"해그로시 스튜디오" <contact@hgrs.io>`;
 const REPLY_TO = "contact@h-grs.com";
 
-export type MailKind = "brochure" | "project_start" | "stage" | "other";
+/** DB(email_log.kind) 제약과 1:1. 여기 없는 값을 쓰면 적재가 실패한다 */
+/**
+ * 조용시간 — **KST 20:00 ~ 10:00 에는 메일을 보내지 않는다.**
+ *
+ * 클라이언트도 작업자도 밤에 업무 알림을 받으면 좋아하지 않는다. 그 시간대에 발생한 메일은
+ * 버리지 않고 **다음 오전 10시로 예약**한다(Resend scheduledAt). 우리 서버가 큐를 들고
+ * 있을 필요가 없어서, 배포가 재시작돼도 예약은 그대로 남는다.
+ *
+ * 반환값이 null 이면 "지금 보내도 되는 시간"이다.
+ */
+const KST_OFFSET = 9 * 60 * 60 * 1000;
+const QUIET_FROM = 20; // 20시부터
+const QUIET_TO = 10; // 10시까지
+
+export function nextSendableAt(now: Date = new Date()): Date | null {
+  const kst = new Date(now.getTime() + KST_OFFSET);
+  const hour = kst.getUTCHours();
+  if (hour >= QUIET_TO && hour < QUIET_FROM) return null;
+
+  const target = new Date(kst);
+  target.setUTCHours(QUIET_TO, 0, 0, 0);
+  // 밤 20시 이후면 다음 날 오전 10시, 새벽이면 오늘 오전 10시
+  if (hour >= QUIET_FROM) target.setUTCDate(target.getUTCDate() + 1);
+  return new Date(target.getTime() - KST_OFFSET);
+}
+
+export type MailKind =
+  | "brochure"
+  | "project_start"
+  | "stage"
+  | "other"
+  | "client_todo"
+  | "source_ready"
+  | "work_remind"
+  | "work_deadline"
+  | "preview_ready"
+  | "final_ready"
+  | "project_done";
 
 type Attachment = { filename: string; path: string };
 
@@ -62,7 +99,13 @@ export async function sendMail({
   const key = process.env.RESEND_API_KEY;
   const admin = createAdminClient();
 
-  const log = async (status: "sent" | "failed" | "skipped", error?: string) => {
+  // 조용시간에 걸리면 다음 오전 10시로 미룬다. 소개서 발송처럼 내가 직접 누르는 건 예외로 둔다
+  const scheduledAt = kind === "brochure" ? null : nextSendableAt();
+
+  const log = async (
+    status: "sent" | "failed" | "skipped" | "scheduled",
+    error?: string,
+  ) => {
     await admin.from("email_log").insert({
       kind,
       to_email: to,
@@ -97,6 +140,7 @@ export async function sendMail({
         subject,
         html,
         ...(attachments?.length ? { attachments } : {}),
+        ...(scheduledAt ? { scheduled_at: scheduledAt.toISOString() } : {}),
       }),
     });
 
@@ -128,6 +172,13 @@ export async function sendMail({
       return { ok: false, skipped: false, error };
     }
 
+    if (scheduledAt) {
+      await log(
+        "scheduled",
+        `조용시간(20~10시)이라 ${scheduledAt.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })} 발송 예약`,
+      );
+      return { ok: true, skipped: false };
+    }
     await log("sent");
     return { ok: true, skipped: false };
   } catch (e) {
@@ -264,4 +315,90 @@ export function projectStartMail(name: string, planLabel: string) {
   ${SERVICE.url}/app
 </p>`),
   };
+}
+
+/**
+ * 진행 안내 메일 — 어드민이 브랜드에게 직접 보내는 한 통. (2026-08-14)
+ *
+ * ── 왜 만들었나 ────────────────────────────────────────────────────────
+ * 사장님 지시: *"실제 일에선 브랜드가 뭘 물어보고 내가 답변해야 하는 것들이
+ * 꽤 있을 거거든. 그런 건 분명 개인 연락 전화 카톡 이런 거 하려고 할 거야.
+ * 난 그 리소스도 개선하고 싶어."*
+ *
+ * 방향은 한 줄이다 — **우리가 먼저 메일로 알린다.** 먼저 알려 두면 브랜드가
+ * 전화할 이유가 줄고, 물어볼 게 남으면 채널톡으로 온다. 개인 연락처로 새는
+ * 대화를 줄이는 가장 싼 방법은 답을 미리 보내 두는 것이다.
+ *
+ * 그래서 이 메일에는 **답장할 곳이 명시**돼 있다. 회신하거나 대시보드에서
+ * 채널톡을 열면 된다고 매번 같은 자리에 적는다.
+ */
+export const CLIENT_NOTICE_PRESETS = {
+  source: {
+    label: "소스 촬영본 요청",
+    subject: "소스 촬영본을 기다리고 있습니다",
+    lead: "제작을 시작하려면 촬영 원본이 필요합니다. 공유해 주신 소스 폴더에 올려 주시면 바로 편집에 들어갑니다.",
+  },
+  schedule: {
+    label: "일정 안내",
+    subject: "이번 회차 일정 안내드립니다",
+    lead: "진행 일정을 정리해 알려 드립니다. 아래 내용 확인해 주시고, 조정이 필요하시면 회신 주세요.",
+  },
+  preview: {
+    label: "1차 완성본 올라왔습니다",
+    subject: "1차 완성본이 올라왔습니다 — 확인 부탁드립니다",
+    lead: "대시보드에서 바로 보시고 수정 요청을 남기실 수 있습니다. 무상 수정은 편당 1회입니다.",
+  },
+  revised: {
+    label: "수정 반영 완료",
+    subject: "요청하신 수정을 반영했습니다",
+    lead: "말씀하신 부분을 반영해 다시 올렸습니다. 대시보드에서 확인해 주세요.",
+  },
+  delay: {
+    label: "일정 지연 안내",
+    subject: "일정이 조정되어 미리 알려 드립니다",
+    lead: "예정보다 시간이 더 필요해 먼저 알려 드립니다. 늦어지는 이유와 새 일정은 아래와 같습니다.",
+  },
+  free: {
+    label: "직접 작성",
+    subject: "",
+    lead: "",
+  },
+} as const;
+
+export type ClientNoticeKey = keyof typeof CLIENT_NOTICE_PRESETS;
+
+export function clientNoticeMail(input: {
+  contactName: string;
+  planLabel: string;
+  preset: ClientNoticeKey;
+  subject?: string;
+  body: string;
+}) {
+  const preset = CLIENT_NOTICE_PRESETS[input.preset];
+  const subject =
+    (input.subject?.trim() || preset.subject || "진행 안내드립니다") +
+    ` · ${input.planLabel}`;
+
+  const html = mailShell(`
+    <p style="margin:0 0 6px;font-size:12px;color:#8a8a8a;letter-spacing:0.04em">진행 안내</p>
+    <p style="margin:0 0 18px;font-size:19px;font-weight:700;line-height:1.45">
+      ${input.contactName} 님, 안녕하세요.
+    </p>
+
+    ${preset.lead ? `<p style="margin:0 0 16px;font-size:14px;line-height:1.9;color:#4b5563">${preset.lead}</p>` : ""}
+
+    <div style="margin:0 0 26px;padding:18px 20px;background:#f6f6f4;border-radius:12px;font-size:14px;line-height:1.9;white-space:pre-wrap">${input.body}</div>
+
+    <a href="${SERVICE.url}/app"
+       style="display:inline-block;background:#0a0a0c;color:#fff;text-decoration:none;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:700">
+      대시보드에서 확인하기
+    </a>
+
+    <p style="margin:26px 0 0;font-size:12px;line-height:1.8;color:#9ca3af">
+      이 메일에 <b>그대로 회신</b>하시면 담당자에게 전달됩니다.<br>
+      급하신 건은 대시보드 우측 하단 상담 버튼으로 남겨 주세요 — 저희가 확인하는 대로 답변드립니다.
+    </p>
+  `);
+
+  return { subject, html };
 }

@@ -5,7 +5,7 @@ import { useActionState } from "react";
 import { Field, SubmitError } from "@/components/auth/field";
 import { CONTACT } from "@/lib/sns-brand";
 import { INQUIRY_CONSENTS, CONSENT_VERSION } from "@/lib/consents";
-import { submitInquiry, type InquiryState } from "@/app/inquiry/actions";
+import { submitInquiry, type InquiryState } from "@/app/(site)/inquiry/actions";
 
 const INITIAL: InquiryState = { ok: false, error: null };
 

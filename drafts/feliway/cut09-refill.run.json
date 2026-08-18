@@ -1,0 +1,18 @@
+{
+  "endpoint": "bytedance/seedance-2.0/reference-to-video",
+  "body": {
+    "prompt": "제품은 [Image1] 의 디퓨저 본체와 투명한 리필 병 형태를 그대로 유지한다. 보라색 라벨의 색과 배치가 바뀌지 않는다. 장소는 [Image2] 와 같은 한국 가정집 거실이다.\n세로 9:16. 자연광. 손과 제품만 나오는 클로즈업, 얕은 심도.\n카메라: 손 높이에서 고정.\n동작: 여성의 두 손이 투명한 리필 병을 [Image1] 의 흰색 디퓨저 본체 아래에 대고 시계 방향으로 돌려 끼운다. 끝까지 돌아가 딸깍 맞물린 뒤 손을 뗀다. 얼굴은 나오지 않는다.\n이 컷에 반드시 담긴다: 리필 병이 본체에 완전히 결합된 상태가 마지막 1.5초 동안 정면으로 보인다.\n화면에 글자·자막·로고를 넣지 않는다.",
+    "resolution": "720p",
+    "duration": "5",
+    "aspect_ratio": "9:16",
+    "generate_audio": false,
+    "seed": 901,
+    "image_urls": [
+      "https://v3b.fal.media/files/b/0aa67364/v8E2uN7RxnBtbfc72lw7i_device.png",
+      "https://v3b.fal.media/files/b/0aa67352/gy3abMWiUhIPnhxeq5SVR_space-living.png"
+    ]
+  },
+  "seed": 901,
+  "videoUrl": "https://v3b.fal.media/files/b/0aa6735b/y2vS8ya04Jbs8UIs4JR71_video.mp4",
+  "spent": 1.525
+}

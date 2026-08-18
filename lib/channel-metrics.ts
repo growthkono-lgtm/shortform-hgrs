@@ -21,6 +21,14 @@ export type ChannelMetrics = {
   thumbnailUrl: string | null;
   /** 표시용 채널명 — 벤더가 주는 이름이 URL 핸들보다 정확하다 */
   displayName: string | null;
+  /** 프로필 소개글. 카드 표시와 카테고리 추정에 쓴다 */
+  bio: string | null;
+  /** 최근 게시물 썸네일 3장. 이미 받아오던 응답에 들어 있는데 버리고 있었다 */
+  latestPosts: { thumbnail: string; url: string }[];
+  /** 인스타가 직접 주는 업종. **비즈니스 계정에만 있다** — 없으면 소개글로 짐작한다 */
+  businessCategory: string | null;
+  /** 카테고리 추정용 재료 — 소개글 + 최근 게시물 해시태그 */
+  keywords: string | null;
 };
 
 export type MetricsResult =
@@ -108,6 +116,30 @@ function fromInstagram(item: Record<string, unknown>): ChannelMetrics {
         : typeof item.username === "string"
           ? `@${item.username}`
           : null,
+    bio: typeof item.biography === "string" ? item.biography : null,
+    businessCategory:
+      typeof item.businessCategoryName === "string" ? item.businessCategoryName : null,
+    // 소개글만으로는 업종이 안 잡히는 계정이 많다. 게시물 해시태그·캡션을 같이 본다
+    keywords: [
+      typeof item.biography === "string" ? item.biography : "",
+      ...posts.flatMap((p) =>
+        Array.isArray(p.hashtags) ? (p.hashtags as string[]) : [],
+      ),
+      ...posts.map((p) => (typeof p.caption === "string" ? p.caption.slice(0, 120) : "")),
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .slice(0, 2000),
+    latestPosts: posts
+      .map((p) => ({
+        thumbnail:
+          (typeof p.displayUrl === "string" && p.displayUrl) ||
+          (typeof p.thumbnailUrl === "string" && p.thumbnailUrl) ||
+          "",
+        url: typeof p.url === "string" ? p.url : "",
+      }))
+      .filter((p) => p.thumbnail && p.url)
+      .slice(0, 3),
   };
 }
 
@@ -124,6 +156,10 @@ function fromTiktok(items: Record<string, unknown>[]): ChannelMetrics {
     avgLikes: avg(num("diggCount")),
     avgComments: avg(num("commentCount")),
     thumbnailUrl: typeof author.avatar === "string" ? author.avatar : null,
+    bio: typeof author.signature === "string" ? author.signature : null,
+    businessCategory: null,
+    keywords: typeof author.signature === "string" ? author.signature : null,
+    latestPosts: [],
     displayName:
       typeof author.nickName === "string"
         ? author.nickName
@@ -146,6 +182,11 @@ function fromYoutube(items: Record<string, unknown>[]): ChannelMetrics {
     avgLikes: avg(num("likes")),
     avgComments: avg(num("commentsCount")),
     thumbnailUrl: typeof first.channelAvatarUrl === "string" ? first.channelAvatarUrl : null,
+    bio: typeof first.channelDescription === "string" ? first.channelDescription : null,
+    businessCategory: null,
+    keywords:
+      typeof first.channelDescription === "string" ? first.channelDescription : null,
+    latestPosts: [],
     displayName: typeof first.channelName === "string" ? first.channelName : null,
   };
 }
@@ -200,4 +241,50 @@ export async function fetchChannelMetrics(url: string): Promise<MetricsResult> {
 export function computeCpv(reward: number | null, avgViews: number | null) {
   if (!reward || !avgViews) return null;
   return Math.round(reward / avgViews);
+}
+
+export type PostMetrics = {
+  handle: string | null;
+  thumbnail: string | null;
+  caption: string | null;
+  views: number | null;
+  likes: number | null;
+  comments: number | null;
+  postedAt: string | null;
+};
+
+/**
+ * 게시물 하나의 지표 — 콘텐츠 검수·모아보기가 쓴다.
+ *
+ * 프로필 스크래퍼와 같은 액터를 게시물 URL 로 돌린다. 실패하면 null 을 돌려주고,
+ * **호출부는 링크만이라도 저장한다** — 지표가 없다고 검수를 못 하면 안 된다.
+ */
+export async function fetchPostMetrics(url: string): Promise<PostMetrics | null> {
+  const token = process.env.APIFY_TOKEN;
+  if (!token) return null;
+
+  try {
+    const run = await runActor(
+      "apify~instagram-scraper",
+      { directUrls: [url], resultsType: "posts", resultsLimit: 1 },
+      token,
+    );
+    const p = run.items?.[0];
+    if (!p) return null;
+
+    return {
+      handle: typeof p.ownerUsername === "string" ? p.ownerUsername : null,
+      thumbnail:
+        (typeof p.displayUrl === "string" && p.displayUrl) ||
+        (typeof p.thumbnailUrl === "string" && p.thumbnailUrl) ||
+        null,
+      caption: typeof p.caption === "string" ? p.caption : null,
+      views: toNum(p.videoViewCount) ?? toNum(p.videoPlayCount),
+      likes: toNum(p.likesCount),
+      comments: toNum(p.commentsCount),
+      postedAt: typeof p.timestamp === "string" ? p.timestamp : null,
+    };
+  } catch {
+    return null;
+  }
 }

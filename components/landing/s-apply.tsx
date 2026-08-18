@@ -7,7 +7,7 @@ import { Field, SubmitError } from "@/components/auth/field";
 import { cn } from "@/lib/cn";
 import { POLICY } from "@/lib/constants";
 import { INQUIRY_CONSENTS, CONSENT_VERSION } from "@/lib/consents";
-import { submitInquiry, type InquiryState } from "@/app/inquiry/actions";
+import { submitInquiry, type InquiryState } from "@/app/(site)/inquiry/actions";
 import { useDiagnosis } from "./diagnosis-context";
 
 const INITIAL: InquiryState = { ok: false, error: null };

@@ -2,7 +2,14 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { CASES, FEATURES, type Feature, type Figure } from "@/lib/sns-brand";
+import {
+  BLOG_CARD,
+  CASES,
+  FEATURES,
+  type ChannelTile,
+  type Feature,
+  type Figure,
+} from "@/lib/sns-brand";
 import { Rich } from "./rich";
 import { useViewProgress } from "./use-view-progress";
 
@@ -60,6 +67,97 @@ function PlateSwiper({ figures }: { figures: Figure[] }) {
         {figure.caption}
       </figcaption>
     </figure>
+  );
+}
+
+/**
+ * 채널 타일 — 이 프로젝트에서 굴린 계정 하나.
+ *
+ * 2026-08-14: 별도 "채널 포트폴리오" 섹션을 만들었다가 통째로 빼고 여기로 넣었다.
+ * 사례에서 떼어 놓으면 남의 계정 목록으로 읽힌다.
+ *
+ * 썸네일 위 배지는 플랫폼, 우상단은 꼬리표(예: "PT 및 컨설팅").
+ * 자사 블로그 배지를 흰색으로 뒀더니 밝은 포스트 커버 위에서 이미지 문구와
+ * 섞여 안 읽혔다 — 어두운 배지로 고정한다.
+ */
+const PLATFORM_STYLE: Record<ChannelTile["platform"], string> = {
+  YouTube: "bg-[#ff0033] text-white",
+  Instagram:
+    "bg-gradient-to-br from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white",
+  "네이버 블로그": "bg-[#03c75a] text-white",
+  블로그: "bg-black/65 text-white backdrop-blur-sm",
+};
+
+function ChannelCard({ channel }: { channel: ChannelTile }) {
+  return (
+    <li>
+      <a
+        href={channel.href}
+        target="_blank"
+        rel="noreferrer"
+        className="group/c block"
+      >
+        <div className="relative aspect-video overflow-hidden rounded-xl border border-white/12 bg-night-soft">
+          <Image
+            src={channel.thumb}
+            alt={`${channel.name} 채널 게시물`}
+            fill
+            sizes="(min-width: 1024px) 260px, 45vw"
+            className="object-cover transition-transform duration-500 group-hover/c:scale-[1.04]"
+          />
+          <span
+            className={`absolute top-2 left-2 rounded-full px-2 py-0.5 text-[0.625rem] leading-none font-bold ${PLATFORM_STYLE[channel.platform]}`}
+          >
+            {channel.platform}
+          </span>
+          {channel.tag && (
+            <span className="absolute top-2 right-2 rounded-full bg-black/65 px-2 py-0.5 text-[0.625rem] leading-none font-bold text-white backdrop-blur-sm">
+              {channel.tag}
+            </span>
+          )}
+        </div>
+        <p className="mt-2.5 text-[0.8125rem] leading-[1.5] font-bold text-white">
+          {channel.name}
+        </p>
+        {/* 지표가 없는 채널(공개 지표 없음)은 줄 자체를 안 만든다 — 빈 값을 적지 않는다 */}
+        {channel.metric && (
+          <p className="mt-0.5 text-[0.75rem] leading-[1.5] text-white/60">
+            {channel.metric}
+          </p>
+        )}
+        {channel.note && (
+          <p className="mt-0.5 text-[0.75rem] leading-[1.6] text-white/45">
+            {channel.note}
+          </p>
+        )}
+      </a>
+    </li>
+  );
+}
+
+function Channels({
+  channels,
+  note,
+}: {
+  channels: ChannelTile[];
+  note?: string;
+}) {
+  return (
+    <div>
+      <p className="text-[0.6875rem] font-bold tracking-[0.02em] text-white/45 uppercase">
+        Channels
+      </p>
+      {note && (
+        <p className="mt-1 text-[0.8125rem] leading-[1.6] font-bold text-white/80">
+          {note}
+        </p>
+      )}
+      <ul className="mt-3 grid grid-cols-2 gap-3 sm:gap-4">
+        {channels.map((channel) => (
+          <ChannelCard key={channel.href} channel={channel} />
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -152,8 +250,49 @@ function Card({ feature }: { feature: Feature }) {
               </a>
             </figure>
           ))}
+
+          {feature.channels && (
+            <Channels
+              channels={feature.channels}
+              note={feature.channelsNote}
+            />
+          )}
         </div>
       </div>
+    </article>
+  );
+}
+
+/**
+ * 공식 블로그 관리 — 사례 카드와 같은 껍데기지만 안이 다르다.
+ * 도판·영상 없이 **블로그 세 개를 가로로 편다**. 브랜드 하나짜리 사례가 아니라
+ * "블로그는 이렇게 굴린다"를 보여 주는 칸이라 좌우 2단으로 나눌 것이 없다.
+ */
+function BlogCard() {
+  return (
+    <article className="min-w-0 rounded-2xl border border-white/12 bg-white/[0.03] p-6 sm:p-8">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <p className="eyebrow">{BLOG_CARD.category}</p>
+        <p className="text-xs text-white/45">{BLOG_CARD.meta}</p>
+      </div>
+
+      <h3 className="mt-5 text-[1.25rem] leading-[1.45] font-bold text-white sm:text-[1.625rem]">
+        {BLOG_CARD.title}
+      </h3>
+      {BLOG_CARD.body.map((para) => (
+        <p
+          key={para.slice(0, 14)}
+          className="mt-5 max-w-3xl text-[1rem] leading-[1.9] text-white/80 sm:text-[1.0625rem]"
+        >
+          {para}
+        </p>
+      ))}
+
+      <ul className="mt-8 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
+        {BLOG_CARD.channels.map((channel) => (
+          <ChannelCard key={channel.href} channel={channel} />
+        ))}
+      </ul>
     </article>
   );
 }
@@ -183,6 +322,7 @@ export function Cases() {
           {FEATURES.map((feature) => (
             <Card key={feature.id} feature={feature} />
           ))}
+          <BlogCard />
         </div>
       </div>
     </section>

@@ -1,0 +1,20 @@
+{
+  "endpoint": "bytedance/seedance-2.0/reference-to-video",
+  "body": {
+    "prompt": "등장인물은 [Image1] [Image2] [Image3] 과 동일 인물이다. 같은 얼굴, 같은 머리, 같은 크림색 니트. 20대 후반 한국 여성. 장소는 [Image4] 와 같은 거실이다.\n세로 9:16. 자연광. 손에 든 스마트폰으로 셀피처럼 찍은 앵글, 미세한 흔들림. 브이로그 톤.\n카메라: 얼굴과 가슴 위까지 잡는 셀피 앵글, 고정.\n동작: 여성이 카메라를 정면으로 보며 손가락으로 하나씩 꼽으며 안타깝게 말한다. 쉬지 않고 이어서 말한다.\n인물이 한국어로 자연스럽게 말한다: \"숨고, 안 먹고, 계속 핥고, 하악질까지 하면 힘들다는 뜻이에요\"\n이 컷에 반드시 담긴다: 인물의 입 모양이 대사와 정확히 맞고, 5초 내내 말이 끊기지 않는다.\n화면에 글자·자막·로고를 넣지 않는다.",
+    "resolution": "720p",
+    "duration": "5",
+    "aspect_ratio": "9:16",
+    "generate_audio": true,
+    "seed": 9003,
+    "image_urls": [
+      "https://v3b.fal.media/files/b/0aa6752e/JImpJhLLdsaXb6bi-Cx9P_face-1.png",
+      "https://v3b.fal.media/files/b/0aa6752e/gToYOcGb4w2rhu15qqzje_face-2.png",
+      "https://v3b.fal.media/files/b/0aa6752e/4YOS15iLWkg-_t3YmUbDF_face-3.png",
+      "https://v3b.fal.media/files/b/0aa6752e/cBc-a-VjSVIyf1W8I9c-o_space-living.png"
+    ]
+  },
+  "seed": 9003,
+  "videoUrl": "https://v3b.fal.media/files/b/0aa67541/RT9RHTJk97j4-671n0qPZ_video.mp4",
+  "spent": 1.525
+}

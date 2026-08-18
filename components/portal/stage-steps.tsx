@@ -11,17 +11,26 @@ import { stageIndex } from "@/lib/stages";
 export function StageSteps({
   stages,
   stage,
+  stateOf,
 }: {
   stages: readonly { key: string; label: string }[];
-  stage: string;
+  stage?: string;
+  /**
+   * 칸마다 상태를 직접 정한다.
+   *
+   * 인덱스 하나로 "앞은 전부 완료"로 그리면 거짓이 나온다 — 준비 트랙과 제작 트랙은
+   * 서로 다른 값이 정하기 때문에, 앞 칸이 아직 안 끝났는데 완료로 찍히는 일이 생겼다.
+   */
+  stateOf?: (key: string) => "done" | "active" | "todo";
 }) {
-  const current = stageIndex(stages, stage);
+  const current = stage ? stageIndex(stages, stage) : -1;
 
   return (
     <ol className="-mx-1 flex min-w-0 items-start justify-start gap-0.5 overflow-x-auto px-1 pb-2 sm:gap-1">
       {stages.map((s, i) => {
-        const done = i < current;
-        const active = i === current;
+        const st = stateOf?.(s.key);
+        const done = st ? st === "done" : i < current;
+        const active = st ? st === "active" : i === current;
         const last = i === stages.length - 1;
 
         return (

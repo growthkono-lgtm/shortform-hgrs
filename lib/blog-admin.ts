@@ -1,7 +1,7 @@
 import "server-only";
 
+import { metricsByPost, type PostMetric } from "@/lib/blog-metrics";
 import { createAdminClient } from "@/lib/supabase/server";
-import { searchSummary } from "@/lib/search-console";
 
 import { PILLARS, type FormatKey, type PillarKey } from "./blog-spec";
 import {
@@ -315,7 +315,17 @@ export type BoardRow = {
   /** 검수·발행 화면으로 가는 입구. 원고가 없으면 null */
   href: string | null;
   /** 원고 자동 생성이 지금 어디까지 왔는지. 아직 안 걸렸으면 null */
-  job: { stage: string; note: string | null; costUsd: number | null } | null;
+  job: {
+    stage: string;
+    note: string | null;
+    costUsd: number | null;
+    /** 이 회차가 실제로 노리는 검색어 (기획안 문구가 아니라 편성이 고른 것) */
+    keywordTerm: string | null;
+    /** 세부타겟 — 편성이 검색어에서 추정한 업종 */
+    segment: string | null;
+    /** 이 회차의 각도 한 문장 */
+    topic: string | null;
+  } | null;
   /**
    * 이 회차가 노리는 검색어와 그 지표. (2026-08-14 사장님 요청)
    *
@@ -344,6 +354,15 @@ export type BoardRow = {
     impressions: number | null;
     clicks: number | null;
     position: number | null;
+    /**
+     * 발행 후 며칠째에 잰 값인가 (7 · 21 · 60). (2026-08-18)
+     *
+     * 이게 없으면 "노출 0" 이 실패인지 아직 이른 것인지 구분이 안 된다.
+     * D+7 의 0 은 색인 문제고, D+21 의 0 은 아직 정상이다.
+     */
+    offsetDays: number | null;
+    /** 아직 첫 측정(D+7) 전이면 며칠 남았나 */
+    daysUntilFirst: number | null;
   };
 };
 
@@ -363,7 +382,7 @@ export async function scheduleBoard(weeks = 4): Promise<BoardRow[]> {
   const supabase = createAdminClient();
   const { data: jobs } = await supabase
     .from("blog_job")
-    .select("scheduled_for, stage, last_error, cost_usd, keyword_term");
+    .select("id, scheduled_for, stage, last_error, cost_usd, keyword_term, segment, topic, post_id");
 
   /**
    * 키워드 지표 — 편성표에 검색량·클릭률을 같이 세운다. (2026-08-14)
@@ -376,21 +395,48 @@ export async function scheduleBoard(weeks = 4): Promise<BoardRow[]> {
     .from("blog_keyword")
     .select("term, total_volume, pc_ctr, mobile_ctr, competition");
 
-  // 우리 실제 성적 — 검색어별 노출·클릭·순위. 연결 전이면 빈 맵이다
-  const search = await searchSummary();
-  const perfByQuery = new Map(
-    search.queries.map((q) => [
-      q.key.replace(/\s+/g, ""),
-      { impressions: q.impressions, clicks: q.clicks, position: q.position },
-    ]),
-  );
-  const perfOf = (term: string | null | undefined) => {
-    const hit = term ? perfByQuery.get(term.replace(/\s+/g, "")) : undefined;
-    return {
-      impressions: hit?.impressions ?? null,
-      clicks: hit?.clicks ?? null,
-      position: hit?.position ?? null,
-    };
+  /**
+   * 우리 실제 성적 — **글 단위**로 읽는다. (2026-08-18 전환)
+   *
+   * 예전엔 검색어 차원(`searchSummary`)에서 검색어를 맞춰 붙였다. 그런데
+   * 편성표의 열쇠는 검색어가 아니라 **글**이라 거의 안 맞았고, 맞아도
+   * "그 검색어 전체 노출" 이지 "이 글의 노출" 이 아니었다.
+   *
+   * 이제 `blog_post_metric` 이 발행 후 D+7·21·60 세 시점에 글별로 재 둔다.
+   * 여기서는 그중 **가장 나중 시점**을 대표값으로 세운다.
+   */
+  const metrics = await metricsByPost();
+  const latest = (list: PostMetric[] | undefined) =>
+    list && list.length ? list[list.length - 1] : null;
+
+  const EMPTY_PERF = {
+    impressions: null,
+    clicks: null,
+    position: null,
+    offsetDays: null,
+    daysUntilFirst: null,
+  };
+
+  const perfOf = (post: PostRow | null | undefined) => {
+    if (!post?.publishedAt) return EMPTY_PERF;
+    const hit = latest(metrics.get(post.id));
+    if (hit) {
+      return {
+        impressions: hit.impressions,
+        clicks: hit.clicks,
+        position: hit.position,
+        offsetDays: hit.offsetDays,
+        daysUntilFirst: null,
+      };
+    }
+    /**
+     * 아직 한 번도 안 잰 글. "—" 만 찍으면 고장인지 이른 건지 구분이 안 된다.
+     * 며칠 남았는지 세어 준다 — 첫 측정은 D+7 이다.
+     */
+    const age = Math.floor(
+      (Date.now() - new Date(post.publishedAt).getTime()) / 86_400_000,
+    );
+    return { ...EMPTY_PERF, daysUntilFirst: Math.max(0, 7 - age) };
   };
 
   /**
@@ -416,28 +462,34 @@ export async function scheduleBoard(weeks = 4): Promise<BoardRow[]> {
       competition: row?.competition ?? null,
     };
   };
-  const jobByDay = new Map(
-    (jobs ?? []).map((j) => [
-      j.scheduled_for,
-      {
-        stage: JOB_STAGE_LABEL[j.stage] ?? j.stage,
-        note: j.last_error,
-        costUsd: j.cost_usd === null ? null : Number(j.cost_usd),
-        /**
-         * 이 회차가 **실제로 노리는 검색어**. (2026-08-18)
-         *
-         * 그동안 검색량·CTR 을 `plan.head_keyword` 로 찾았다. 그건 AI 가
-         * 기획안에 적은 **자연어 문구**("인스타 메타 예산 배분")이고, 우리가
-         * 키워드 보드에서 골라 준 검색어는 `keyword_term`("인스타메타광고")이다.
-         * 둘은 거의 안 맞아서 편성표의 검색량·CTR 칸이 계속 "—" 였다 —
-         * 값이 없어서가 아니라 **엉뚱한 열쇠로 찾고 있었다.**
-         * (인스타메타광고 470회 1.8%, 스마트스토어상품등록대행 510회 7.55%
-         *  둘 다 표에 멀쩡히 있었는데 화면엔 안 떴다)
-         */
-        keywordTerm: (j.keyword_term as string | null) ?? null,
-      },
-    ]),
+  /**
+   * ⚠️ 작업표를 **날짜로** 붙이면 안 된다. (2026-08-18)
+   *
+   * 원고의 `scheduled_for` 와 작업표의 `scheduled_for` 가 하루씩 어긋나 있다
+   * (08-16 이전 날짜 버그의 잔재 — 원고 08-13 ↔ 작업표 08-14).
+   * 날짜로 붙였더니 2·3행에 엉뚱한 검색어가 걸리고 6행 생성비가 옆 회차 것으로
+   * 나왔다. `blog_job.post_id` 라는 정확한 열쇠가 처음부터 있었다.
+   *
+   * 날짜 맵은 **아직 원고가 없는 앞으로의 슬롯**에만 쓴다. 그때는 붙일
+   * post_id 자체가 없기 때문이다.
+   */
+  const toJob = (j: (typeof jobs extends (infer U)[] | null ? U : never)) => ({
+    stage: JOB_STAGE_LABEL[j.stage] ?? j.stage,
+    note: j.last_error,
+    costUsd: j.cost_usd === null ? null : Number(j.cost_usd),
+    keywordTerm: (j.keyword_term as string | null) ?? null,
+    segment: (j.segment as string | null) ?? null,
+    topic: (j.topic as string | null) ?? null,
+  });
+
+  const jobByPost = new Map(
+    (jobs ?? []).filter((j) => j.post_id).map((j) => [j.post_id as string, toJob(j)]),
   );
+
+  const jobByDay = new Map(
+    (jobs ?? []).map((j) => [j.scheduled_for, toJob(j)] as const),
+  );
+
 
   // 고객 이야기는 편성표에 오르지 않는다 — 발행 예정이 있는 연재물이 아니라
   // 늘 거기 있는 상시 자료다
@@ -457,14 +509,8 @@ export async function scheduleBoard(weeks = 4): Promise<BoardRow[]> {
       );
     });
 
-  /**
-   * ⚠️ `scheduledFor` 를 그냥 slice 하면 UTC 날짜라 **전날**이 나오고,
-   * 생성비·진행상태가 옆 회차 것으로 붙는다 (2026-08-16 수정)
-   */
-  const settledJob = (post: PostRow) =>
-    (post.scheduledFor
-      ? jobByDay.get(kstDate(new Date(post.scheduledFor)))
-      : null) ?? null;
+  /** 이미 원고가 있는 회차는 post_id 로 붙인다. 날짜는 못 믿는다 */
+  const settledJob = (post: PostRow) => jobByPost.get(post.id) ?? null;
 
   const rows: BoardRow[] = [];
   let cursor = 0;
@@ -485,7 +531,7 @@ export async function scheduleBoard(weeks = 4): Promise<BoardRow[]> {
       job: settledJob(post),
       // 노리는 검색어가 먼저다. 기획안 문구는 그게 없을 때의 차선책이다
       keyword: metricOf(settledJob(post)?.keywordTerm ?? post.headKeyword),
-      performance: perfOf(settledJob(post)?.keywordTerm ?? post.headKeyword),
+      performance: perfOf(post),
     });
   }
 
@@ -517,11 +563,8 @@ export async function scheduleBoard(weeks = 4): Promise<BoardRow[]> {
           post?.headKeyword ??
           TOPIC_QUEUE[queueAt - 1]?.term,
       ),
-      performance: perfOf(
-        jobByDay.get(kstDate(date))?.keywordTerm ??
-          post?.headKeyword ??
-          TOPIC_QUEUE[queueAt - 1]?.term,
-      ),
+      // 아직 안 나간 회차는 성적이 있을 수 없다
+      performance: perfOf(post),
     });
   }
 

@@ -8,163 +8,91 @@ import { clipPoster } from "@/lib/clips";
  * `A브랜드_그로스플랜_7월1차` 처럼 **플랜명(스타터·그로스·스케일)이 들어간 규칙**으로 쓴다.
  */
 
-/** 0 — 브랜드 AI 기본 분석. 상세페이지 URL 한 줄이 구조화된 항목으로 떨어진다 */
-export function BrandAiPreview() {
-  const rows = [
-    ["브랜드", "반려견 영양처방식 D2C"],
+export function GuidelinePreview() {
+  const fields = [
+    ["브랜드 · 제품 소개", "반려견 영양처방식 · 관절 케어 라인"],
+    ["판매 링크", "brand.co.kr/product/..."],
+    ["가격 · 옵션 · 수량", "3.9만원대 / 30정·60정 / 20개"],
     ["핵심 타겟", "3040 보호자 · 노령견 · 식이 민감"],
     ["USP", "수의사 처방 기준 · 저지방 배합"],
-    ["객단가", "3.9만원대 · 재구매 42%"],
     ["금지 표현", "치료·완치 등 효능 단정"],
   ];
 
   return (
     <div className="flex h-full flex-col p-4">
-      <div className="flex items-center gap-2 rounded-lg border border-line bg-paper px-3 py-2">
-        <span className="size-3.5 shrink-0 rounded-sm bg-accent/25" />
-        <span className="truncate text-[0.625rem] text-muted">
-          https://brand.co.kr/product/…
-        </span>
-        <span className="ml-auto shrink-0 rounded bg-accent px-1.5 py-0.5 text-[0.5625rem] font-bold text-white">
-          분석
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-bold">브랜드 · 제품 소개</span>
+        <span className="rounded-full bg-paper-alt px-2 py-0.5 text-[0.5625rem] font-bold text-muted">
+          작성 완료
         </span>
       </div>
-      <dl className="mt-2.5 divide-y divide-line overflow-hidden rounded-lg border border-line bg-paper">
-        {rows.map(([k, v]) => (
-          <div
-            key={k}
-            className="flex items-baseline gap-2 px-3 py-[0.4375rem]"
-          >
-            <dt className="w-14 shrink-0 text-[0.5625rem] text-muted">{k}</dt>
-            <dd className="truncate text-[0.625rem] font-bold">{v}</dd>
+      <p className="mt-1 text-[0.5rem] leading-[1.6] text-muted">
+        판매 링크 · 가격 · 옵션 · 수량은 필수
+      </p>
+      <dl className="mt-2 divide-y divide-line overflow-hidden rounded-lg border border-line bg-paper">
+        {fields.map(([label, value]) => (
+          <div key={label} className="flex items-center gap-2 px-3 py-1.5">
+            <dt className="w-[76px] shrink-0 text-[0.5rem] text-muted">{label}</dt>
+            <dd className="truncate text-[0.5625rem] font-bold">{value}</dd>
           </div>
         ))}
       </dl>
-      <p className="mt-2 text-[0.5625rem] text-muted">
-        AI 초안 · 담당자 검수 후 확정
-      </p>
-    </div>
-  );
-}
-
-/** 0-1 — 컨텐츠 가이드라인 세부 기획. 편별로 포맷·후킹이 갈린다 */
-export function GuidelinePreview() {
-  const rows = [
-    {
-      no: "01",
-      format: "후기형",
-      hook: '"밥 먹어~" 소리도 안 들려요',
-      tag: "전환",
-    },
-    {
-      no: "02",
-      format: "전문가형",
-      hook: "췌장염 저지방 식이 성분",
-      tag: "신뢰",
-    },
-    {
-      no: "03",
-      format: "비교형",
-      hook: "기존 레시피 그대로 괜찮을까",
-      tag: "설득",
-    },
-    {
-      no: "04",
-      format: "리얼리티",
-      hook: "보호자가 더 신나는 이유",
-      tag: "도달",
-    },
-  ];
-
-  return (
-    <div className="flex h-full flex-col p-4">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-bold">컨텐츠 가이드라인</span>
-        <span className="rounded bg-accent/10 px-1.5 py-0.5 text-[0.5625rem] font-bold text-accent-deep">
-          10편 편성
-        </span>
-      </div>
-      <ul className="mt-2.5 divide-y divide-line overflow-hidden rounded-lg border border-line bg-paper">
-        {rows.map((r) => (
-          <li key={r.no} className="flex items-center gap-2 px-3 py-2">
-            <span className="stat-figure shrink-0 text-[0.5625rem] text-muted">
-              {r.no}
-            </span>
-            <span className="shrink-0 rounded bg-paper-alt px-1.5 py-0.5 text-[0.5625rem] font-bold">
-              {r.format}
-            </span>
-            <span className="truncate text-[0.625rem] text-muted">
-              {r.hook}
-            </span>
-            <span className="ml-auto shrink-0 text-[0.5625rem] text-accent-deep">
-              {r.tag}
-            </span>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }
 
 /**
- * 1 — 1차 선정 심사 보드.
+ * 1 — 확정 인플루언서 카드.
  * **클라이언트가 실제로 보는 화면 그대로다** (components/portal/project-panels.tsx).
- * 지표는 Apify로 수집한 실값이 들어가고, 클라이언트가 여기서 직접 고른다.
+ * 고르는 화면이 아니다 — 선정은 우리가 끝내고 클라이언트는 확정 명단을 본다.
  * 임의로 예쁜 화면을 그리지 말 것 — 실제와 어긋나면 신청 후에 배신감이 된다.
  */
 export function SeedingPreview() {
   const rows = [
     {
-      name: "맛집투어l핫플공유",
-      handle: "instagram",
-      picked: true,
-      m: ["2,541", "56", "8,249", "153", "23", "2원"],
+      handle: "@creator_a",
+      category: "맛집·먹방",
+      posts: ["seeding-garnish", "seeding-patty", "gaehogang-square"],
+      m: ["2,540", "8,253", "153"],
     },
     {
-      name: "guccim71",
-      handle: "instagram",
-      picked: false,
-      m: ["17.5천", "302", "24,100", "890", "41", "3원"],
+      handle: "@creator_b",
+      category: "라이프스타일",
+      posts: ["riiid-parent-itv", "bone-w40s", "pet-treats-plea"],
+      m: ["17,500", "24,100", "890"],
     },
   ];
-  const labels = ["팔로워", "컨텐츠수", "평균 조회", "좋아요", "댓글", "CPV"];
+  const labels = ["팔로워", "평균 조회", "평균 좋아요"];
 
   return (
     <div className="flex h-full flex-col p-4">
-      <div className="flex items-baseline justify-between">
-        <span className="text-xs font-bold">
-          1차 선정 심사 <span className="text-muted">12명</span>
-        </span>
-        <span className="text-[0.5625rem] text-muted">
-          선택 4명 · 08/10 기준
-        </span>
-      </div>
+      <span className="text-xs font-bold">
+        확정 인플루언서 <span className="text-muted">12명</span>
+      </span>
 
       <div className="mt-2.5 space-y-1.5">
         {rows.map((r) => (
-          <div
-            key={r.name}
-            className={`rounded-lg border px-3 py-2.5 ${
-              r.picked ? "border-ink bg-accent/[0.05]" : "border-line bg-paper"
-            }`}
-          >
+          <div key={r.handle} className="rounded-lg border border-line bg-paper p-2">
             <div className="flex items-center gap-1.5">
               <span className="size-4 shrink-0 rounded-full bg-accent/20" />
-              <span className="truncate text-[0.625rem] font-bold">
-                {r.name}
+              <span className="rounded bg-gold/15 px-1 py-0.5 text-[0.5rem] font-bold text-gold-deep">
+                {r.category}
               </span>
-              <span className="rounded bg-paper-alt px-1 py-0.5 text-[0.5rem] text-muted">
-                {r.handle}
-              </span>
-              <span
-                className={`ml-auto rounded-full px-2 py-0.5 text-[0.5rem] font-bold ${
-                  r.picked ? "bg-ink text-paper" : "border border-ink/20"
-                }`}
-              >
-                {r.picked ? "선택 해제" : "선택"}
-              </span>
+              <span className="truncate text-[0.5625rem] font-bold">{r.handle}</span>
             </div>
-            <dl className="mt-2 grid grid-cols-6 gap-1">
+            <div className="mt-1.5 grid grid-cols-3 gap-0.5">
+              {r.posts.map((slug) => (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  key={slug}
+                  src={clipPoster(slug)}
+                  alt=""
+                  loading="lazy"
+                  className="aspect-square w-full rounded-sm object-cover"
+                />
+              ))}
+            </div>
+            <dl className="mt-1.5 grid grid-cols-3 gap-1">
               {labels.map((l, k) => (
                 <div key={l}>
                   <dt className="text-[0.4375rem] text-muted">{l}</dt>
@@ -273,7 +201,12 @@ export function ShortformPreview() {
  * 5 — 검수·납품. 클라이언트 보드의 **진행 단계 원형 스텝퍼**를 그대로 축소한 것이다.
  */
 export function DeliveryPreview() {
-  const steps = ["소스컷 확인", "기획", "제작완료", "수정 반영", "다운로드"];
+  const steps = [
+    "숏폼 기획제작 진행중",
+    "1차 완성본 컨펌 확인",
+    "최종 수정요청 반영중",
+    "최종본 다운로드",
+  ];
   const current = 2;
   const rows = [
     { seq: "01편", state: "최종 승인", done: true },
@@ -335,6 +268,66 @@ export function DeliveryPreview() {
       <p className="mt-2 text-[0.5rem] text-muted">
         1회 무상 수정 후 최종본 전체 다운로드
       </p>
+    </div>
+  );
+}
+
+/**
+ * 5 — 소재 정기 수급. **별도 플랜으로 이어서 진행하는 자리다.**
+ *
+ * 성과 수치는 넣지 않는다 — 예시로 적은 숫자가 "이 정도는 나온다"로 읽히면
+ * 그 순간 과장 광고가 된다. 보여 줄 것은 **판정과 다음 수**의 구조다.
+ */
+export function RestockPreview() {
+  const last = [
+    { name: "후기형 · 첫구매", verdict: "유지", tone: "keep" },
+    { name: "전문가형 · 성분", verdict: "확대", tone: "up" },
+    { name: "비교형 · 레시피", verdict: "교체", tone: "drop" },
+  ];
+
+  return (
+    <div className="flex h-full flex-col p-4">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-bold">
+          8월 2차 <span className="text-muted">편성안</span>
+        </span>
+        <span className="rounded bg-gold/20 px-1.5 py-0.5 text-[0.5625rem] font-bold text-gold-deep">
+          월 정기
+        </span>
+      </div>
+
+      <span className="mt-2.5 text-[0.5rem] text-muted">지난 회차 판정</span>
+      <ul className="mt-1 space-y-1">
+        {last.map((r) => (
+          <li
+            key={r.name}
+            className="flex items-center gap-2 rounded-lg border border-line bg-paper px-2.5 py-1.5"
+          >
+            <span className="truncate text-[0.5625rem] font-bold">{r.name}</span>
+            <span
+              className={`ml-auto shrink-0 rounded-full px-1.5 py-0.5 text-[0.5rem] font-bold ${
+                r.tone === "up"
+                  ? "bg-accent text-white"
+                  : r.tone === "keep"
+                    ? "bg-accent/10 text-accent-deep"
+                    : "border border-line text-muted"
+              }`}
+            >
+              {r.verdict}
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      <span className="mt-2.5 text-[0.5rem] text-muted">다음 회차 제안</span>
+      <div className="mt-1 rounded-lg border border-accent/30 bg-accent/[0.05] px-2.5 py-2">
+        <span className="block text-[0.5625rem] font-bold">
+          전문가형 2편 추가 · 비교형 → 리얼리티 전환
+        </span>
+        <span className="mt-0.5 block text-[0.5rem] text-muted">
+          잘 도는 각은 늘리고, 꺾인 각은 접습니다
+        </span>
+      </div>
     </div>
   );
 }

@@ -95,3 +95,6 @@ main().catch((e) => {
   console.error(e);
   process.exit(1);
 });
+
+// 이 파일은 스크립트다. 전역 스코프 충돌을 막으려고 모듈로 못 박는다
+export {};

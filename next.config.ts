@@ -54,19 +54,17 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       /**
-       * 블로그는 브런치북으로 보낸다.
+       * 2026-08-13: 자체 `/blog` 를 다시 열었다.
        *
-       * 2026-08-12: 자체 /blog 를 접었다. 글·이미지·구성 품질이 발행할 수준이
-       * 아니었고, 제대로 하려면 기획-제작-발행 자동화를 따로 설계해야 한다.
-       * 그때까지 이 경로들은 전부 이미 쌓여 있는 브런치북으로 넘긴다 —
-       * 빈 페이지를 남기거나 404 를 내는 것보다 낫다.
+       * 08-12 에 품질 미달로 접고 브런치북으로 넘겨 뒀던 리다이렉트를 걷는다.
+       * 이번엔 조사 → 자료 검증 → 집필 → 규격 검사를 통과한 글만 올라간다.
+       * 그때 `permanent: false` 로 둔 판단이 여기서 값을 했다 — 영구 이전으로
+       * 굳혀 놨으면 검색엔진에서 되돌리는 데 시간이 걸렸을 것이다.
        *
-       * permanent: false (307/308 아님) — 자체 블로그를 다시 열 때
-       * 브라우저·검색엔진에 영구 이전으로 굳어 있으면 되돌리기 어렵다.
+       * 브런치북은 없애지 않는다. `/article` 은 계속 그쪽으로 보내고,
+       * `/blog` 목록 하단에도 링크를 남겨 뒀다 — 거기서 오는 독자가 있다.
        */
       { source: "/article", destination: BRUNCH_URL, permanent: false },
-      { source: "/blog", destination: BRUNCH_URL, permanent: false },
-      { source: "/blog/:path*", destination: BRUNCH_URL, permanent: false },
     ];
   },
 };

@@ -7,6 +7,8 @@ import { BROCHURE, brochureMail, brochureUrl, projectStartMail, sendMail } from 
 import { FIRST_SEEDING_STAGE, FIRST_SHORTS_STAGE } from "@/lib/stages";
 import { parseChannelUrl } from "@/lib/channel-url";
 import { computeCpv, fetchChannelMetrics } from "@/lib/channel-metrics";
+import { guessCategory } from "@/lib/influencer";
+import { mirrorCandidateMedia } from "@/lib/media";
 
 export type ActionState = { ok: boolean; message: string | null };
 
@@ -101,10 +103,16 @@ export async function startProject(
 
   const { data: plan } = await admin
     .from("plans")
-    .select("id, code, label")
+    .select("id, code, label, shorts_count")
     .eq("id", planId)
     .maybeSingle();
   if (!plan) return fail("플랜을 찾지 못했습니다.");
+
+  /**
+   * 작업자에게 보일 이름. 비우면 가입 때 적은 회사명을 그대로 쓴다.
+   * 이 값이 작업자 목록·상세·업로드 파일명·드라이브 폴더 이름을 전부 덮는다.
+   */
+  const workAlias = String(formData.get("work_alias") ?? "").trim() || null;
 
   const { data: project, error } = await admin
     .from("projects")
@@ -112,6 +120,7 @@ export async function startProject(
       user_id: profile.id,
       plan_id: plan.id,
       inquiry_id: inquiry.id,
+      work_alias: workAlias,
       type: plan.code,
       stage_a: plan.code === "full" ? FIRST_SEEDING_STAGE : null,
       stage_b: FIRST_SHORTS_STAGE,
@@ -124,6 +133,43 @@ export async function startProject(
 
   // 가이드라인 입력 자리를 미리 열어 둔다 — 클라이언트가 바로 채울 수 있게
   await admin.from("project_guidelines").insert({ project_id: project.id });
+
+  // 편 행도 지금 만든다. 행이 있어야 작업자를 배정할 수 있고,
+  // 나중에 만들면 "아직 저장 안 한 편"이라는 유령 상태가 생긴다
+  const shortsCount = plan.shorts_count ?? 0;
+
+  /**
+   * 작업자 배정을 **여기서 같이** 한다. (2026-08-14)
+   *
+   * 사장님 지시: *"플랜을 현금결제한 클라 브랜드한테 넣어주면, 그와 동시에
+   * 작업자도 내가 거기서 배정하고."*
+   *
+   * 08-14 오전까지는 플랜만 넣고 작업자는 프로젝트 상세로 따로 들어가야 했다.
+   * 화면을 두 번 옮겨야 하는 순간 한쪽은 반드시 빠진다 — 실제로 배정 없이
+   * 며칠 방치된 프로젝트가 있었다.
+   *
+   * 마감일은 편성 규칙(주 2편 · 편당 7일) 그대로 1·2편 D+7, 3·4편 D+14 …
+   * 로 깐다. 배정하지 않으면 편 행만 만들어지고 담당자는 비어 있다.
+   */
+  const assigneeId = String(formData.get("assignee_id") ?? "").trim() || null;
+
+  if (shortsCount > 0) {
+    const today = new Date();
+    await admin.from("deliverables").insert(
+      Array.from({ length: shortsCount }, (_, i) => {
+        const seq = i + 1;
+        const due = new Date(today);
+        due.setDate(due.getDate() + Math.ceil(seq / 2) * 7);
+        return {
+          project_id: project.id,
+          seq,
+          ...(assigneeId
+            ? { assignee_id: assigneeId, due_date: due.toISOString().slice(0, 10) }
+            : {}),
+        };
+      }),
+    );
+  }
 
   await admin
     .from("inquiries")
@@ -146,10 +192,14 @@ export async function startProject(
 
   revalidatePath("/admin");
   revalidatePath("/app");
+  revalidatePath("/work");
+
+  const assigned = assigneeId ? ` 작업자 ${shortsCount}편 배정 완료.` : "";
   return done(
-    res.ok
+    (res.ok
       ? "프로젝트를 시작하고 안내 메일을 보냈습니다."
-      : "프로젝트를 시작했습니다. (메일은 발송되지 않았습니다 — 발송 이력 확인)",
+      : "프로젝트를 시작했습니다. (메일은 발송되지 않았습니다 — 발송 이력 확인)") +
+      assigned,
   );
 }
 
@@ -202,7 +252,10 @@ export async function addCandidate(
   const m = result.ok ? result.metrics : null;
 
   const admin = createAdminClient();
-  const { error } = await admin.from("influencer_candidates").insert({
+  // 먼저 행을 만들어 id 를 받고, 그 id 로 이미지 경로를 잡는다
+  const { data: created, error } = await admin
+    .from("influencer_candidates")
+    .insert({
     project_id: projectId,
     channel_url: parsed.url,
     channel_name: m?.displayName || parsed.handle || parsed.url,
@@ -215,13 +268,36 @@ export async function addCandidate(
     avg_comments: m?.avgComments ?? null,
     avg_cpv: computeCpv(reward, m?.avgViews ?? null),
     reward,
+    bio: m?.bio ?? null,
+    // 소개글로 카테고리를 짐작해 둔다. 틀리면 어드민에서 고른다
+    category: m?.businessCategory ?? guessCategory(m?.keywords) ?? null,
+    latest_posts: m?.latestPosts ?? [],
+    // 1차 심사가 없어졌다 — 등록하는 순간 확정 명단이다
+    confirmed: true,
     note: String(formData.get("note") ?? "").trim() || null,
     fetch_error: result.ok ? null : result.error,
     fetched_at: result.ok ? new Date().toISOString() : null,
     snapshot_at: new Date().toISOString(),
-  });
+    })
+    .select("id")
+    .single();
 
-  if (error) return fail("후보를 저장하지 못했습니다.");
+  if (error || !created) return fail("후보를 저장하지 못했습니다.");
+
+  // 인스타 CDN 주소는 만료된다. 받는 즉시 우리 스토리지로 옮겨 둔다
+  if (m) {
+    const mirrored = await mirrorCandidateMedia(created.id, {
+      thumbnailUrl: m.thumbnailUrl,
+      posts: m.latestPosts,
+    });
+    await admin
+      .from("influencer_candidates")
+      .update({
+        thumbnail_url: mirrored.thumbnailUrl,
+        latest_posts: mirrored.posts,
+      })
+      .eq("id", created.id);
+  }
   revalidatePath(`/admin/projects/${projectId}`);
   revalidatePath("/app");
   return result.ok
@@ -258,17 +334,24 @@ export async function refreshCandidate(
   }
 
   const m = result.metrics;
+  const mirrored = await mirrorCandidateMedia(id, {
+    thumbnailUrl: m.thumbnailUrl,
+    posts: m.latestPosts,
+  });
   await admin
     .from("influencer_candidates")
     .update({
       channel_name: m.displayName ?? undefined,
-      thumbnail_url: m.thumbnailUrl,
+      thumbnail_url: mirrored.thumbnailUrl,
       follower_count: m.followerCount,
       content_count: m.contentCount,
       avg_views: m.avgViews,
       avg_likes: m.avgLikes,
       avg_comments: m.avgComments,
       avg_cpv: computeCpv(candidate.reward, m.avgViews),
+      bio: m.bio,
+      category: m.businessCategory ?? guessCategory(m.keywords),
+      latest_posts: mirrored.posts,
       fetch_error: null,
       fetched_at: new Date().toISOString(),
       snapshot_at: new Date().toISOString(),
@@ -334,13 +417,36 @@ export async function upsertDeliverable(
   if (!projectId || !seq) return fail("편 번호를 확인해 주세요.");
 
   const admin = createAdminClient();
+  const status = String(formData.get("status") ?? "producing");
+
+  /**
+   * 어드민이 상태를 바꾸면 **작업자 트랙도 같이 민다.** (2026-08-14 QA)
+   *
+   * 여기서 `status` 만 쓰고 있었다. 그래서 어드민이 어떤 편을 "수정 반영중"
+   * 으로 바꿔도 작업자 화면은 계속 "컨텐츠 기획제작중" 이었다. 클라이언트는
+   * "수정 반영중" 을 보고 기다리는데 작업자는 수정 요청이 온 줄도 모르는,
+   * 두 화면이 서로 다른 말을 하는 상태가 된다. 실제로 그 상태로 남아 있는
+   * 편이 하나 있었다(1편, 08-10).
+   *
+   * `producing` 만 예외다 — 작업자 쪽 `study`(브랜드 숙지)와 `producing`
+   * (기획제작)이 클라이언트에게는 한 칸으로 보이므로, 여기서 밀면 작업자가
+   * 이미 밟은 칸을 되돌리게 된다. 단계는 되돌리지 않는다는 원칙이 우선이다.
+   */
+  const WORK_STATUS_OF: Record<string, string> = {
+    preview: "review",
+    revision: "revising",
+    approved: "done",
+  };
+  const workStatus = WORK_STATUS_OF[status];
+
   const { error } = await admin.from("deliverables").upsert(
     {
       project_id: projectId,
       seq,
       title: String(formData.get("title") ?? "").trim() || null,
       preview_url: String(formData.get("preview_url") ?? "").trim() || null,
-      status: String(formData.get("status") ?? "producing"),
+      status,
+      ...(workStatus ? { work_status: workStatus } : {}),
     },
     { onConflict: "project_id,seq" },
   );
@@ -348,6 +454,9 @@ export async function upsertDeliverable(
   if (error) return fail("산출물을 저장하지 못했습니다.");
   revalidatePath(`/admin/projects/${projectId}`);
   revalidatePath("/app");
+  // 작업자 화면도 같이 갱신한다 — 상태를 밀어 놓고 화면이 안 바뀌면
+  // 작업자는 여전히 옛 단계를 본다
+  revalidatePath("/work");
   return done("산출물을 저장했습니다.");
 }
 

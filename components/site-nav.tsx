@@ -20,15 +20,16 @@ export const NAV = [
   { href: "/sns-brand", label: "브랜드 SNS 채널" },
   { href: "/portfolio", label: "성과 사례" },
   /**
-   * 브런치북. 자체 /blog 는 2026-08-12 에 접었다 — 기획-제작-발행 자동화를
-   * 제대로 설계하기 전까지는 이미 글이 쌓여 있는 브런치가 낫다.
-   * next.config 의 /blog 리다이렉트도 같은 곳을 본다.
+   * 2026-08-13: 자체 `/blog` 로 되돌린다.
+   *
+   * 08-12 에 품질 미달로 접고 이 자리를 브런치북 외부 링크로 두었는데, 자체
+   * 블로그를 다시 열고도 이 링크를 그대로 둬서 **사이트 어디에서도 /blog 에
+   * 갈 수 없었다.** 페이지는 배포돼 있는데 입구가 없던 것.
+   *
+   * 브런치북을 버리는 게 아니다 — /blog 목록 하단에 카드로 남아 있다.
+   * 검색 유입을 받는 정면만 우리 도메인으로 옮긴다.
    */
-  {
-    href: "https://brunch.co.kr/brunchbook/bmaha2",
-    label: "블로그",
-    external: true,
-  },
+  { href: "/blog", label: "블로그" },
 ] as const;
 
 export function SiteNav({

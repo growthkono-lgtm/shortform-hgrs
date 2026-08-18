@@ -158,7 +158,7 @@ const draws = (plan.lines ?? []).map((l, i) => {
     `drawtext=fontfile='${FONT}':textfile='${tf}'` +
     `:fontsize=${pt}:fontcolor=${l.hi ? HI : "white"}` +
     `:x=(w-text_w)/2:y=h*${y}` +
-    `:box=1:boxcolor=black@0.55:boxborderw=${Math.round(pt * 0.42)}|${Math.round(pt * 0.30)}` +
+    `:box=1:boxcolor=black@0.55:boxborderw=${Math.round(pt * 0.34)}` +   // 이 ffmpeg 빌드는 `가로|세로` 두 값을 못 받는다
     `:borderw=${Math.max(2, Math.round(pt * 0.05))}:bordercolor=black@0.85` +
     `:shadowx=0:shadowy=2:shadowcolor=black@0.35` +
     `:line_spacing=${Math.round(pt * 0.25)}` +

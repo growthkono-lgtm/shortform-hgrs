@@ -112,8 +112,54 @@ if (!res.ok) {
   process.exit(1);
 }
 const tr = await res.json();
-const words = tr.words ?? [];
-const segments = tr.segments ?? [];
+let words = tr.words ?? [];
+let segments = tr.segments ?? [];
+
+/**
+ * ⚠️ **자막 글자는 받아쓰기가 아니라 원문에서 온다.** (2026-08-16)
+ *
+ * v7 첫 조립에서 자막에 `오금실수`·`표속이래요`·`먹히는것도` 가 그대로 나갔다.
+ * whisper 가 잘못 들은 것을 자막으로 썼기 때문이다. 발음이 조금만 뭉개져도
+ * 화면에 오탈자가 박힌다 — 광고에서 이건 치명적이다.
+ *
+ * 그래서 `speechClips[].line` 에 기획안 원문이 있으면 **글자는 원문을 쓰고
+ * 시각만 받아쓰기에서 가져온다.** 어절 수가 받아쓰기와 달라도 되게, 그 클립의
+ * 실제 발화 구간에 어절을 글자 수 비례로 배분한다. 카드는 어차피 어절 여러 개를
+ * 묶으므로 이 정도 근사로 충분하고, **글자가 맞는 게 0.1초보다 훨씬 중요하다.**
+ */
+const scripted = plan.speechClips.filter((s) => s.line?.trim());
+if (scripted.length) {
+  const rebuilt = [];
+  const segs = [];
+  let track = 0;
+  for (const clip of plan.speechClips) {
+    const t0 = track;
+    const t1 = track + clip.dur;
+    track = t1;
+    if (!clip.line?.trim()) continue;
+
+    // 이 클립 안에서 실제로 말이 있었던 구간
+    const mine = words.filter((w) => w.start >= t0 - 0.01 && w.start < t1 + 0.01);
+    const from = mine.length ? mine[0].start : t0;
+    const to = mine.length ? mine[mine.length - 1].end : t1;
+
+    const parts = clip.line.trim().split(/\s+/).filter(Boolean);
+    const weights = parts.map((p) => Math.max(1, p.replace(/\s/g, "").length));
+    const sum = weights.reduce((a, b) => a + b, 0);
+    let cur = from;
+    for (let i = 0; i < parts.length; i += 1) {
+      const span = ((to - from) * weights[i]) / sum;
+      rebuilt.push({ word: parts[i], start: cur, end: cur + span });
+      cur += span;
+    }
+    segs.push({ start: from, end: to, text: clip.line.trim() });
+  }
+  if (rebuilt.length) {
+    words = rebuilt;
+    segments = segs; // 문장 경계 = 클립 경계. 자막이 클립을 넘지 않는다
+    console.log(`\n원문 대사 ${segs.length}줄로 자막 글자를 교체했습니다(받아쓰기는 시각만 사용)`);
+  }
+}
 
 if (!words.length) {
   console.error("단어 타임스탬프가 없습니다 — 말이 없는 트랙일 수 있습니다");
@@ -201,10 +247,16 @@ for (let i = cards.length - 1; i > 0; i -= 1) {
   const prev = cards[i - 1];
   const sameSentence = prev.seg === c.seg;
   const tooShort = c.until - c.at < CARD_SECONDS[0] || count(c.text) < 4;
+  /**
+   * 두 글자 이하 꼬리는 글자 수 상한을 무시하고 붙인다.
+   * `말` 한 글자가 0.4초 깜빡이는 카드가 실제로 나왔다(2026-08-16).
+   * 한 글자짜리 카드는 상한을 조금 넘는 것보다 훨씬 나쁘다.
+   */
+  const orphan = count(c.text) <= 2;
   if (
     sameSentence &&
     tooShort &&
-    count(`${prev.text}${c.text}`) <= CHARS_PER_CARD[1]
+    (orphan || count(`${prev.text}${c.text}`) <= CHARS_PER_CARD[1])
   ) {
     prev.text = `${prev.text} ${c.text}`.trim();
     prev.until = c.until;

@@ -30,13 +30,25 @@ const env = Object.fromEntries(
     }),
 );
 
-/** 공개돼도 되는 값은 검사에서 뺀다 */
+/**
+ * 공개돼도 되는 값은 검사에서 뺀다.
+ *
+ * 검색엔진 소유확인 태그는 **HTML 에 박히라고 있는 값** 이다. 이걸 잡아 두면
+ * 페이지마다 빨간불이 떠서 진짜 유출이 그 밑에 묻힌다 — 2026-08-14 에
+ * 실제로 40줄이 넘게 쏟아졌다.
+ */
+const PUBLIC_BY_DESIGN = new Set([
+  "GOOGLE_SITE_VERIFICATION",
+  "NAVER_SITE_VERIFICATION",
+]);
+
 const publicValues = Object.entries(env)
   .filter(([k]) => k.startsWith("NEXT_PUBLIC_"))
   .map(([, v]) => v);
 
 const secrets = Object.entries(env).filter(([k, v]) => {
   if (k.startsWith("NEXT_PUBLIC_")) return false;
+  if (PUBLIC_BY_DESIGN.has(k)) return false;
   if (v.length < 12) return false;
   // 공개 값 안에 통째로 들어가는 조각(프로젝트 ref 등)은 비밀이 아니다
   if (publicValues.some((pv) => pv.includes(v))) return false;

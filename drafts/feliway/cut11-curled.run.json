@@ -1,0 +1,17 @@
+{
+  "endpoint": "bytedance/seedance-2.0/reference-to-video",
+  "body": {
+    "prompt": "장소는 [Image1] 과 같은 한국 가정집 거실이다. 같은 소파, 같은 벽, 같은 바닥.\n세로 9:16. 흐린 낮의 창가 빛. 손에 든 스마트폰으로 찍은 듯한 미세한 흔들림.\n카메라: 소파 높이에서 고정, 아주 천천히 다가간다.\n동작: 회색 줄무늬 고양이가 소파 구석에서 몸을 완전히 동그랗게 말고 앞발에 얼굴을 파묻은 채 자고 있다. 꼬리로 몸을 감쌌다. 등이 잔뜩 굽어 있고 긴장이 풀리지 않은 자세다.\n이 컷에 반드시 담긴다: 고양이가 최대한 작게 웅크린 실루엣 전체가 화면에 들어온다.\n사람은 등장하지 않는다. 화면에 글자·자막·로고를 넣지 않는다.",
+    "resolution": "720p",
+    "duration": "5",
+    "aspect_ratio": "9:16",
+    "generate_audio": false,
+    "seed": 1101,
+    "image_urls": [
+      "https://v3b.fal.media/files/b/0aa67334/yqD0VO_M76LfGdu54znN__space-living.png"
+    ]
+  },
+  "seed": 1101,
+  "videoUrl": "https://v3b.fal.media/files/b/0aa67353/0v7D5R7P0VXdqyDim0d3z_video.mp4",
+  "spent": 0
+}

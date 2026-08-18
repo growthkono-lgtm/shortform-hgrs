@@ -355,3 +355,274 @@ dd {
     opacity: 1;
   }
 }
+
+/* ── 블로그 본문 ─────────────────────────────────────────────────────────
+   `lib/blog-posts.ts` 가 뱉는 HTML 만 대상으로 한다. 본문은 마크다운에서
+   오기 때문에 클래스를 붙일 수 없어, 자손 선택자로 조판한다.
+
+   2026-08-13 밤 개편 — 사장님 지적 반영:
+    · 출처가 모노스페이스 덩어리로 튀어나와 읽는 흐름을 끊었다 → 한 줄로 작게
+    · 제목 위계가 없어 다 평평했다 → H2/H3 를 눈에 띄게 갈랐다
+    · 시각적 리듬이 없었다 → 인용 박스와 강조 배경을 넣었다 */
+.blog-body {
+  font-size: 1.0625rem;
+  line-height: 1.85;
+  letter-spacing: -0.01em;
+}
+
+/* 대제목 — 섹션이 바뀐다는 걸 한눈에 */
+.blog-body h2 {
+  margin: 3.4rem 0 1.2rem;
+  font-size: 1.45rem;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  scroll-margin-top: 5rem;
+}
+.blog-body h2::before {
+  content: "";
+  display: block;
+  width: 2.25rem;
+  height: 3px;
+  margin-bottom: 1rem;
+  border-radius: 2px;
+  background: var(--color-accent);
+}
+
+/* 중제목 — 사례 이름 등. 대제목보다 작고 색으로 구분 */
+.blog-body h3 {
+  margin: 2.2rem 0 0.6rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--color-accent-deep);
+  scroll-margin-top: 5rem;
+}
+
+.blog-body p {
+  margin: 0 0 1.1rem;
+  color: color-mix(in oklab, var(--color-ink) 84%, transparent);
+}
+.blog-body strong {
+  font-weight: 700;
+  color: var(--color-ink);
+  background: linear-gradient(
+    transparent 62%,
+    color-mix(in oklab, var(--color-accent) 18%, transparent) 62%
+  );
+}
+.blog-body a {
+  color: var(--color-accent-deep);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* 인용 — 브랜드 색 면으로 리듬을 준다 */
+.blog-body blockquote {
+  margin: 1.8rem 0;
+  padding: 1.1rem 1.3rem;
+  border-left: 3px solid var(--color-accent);
+  border-radius: 0 0.6rem 0.6rem 0;
+  background: color-mix(in oklab, var(--color-accent) 6%, transparent);
+}
+.blog-body blockquote p {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+.blog-body blockquote p + p {
+  margin-top: 0.6rem;
+}
+
+/* 강조 박스 — 2026-08-15. 사장님 지적: "핵심 포인트가 시각적으로 강조가
+   안 되니까 안 읽히더라." 줄글 사이에서 결론과 실행이 눈에 잡히게 세운다.
+   :::point = 이 섹션에서 가져갈 것 / :::do = 이번 주에 할 것 */
+.blog-body .callout {
+  margin: 1.9rem 0;
+  padding: 1.15rem 1.3rem 1.25rem;
+  border-radius: 0.85rem;
+  border: 1px solid color-mix(in oklab, var(--color-accent) 26%, transparent);
+  background: color-mix(in oklab, var(--color-accent) 6%, transparent);
+}
+.blog-body .callout-do {
+  border-color: color-mix(in oklab, var(--color-ink) 16%, transparent);
+  background: color-mix(in oklab, var(--color-ink) 4%, transparent);
+}
+.blog-body .callout-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.55;
+  color: var(--color-ink);
+}
+.blog-body .callout-label {
+  display: inline-block;
+  margin-right: 0.5rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 0.35rem;
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  vertical-align: 0.12em;
+}
+.blog-body .callout-do .callout-label {
+  background: var(--color-ink);
+}
+.blog-body .callout ul,
+.blog-body .callout ol {
+  margin: 0.85rem 0 0;
+  padding-left: 1.3rem;
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  color: color-mix(in oklab, var(--color-ink) 82%, transparent);
+}
+.blog-body .callout li {
+  margin: 0.35rem 0;
+}
+.blog-body .callout ul {
+  list-style: disc;
+}
+.blog-body .callout ol {
+  list-style: decimal;
+}
+
+/* 본문 목록 — 2026-08-15 이전엔 렌더 자체가 없어 `- 항목` 이 문단으로 나왔다 */
+.blog-body ul.bullets,
+.blog-body ol.steps {
+  margin: 1.1rem 0 1.4rem;
+  padding-left: 1.35rem;
+}
+.blog-body ul.bullets {
+  list-style: disc;
+}
+.blog-body ol.steps {
+  list-style: decimal;
+}
+.blog-body ul.bullets li,
+.blog-body ol.steps li {
+  margin: 0.45rem 0;
+  padding-left: 0.2rem;
+  color: color-mix(in oklab, var(--color-ink) 84%, transparent);
+}
+.blog-body ol.steps li::marker {
+  font-weight: 700;
+  color: var(--color-accent-deep);
+}
+
+.blog-body ol.toc {
+  margin: 1.4rem 0 0;
+  padding: 1.15rem 1.2rem 1.15rem 2.5rem;
+  border-radius: 0.75rem;
+  background: color-mix(in oklab, var(--color-ink) 3.5%, transparent);
+  font-size: 0.9375rem;
+  color: color-mix(in oklab, var(--color-ink) 66%, transparent);
+  list-style: decimal;
+}
+.blog-body ol.toc li {
+  margin: 0.35rem 0;
+}
+.blog-body ol.toc a {
+  color: inherit;
+  text-decoration: none;
+}
+.blog-body ol.toc a:hover {
+  text-decoration: underline;
+}
+
+/* 표 — 넘치면 표만 가로로 스크롤한다 */
+.blog-body .table-wrap {
+  margin: 1.7rem 0 1.9rem;
+  overflow-x: auto;
+  border: 1px solid color-mix(in oklab, var(--color-ink) 10%, transparent);
+  border-radius: 0.75rem;
+}
+.blog-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.blog-body thead {
+  background: color-mix(in oklab, var(--color-ink) 3.5%, transparent);
+}
+.blog-body th,
+.blog-body td {
+  padding: 0.7rem 0.85rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--color-ink) 8%, transparent);
+  text-align: left;
+  vertical-align: top;
+}
+.blog-body tbody tr:last-child td {
+  border-bottom: 0;
+}
+.blog-body th {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* 시각 자료 */
+.blog-body .src {
+  margin: 1.4rem 0 1.8rem;
+}
+/* 유튜브 — 16:9 상자에 절대 배치 */
+.blog-body .embed-video {
+  position: relative;
+  padding-top: 56.25%;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background: color-mix(in oklab, var(--color-ink) 5%, transparent);
+}
+.blog-body .embed-video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* 틱톡·인스타 — 플랫폼 스크립트가 자기 크기의 iframe 으로 바꿔 끼운다.
+   16:9 상자를 씌우면 잘리므로 높이를 내용에 맡긴다. 스크립트가 끝내 안 붙으면
+   원본 캡션이 그대로 보이는데, 그건 빈 상자보다 낫다 */
+.blog-body .embed-social {
+  display: flex;
+  justify-content: center;
+  min-height: 6rem;
+}
+.blog-body .embed-social blockquote {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  max-width: 100%;
+}
+.blog-body .embed-social iframe {
+  max-width: 100% !important;
+}
+
+/* 출처 — 자료 바로 아래, 작게. 명시는 하되 방해하지 않는다 */
+.blog-body figcaption,
+.blog-body .src-inline {
+  display: block;
+  margin: 0.55rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: color-mix(in oklab, var(--color-ink) 42%, transparent);
+}
+.blog-body .src-inline {
+  margin: -0.4rem 0 1.4rem;
+}
+.blog-body figcaption a,
+.blog-body .src-inline a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in oklab, var(--color-ink) 18%, transparent);
+}
+.blog-body figcaption a:hover,
+.blog-body .src-inline a:hover {
+  color: var(--color-accent-deep);
+  border-bottom-color: currentColor;
+}

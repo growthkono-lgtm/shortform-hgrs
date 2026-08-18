@@ -1,14 +1,27 @@
 import Link from "next/link";
+import {
+  CLIENT_WORK_STEPS,
+  prepState,
+  prepSteps,
+  sourcesDelivered,
+  workState,
+} from "@/lib/process";
 import { StageSteps } from "@/components/portal/stage-steps";
 import {
   CandidatePanel,
+  ClientNotePanel,
   DeliverablePanel,
+  ContentGallery,
+  ContentReviewPanel,
+  ShipmentPanel,
+  type InfluencerContent,
+  type Shipment,
   GuidelinePanel,
   type Candidate,
   type Deliverable,
   type Guideline,
 } from "@/components/portal/project-panels";
-import { SEEDING_STAGES, SHORTS_STAGES, TRACK_LABEL } from "@/lib/stages";
+import { TRACK_LABEL } from "@/lib/stages";
 import { formatKRW } from "@/lib/constants";
 
 export type DashboardData = {
@@ -36,6 +49,9 @@ export type DashboardData = {
     influencerCount: number;
   } | null;
   guideline: Guideline;
+  clientNote: string | null;
+  shipments: Shipment[];
+  contents: InfluencerContent[];
   candidates: Candidate[];
   deliverables: Deliverable[];
   seedingDriveLink: string | null;
@@ -45,6 +61,7 @@ export type DashboardData = {
 
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString("ko-KR", {
+    timeZone: "Asia/Seoul",
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -76,6 +93,9 @@ export function DashboardView({
     brands,
     campaign,
     guideline,
+    clientNote,
+    shipments,
+    contents,
     candidates,
     deliverables,
     seedingDriveLink,
@@ -83,6 +103,10 @@ export function DashboardView({
     history,
   } = data;
   const due = dueInfo(campaign?.startedAt ?? null);
+  // 시딩 포함 여부는 플랜이 정한다. 준비 트랙의 칸 수가 여기서 갈린다
+  const hasSeeding = (campaign?.influencerCount ?? 0) > 0;
+  // 소스컷이 전달돼야 제작 트랙에 불이 들어온다
+  const delivered = sourcesDelivered(campaign?.stageA);
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,260px)_minmax(0,1fr)] lg:gap-10">
@@ -219,6 +243,26 @@ export function DashboardView({
               </p>
             </div>
 
+            {/* 먼저 채워 주셔야 할 것 — 화면 맨 위에 둔다.
+                진행 단계보다 위에 있어야 "내가 뭘 해야 하나"가 먼저 읽힌다.
+
+                ⚠️ 2026-08-14 QA: 이 블록이 통째로 두 번 그려지고 있었다.
+                클라이언트 화면에 같은 입력 폼과 [가이드라인 저장] 버튼이
+                두 벌 보였다. 08-13 "맨 위로 올리기" 작업 때 옮기고 원래 자리를
+                안 지운 것으로 보인다. 한 벌만 남긴다 */}
+            {!readOnly && (
+              <section className="space-y-3">
+                <GuidelinePanel
+                  projectId={campaign.projectId}
+                  guideline={guideline}
+                />
+                <ClientNotePanel
+                  projectId={campaign.projectId}
+                  note={clientNote}
+                />
+              </section>
+            )}
+
             {/* 기획제작 요청 확정 기한 — 시작일 + 7일 */}
             {due && (
               <p className="mt-3 inline-flex flex-wrap items-center gap-2 rounded-xl border border-accent/40 bg-accent/[0.06] px-4 py-2.5 text-xs leading-[1.7] text-accent-deep">
@@ -229,51 +273,78 @@ export function DashboardView({
               </p>
             )}
 
-            {/* 인플루언서 시딩 트랙 */}
-            {campaign.stageA && (
-              <section className="mt-8">
-                <h2 className="text-sm font-bold">
-                  {TRACK_LABEL.seeding}
+            {/* 준비 트랙 — 시딩이 있으면 5칸, 없으면 소스컷 1칸 */}
+            <section className="mt-10">
+              <h2 className="text-sm font-bold">
+                {hasSeeding ? "인플루언서 시딩" : "소스컷 준비"}
+                {hasSeeding && (
                   <span className="ml-2 font-normal text-muted">
                     {campaign.influencerCount}명
                   </span>
-                </h2>
-                <div className="mt-4 rounded-2xl border border-line bg-paper p-5 sm:p-6">
-                  <StageSteps stages={SEEDING_STAGES} stage={campaign.stageA} />
+                )}
+              </h2>
+              <div className="mt-4 rounded-2xl border border-line bg-paper p-5 sm:p-6">
+                <StageSteps
+                  stages={prepSteps(hasSeeding)}
+                  stateOf={(k) => prepState(k, campaign.stageA)}
+                />
+              </div>
+
+              {hasSeeding && shipments.length > 0 && (
+                <div className="mt-4">
+                  <ShipmentPanel
+                    projectId={campaign.projectId}
+                    shipments={shipments}
+                  />
                 </div>
+              )}
 
-                {candidates.length > 0 && (
-                  <div className="mt-4">
-                    <CandidatePanel
-                      projectId={campaign.projectId}
-                      candidates={candidates}
-                    />
-                  </div>
-                )}
+              {hasSeeding && candidates.length > 0 && (
+                <div className="mt-4">
+                  <CandidatePanel candidates={candidates} />
+                </div>
+              )}
 
-                {seedingDriveLink && (
-                  <a
-                    href={seedingDriveLink}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-4 inline-flex rounded-full bg-ink px-5 py-2.5 text-xs font-bold text-paper"
-                  >
-                    인플루언서 결과물 받기
-                  </a>
-                )}
-              </section>
-            )}
+              {hasSeeding && contents.length > 0 && (
+                <div className="mt-4 space-y-4">
+                  <ContentReviewPanel
+                    projectId={campaign.projectId}
+                    contents={contents}
+                  />
+                  <ContentGallery contents={contents} />
+                </div>
+              )}
 
-            {/* 숏폼 기획제작 트랙 */}
-            <section className="mt-10">
+              {hasSeeding && seedingDriveLink && (
+                <a
+                  href={seedingDriveLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-4 inline-flex rounded-full bg-ink px-5 py-2.5 text-xs font-bold text-paper"
+                >
+                  인플루언서 결과물 받기
+                </a>
+              )}
+            </section>
+
+            {/* 제작 트랙 — 소스가 전달돼야 켜진다 */}
+            <section className="mt-8">
               <h2 className="text-sm font-bold">
-                {TRACK_LABEL.shorts}
+                전환형 숏폼 기획제작
                 <span className="ml-2 font-normal text-muted">
                   {campaign.shortsCount}편
                 </span>
               </h2>
               <div className="mt-4 rounded-2xl border border-line bg-paper p-5 sm:p-6">
-                <StageSteps stages={SHORTS_STAGES} stage={campaign.stageB} />
+                <StageSteps
+                  stages={CLIENT_WORK_STEPS}
+                  stateOf={(k) => workState(k, campaign.stageB, delivered)}
+                />
+                {!delivered && (
+                  <p className="mt-3 text-[0.6875rem] leading-[1.7] text-muted/70">
+                    소스컷이 전달되면 제작이 시작됩니다.
+                  </p>
+                )}
               </div>
 
               {(deliverables.length > 0 || finalDriveLink) && (
@@ -287,19 +358,9 @@ export function DashboardView({
               )}
             </section>
 
-            {/* 컨텐츠 가이드라인 */}
-            {!readOnly && (
-              <section className="mt-10">
-                <GuidelinePanel
-                  projectId={campaign.projectId}
-                  guideline={guideline}
-                />
-              </section>
-            )}
-
             <p className="mt-6 text-xs leading-[1.7] text-muted">
               단계는 담당자가 진행에 맞춰 갱신합니다. 궁금한 점은 우측 하단
-              채널톡으로 문의해 주세요.
+              우측 하단 카카오톡 상담으로 문의해 주세요.
             </p>
           </>
         )}

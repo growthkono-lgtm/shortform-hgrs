@@ -30,6 +30,23 @@ export async function createClient() {
 }
 
 /**
+ * 공개 데이터 전용 — 쿠키를 읽지 않는다.
+ *
+ * `generateStaticParams` 와 사이트맵은 **빌드 시점**에 도는데, 그때는 HTTP 요청이
+ * 없어서 `cookies()` 를 부르면 에러가 난다(2026-08-13 블로그 빌드 실패).
+ * 로그인 세션이 필요 없는 공개 글 목록은 이 클라이언트로 읽는다.
+ *
+ * anon 키라 RLS 가 그대로 걸린다 — 발행분만 보인다. 초안이 샐 경로가 없다.
+ */
+export function createPublicClient() {
+  return createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { cookies: { getAll: () => [], setAll: () => {} } },
+  );
+}
+
+/**
  * RLS를 우회하는 관리자 클라이언트.
  * 상태 전이·결제 승인 등 server route 전용. 절대 클라이언트로 새어나가면 안 된다.
  */

@@ -1,0 +1,17 @@
+{
+  "endpoint": "bytedance/seedance-2.0/reference-to-video",
+  "body": {
+    "prompt": "장소는 [Image1] 과 같은 한국 가정집 거실 바닥이다. 같은 마루, 같은 조명.\n세로 9:16. 밝은 낮의 자연광. 손에 든 스마트폰으로 찍은 듯한 미세한 흔들림.\n카메라: 바닥 가까이 낮은 각도에서 고정.\n동작: 회색 줄무늬 고양이가 흰 사기 밥그릇으로 다가와 얼굴을 묻고 사료를 씹어 먹는다. 꼬리가 위로 서 있고 귀가 앞을 향한다.\n이 컷에 반드시 담긴다: 고양이가 실제로 사료를 입에 넣고 씹는 동작이 보인다.\n사람은 등장하지 않는다. 화면에 글자·자막·로고를 넣지 않는다.",
+    "resolution": "720p",
+    "duration": "5",
+    "aspect_ratio": "9:16",
+    "generate_audio": false,
+    "seed": 1301,
+    "image_urls": [
+      "https://v3b.fal.media/files/b/0aa6735c/pgZCUQHj3K7irQZ9yz2ZX_space-living.png"
+    ]
+  },
+  "seed": 1301,
+  "videoUrl": "https://v3b.fal.media/files/b/0aa6736b/HN42I8gSdaq0ZsPMI8Gyl_video.mp4",
+  "spent": 1.525
+}

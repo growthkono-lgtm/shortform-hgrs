@@ -1,0 +1,119 @@
+{
+  "title": "소재 피로도, 조회수 하락 전에 교체 시점을 읽는 법",
+  "slug": "creative-fatigue-replacement-signals-2026",
+  "lead": "광고 영상을 계속 추가하는데도 신규 고객 도달과 구매 효율이 함께 밀리는 구간이 늘고 있습니다. 조회수는 아직 나오는데 CPA와 ROAS가 흔들리면, 팀은 무엇부터 갈아야 할지 판단이 어려워집니다. 지금은 실제 피로 신호를 읽고 다른 구매 이유의 영상을 제때 투입하는 운영 구조가 필요합니다.",
+  "head_keyword": "소재 피로도",
+  "sub_keywords": [
+    "구매 전환형 숏폼",
+    "크리에이티브 피로",
+    "광고 소재 교체",
+    "신규 도달",
+    "CPA",
+    "ROAS",
+    "기여 매출",
+    "어트리뷰션 윈도우"
+  ],
+  "sections": [
+    {
+      "heading": "소재 피로도는 조회수가 떨어질 때 판단하면 되나요?",
+      "intent": "조회수나 빈도 하나가 아니라 신규 도달, 반응, 수익성이 함께 무너지는 복합 신호를 교체 기준으로 세워야 한다는 결론을 제시합니다. 첫 문단에서 전환 캠페인의 현상과 독자 상황을 짚고, 이어 빈도 상승·CTR 하락·도달 하락·CPA 상승 또는 ROAS 하락을 한 묶음으로 읽어야 하는 이유를 설명합니다. 클릭 지표만으로 결론 내리면 조회 후 구매 기여가 있는 숏폼을 과소평가할 수 있으므로, 동일 어트리뷰션 윈도우에서 기여 매출 효율을 봐야 한다는 판단까지 연결합니다.",
+      "answer": "아닙니다. 빈도 상승만으로 교체하지 말고 신규 도달·CTR·CPA·ROAS가 같은 흐름으로 악화되는지 보셔야 합니다. 새 고객을 덜 만나며 구매 효율까지 꺾일 때가 실제 교체 신호입니다.",
+      "table": null,
+      "source_refs": [
+        0
+      ]
+    },
+    {
+      "heading": "구매 전환형 숏폼은 몇 편을 만들어야 피로도를 막을 수 있나요?",
+      "intent": "제작 편수 목표를 ‘서로 다른 가설을 가진 후보군’의 확보로 바꿉니다. 답은 네 가지로 정리합니다: 기존 승자와 다른 훅, 다른 장면과 인물, 다른 상품 제시 방식, 다른 구매 이유를 준비해야 합니다. 컷과 자막만 바꾼 파생본이 왜 교체 대응력이 낮은지 설명하고, 광고그룹 안에서 차별 소재가 실제로 경쟁할 수 있는지와 대체 영상 투입 리드타임을 운영 KPI로 제안합니다.",
+      "answer": "정해진 제작 편수보다 기존 성과 영상과 얼마나 다른 구매 가설을 시험하는지가 중요합니다. TikTok Business Help Center의 2025년 가이드는 광고그룹마다 3~5개의 서로 다른 크리에이티브를 권장합니다.",
+      "table": {
+        "caption": "판단표 · 더 만들지, 교체할지 결정할 때 함께 볼 신호",
+        "columns": [
+          "판단 단계",
+          "확인할 변화",
+          "경영 판단"
+        ]
+      },
+      "source_refs": [
+        1
+      ]
+    },
+    {
+      "heading": "새 소재가 구매 전환을 회복했는지는 무엇으로 확인하나요?",
+      "intent": "CATALIC Korea 사례를 목적·판단 기준·결과 순서로 다룹니다. 목적은 웹 전환 확대였고, 판단 기준은 조회수가 아니라 TTCX 제작 소재와 비교 소재의 CVR·ROAS 및 전환 리프트였습니다. 결과 수치는 공개 사례의 비교 기준을 벗어나 일반화하지 않되, 소재의 가치는 영상별 조회 순위가 아니라 소재군별 전환 효율과 증분 구매로 평가해야 한다는 사례 결론으로 번역합니다. 업종 적용에서는 소재별 성과표에 상단 반응 지표와 구매 기여 지표를 함께 두고, 할인·시즌성·입찰 변화와 소재 문제를 분리해 보도록 안내합니다.",
+      "answer": "전환 기여는 조회수가 아니라 소재군별 CVR·ROAS와 노출·비노출군의 구매 차이로 확인해야 합니다. TikTok for Business의 2026년 조회 CATALIC Korea 사례에서는 TTCX 소재가 비교 소재보다 CVR 83% 상승, ROAS 2배를 기록했습니다.",
+      "table": null,
+      "source_refs": [
+        3
+      ]
+    },
+    {
+      "heading": "소재 피로 신호가 보이면 운영 팀에 무엇을 맡겨야 하나요?",
+      "intent": "내일부터 적용할 운영 순서를 성과 확인, 교체 판단, 대체 영상 투입의 한 흐름으로 제시합니다. 인하우스와 외부 파트너를 나눠 운영하더라도 소재별 신규 도달·CPA·ROAS를 같은 기준으로 확인하고, 다른 구매 이유를 담은 후보를 미리 준비해야 한다는 점을 강조합니다. 해그로시는 구매 전환형 숏폼을 기획·제작하며, 플랜 결제 후 ‘내 프로젝트’에서 진행 현황을 확인하고 콘텐츠를 수급받는 구조를 운영한다는 사실로 연결합니다. 자사 성과 수치를 앞세우지 않고, 운영 투명성과 소재 공급 리드타임이 필요한 브랜드의 선택 기준으로 마무리합니다.",
+      "answer": "운영 팀에는 성과 확인, 교체 판단, 대체 영상 투입을 한 흐름으로 맡기셔야 합니다. 해그로시는 플랜 결제 후 ‘내 프로젝트’에서 진행 현황을 확인하고 콘텐츠를 수급하는 구조를 운영합니다.",
+      "table": null,
+      "source_refs": [
+        4
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "kind": "stat",
+      "url": "https://ads.tiktok.com/business/library/TikTok_Web_Auction_Best_Practices_2024.pdf",
+      "title": "TikTok Web Auction Best Practices Guide 2024",
+      "author": "TikTok for Business",
+      "year": "2024",
+      "basis": "2026년 조회, TikTok 웹 전환(Web Auction) 광고의 광고그룹 단위 빈도·도달·CTR·CPA·ROAS 변화 기준"
+    },
+    {
+      "kind": "stat",
+      "url": "https://ads.tiktok.com/help/article/creative-best-practices?lang=en&q=ACO&redirected=1",
+      "title": "Creative best practices for performance ads",
+      "author": "TikTok Business Help Center",
+      "year": "2025",
+      "basis": "2025년 6월 최종 업데이트, 2026년 조회, TikTok 성과형 광고의 광고그룹·캠페인 소재 구성 및 전달 성과 기준"
+    },
+    {
+      "kind": "stat",
+      "url": "https://ads.tiktok.com/help/article/smart-creative",
+      "title": "About Smart Creative",
+      "author": "TikTok Business Help Center",
+      "year": "2025",
+      "basis": "2025년 11월 최종 업데이트, 2026년 조회, 전 지역 TikTok Ads Manager의 트래픽·앱 프로모션·전환·리드 생성 광고그룹 기준"
+    },
+    {
+      "kind": "stat",
+      "url": "https://ads.tiktok.com/business/en-GB/inspiration/catalic-korea-ttcx",
+      "title": "CATALIC Korea: Boosting web conversions with Soon-ent and TikTok Creative Exchange",
+      "author": "TikTok for Business",
+      "year": "2026",
+      "basis": "2026년 조회, 한국 립스틱 브랜드 CATALIC의 TTCX 제작 소재와 비-TTCX 소재 비교 및 TikTok 전환 리프트 측정 기준"
+    },
+    {
+      "kind": "owned",
+      "url": "https://hgrs.io/shortform",
+      "title": "구매 전환형 숏폼 기획·제작",
+      "author": "주식회사 해그로시(HGRS)",
+      "year": "2026",
+      "basis": "2026년 조회, 해그로시 스튜디오의 구매 전환형 숏폼 기획·제작 및 프로젝트 진행 현황 확인 구조 소개 기준"
+    },
+    {
+      "kind": "stat",
+      "url": "https://blog.google/products/ads-commerce/youtube-brand-engagement-shorts-creators/",
+      "title": "New ways brands can stand out on YouTube",
+      "author": "Google Ads Blog",
+      "year": "2024",
+      "basis": "2024년 11월 13일 발행, 2026년 조회, Video View Campaign의 글로벌 Shorts 전용 구매 제어 및 Shorts 측정 기능 발표 기준"
+    }
+  ],
+  "faq": [
+    "성과가 하락한 소재를 멈출 때 캠페인 학습 손실은 어떻게 줄이나요?",
+    "세일 기간처럼 외부 조건이 바뀐 주간에도 소재 피로도를 판단할 수 있나요?",
+    "크리에이터 영상과 브랜드 계정 영상을 같은 ROAS로 비교해도 되나요?",
+    "플랫폼별 어트리뷰션 윈도우가 다르면 기여 매출은 어떻게 보고해야 하나요?"
+  ],
+  "next_teaser": "다음 편에서는 승자 소재를 복제하지 않고도 구매 이유를 확장하는 숏폼 테스트 설계 기준을 다룹니다.",
+  "thumbnail_prompt": "A premium marketing operations scene for a Korean commerce brand: multiple vertical short-form video concepts displayed as distinct storyboard cards, a clean analytics dashboard showing declining reach and rising cost signals, a decisive executive hand selecting a fresh alternative creative, dark charcoal background with vivid coral and electric blue accents, editorial business photography style, no text, no logos"
+}

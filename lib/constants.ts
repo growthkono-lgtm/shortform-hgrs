@@ -246,3 +246,17 @@ export const formatKRW = (won: number) => `₩${won.toLocaleString("ko-KR")}`;
 
 export const discountRate = (listPrice: number, betaPrice: number) =>
   Math.round((1 - betaPrice / listPrice) * 100);
+
+/**
+ * 카카오톡 상담 채널. (2026-08-14 — 채널톡 대체)
+ *
+ * 브랜드가 우리에게 말을 거는 유일한 창구다. 반대 방향(우리 → 브랜드)은
+ * 메일이고, 어드민 프로젝트 화면의 [브랜드에게 알리기]가 그 입구다.
+ * 먼저 알려 두면 여기로 오는 문의가 줄고, 남는 건 진짜 물어볼 것뿐이다.
+ */
+export const KAKAO_CHANNEL = {
+  /** 채널 홈 */
+  url: "https://pf.kakao.com/_QExiiX",
+  /** 채팅 바로 열기 — 홈을 거치지 않고 대화창으로 떨어진다 */
+  chatUrl: "https://pf.kakao.com/_QExiiX/chat",
+} as const;

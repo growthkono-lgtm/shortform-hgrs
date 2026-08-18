@@ -31,8 +31,36 @@ export async function requireProfile(next?: string): Promise<Profile> {
   // 트리거가 아직 행을 못 만든 극히 드문 경우 — 재로그인 유도
   if (!profile) redirect("/login?error=profile_missing");
 
+  // 작업자 계정은 클라이언트 표면에 들어올 일이 없다.
+  // 여기서 막지 않으면 /app 에서 회사명·플랜·금액을 그대로 보게 된다
+  if (profile.role === "worker") redirect("/work");
+
   // 이메일 인증만 하고 이탈한 반쪽 계정 — 가입 마무리로 돌려보낸다
   if (!profile.signup_completed) redirect("/signup");
+
+  return profile;
+}
+
+/**
+ * 작업자 전용 가드.
+ *
+ * requireProfile 을 재사용하지 않는다 — 그쪽은 실패하면 `/login`·`/signup` 으로 보내는데
+ * 작업자 호스트에서 그 경로는 404 다(proxy.ts). 막다른 골목이 된다.
+ * 여기서는 언제나 `/work/login` 으로만 보낸다.
+ */
+export async function requireWorker(): Promise<Profile> {
+  const supabase = await createClient();
+
+  const { data: claimsData, error } = await supabase.auth.getClaims();
+  if (error || !claimsData?.claims) redirect("/work/login");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", claimsData.claims.sub as string)
+    .single();
+
+  if (!profile || profile.role !== "worker") redirect("/work/login?error=denied");
 
   return profile;
 }

@@ -50,14 +50,25 @@ export function Diagnosis() {
             <br />
             <strong className="font-bold">컨디션 체크</strong>
           </h2>
-          <p className="mt-5 max-w-lg text-[0.9375rem] leading-[1.8] text-white/60 sm:text-base">
-            인플루언서 시딩과 함께 소스컷을 확보해 광고 전환용 숏폼을
-            기획제작하거나, 소스가 충분할 경우 후자만 진행합니다. 단, 브랜드마다
-            상황이 다양하므로 상세 안내를 꼭 받아보세요.
-          </p>
-          <p className="mt-6 text-xs leading-[1.7] text-white/40">
-            30초 · 답변은 신청하실 때만 함께 전달됩니다
-          </p>
+          {/* 2026-08-13 사장님 지시: "30초 · 답변은…" 안내 문구를 빼고,
+              AI 제작 가능 여부와 단가 확인 경로를 문단으로 나눠 덧붙였다.
+              단가를 페이지에 박지 않는 이유는 브랜드마다 소스 보유 상태가
+              달라 확정가가 상담 단계에서만 나오기 때문이다. */}
+          <div className="mt-5 flex max-w-lg flex-col gap-4 text-[0.9375rem] leading-[1.8] text-white/60 sm:text-base">
+            <p>
+              인플루언서 시딩과 함께 소스컷을 확보해 광고 전환용 숏폼을
+              기획제작하거나, 소스가 충분할 경우 후자만 진행합니다. 단,
+              브랜드마다 상황이 다양하므로 상세 안내를 꼭 받아보세요.
+            </p>
+            <p>
+              기획과 AI만으로도 제작은 가능합니다. 다만 광고 매출 성과는 명확한
+              가이드라인과 필요한 소스컷을 토대로 기획이 함께 들어가야 결과로
+              증명됩니다.
+            </p>
+            <p>
+              세부 확정 단가는 신청 후 상담 단계(메일)에서 확인해 주세요.
+            </p>
+          </div>
         </div>
 
         <div className="min-w-0 rounded-3xl border border-white/10 bg-white/[0.04] p-6 sm:p-8">

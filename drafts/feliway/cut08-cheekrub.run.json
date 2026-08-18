@@ -1,0 +1,17 @@
+{
+  "endpoint": "bytedance/seedance-2.0/reference-to-video",
+  "body": {
+    "prompt": "장소는 [Image1] 과 같은 한국 가정집 거실이다.\n세로 9:16. 자연광. 얕은 심도의 클로즈업.\n카메라: 고양이 얼굴 높이에서 고정.\n동작: 회색 줄무늬 고양이가 소파 모서리에 볼과 턱을 천천히, 반복해서 문지른다. 눈을 반쯤 감고 편안한 표정이다. 문지른 뒤 고개를 들어 같은 자리를 다시 비빈다.\n이 컷에 반드시 담긴다: 고양이의 볼과 턱이 가구 모서리에 닿아 눌리는 순간이 정면 클로즈업으로 보인다.\n사람은 등장하지 않는다. 화면에 글자·자막·로고를 넣지 않는다.",
+    "resolution": "720p",
+    "duration": "5",
+    "aspect_ratio": "9:16",
+    "generate_audio": false,
+    "seed": 801,
+    "image_urls": [
+      "https://v3b.fal.media/files/b/0aa67340/pS6qzWw-bk0eX6NGjJYoq_space-living.png"
+    ]
+  },
+  "seed": 801,
+  "videoUrl": "https://v3b.fal.media/files/b/0aa67351/5juG4JIS6NcB9EmmjlgiI_video.mp4",
+  "spent": 1.525
+}

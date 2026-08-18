@@ -1,0 +1,20 @@
+{
+  "endpoint": "bytedance/seedance-2.0/reference-to-video",
+  "body": {
+    "prompt": "등장인물은 [Image1] [Image2] [Image3] 과 동일 인물이다. 같은 얼굴, 같은 머리, 같은 크림색 니트. 20대 후반 한국 여성. 장소는 [Image4] 와 같은 거실이다.\n세로 9:16. 자연광. 손에 든 스마트폰으로 셀피처럼 찍은 앵글, 미세한 흔들림. 브이로그 톤.\n카메라: 얼굴 가슴 위까지 잡는 셀피 앵글, 고정.\n동작: 여성이 카메라를 정면으로 보며 편안하게 말한다. 말하면서 살짝 고개를 끄덕인다.\n인물이 한국어로 자연스럽게 말한다: \"하나로 스물두 평, 삼십 일이에요. 하루 천오백원꼴\"\n이 컷에 반드시 담긴다: 인물의 입 모양이 대사와 정확히 맞는다.\n화면에 글자·자막·로고를 넣지 않는다.",
+    "resolution": "720p",
+    "duration": "5",
+    "aspect_ratio": "9:16",
+    "generate_audio": true,
+    "seed": 1111,
+    "image_urls": [
+      "https://v3b.fal.media/files/b/0aa673cd/haRODeT5nM5xR_GYhhJvY_face-1.png",
+      "https://v3b.fal.media/files/b/0aa673bb/TPeatSM45MBldp0d1kVES_face-2.png",
+      "https://v3b.fal.media/files/b/0aa673bb/PAJO_4U1SbOAfNCb9Ncsc_face-3.png",
+      "https://v3b.fal.media/files/b/0aa673ce/y_7KgbMd1L4ynzi4WyM_v_space-living.png"
+    ]
+  },
+  "seed": 1111,
+  "videoUrl": "https://v3b.fal.media/files/b/0aa673ea/HLVvWoPeD3MuuK3pTmNzX_video.mp4",
+  "spent": 0
+}

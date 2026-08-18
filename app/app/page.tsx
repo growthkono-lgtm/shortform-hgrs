@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { requireProfile } from "@/lib/supabase/auth";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import {
@@ -52,6 +51,9 @@ export default async function PortalHome() {
     { data: candidates },
     { data: deliverables },
     { data: grants },
+    { data: brief },
+    { data: shipments },
+    { data: contents },
   ] = current
     ? await Promise.all([
         admin
@@ -74,8 +76,31 @@ export default async function PortalHome() {
           .from("drive_grants")
           .select("kind, drive_link")
           .eq("project_id", current.id),
+        admin
+          .from("work_briefs")
+          .select("client_note")
+          .eq("project_id", current.id)
+          .maybeSingle(),
+        admin
+          .from("seeding_shipments")
+          .select("*")
+          .eq("project_id", current.id)
+          .order("sort_order"),
+        admin
+          .from("influencer_contents")
+          .select("*")
+          .eq("project_id", current.id)
+          .order("posted_at", { ascending: false, nullsFirst: false }),
       ])
-    : [{ data: null }, { data: [] }, { data: [] }, { data: [] }];
+    : [
+        { data: null },
+        { data: [] },
+        { data: [] },
+        { data: [] },
+        { data: null },
+        { data: [] },
+        { data: [] },
+      ];
 
   const data: DashboardData = {
     account: {
@@ -106,6 +131,9 @@ export default async function PortalHome() {
         }
       : null,
     guideline: guideline ?? null,
+    clientNote: brief?.client_note ?? null,
+    shipments: shipments ?? [],
+    contents: contents ?? [],
     candidates: candidates ?? [],
     deliverables: (deliverables ?? [])
       // 아직 아무것도 안 올라온 칸은 감춘다 — 빈 카드가 줄줄이 보이면 진행이 멈춘 것처럼 읽힌다
@@ -130,28 +158,14 @@ export default async function PortalHome() {
     })),
   };
 
-  return (
-    <>
-      {/* 브랜드 프로필 온보딩 (PART E1) — 최초 1회 */}
-      {(!brands || brands.length === 0) && (
-        <div className="mb-8 rounded-2xl border border-accent/40 bg-accent/[0.06] p-6">
-          <p className="text-sm font-bold text-accent-deep">
-            먼저 브랜드 프로필을 등록해 주세요
-          </p>
-          <p className="mt-2 text-xs leading-[1.7] text-muted">
-            상세페이지 URL만 넣으시면 그로스 AI가 브랜드 소개·핵심 USP·타겟을
-            정리해 드립니다. 한 번 등록해두면 이후 모든 주문에서 재사용됩니다.
-          </p>
-          <Link
-            href="/onboarding"
-            className="mt-4 inline-flex rounded-full bg-ink px-4 py-2 text-xs font-bold text-paper"
-          >
-            브랜드 등록하기
-          </Link>
-        </div>
-      )}
-
-      <DashboardView data={data} />
-    </>
-  );
+  /**
+   * 그로스 AI 브랜드 프로필 배너를 걷어냈다. (2026-08-14)
+   *
+   * "상세페이지 URL 만 넣으면 AI 가 정리해 드립니다" 는 자리를 두 번 만들었다 —
+   * 여기서 한 번, 아래 [브랜드 · 제품] 칸에서 또 한 번. 클라이언트는 어디에
+   * 쓰라는 건지 헷갈리고, AI 가 정리한 요약은 어차피 제작에 못 쓴다.
+   * 사장님 판단: **필요한 건 클라이언트가 직접 적는 링크·가격·옵션·프로모션**이고,
+   * 그게 그대로 작업자에게 넘어가야 한다. 정리는 사람이 읽고 하면 된다.
+   */
+  return <DashboardView data={data} />;
 }

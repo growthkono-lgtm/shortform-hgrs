@@ -1,0 +1,20 @@
+{
+  "endpoint": "bytedance/seedance-2.0/reference-to-video",
+  "body": {
+    "prompt": "등장인물은 [Image1] [Image2] [Image3] 과 동일 인물이다. 같은 얼굴, 같은 머리, 같은 크림색 니트. 20대 후반 한국 여성. 장소는 [Image4] 와 같은 거실이다.\n세로 9:16. 자연광. 손에 든 스마트폰으로 셀피처럼 찍은 앵글, 미세한 흔들림. 브이로그 톤.\n카메라: 얼굴과 가슴 위까지 잡는 셀피 앵글, 고정.\n동작: 여성이 카메라를 정면으로 보며 속상한 표정으로 말한다. 쉬지 않고 이어서 말한다.\n인물이 한국어로 자연스럽게 말한다: \"좋아하던 숨숨집도 안 들어가요. 제가 데려온 건데 제 탓 같아서\"\n이 컷에 반드시 담긴다: 인물의 입 모양이 대사와 정확히 맞고, 5초 내내 말이 끊기지 않는다.\n화면에 글자·자막·로고를 넣지 않는다.",
+    "resolution": "720p",
+    "duration": "5",
+    "aspect_ratio": "9:16",
+    "generate_audio": true,
+    "seed": 2002,
+    "image_urls": [
+      "https://v3b.fal.media/files/b/0aa6740b/kZznzTkDQXLdTn_7Y9jdW_face-1.png",
+      "https://v3b.fal.media/files/b/0aa673f8/wvvBs6lXjXoRgNOiCLOrF_face-2.png",
+      "https://v3b.fal.media/files/b/0aa6740b/YW5dkDHH2GDyVvOhCVOVN_face-3.png",
+      "https://v3b.fal.media/files/b/0aa6740b/nxas98XtzGF9h8C93Vasp_space-living.png"
+    ]
+  },
+  "seed": 2002,
+  "videoUrl": "https://v3b.fal.media/files/b/0aa67422/5ILo6FhuCE1TYvF2CguUp_video.mp4",
+  "spent": 1.525
+}

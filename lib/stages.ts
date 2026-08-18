@@ -18,16 +18,31 @@ export const SEEDING_STAGES = [
   { key: "live", label: "채널 라이브 확인" },
 ] as const;
 
+/**
+ * 숏폼 트랙 — **클라이언트가 보는 라벨**이다.
+ *
+ * key 는 `lib/work.ts` 의 WORK_STAGES 와 같은 값을 쓴다. 작업자가 편을 넘기면
+ * DB 트리거가 가장 뒤처진 편의 상태를 projects.stage_b 로 밀어 넣고, 이 배열이
+ * 그 값을 클라이언트 말로 옮긴다. 두 벌을 사람이 맞춰 누르지 않는다.
+ */
 export const SHORTS_STAGES = [
-  { key: "source", label: "소스컷 확인중" },
-  { key: "planning", label: "기획중" },
-  { key: "produced", label: "제작완료" },
-  { key: "revising", label: "최종수정 반영중" },
-  { key: "download", label: "다운로드하기" },
+  { key: "study", label: "담당자 브랜드 압축 스터디중" },
+  { key: "producing", label: "숏폼 기획제작 진행중" },
+  { key: "review", label: "1차 완성본 컨펌 확인" },
+  { key: "revising", label: "최종 수정요청 반영중" },
+  { key: "done", label: "최종본 다운로드 / 확인" },
 ] as const;
 
 export type SeedingStage = (typeof SEEDING_STAGES)[number]["key"];
 export type ShortsStage = (typeof SHORTS_STAGES)[number]["key"];
+
+/**
+ * ⚠️ "전체 공정" 한 줄은 없앴다.
+ *
+ * 시딩(stage_a)과 숏폼(stage_b)은 **병렬로 도는 두 트랙**인데 이걸 순차 한 줄로 접으니
+ * 시딩이 "모집중"인데도 전체 공정에서는 시딩이 완료(✓)로 찍히는 거짓 표시가 나왔다.
+ * 두 트랙을 각자 그대로 보여 주는 게 정확하다.
+ */
 
 /** 싱글 플랜에서 시딩 트랙 자리에 대신 놓는 문구 */
 export const SEEDING_NONE = "해당없음";

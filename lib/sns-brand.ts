@@ -47,6 +47,10 @@ export type Feature = {
   hero: Figure;
   figures: Figure[];
   videos?: { id: string; title: string }[];
+  /** 이 프로젝트에서 굴린 계정들 — 카드 우측 도판 아래에 2열로 붙는다 */
+  channels?: ChannelTile[];
+  /** 채널 묶음 위에 한 줄로 다는 설명 (계약 범위 같은 것) */
+  channelsNote?: string;
 };
 
 /**
@@ -94,6 +98,25 @@ export const FEATURES: Feature[] = [
     videos: [
       { id: "63_0QN5MUXY", title: "배틀그라운드 이스포츠 공식 컨텐츠" },
       { id: "Bsp_HBS8ckM", title: "배틀그라운드 이스포츠 공식 컨텐츠" },
+    ],
+    channelsNote: "모든 공식채널 연간 대행",
+    channels: [
+      {
+        name: "배틀그라운드 이스포츠",
+        handle: "@pubgesportskr",
+        platform: "YouTube",
+        metric: "구독자 11.7만",
+        href: "https://www.youtube.com/channel/UCAl4HWznMn7KhKBRFO5eiFA",
+        thumb: "/sns/channels/pubg-youtube.jpg",
+      },
+      {
+        name: "배틀그라운드 이스포츠",
+        handle: "@pubgesports_kr",
+        platform: "Instagram",
+        metric: "팔로워 2.6만",
+        href: "https://www.instagram.com/pubgesports_kr/",
+        thumb: "/sns/channels/pubg-instagram.jpg",
+      },
     ],
   },
   {
@@ -203,8 +226,96 @@ export const FEATURES: Feature[] = [
         title: "강아지 사료 솔루션 — 짱구 이야기 (전편)",
       },
     ],
+    channels: [
+      {
+        name: "트러스티랩스",
+        handle: "@TrustyLabs",
+        platform: "YouTube",
+        metric: "구독자 1,770",
+        note: "처방 브랜드 진단 퍼널 연결",
+        href: "https://www.youtube.com/@TrustyLabs",
+        thumb: "/sns/channels/trustylabs-youtube.jpg",
+      },
+      {
+        name: "트러스티푸드",
+        handle: "@trustyfood_official",
+        platform: "Instagram",
+        metric: "팔로워 1.3만",
+        note: "브랜드 공식 인스타그램 운영",
+        href: "https://www.instagram.com/trustyfood_official/",
+        thumb: "/sns/channels/trustyfood-instagram.jpg",
+      },
+    ],
   },
 ];
+
+export type ChannelTile = {
+  name: string;
+  handle: string;
+  platform: "YouTube" | "Instagram" | "네이버 블로그" | "블로그";
+  /** 구독자·팔로워·이웃수. **직접 확인한 값만** 넣고, 공개 지표가 없으면 비운다 */
+  metric?: string;
+  /** 이 채널이 무엇으로 이어졌는지 한 줄 */
+  note?: string;
+  /** 우상단 꼬리표 */
+  tag?: string;
+  href: string;
+  thumb: string;
+};
+
+/**
+ * 사례 카드 안에 거는 **채널 타일** — 우리가 굴린 계정 자체를 보여 주는 자리다.
+ *
+ * 2026-08-14: 처음엔 "채널 포트폴리오"라는 별도 섹션으로 뽑았는데 통째로 뺐다.
+ * 채널은 사례에서 떼면 그냥 남의 계정 목록이 된다. **그 브랜드 카드 안에** 두면
+ * "이 프로젝트에서 우리가 굴린 계정이 이거다"가 한 화면에서 끝난다.
+ *
+ * 지표는 2026-08-14 에 각 채널 공개 페이지에서 직접 읽은 값이다
+ * (유튜브 구독자 / 인스타 팔로워 / 네이버 이웃수). 추정치는 적지 않는다 —
+ * 왈라·사이버다임 블로그는 공개 지표가 없어 metric 을 비웠다.
+ *
+ * 썸네일은 **그 채널의 실제 게시물**로 만든다: 유튜브=최근 영상 4장 2×2,
+ * 인스타=프로필 그리드, 블로그=최근 포스트 커버 4장 2×2.
+ * 브라우저 UI(구독 버튼·내 계정 사이드바)가 찍힌 캡처는 쓰지 않는다.
+ */
+export const BLOG_CARD = {
+  label: "Feature 05",
+  category: "OWNED MEDIA · BLOG",
+  meta: "공식 블로그 운영",
+  title: "공식 블로그 관리",
+  body: [
+    "브랜드가 직접 가진 채널 중 가장 오래 남는 것은 글입니다. 주제 설계부터 발행까지 공식 블로그를 맡아 운영합니다.",
+  ],
+  channels: [
+    {
+      name: "파크론 제로블럭",
+      handle: "blog.naver.com/zeroblock",
+      platform: "네이버 블로그",
+      metric: "이웃 497",
+      note: "시공 사례를 쌓아 지역 검색 유입",
+      href: "https://blog.naver.com/zeroblock",
+      thumb: "/sns/channels/zeroblock-blog.jpg",
+    },
+    {
+      name: "왈라 블로그",
+      handle: "home.walla.my",
+      platform: "블로그",
+      note: "KT 억대 수주 연결",
+      href: "https://home.walla.my/ko/blog",
+      thumb: "/sns/channels/walla-blog.jpg",
+    },
+    {
+      name: "사이버다임 블로그",
+      handle: "cyberdigm.co.kr",
+      platform: "블로그",
+      tag: "PT 및 컨설팅",
+      note: "문서중앙화·IT 트렌드 콘텐츠",
+      href: "https://www.cyberdigm.co.kr/blog",
+      thumb: "/sns/channels/cyberdigm-blog.jpg",
+    },
+  ] satisfies ChannelTile[],
+};
+
 
 /**
  * 최근 주요 포트폴리오 — 실제 편성·제작한 **롱폼 영상**.

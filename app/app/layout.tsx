@@ -1,28 +1,26 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requireProfile } from "@/lib/supabase/auth";
-import { createClient } from "@/lib/supabase/server";
-import { ChannelTalkIdentify } from "@/components/channel-talk-identify";
+import { KakaoConsult } from "@/components/kakao-consult";
 import { SERVICE } from "@/lib/constants";
-import { LAST_SHORTS_STAGE, stageLabel } from "@/lib/stages";
 
 /** 포털은 검색 노출 금지 (PART F13) */
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+/**
+ * 상담 컨텍스트(누가·어느 단계)를 미리 읽던 쿼리를 걷어냈다. (2026-08-14)
+ *
+ * 채널톡은 위젯 부팅 때 프로필을 실어 보낼 수 있어서 그 값이 쓸모가 있었지만,
+ * 카카오 채널은 링크 하나로 열리고 우리가 붙일 수 있는 값이 없다.
+ * 쓰지도 않을 조회를 모든 포털 페이지에서 한 번씩 돌릴 이유가 없다.
+ *
+ * 대신 누가 문의했는지는 카카오 상담창에서 물어보거나, 어드민에서
+ * 이메일로 찾는다 — 지금 검색이 붙어 있다.
+ */
 export default async function PortalLayout({ children }: LayoutProps<"/app">) {
   const profile = await requireProfile();
-
-  // 상담 컨텍스트용 — 가장 최근 진행 프로젝트 한 건
-  const supabase = await createClient();
-  const { data: activeProject } = await supabase
-    .from("projects")
-    .select("id, stage_a, stage_b")
-    .neq("stage_b", LAST_SHORTS_STAGE)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -58,19 +56,9 @@ export default async function PortalLayout({ children }: LayoutProps<"/app">) {
         {children}
       </main>
 
-      {/* 상담 들어올 때 누가 어느 단계에서 막혔는지 바로 보이게 (F11) */}
-      <ChannelTalkIdentify
-        profile={{
-          memberId: profile.id,
-          name: profile.contact_name,
-          companyName: profile.company_name,
-          activeProjectId: activeProject?.id,
-          // 상담원이 읽는 값이라 내부 키가 아니라 화면과 같은 한글 단계명으로 넘긴다
-          activeStage: activeProject
-            ? stageLabel(activeProject.stage_a ?? activeProject.stage_b)
-            : undefined,
-        }}
-      />
+      {/* 위젯은 루트가 아니라 표면별로 붙인다 — 작업자 대시보드에는 올라가면 안 된다 */}
+      <KakaoConsult />
+
     </div>
   );
 }

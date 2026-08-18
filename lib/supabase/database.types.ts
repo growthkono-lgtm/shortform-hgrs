@@ -14,6 +14,88 @@ export type Database = {
   }
   public: {
     Tables: {
+      adfilm: {
+        Row: {
+          assignee_id: string | null
+          brief: Json
+          cost_usd: number | null
+          created_at: string
+          deliverable_id: string | null
+          final_url: string | null
+          format: string
+          id: string
+          last_error: string | null
+          project_id: string | null
+          seconds: number | null
+          shots: Json
+          stage: string
+          storyboard: Json
+          title: string | null
+          updated_at: string
+          video_id: string | null
+        }
+        Insert: {
+          assignee_id?: string | null
+          brief?: Json
+          cost_usd?: number | null
+          created_at?: string
+          deliverable_id?: string | null
+          final_url?: string | null
+          format?: string
+          id?: string
+          last_error?: string | null
+          project_id?: string | null
+          seconds?: number | null
+          shots?: Json
+          stage?: string
+          storyboard?: Json
+          title?: string | null
+          updated_at?: string
+          video_id?: string | null
+        }
+        Update: {
+          assignee_id?: string | null
+          brief?: Json
+          cost_usd?: number | null
+          created_at?: string
+          deliverable_id?: string | null
+          final_url?: string | null
+          format?: string
+          id?: string
+          last_error?: string | null
+          project_id?: string | null
+          seconds?: number | null
+          shots?: Json
+          stage?: string
+          storyboard?: Json
+          title?: string | null
+          updated_at?: string
+          video_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "adfilm_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "adfilm_deliverable_id_fkey"
+            columns: ["deliverable_id"]
+            isOneToOne: false
+            referencedRelation: "deliverables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "adfilm_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agreements: {
         Row: {
           agreed_at: string
@@ -59,6 +141,538 @@ export type Database = {
           },
         ]
       }
+      blog_job: {
+        Row: {
+          attempts: number
+          audit: Json | null
+          cost_usd: number | null
+          created_at: string
+          format: string
+          id: string
+          keyword_term: string | null
+          last_error: string | null
+          locked_at: string | null
+          pillar: string
+          plan: Json | null
+          post_id: string | null
+          research: string | null
+          revisions: number
+          scheduled_for: string
+          search_count: number | null
+          segment: string | null
+          sources: Json | null
+          stage: string
+          topic: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          audit?: Json | null
+          cost_usd?: number | null
+          created_at?: string
+          format: string
+          id?: string
+          keyword_term?: string | null
+          last_error?: string | null
+          locked_at?: string | null
+          pillar: string
+          plan?: Json | null
+          post_id?: string | null
+          research?: string | null
+          revisions?: number
+          scheduled_for: string
+          search_count?: number | null
+          segment?: string | null
+          sources?: Json | null
+          stage?: string
+          topic: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          audit?: Json | null
+          cost_usd?: number | null
+          created_at?: string
+          format?: string
+          id?: string
+          keyword_term?: string | null
+          last_error?: string | null
+          locked_at?: string | null
+          pillar?: string
+          plan?: Json | null
+          post_id?: string | null
+          research?: string | null
+          revisions?: number
+          scheduled_for?: string
+          search_count?: number | null
+          segment?: string | null
+          sources?: Json | null
+          stage?: string
+          topic?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_job_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_post"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_keyword: {
+        Row: {
+          ad_depth: number | null
+          buyer_intent: boolean
+          competition: string | null
+          created_at: string
+          difficulty: string | null
+          id: string
+          mobile_clicks: number | null
+          mobile_ctr: number | null
+          mobile_volume: number | null
+          niche_score: number | null
+          note: string | null
+          pc_clicks: number | null
+          pc_ctr: number | null
+          pc_volume: number | null
+          pillar: string
+          refreshed_at: string | null
+          source: string
+          status: string
+          term: string
+          tier: string
+          total_volume: number | null
+          volume: number | null
+        }
+        Insert: {
+          ad_depth?: number | null
+          buyer_intent?: boolean
+          competition?: string | null
+          created_at?: string
+          difficulty?: string | null
+          id?: string
+          mobile_clicks?: number | null
+          mobile_ctr?: number | null
+          mobile_volume?: number | null
+          niche_score?: number | null
+          note?: string | null
+          pc_clicks?: number | null
+          pc_ctr?: number | null
+          pc_volume?: number | null
+          pillar: string
+          refreshed_at?: string | null
+          source?: string
+          status?: string
+          term: string
+          tier?: string
+          total_volume?: number | null
+          volume?: number | null
+        }
+        Update: {
+          ad_depth?: number | null
+          buyer_intent?: boolean
+          competition?: string | null
+          created_at?: string
+          difficulty?: string | null
+          id?: string
+          mobile_clicks?: number | null
+          mobile_ctr?: number | null
+          mobile_volume?: number | null
+          niche_score?: number | null
+          note?: string | null
+          pc_clicks?: number | null
+          pc_ctr?: number | null
+          pc_volume?: number | null
+          pillar?: string
+          refreshed_at?: string | null
+          source?: string
+          status?: string
+          term?: string
+          tier?: string
+          total_volume?: number | null
+          volume?: number | null
+        }
+        Relationships: []
+      }
+      blog_keyword_metric: {
+        Row: {
+          collected_at: string
+          competition: string | null
+          id: string
+          keyword_id: string
+          mobile_ctr: number | null
+          mobile_volume: number | null
+          pc_ctr: number | null
+          pc_volume: number | null
+          total_volume: number | null
+          week: string
+        }
+        Insert: {
+          collected_at?: string
+          competition?: string | null
+          id?: string
+          keyword_id: string
+          mobile_ctr?: number | null
+          mobile_volume?: number | null
+          pc_ctr?: number | null
+          pc_volume?: number | null
+          total_volume?: number | null
+          week: string
+        }
+        Update: {
+          collected_at?: string
+          competition?: string | null
+          id?: string
+          keyword_id?: string
+          mobile_ctr?: number | null
+          mobile_volume?: number | null
+          pc_ctr?: number | null
+          pc_volume?: number | null
+          total_volume?: number | null
+          week?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_keyword_metric_keyword_id_fkey"
+            columns: ["keyword_id"]
+            isOneToOne: false
+            referencedRelation: "blog_keyword"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_notice_log: {
+        Row: {
+          post_id: string
+          recipients: number
+          sent_at: string
+        }
+        Insert: {
+          post_id: string
+          recipients?: number
+          sent_at?: string
+        }
+        Update: {
+          post_id?: string
+          recipients?: number
+          sent_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_notice_log_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: true
+            referencedRelation: "blog_post"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_ops_log: {
+        Row: {
+          at: string
+          id: string
+          note: string | null
+          ok: boolean
+          route: string
+        }
+        Insert: {
+          at?: string
+          id?: string
+          note?: string | null
+          ok: boolean
+          route: string
+        }
+        Update: {
+          at?: string
+          id?: string
+          note?: string | null
+          ok?: boolean
+          route?: string
+        }
+        Relationships: []
+      }
+      blog_post: {
+        Row: {
+          approved_at: string | null
+          audit: Json | null
+          body: string | null
+          chars: number | null
+          client_industry: string | null
+          client_name: string | null
+          client_period: string | null
+          created_at: string
+          format: string
+          id: string
+          keyword_id: string | null
+          kind: string
+          notified_at: string | null
+          pillar: string
+          plan: Json
+          published_at: string | null
+          read_minutes: number | null
+          reject_note: string | null
+          scheduled_for: string | null
+          seq: number | null
+          slug: string
+          sources: Json
+          status: string
+          sub_keyword_ids: string[]
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          audit?: Json | null
+          body?: string | null
+          chars?: number | null
+          client_industry?: string | null
+          client_name?: string | null
+          client_period?: string | null
+          created_at?: string
+          format: string
+          id?: string
+          keyword_id?: string | null
+          kind?: string
+          notified_at?: string | null
+          pillar: string
+          plan: Json
+          published_at?: string | null
+          read_minutes?: number | null
+          reject_note?: string | null
+          scheduled_for?: string | null
+          seq?: number | null
+          slug: string
+          sources?: Json
+          status?: string
+          sub_keyword_ids?: string[]
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          audit?: Json | null
+          body?: string | null
+          chars?: number | null
+          client_industry?: string | null
+          client_name?: string | null
+          client_period?: string | null
+          created_at?: string
+          format?: string
+          id?: string
+          keyword_id?: string | null
+          kind?: string
+          notified_at?: string | null
+          pillar?: string
+          plan?: Json
+          published_at?: string | null
+          read_minutes?: number | null
+          reject_note?: string | null
+          scheduled_for?: string | null
+          seq?: number | null
+          slug?: string
+          sources?: Json
+          status?: string
+          sub_keyword_ids?: string[]
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_post_keyword_id_fkey"
+            columns: ["keyword_id"]
+            isOneToOne: false
+            referencedRelation: "blog_keyword"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_post_metric: {
+        Row: {
+          captured_on: string
+          clicks: number
+          impressions: number
+          offset_days: number
+          position: number | null
+          post_id: string
+        }
+        Insert: {
+          captured_on: string
+          clicks?: number
+          impressions?: number
+          offset_days: number
+          position?: number | null
+          post_id: string
+        }
+        Update: {
+          captured_on?: string
+          clicks?: number
+          impressions?: number
+          offset_days?: number
+          position?: number | null
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_post_metric_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_post"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_remind_log: {
+        Row: {
+          day: string
+          sent_at: string
+        }
+        Insert: {
+          day: string
+          sent_at?: string
+        }
+        Update: {
+          day?: string
+          sent_at?: string
+        }
+        Relationships: []
+      }
+      blog_report_log: {
+        Row: {
+          day: string
+          sent_at: string
+          summary: string | null
+        }
+        Insert: {
+          day: string
+          sent_at?: string
+          summary?: string | null
+        }
+        Update: {
+          day?: string
+          sent_at?: string
+          summary?: string | null
+        }
+        Relationships: []
+      }
+      blog_search_daily: {
+        Row: {
+          captured_on: string
+          clicks: number
+          created_at: string
+          dimension: string
+          id: number
+          impressions: number
+          key: string
+          position: number | null
+        }
+        Insert: {
+          captured_on: string
+          clicks?: number
+          created_at?: string
+          dimension: string
+          id?: never
+          impressions?: number
+          key?: string
+          position?: number | null
+        }
+        Update: {
+          captured_on?: string
+          clicks?: number
+          created_at?: string
+          dimension?: string
+          id?: never
+          impressions?: number
+          key?: string
+          position?: number | null
+        }
+        Relationships: []
+      }
+      blog_subscriber: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          source: string | null
+          unsubscribed_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          source?: string | null
+          unsubscribed_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string | null
+          unsubscribed_at?: string | null
+        }
+        Relationships: []
+      }
+      blog_trend: {
+        Row: {
+          angle: string
+          captured_on: string
+          combined_term: string
+          created_at: string
+          headline: string
+          id: string
+          pillar: string
+          source_name: string | null
+          source_url: string
+          used_on: string | null
+        }
+        Insert: {
+          angle: string
+          captured_on: string
+          combined_term: string
+          created_at?: string
+          headline: string
+          id?: string
+          pillar: string
+          source_name?: string | null
+          source_url: string
+          used_on?: string | null
+        }
+        Update: {
+          angle?: string
+          captured_on?: string
+          combined_term?: string
+          created_at?: string
+          headline?: string
+          id?: string
+          pillar?: string
+          source_name?: string | null
+          source_url?: string
+          used_on?: string | null
+        }
+        Relationships: []
+      }
+      blog_view: {
+        Row: {
+          day: string
+          slug: string
+          views: number
+        }
+        Insert: {
+          day: string
+          slug: string
+          views?: number
+        }
+        Update: {
+          day?: string
+          slug?: string
+          views?: number
+        }
+        Relationships: []
+      }
       brand_profiles: {
         Row: {
           brand_name: string
@@ -102,45 +716,85 @@ export type Database = {
       }
       deliverables: {
         Row: {
+          assignee_id: string | null
           created_at: string
+          drive_file_id: string | null
+          due_date: string | null
           final_drive_file_id: string | null
           final_drive_link: string | null
           id: string
+          plan_note: string | null
           preview_path: string | null
           preview_url: string | null
           project_id: string
+          remind_24h_at: string | null
+          remind_48h_at: string | null
+          revision_round: number
           seq: number
           status: string
           title: string | null
           updated_at: string
+          work_file_name: string | null
+          work_status: string
+          work_url: string | null
+          worker_updated_at: string | null
         }
         Insert: {
+          assignee_id?: string | null
           created_at?: string
+          drive_file_id?: string | null
+          due_date?: string | null
           final_drive_file_id?: string | null
           final_drive_link?: string | null
           id?: string
+          plan_note?: string | null
           preview_path?: string | null
           preview_url?: string | null
           project_id: string
+          remind_24h_at?: string | null
+          remind_48h_at?: string | null
+          revision_round?: number
           seq: number
           status?: string
           title?: string | null
           updated_at?: string
+          work_file_name?: string | null
+          work_status?: string
+          work_url?: string | null
+          worker_updated_at?: string | null
         }
         Update: {
+          assignee_id?: string | null
           created_at?: string
+          drive_file_id?: string | null
+          due_date?: string | null
           final_drive_file_id?: string | null
           final_drive_link?: string | null
           id?: string
+          plan_note?: string | null
           preview_path?: string | null
           preview_url?: string | null
           project_id?: string
+          remind_24h_at?: string | null
+          remind_48h_at?: string | null
+          revision_round?: number
           seq?: number
           status?: string
           title?: string | null
           updated_at?: string
+          work_file_name?: string | null
+          work_status?: string
+          work_url?: string | null
+          worker_updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "deliverables_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "deliverables_project_id_fkey"
             columns: ["project_id"]
@@ -158,6 +812,7 @@ export type Database = {
           granted_at: string
           id: string
           kind: string
+          label: string | null
           project_id: string
           revoked: boolean
         }
@@ -168,6 +823,7 @@ export type Database = {
           granted_at?: string
           id?: string
           kind?: string
+          label?: string | null
           project_id: string
           revoked?: boolean
         }
@@ -178,6 +834,7 @@ export type Database = {
           granted_at?: string
           id?: string
           kind?: string
+          label?: string | null
           project_id?: string
           revoked?: boolean
         }
@@ -248,6 +905,8 @@ export type Database = {
           avg_cpv: number | null
           avg_likes: number | null
           avg_views: number | null
+          bio: string | null
+          category: string | null
           channel_name: string
           channel_url: string
           confirmed: boolean
@@ -257,6 +916,7 @@ export type Database = {
           fetched_at: string | null
           follower_count: number | null
           id: string
+          latest_posts: Json
           note: string | null
           platform: string
           project_id: string
@@ -272,6 +932,8 @@ export type Database = {
           avg_cpv?: number | null
           avg_likes?: number | null
           avg_views?: number | null
+          bio?: string | null
+          category?: string | null
           channel_name: string
           channel_url: string
           confirmed?: boolean
@@ -281,6 +943,7 @@ export type Database = {
           fetched_at?: string | null
           follower_count?: number | null
           id?: string
+          latest_posts?: Json
           note?: string | null
           platform?: string
           project_id: string
@@ -296,6 +959,8 @@ export type Database = {
           avg_cpv?: number | null
           avg_likes?: number | null
           avg_views?: number | null
+          bio?: string | null
+          category?: string | null
           channel_name?: string
           channel_url?: string
           confirmed?: boolean
@@ -305,6 +970,7 @@ export type Database = {
           fetched_at?: string | null
           follower_count?: number | null
           id?: string
+          latest_posts?: Json
           note?: string | null
           platform?: string
           project_id?: string
@@ -318,6 +984,78 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "influencer_candidates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      influencer_contents: {
+        Row: {
+          candidate_id: string | null
+          caption: string | null
+          collected_at: string
+          comment_count: number | null
+          created_at: string
+          handle: string
+          id: string
+          like_count: number | null
+          permalink: string
+          posted_at: string | null
+          project_id: string
+          review_status: string
+          reviewed_at: string | null
+          revision_note: string | null
+          thumbnail_url: string | null
+          view_count: number | null
+        }
+        Insert: {
+          candidate_id?: string | null
+          caption?: string | null
+          collected_at?: string
+          comment_count?: number | null
+          created_at?: string
+          handle: string
+          id?: string
+          like_count?: number | null
+          permalink: string
+          posted_at?: string | null
+          project_id: string
+          review_status?: string
+          reviewed_at?: string | null
+          revision_note?: string | null
+          thumbnail_url?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          candidate_id?: string | null
+          caption?: string | null
+          collected_at?: string
+          comment_count?: number | null
+          created_at?: string
+          handle?: string
+          id?: string
+          like_count?: number | null
+          permalink?: string
+          posted_at?: string | null
+          project_id?: string
+          review_status?: string
+          reviewed_at?: string | null
+          revision_note?: string | null
+          thumbnail_url?: string | null
+          view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "influencer_contents_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "influencer_candidates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "influencer_contents_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
@@ -620,6 +1358,7 @@ export type Database = {
           id: string
           price_range: string | null
           project_id: string
+          promotion: string | null
           reference_urls: string | null
           submitted_at: string | null
           target: string | null
@@ -634,6 +1373,7 @@ export type Database = {
           id?: string
           price_range?: string | null
           project_id: string
+          promotion?: string | null
           reference_urls?: string | null
           submitted_at?: string | null
           target?: string | null
@@ -648,6 +1388,7 @@ export type Database = {
           id?: string
           price_range?: string | null
           project_id?: string
+          promotion?: string | null
           reference_urls?: string | null
           submitted_at?: string | null
           target?: string | null
@@ -678,12 +1419,15 @@ export type Database = {
           order_id: string | null
           plan_id: string | null
           recruit_deadline: string | null
+          source_delivered_at: string | null
           stage_a: string | null
           stage_b: string
           started_at: string | null
           type: string
           updated_at: string
           user_id: string
+          work_alias: string | null
+          work_code: string | null
         }
         Insert: {
           brand_profile_id?: string | null
@@ -697,12 +1441,15 @@ export type Database = {
           order_id?: string | null
           plan_id?: string | null
           recruit_deadline?: string | null
+          source_delivered_at?: string | null
           stage_a?: string | null
           stage_b?: string
           started_at?: string | null
           type: string
           updated_at?: string
           user_id: string
+          work_alias?: string | null
+          work_code?: string | null
         }
         Update: {
           brand_profile_id?: string | null
@@ -716,12 +1463,15 @@ export type Database = {
           order_id?: string | null
           plan_id?: string | null
           recruit_deadline?: string | null
+          source_delivered_at?: string | null
           stage_a?: string | null
           stage_b?: string
           started_at?: string | null
           type?: string
           updated_at?: string
           user_id?: string
+          work_alias?: string | null
+          work_code?: string | null
         }
         Relationships: [
           {
@@ -803,6 +1553,89 @@ export type Database = {
           },
         ]
       }
+      seeding_shipments: {
+        Row: {
+          address: string | null
+          created_at: string
+          id: string
+          influencer_name: string
+          note: string | null
+          option: string | null
+          phone: string | null
+          product: string | null
+          project_id: string
+          quantity: string | null
+          shipped_at: string | null
+          sort_order: number
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          id?: string
+          influencer_name: string
+          note?: string | null
+          option?: string | null
+          phone?: string | null
+          product?: string | null
+          project_id: string
+          quantity?: string | null
+          shipped_at?: string | null
+          sort_order?: number
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          id?: string
+          influencer_name?: string
+          note?: string | null
+          option?: string | null
+          phone?: string | null
+          product?: string | null
+          project_id?: string
+          quantity?: string | null
+          shipped_at?: string | null
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seeding_shipments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      spend_log: {
+        Row: {
+          at: string
+          id: string
+          kind: string
+          meta: Json
+          ref: string
+          service: string
+          usd: number
+        }
+        Insert: {
+          at?: string
+          id?: string
+          kind: string
+          meta?: Json
+          ref: string
+          service: string
+          usd: number
+        }
+        Update: {
+          at?: string
+          id?: string
+          kind?: string
+          meta?: Json
+          ref?: string
+          service?: string
+          usd?: number
+        }
+        Relationships: []
+      }
       user_consents: {
         Row: {
           agreed: boolean
@@ -844,12 +1677,87 @@ export type Database = {
           },
         ]
       }
+      work_briefs: {
+        Row: {
+          client_note: string | null
+          manual_note: string | null
+          project_id: string
+          updated_at: string
+        }
+        Insert: {
+          client_note?: string | null
+          manual_note?: string | null
+          project_id: string
+          updated_at?: string
+        }
+        Update: {
+          client_note?: string | null
+          manual_note?: string | null
+          project_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_briefs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_notes: {
+        Row: {
+          author_id: string
+          author_role: string
+          body: string
+          created_at: string
+          deliverable_id: string
+          id: string
+        }
+        Insert: {
+          author_id: string
+          author_role: string
+          body: string
+          created_at?: string
+          deliverable_id: string
+          id?: string
+        }
+        Update: {
+          author_id?: string
+          author_role?: string
+          body?: string
+          created_at?: string
+          deliverable_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_notes_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_notes_deliverable_id_fkey"
+            columns: ["deliverable_id"]
+            isOneToOne: false
+            referencedRelation: "deliverables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      blog_cron_hit: { Args: { path: string }; Returns: number }
+      blog_view_bump: {
+        Args: { p_day: string; p_slug: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

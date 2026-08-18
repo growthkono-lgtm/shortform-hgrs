@@ -66,3 +66,6 @@ public/logos/_raw/
 /*.xlsx
 /*.pdf
 /*.pptx
+
+# 구글 서비스 계정 키 — 절대 커밋 금지
+gcp-key.json

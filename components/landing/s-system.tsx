@@ -12,21 +12,56 @@
  * Crew 섹션의 카드(테두리 white/10 + 면 white/[0.04])를 따른다. 새 색은 쓰지 않는다.
  */
 
+/**
+ * 2026-08-13 사장님 지시로 교체. 이전 카드는 *일하는 방식*(위너 기준·사이클·분업)을
+ * 말했는데, 방문자가 "이 값에 이 퀄리티가 왜 나오지?"에 실제로 납득하는 근거는
+ * **누가 붙느냐**였다. 그래서 세 칸을 전부 이력으로 바꿨다.
+ * 검증 불가한 수치를 새로 만들지 않고, 사장님이 불러 주신 이력만 옮긴다.
+ */
+/**
+ * 아이콘은 장식이 아니라 카드가 말하는 자산의 종류를 가리킨다 —
+ * 감도(스파크) / 수상 이력(뱃지) / 운영 규모(우상향 그래프).
+ * 아이콘 라이브러리를 새로 들이지 않고 이 레포의 인라인 SVG 관례를 따른다.
+ */
+const ICONS = {
+  spark: (
+    <path
+      d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3zM18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2z"
+      strokeLinejoin="round"
+    />
+  ),
+  badge: (
+    <>
+      <circle cx="12" cy="9" r="5.2" />
+      <path d="M8.3 13.4L7 21l5-2.4L17 21l-1.3-7.6" strokeLinejoin="round" />
+    </>
+  ),
+  growth: (
+    <>
+      <path d="M4 19h16" strokeLinecap="round" />
+      <path d="M7 19v-4.5M12 19V9.5M17 19V5.5" strokeLinecap="round" />
+    </>
+  ),
+} as const;
+
 const CARDS = [
   {
     no: "1",
-    title: "위너 기준이 먼저 정의됩니다",
-    body: "조회수가 아니라 구매 전환이 기준입니다. 소재별로 훅 유지율·CPA·ROAS를 판독하고, 지출이 꺾이지 않고 이어지는 소재만 '위너'로 분류해 변주합니다.",
+    icon: "spark" as const,
+    title: "AI 강연자 출신 총괄 디렉터",
+    body: "중소기업청 모두의창업 AI 강연자로 선 총괄 디렉터가 누구보다 효율적인 AI 제작 감도를 반영합니다.",
   },
   {
     no: "2",
-    title: "프로젝트에서 굴리던 사이클 그대로",
-    body: "기획→제작→집행 데이터 판독→변주 제작으로 이어지는 사이클을 프로젝트 단위에서 수십 회 반복해 왔습니다. 이 패키지는 그 사이클 중 '기획→제작' 구간을 상품화한 것입니다.",
+    icon: "badge" as const,
+    title: "구글·메타 우수 크리에이티브 기획제작진",
+    body: "구글 5대·메타 15대 우수 크리에이티브에 선정된 브랜드 출신 기획제작진, 그리고 국내 초기 숏폼 바이럴을 만든 블랭크 출신 콘텐츠 PD가 붙습니다.",
   },
   {
     no: "3",
-    title: "역할이 분업된 팀이 붙습니다",
-    body: "기획·촬영·편집·모션·퍼포먼스 판독이 각자 담당으로 붙는 10인 팀 시스템입니다. 한 명의 프리랜서가 아니라, 담당이 빠져도 멈추지 않는 구조로 납품합니다.",
+    icon: "growth" as const,
+    title: "인당 평균 운영 경험 100억",
+    body: "퍼포먼스 마케팅 인당 평균 운영 경험 100억 원. 숏폼 납품 이력이 다수인 담당이 소재 판독을 맡습니다.",
   },
 ];
 
@@ -59,7 +94,21 @@ export function System() {
               key={c.no}
               className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 sm:p-7"
             >
-              <h3 className="flex items-start gap-2.5 text-lg font-bold">
+              <span
+                aria-hidden="true"
+                className="grid size-11 place-items-center rounded-xl bg-accent/20 text-white"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  className="size-[22px]"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                >
+                  {ICONS[c.icon]}
+                </svg>
+              </span>
+              <h3 className="mt-4 flex items-start gap-2.5 text-lg font-bold">
                 <span className="stat-figure mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-accent text-xs text-white">
                   {c.no}
                 </span>
@@ -73,9 +122,13 @@ export function System() {
         </div>
 
         {/* 누적 제작 소재 편수는 실집계가 확인되기 전까지 싣지 않는다 —
-            근거 섹션에서 검증 안 된 숫자를 하나 얹는 순간 나머지 숫자도 같이 의심받는다. */}
+            근거 섹션에서 검증 안 된 숫자를 하나 얹는 순간 나머지 숫자도 같이 의심받는다.
+
+            2026-08-13: "브랜드 프로젝트 30+" 만 두면 30 이라는 숫자가 오히려 작아 보인다
+            (사장님 지적). 한 건이 연·분기 단위로 굴러간 프로젝트라는 단위를 밝혀야
+            같은 숫자가 제대로 읽힌다. */}
         <p className="mt-8 text-right text-xs text-white/40">
-          브랜드 프로젝트 30+
+          연·분기 단위 브랜드 프로젝트 30+ 수행
         </p>
       </div>
     </section>
