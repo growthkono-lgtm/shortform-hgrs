@@ -1,3 +1,4 @@
+import { readDiagnosis, type DiagAnswers } from "@/lib/diagnosis";
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/server";
 import { ActionForm } from "@/components/admin/action-form";
@@ -147,9 +148,32 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
       ) : (
         <ul className="mt-3 space-y-4">
           {waiting.map((row) => {
+            /**
+             * 유입 경로마다 채워지는 값이 다르다. (2026-08-18)
+             *
+             * 랜딩(/)에서 진단을 마치고 신청하면 `answers` 5문항과 추천 플랜이
+             * 통째로 실려 온다. 반면 `/sns-brand` 채널 문의 폼에는 **플랜 선택
+             * 자체가 없어** 서버로 `unsure`·`unknown` 을 하드코딩해 보낸다
+             * (`components/sns/s-contact.tsx`). 그걸 그대로 "관심 추천 요청 ·
+             * 편수 미정" 으로 찍으면 **고객이 고른 것처럼 읽힌다.** 실제로는
+             * 물어본 적이 없다. 안 물어본 것은 안 물어봤다고 적는다.
+             */
             const diagnosis = row.diagnosis as {
-              plan?: { label?: string; composition?: string };
+              plan?: { label?: string; composition?: string; tier?: string };
+              answers?: DiagAnswers;
+              source?: string;
+              page?: string;
             } | null;
+
+            const log = readDiagnosis(diagnosis?.answers);
+            const SOURCE_LABEL: Record<string, string> = {
+              "sns-brand": "채널 운영 문의 (/sns-brand)",
+            };
+            const from = diagnosis?.source
+              ? (SOURCE_LABEL[diagnosis.source] ?? diagnosis.source)
+              : "랜딩 신청 (/)";
+            /** 플랜을 물어보는 폼에서 온 신청인가 */
+            const asked = !diagnosis?.source;
 
             return (
               <li
@@ -175,11 +199,44 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
                       {` · ${fmt(row.created_at)}`}
                     </p>
                     <p className="mt-2 text-xs text-muted">
-                      관심 {INTEREST_LABEL[row.interest] ?? row.interest} · 편수{" "}
-                      {VOLUME_LABEL[row.volume] ?? row.volume}
+                      <span className="text-muted/70">{from}</span>
+                      {" · "}
+                      {asked ? (
+                        <>
+                          관심 {INTEREST_LABEL[row.interest] ?? row.interest} ·
+                          편수 {VOLUME_LABEL[row.volume] ?? row.volume}
+                        </>
+                      ) : (
+                        // 이 폼은 플랜을 묻지 않는다. 안 물어본 것을 고른 것처럼 적지 않는다
+                        <span className="font-medium text-amber-700">
+                          플랜 미작성
+                        </span>
+                      )}
                       {diagnosis?.plan?.label &&
                         ` · 진단 ${diagnosis.plan.label} (${diagnosis.plan.composition})`}
                     </p>
+
+                    {/* 진단을 마치고 신청한 사람은 무엇을 골랐는지 그대로 남긴다 —
+                        통화 첫 마디가 달라진다 */}
+                    {log.length > 0 && (
+                      <details className="mt-2.5 rounded-xl bg-paper-alt px-4 py-3">
+                        <summary className="cursor-pointer text-xs font-bold">
+                          진단 응답 {log.length}문항
+                        </summary>
+                        <dl className="mt-3 space-y-2.5">
+                          {log.map((r) => (
+                            <div key={r.question}>
+                              <dt className="text-[0.6875rem] leading-[1.6] text-muted">
+                                {r.question}
+                              </dt>
+                              <dd className="mt-0.5 text-xs leading-[1.7] font-medium">
+                                {r.answer}
+                              </dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </details>
+                    )}
                     {row.brand_url && (
                       <a
                         href={row.brand_url}

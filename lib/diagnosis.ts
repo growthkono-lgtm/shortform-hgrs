@@ -209,3 +209,28 @@ export function diagnose(answers: DiagAnswers): DiagResult {
         : undefined,
   };
 }
+
+/**
+ * 진단 답변을 사람이 읽는 문답으로 편다. (2026-08-18)
+ *
+ * 사장님 지시: *"그냥 신청한 사람은 미작성으로 하고, 작성한 로그가 남은 채로
+ * 신청한 사람은 그 로그를 기록해 줘야 연락할 때 매끄러울 듯."*
+ *
+ * 그동안 어드민은 진단 결과의 **플랜 이름 한 줄**만 보여 줬다. 정작 통화할 때
+ * 필요한 건 그 사람이 무엇을 골랐는가다 — "소스가 거의 없다" 고 답한 브랜드와
+ * "촬영본이 충분하다" 고 답한 브랜드는 첫 마디가 달라야 한다.
+ */
+export function readDiagnosis(
+  answers: DiagAnswers | null | undefined,
+): { question: string; answer: string }[] {
+  if (!answers) return [];
+  const out: { question: string; answer: string }[] = [];
+  for (const q of DIAGNOSIS) {
+    const picked = answers[q.id];
+    if (!picked) continue;
+    const opt = q.options.find((o) => o.value === picked);
+    // 값이 바뀌어 라벨을 못 찾으면 원본 값이라도 남긴다. 빈칸보다 낫다
+    out.push({ question: q.title, answer: opt?.label ?? picked });
+  }
+  return out;
+}

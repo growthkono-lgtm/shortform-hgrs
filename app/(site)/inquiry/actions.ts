@@ -65,6 +65,28 @@ export async function submitInquiry(
     null;
 
   const admin = createAdminClient();
+
+  /**
+   * 같은 사람이 연달아 보낸 것은 한 건으로 본다. (2026-08-18)
+   *
+   * 08-18 오전 첫 실사 문의(자보티바)가 **3초 간격으로 두 번** 들어왔고,
+   * 소개서 메일도 두 통 나갔다. 고객이 같은 메일을 두 번 받은 셈이다.
+   * 버튼 연타든 새로고침이든 원인은 사용자 쪽이지만, 결과는 우리 인상이다.
+   *
+   * 10분 창을 두고 같은 이메일이면 새로 넣지 않고 조용히 접수 성공으로
+   * 돌려준다 — 사용자에게 "이미 접수됐다" 는 오류를 띄우면 실패로 읽힌다.
+   * 정말 다시 보내려는 사람은 10분 뒤에 되고, 어드민에는 [소개서 재발송]이 있다.
+   */
+  const since = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+  const { data: recent } = await admin
+    .from("inquiries")
+    .select("id")
+    .eq("email", email)
+    .gte("created_at", since)
+    .limit(1)
+    .maybeSingle();
+  if (recent) return { ok: true, error: null };
+
   const { data: inserted, error } = await admin
     .from("inquiries")
     .insert({
