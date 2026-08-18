@@ -209,19 +209,36 @@ export async function keywordSummary() {
     .order("refreshed_at", { ascending: false })
     .limit(1);
 
-  const { data: diffRows } = await supabase
-    .from("blog_keyword")
-    .select("difficulty")
-    .neq("status", "dropped")
-    .limit(2000);
-  const byDifficulty = (diffRows ?? []).reduce<Record<string, number>>(
-    (acc, r) => {
-      const key = r.difficulty ?? "미분류";
-      acc[key] = (acc[key] ?? 0) + 1;
-      return acc;
-    },
-    {},
+  /**
+   * ⚠️ 행을 끌어와 세지 않는다. (2026-08-18 수정)
+   *
+   * 앞서 `.limit(2000)` 으로 받아 자바스크립트에서 셌는데, **서버가 1,000에서
+   * 자른다.** 키워드가 1,998개라 니치·빅 집계가 절반만 세어졌다. limit 을
+   * 올려도 소용없다 — PostgREST 의 max-rows 는 클라이언트가 못 넘긴다.
+   *
+   * 세는 일은 DB 에 시킨다. 행을 안 가져오므로 몇 만 개가 되어도 정확하다.
+   */
+  const DIFFICULTIES = ["니치", "빅"] as const;
+  const counted = await Promise.all(
+    DIFFICULTIES.map(async (d) => {
+      const { count } = await supabase
+        .from("blog_keyword")
+        .select("id", { count: "exact", head: true })
+        .neq("status", "dropped")
+        .eq("difficulty", d);
+      return [d, count ?? 0] as const;
+    }),
   );
+  const { count: noneCount } = await supabase
+    .from("blog_keyword")
+    .select("id", { count: "exact", head: true })
+    .neq("status", "dropped")
+    .is("difficulty", null);
+
+  const byDifficulty: Record<string, number> = Object.fromEntries(
+    counted.filter(([, n]) => n > 0),
+  );
+  if (noneCount) byDifficulty["미분류"] = noneCount;
 
   return {
     total: total ?? 0,
@@ -391,9 +408,35 @@ export async function scheduleBoard(weeks = 4): Promise<BoardRow[]> {
    * 오가며 맞춰 봐야 한다. 노리는 검색어와 그 검색량이 같은 줄에 있어야
    * 편성이 맞았는지 한눈에 판단된다.
    */
-  const { data: keywordRows } = await supabase
-    .from("blog_keyword")
-    .select("term, total_volume, pc_ctr, mobile_ctr, competition");
+  /**
+   * ⚠️ `.select()` 만 쓰면 **1,000행에서 잘린다.** (2026-08-18 수정)
+   *
+   * PostgREST 기본 상한이 1,000이고 키워드는 지금 1,998개다. 그래서 5편이
+   * 노리는 `인스타메타광고`(470회·1.8%)가 표에 멀쩡히 있는데도 편성표에는
+   * "—" 로 나왔다 — 잘려 나간 뒷쪽 998개에 들어 있었다.
+   *
+   * 낮에 매칭 키를 고치고 3·4편이 뜨는 걸 보고 통과로 판단했다. 표본 두 개로
+   * 넘긴 것이고, 그 둘이 우연히 앞쪽 1,000개 안에 있었을 뿐이다.
+   * 키워드는 계속 늘어나므로 상한을 올리는 게 아니라 **다 읽을 때까지 넘긴다.**
+   */
+  const keywordRows: {
+    term: string;
+    total_volume: number | null;
+    pc_ctr: number | null;
+    mobile_ctr: number | null;
+    competition: string | null;
+  }[] = [];
+  const PAGE = 1000;
+  for (let from = 0; ; from += PAGE) {
+    const { data } = await supabase
+      .from("blog_keyword")
+      .select("term, total_volume, pc_ctr, mobile_ctr, competition")
+      .order("term")
+      .range(from, from + PAGE - 1);
+    if (!data?.length) break;
+    keywordRows.push(...data);
+    if (data.length < PAGE) break;
+  }
 
   /**
    * 우리 실제 성적 — **글 단위**로 읽는다. (2026-08-18 전환)
@@ -447,7 +490,7 @@ export async function scheduleBoard(weeks = 4): Promise<BoardRow[]> {
   const norm = (t: string) => t.replace(/\s+/g, "");
   const metricOf = (term: string | null | undefined) => {
     const row = term
-      ? (keywordRows ?? []).find((k) => norm(k.term) === norm(term))
+      ? keywordRows.find((k) => norm(k.term) === norm(term))
       : undefined;
     return {
       term: term ?? null,
