@@ -50,6 +50,8 @@ const jsonAuth = { ...auth, "Content-Type": "application/json" };
 const QUEUE = "https://queue.fal.run";
 /** fast 720p. 명세서 §7-3 기준 $0.2419/s */
 const MODEL = "bytedance/seedance-2.0/fast/image-to-video";
+/** fast 720p 공시가. 명세서 §7-3 (2026-08-18 fal 확인) */
+const PRICE_PER_SECOND = 0.2419;
 
 const balance = async () =>
   Number(await (await fetch("https://rest.alpha.fal.ai/billing/user_balance", { headers: auth })).text());
@@ -113,7 +115,7 @@ async function shoot(scene, nextScene) {
     ? await upload(stillOf(nextScene.no))
     : null;
 
-  const before = await balance();
+  const spent0 = null; // 병렬 전제 — 잔액 차분을 개별 샷에 쓰지 않는다
   const body = {
     prompt: motionPrompt(scene),
     image_url: first,
@@ -150,14 +152,25 @@ async function shoot(scene, nextScene) {
   const dest = path.join(outDir, `scene${String(scene.no).padStart(2, "0")}.mp4`);
   await writeFile(dest, Buffer.from(await (await fetch(url)).arrayBuffer()));
 
-  const after = await balance();
-  const spent = before - after;
-  console.log(`\r  씬${String(scene.no).padStart(2, "0")} ${seconds}초 → ${path.basename(dest)} · $${spent.toFixed(3)} · 체인 ${last ? "O" : "—"}     `);
+  /**
+   * ⚠️ 병렬로 돌 때는 **잔액 차분을 쓰면 안 된다.** (2026-08-19 수정)
+   *
+   * 순차일 땐 호출 전후 잔액 차이가 곧 그 샷의 값이었다. 그런데 12씬을 동시에
+   * 던지니 각 샷의 "전후" 사이에 다른 샷들의 차감이 끼어들었고, 장부가 실제
+   * $14.61 을 **$57.99 로** 적었다. 같은 돈을 여러 번 센 것이다.
+   *
+   * 병렬에서는 단가 × 초로 적는다. 배치 전체의 실측은 호출부가 따로 잰다 —
+   * 개별 귀속은 계산으로, 총액은 실측으로. 둘을 섞으면 둘 다 틀린다.
+   */
+  const unit = spent0 == null ? PRICE_PER_SECOND * seconds : null;
+  const amount = unit ?? 0;
+  console.log(`\r  씬${String(scene.no).padStart(2, "0")} ${seconds}초 → ${path.basename(dest)} · $${amount.toFixed(3)} · 체인 ${last ? "O" : "—"}     `);
 
-  await recordSpend("fal", "video", `${tag}/scene${scene.no}`, spent, {
+  await recordSpend("fal", "video", `${tag}/scene${scene.no}`, amount, {
     model: MODEL, seconds, chained: Boolean(last), seed: res.seed ?? null,
+    basis: "단가×초 (병렬이라 잔액 차분을 못 씀)",
   });
-  return { dest, spent, seconds };
+  return { dest, spent: amount, seconds };
 }
 
 /* ── 실행 ─────────────────────────────────────────────────────────── */
@@ -166,23 +179,32 @@ const targets = all.filter((s) => !only.length || only.includes(s.no));
 const totalSec = targets.reduce((a, s) => a + secondsFor(s), 0);
 
 console.log(`i2v ${targets.length}씬 · 총 ${totalSec}초 · 예상 $${(totalSec * 0.2419).toFixed(2)}`);
-console.log(`잔액 $${(await balance()).toFixed(2)}\n`);
+const startBalance = await balance();
+console.log(`잔액 $${startBalance.toFixed(2)}\n`);
 
-let total = 0;
-for (const scene of targets) {
-  const next = all.find((s) => s.no === scene.no + 1);
-  const dest = path.join(outDir, `scene${String(scene.no).padStart(2, "0")}.mp4`);
-  if (existsSync(dest) && !only.length) {
-    console.log(`  씬${String(scene.no).padStart(2, "0")} 건너뜀 (이미 있음)`);
-    continue;
-  }
-  try {
-    const r = await shoot(scene, next);
-    total += r.spent;
-  } catch (e) {
-    console.error(`\n  씬${scene.no} — ${String(e.message).slice(0, 200)}`);
-  }
-}
+/**
+ * **동시에 돌린다.** 샷 하나가 2~4분인데 순차로 12씬이면 40분이다.
+ * 씬끼리 의존이 없다 — 체인은 *스틸* 로 물리므로 앞 영상을 기다릴 필요가 없다.
+ * (sora 시절엔 앞 컷을 video_urls 로 물려 순차였는데, 그 제약이 사라졌다)
+ */
+const outcomes = await Promise.all(
+  targets.map(async (scene) => {
+    const next = all.find((s) => s.no === scene.no + 1);
+    const dest = path.join(outDir, `scene${String(scene.no).padStart(2, "0")}.mp4`);
+    if (existsSync(dest) && !only.length) {
+      console.log(`  씬${String(scene.no).padStart(2, "0")} 건너뜀 (이미 있음)`);
+      return null;
+    }
+    try {
+      return await shoot(scene, next);
+    } catch (e) {
+      console.error(`\n  씬${scene.no} — ${String(e.message).slice(0, 200)}`);
+      return null;
+    }
+  }),
+);
+const total = outcomes.filter(Boolean).reduce((a, r) => a + r.spent, 0);
 
-console.log(`\n합계 $${total.toFixed(2)} · 잔액 $${(await balance()).toFixed(2)}`);
+const endBalance = await balance();
+console.log(`\n장부 합계 $${total.toFixed(2)} (단가×초) · 실측 차감 $${(startBalance - endBalance).toFixed(2)} · 잔액 $${endBalance.toFixed(2)}`);
 console.log(`  ${outDir}`);

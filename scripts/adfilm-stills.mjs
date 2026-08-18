@@ -161,23 +161,27 @@ async function makeStill(scene) {
 const scenes = plan.scenes.filter((s) => !only.length || only.includes(s.no));
 console.log(`스틸 ${scenes.length}장 · 나노바나나 프로 · 잔액 $${(await balance()).toFixed(2)}\n`);
 
-let total = 0;
-const done = [];
-for (const scene of scenes) {
-  const dest = path.join(outDir, `scene${String(scene.no).padStart(2, "0")}.png`);
-  if (existsSync(dest) && !only.length) {
-    console.log(`  씬${String(scene.no).padStart(2, "0")} 건너뜀 (이미 있음)`);
-    done.push(dest);
-    continue;
-  }
-  try {
-    const r = await makeStill(scene);
-    total += r.spent;
-    done.push(r.dest);
-  } catch (e) {
-    console.error(`\n  씬${scene.no} — ${String(e.message).slice(0, 200)}`);
-  }
-}
+/**
+ * **동시에 돌린다.** 한 장에 30~40초씩 걸리는데 순차로 12장이면 8분이다.
+ * fal 큐는 동시 제출을 받는다 — 기다리는 시간을 겹치면 1분 안쪽으로 끝난다.
+ */
+const outcomes = await Promise.all(
+  scenes.map(async (scene) => {
+    const dest = path.join(outDir, `scene${String(scene.no).padStart(2, "0")}.png`);
+    if (existsSync(dest) && !only.length) {
+      console.log(`  씬${String(scene.no).padStart(2, "0")} 건너뜀 (이미 있음)`);
+      return { dest, spent: 0 };
+    }
+    try {
+      return await makeStill(scene);
+    } catch (e) {
+      console.error(`\n  씬${scene.no} — ${String(e.message).slice(0, 200)}`);
+      return null;
+    }
+  }),
+);
+const total = outcomes.filter(Boolean).reduce((a, r) => a + r.spent, 0);
+const done = outcomes.filter(Boolean).map((r) => r.dest);
 
 console.log(`\n완성 ${done.length}장 · 합계 $${total.toFixed(2)} · 잔액 $${(await balance()).toFixed(2)}`);
 console.log(`  ${outDir}`);

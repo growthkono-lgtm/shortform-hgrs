@@ -179,7 +179,23 @@ const draws = allCards.map((c, i) => {
 const filter =
   `[0:v]${draws}[v];` +
   `${delays.join(";")};` +
-  `${mixIns}amix=inputs=${delays.length}:duration=longest:normalize=0,volume=2.0[a]`;
+  /**
+   * 라우드니스 정규화 + 리미터. (2026-08-19 신설)
+   *
+   * 예전엔 `volume=2.0` 으로 무조건 두 배를 올렸다. OpenAI TTS 가 작아서
+   * 그렇게 맞춰 놨는데, ElevenLabs 로 갈아타니 원본이 커서 **0dB 에 붙어
+   * 찌그러졌다**(QC 계층1 이 잡았다).
+   *
+   * 고정 배수를 쓰면 벤더를 바꿀 때마다 깨진다. 목표 라우드니스를 정하고
+   * 거기에 맞춘다 — 숏폼 규격 -16 LUFS, 트루피크 -1.5dB.
+   * `alimiter` 가 마지막 안전망이다.
+   */
+  `${mixIns}amix=inputs=${delays.length}:duration=longest:normalize=0,` +
+  // loudnorm 은 샘플레이트를 제 마음대로 바꾼다(96kHz 로 튀었다). 뒤에서 못 박는다.
+  // 리미터 -3dB. ⚠️ `level=disabled` 가 핵심이다 — alimiter 는 기본으로 출력을
+  // **다시 풀스케일로 끌어올린다.** 그래서 limit 을 내릴수록 평균이 되레 올랐고
+  // 피크가 계속 0dB 에 붙었다. AAC 인터샘플 오버슈트까지 감안해 -3dB 를 남긴다
+  `loudnorm=I=-16:TP=-2:LRA=11,aresample=48000,alimiter=limit=0.70:level=disabled[a]`;
 
 spawnSync(ffmpeg, [
   "-y", "-i", joined, ...audioInputs,
