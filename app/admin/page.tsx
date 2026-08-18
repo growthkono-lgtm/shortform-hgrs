@@ -1,9 +1,7 @@
 import { readDiagnosis, type DiagAnswers } from "@/lib/diagnosis";
 import {
-  INQUIRY_PLAN_LABEL,
   INQUIRY_SOURCE_LABEL,
-  VOLUME_LABEL,
-  needsCount,
+  describeSelection,
 } from "@/lib/inquiry-plans";
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/server";
@@ -166,6 +164,11 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
             const from =
               INQUIRY_SOURCE_LABEL[diagnosis?.source ?? ""] ??
               "숏폼 랜딩 (/shortform)";
+            const picked = describeSelection({
+              interest: row.interest,
+              volume: row.volume,
+              source: diagnosis?.source,
+            });
 
             return (
               <li
@@ -208,14 +211,8 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
                       </p>
                       <div className="mt-2 grid gap-1.5">
                         {[
-                          ["선택 플랜", INQUIRY_PLAN_LABEL[row.interest] ?? row.interest],
-                          // 편수를 묻지 않는 플랜에 "미정" 을 찍으면 고른 것처럼 읽힌다
-                          [
-                            "예상 편수",
-                            needsCount(row.interest)
-                              ? (VOLUME_LABEL[row.volume] ?? row.volume)
-                              : "해당 없음",
-                          ],
+                          ["선택 플랜", picked.plan],
+                          ["예상 편수", picked.count],
                           ["유입 경로", from],
                           ["접수 시각", fmt(row.created_at)],
                           [
@@ -225,7 +222,17 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
                         ].map(([k, v]) => (
                           <div key={k} className="flex gap-3 text-xs">
                             <dt className="w-16 shrink-0 text-muted">{k}</dt>
-                            <dd className="font-medium">{v}</dd>
+                            <dd
+                              className={
+                                // 고른 적 없는 값은 사실대로, 눈에 띄게
+                                !picked.chosen &&
+                                (k === "선택 플랜" || k === "예상 편수")
+                                  ? "font-medium text-amber-700"
+                                  : "font-medium"
+                              }
+                            >
+                              {v}
+                            </dd>
                           </div>
                         ))}
                         {diagnosis?.plan?.label && (

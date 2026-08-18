@@ -447,8 +447,8 @@ export function inquiryNoticeMail(input: {
   brandUrl: string | null;
   /** 화면에 보이던 그대로의 문구 (예: "숏폼 — 패키지 플랜") */
   planLabel: string;
-  /** 편수를 묻지 않는 플랜이면 null */
-  countLabel: string | null;
+  /** "10편" · "해당 없음" · "미선택" — 판정은 describeSelection 이 한다 */
+  countLabel: string;
   /** 어느 랜딩에서 왔나 */
   from: string;
   /** 현황 체크 문답. 비어 있으면 "체크 로그 없음" 으로 찍는다 */
@@ -467,9 +467,11 @@ export function inquiryNoticeMail(input: {
   <td style="padding:6px 0;font-size:14px;color:#030303;line-height:1.6">${value}</td>
 </tr>`;
 
-  const plan = input.countLabel
-    ? `${esc(input.planLabel)} · <strong>${esc(input.countLabel)}</strong>`
-    : esc(input.planLabel);
+  // 편수가 "해당 없음" 인 플랜에까지 굵게 붙이면 눈이 그쪽으로 끌린다
+  const plan =
+    input.countLabel === "해당 없음"
+      ? esc(input.planLabel)
+      : `${esc(input.planLabel)} · <strong>${esc(input.countLabel)}</strong>`;
 
   const log = input.checkLog.length
     ? `<table style="width:100%;border-collapse:collapse;margin:6px 0 0">

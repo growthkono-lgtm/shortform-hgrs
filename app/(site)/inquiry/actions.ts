@@ -5,11 +5,9 @@ import { createAdminClient } from "@/lib/supabase/server";
 import { CONSENT_VERSION } from "@/lib/consents";
 import { BROCHURE, brochureMail, brochureUrl, inquiryNoticeMail, sendMail } from "@/lib/mail";
 import {
-  INQUIRY_PLAN_LABEL,
   INQUIRY_PLAN_VALUES,
   INQUIRY_SOURCE_LABEL,
-  VOLUME_LABEL,
-  needsCount,
+  describeSelection,
 } from "@/lib/inquiry-plans";
 import { readDiagnosis, type DiagAnswers } from "@/lib/diagnosis";
 
@@ -145,12 +143,13 @@ export async function submitInquiry(
    *
    * 발송 실패가 접수 실패로 번지지 않는다. 소개서와 같은 원칙이다.
    */
-  const planLabel = INQUIRY_PLAN_LABEL[interest] ?? interest;
   const diag = diagnosis as {
     answers?: DiagAnswers;
     plan?: { label?: string; composition?: string };
     source?: string;
   } | null;
+
+  const picked = describeSelection({ interest, volume, source: diag?.source });
 
   const notice = inquiryNoticeMail({
     companyName,
@@ -158,9 +157,8 @@ export async function submitInquiry(
     email,
     phone: phone || null,
     brandUrl: brandUrl || null,
-    planLabel,
-    // 편수를 묻지 않는 플랜에 "미정" 을 찍으면 고른 것처럼 읽힌다
-    countLabel: needsCount(interest) ? (VOLUME_LABEL[volume] ?? volume) : null,
+    planLabel: picked.plan,
+    countLabel: picked.count,
     from: INQUIRY_SOURCE_LABEL[diag?.source ?? ""] ?? "숏폼 랜딩 (/shortform)",
     checkLog: readDiagnosis(diag?.answers),
     recommended: diag?.plan?.label

@@ -100,3 +100,45 @@ export const INQUIRY_SOURCE_LABEL: Record<string, string> = {
   "sns-brand": "채널 운영 랜딩 (/sns-brand)",
   shortform: "숏폼 랜딩 (/shortform)",
 };
+
+/**
+ * 고른 것인가, 우리가 박아 넣은 것인가. (2026-08-18)
+ *
+ * 08-18 오전에 들어온 첫 실사 문의가 어드민에 "추천 요청 · 미정" 으로 찍혔다.
+ * 사장님이 "이 클라가 뭘 선택해서 제출했냐" 고 물으셨는데, **답은 "아무것도
+ * 고르지 않았다" 이고 정확히는 "고를 화면이 없었다"** 였다. 그날 `/sns-brand`
+ * 폼에는 플랜 선택 UI 자체가 없었고 서버로 `unsure`·`unknown` 을 하드코딩해
+ * 보내고 있었다.
+ *
+ * 그 값을 라벨로 옮기기만 하면 화면은 거짓말을 한다. 안 물어본 것은 안
+ * 물어봤다고 적어야 통화 첫 마디가 어긋나지 않는다.
+ *
+ * 판정: `/sns-brand` 에서 온 `unsure` 는 고른 것이 아니다. 개편 뒤 그 폼이
+ * 보내는 값은 전부 신규 코드(shorts_single…)라 이 조합은 옛 폼에서만 나온다.
+ * 반대로 숏폼 랜딩의 `unsure` 는 "추천받고 싶어요" 라는 **실제 선택지**였다.
+ */
+export function describeSelection(input: {
+  interest: string;
+  volume: string;
+  source: string | null | undefined;
+}): { plan: string; count: string; chosen: boolean } {
+  const legacyChannelForm =
+    input.source === "sns-brand" && input.interest === "unsure";
+
+  if (legacyChannelForm) {
+    return {
+      plan: "미선택 — 당시 폼에 플랜 선택 항목이 없었습니다",
+      count: "미선택",
+      chosen: false,
+    };
+  }
+
+  return {
+    plan: INQUIRY_PLAN_LABEL[input.interest] ?? input.interest,
+    // 편수를 묻지 않는 플랜에 "미정" 을 찍으면 고객이 그렇게 고른 것처럼 읽힌다
+    count: needsCount(input.interest)
+      ? (VOLUME_LABEL[input.volume] ?? input.volume)
+      : "해당 없음",
+    chosen: true,
+  };
+}
