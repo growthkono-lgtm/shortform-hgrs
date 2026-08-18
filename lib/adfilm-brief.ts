@@ -278,6 +278,33 @@ export function buildShotPrompt(brief: AdBrief, shotNo: number): string {
 const LINE_MAX_WORDS = 10;
 const LINE_MIN_WORDS = 3;
 
+/**
+ * 한국어 TTS 가 1초에 읽는 글자 수 — **실측값이다.** (2026-08-18)
+ *
+ * ── 왜 이 상수가 생겼나 ────────────────────────────────────────────────
+ * 사장님: *"영상을 30초대로 뽑으라고 하면 말도 안 되게 다 줄여 생략해서 아예
+ * 못 쓰게 만들고, 그 제한을 없애면 그냥 2분 가까운 영상을 뽑는다."*
+ *
+ * 원인은 길이를 **대본에** 요구한 것이다. 대본은 늘였다 줄였다 되는 것이라
+ * AI 가 내용을 버려서 맞춘다. 길이는 **샷 슬롯이 정해야 하고**, 대본은 그 안에
+ * 들어가야 한다. 그러려면 "이 샷에 몇 글자까지 들어가는가" 를 알아야 한다.
+ *
+ * ── 어떻게 쟀나 ────────────────────────────────────────────────────────
+ * 같은 문장 셋을 속도 1.0~1.6 으로 뽑아 whisper 로 되받아썼다.
+ *   1.0 → 4.6자/초 (일치율 93.9%)   1.6 → 6.4자/초 (95.6%)
+ * 속도와 정확도에 상관이 없었고 1.6 이 최고 타이였다. 그래서 1.6 을 쓴다.
+ *
+ * ⚠️ **TTS 벤더를 바꾸면 이 값을 다시 재야 한다.** 벤더마다 같은 속도에서
+ * 읽는 양이 다르다. 그래서 환경변수로 열어 뒀다.
+ */
+const CHARS_PER_SECOND = Number(process.env.ADFILM_TTS_CPS ?? 6.4);
+
+/**
+ * 대사 길이 상한. 여유를 조금 둔다 — 딱 맞추면 문장 끝이 잘린다.
+ * 5초 샷이면 6.4 × 5 × 0.92 ≈ 29자.
+ */
+const LINE_FIT = 0.92;
+
 export type BriefIssue = { level: "block" | "warn"; message: string };
 
 export function validateBrief(brief: AdBrief): BriefIssue[] {
@@ -341,6 +368,30 @@ export function validateBrief(brief: AdBrief): BriefIssue[] {
     if (!shot.camera?.trim() || !shot.action?.trim()) {
       issues.push({ level: "block", message: `샷 ${slot.no}: 카메라·동작을 채우세요` });
     }
+    /**
+     * 대사가 샷 길이에 들어가는가 — **유형을 안 가린다.** (2026-08-18)
+     *
+     * 예전엔 립싱크 유형(`onscreen`)만 검사했는데, 안 맞으면 곤란한 건
+     * voiceover 도 같다. 말이 컷보다 길면 다음 컷으로 넘쳐 "컷이 안 맞게
+     * 들어간다" 가 되고, 짧으면 화면이 빈다.
+     *
+     * 여기서 막으면 생성 전에 알게 된다. 영상을 뽑고 나서 알면 그 컷 값을
+     * 통째로 버린다 — 스틸의 8배, 재생성까지 치면 그 이상이다.
+     */
+    const line = shot.line?.trim() ?? "";
+    if (line) {
+      const chars = line.replace(/\s/g, "").length;
+      const fits = Math.floor(slot.seconds * CHARS_PER_SECOND * LINE_FIT);
+      if (chars > fits) {
+        issues.push({
+          level: "block",
+          message:
+            `샷 ${slot.no}: 대사 ${chars}자 — ${slot.seconds}초에는 ${fits}자까지 들어갑니다. ` +
+            `줄이거나 샷을 나누세요 (실측 ${CHARS_PER_SECOND}자/초)`,
+        });
+      }
+    }
+
     if (f.audio === "onscreen") {
       const words = shot.line.trim().split(/\s+/).filter(Boolean).length;
       if (!words) {
