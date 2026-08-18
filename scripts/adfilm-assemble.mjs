@@ -19,13 +19,23 @@ import path from "node:path";
 
 import ffmpeg from "ffmpeg-static";
 
+/**
+ * 샷 폴더와 결과 파일명을 인자로 받는다. (2026-08-18)
+ *
+ * 예전엔 `scenes-v16` 을 하드코딩했다. i2v 로 갈아타면서 샷이 `shots-v16` 에
+ * 쌓이는데, 같은 대본으로 두 판(sora 판 / i2v 판)을 나란히 두고 비교해야
+ * 무엇이 좋아졌는지 알 수 있다. 폴더를 못 박으면 그 비교를 못 한다.
+ *
+ *   node scripts/adfilm-assemble.mjs <plan.json> [샷폴더] [결과파일명]
+ */
 const planFile = process.argv[2] ?? "drafts/feliway/scenes-v16.json";
 const plan = JSON.parse(readFileSync(planFile, "utf8"));
 const root = path.dirname(planFile);
-const sceneDir = path.join(root, "scenes-v16");
-const voiceDir = path.join(root, "voice-v16");
+const tag = path.basename(planFile, ".json").replace(/^scenes-/, "");
+const sceneDir = path.join(root, process.argv[3] ?? `scenes-${tag}`);
+const voiceDir = path.join(root, `voice-${tag}`);
 const voice = JSON.parse(readFileSync(path.join(voiceDir, "lines.json"), "utf8"));
-const out = path.join(root, "feliway-v16.mp4");
+const out = path.join(root, process.argv[4] ?? `feliway-${tag}.mp4`);
 const work = mkdtempSync(path.join(tmpdir(), "adfilm-"));
 
 const FONT = path.resolve("assets/fonts/Pretendard-Bold.otf");

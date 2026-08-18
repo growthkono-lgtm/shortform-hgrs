@@ -137,8 +137,40 @@ export type ShotRequest = {
    * 편차 측정 테스트에서는 이 값을 바꿔 가며 3회 돌린다.
    */
   seed?: number;
-  /** 오디오·립싱크. 인물이 말하는 유형에서만 켠다 */
+  /**
+   * ⚠️ 기본 **꺼짐**. (2026-08-18 뒤집음)
+   *
+   * 그전까지 기본이 켬이었고, 그래서 **중국 모델이 한국어를 발음했다.**
+   * 사장님이 말씀하신 "중국어처럼 어눌하고 끊긴다" 의 정체가 이것이다.
+   * 한국어 음성은 전량 한국어 특화 TTS 로 후합성한다 — 명세서 §6-1-2.
+   *
+   * 켤 수 있게는 남긴다. 환경음·효과음만 필요한 무발화 컷에는 쓸모가 있다.
+   * 다만 **대사가 있는 컷에서는 절대 켜지 않는다.**
+   */
   generateAudio?: boolean;
+
+  /**
+   * 첫 프레임으로 못 박을 스틸. **이걸 주면 image-to-video 로 간다.**
+   *
+   * ── 왜 생겼나 (2026-08-18 A/B 실측) ─────────────────────────────────
+   * 그전까지 스틸을 `imageUrls` 로 넘겼고, 그러면 reference-to-video 로 갔다.
+   * 거기서 이미지는 **참고**다 — 모델이 인물을 매번 다시 그린다.
+   * 같은 스틸·같은 프롬프트로 두 경로를 재 봤다(SSIM, 1.0=동일):
+   *
+   *   reference-to-video   0.642   ← 얼굴·머리·배경·구도까지 다시 그림
+   *   image-to-video       0.922   ← 압축 손실 빼면 사실상 그 프레임 그대로
+   *
+   * "이미지를 먼저 만들었는데도 인물이 달라 보인다" 의 원인이 이것이었다.
+   * 스틸을 애써 고정해 놓고 "참고해 줘" 로 넘기고 있었다.
+   */
+  firstFrameUrl?: string;
+
+  /**
+   * 마지막 프레임. 샷 N 의 끝을 샷 N+1 의 첫 프레임과 같게 물리면
+   * **컷 간 연결이 구조적으로 이어진다.** 모델의 자유도가 중간 모션으로만
+   * 제한되므로 "컷 간 연결이 어색하다" 도 같이 사라진다.
+   */
+  lastFrameUrl?: string;
 };
 
 export type ShotJob = {
@@ -160,8 +192,35 @@ export async function submitShot(req: ShotRequest): Promise<ShotJob> {
     (req.videoUrls?.length ?? 0) > 0 ||
     (req.audioUrls?.length ?? 0) > 0;
 
-  // 레퍼런스가 있으면 reference-to-video 로 간다. 그게 "의도한 대로"의 경로다
-  const endpoint = hasRefs ? ENDPOINT.reference(tier) : ENDPOINT.text(tier);
+  /**
+   * 경로 선택 — 스틸이 있으면 **무조건 image-to-video** 다. (2026-08-18)
+   *
+   * 우선순위가 뒤집혔다. 예전엔 "레퍼런스가 있으면 reference-to-video" 였는데,
+   * 그 경로에서 이미지는 참고일 뿐이라 인물이 매번 새로 그려졌다(위 A/B 실측).
+   * 확정한 스틸이 있다는 것은 **그 프레임에서 시작하라는 뜻**이지 참고하라는
+   * 뜻이 아니다.
+   *
+   *   firstFrame 있음        → image-to-video   (프레임 고정)
+   *   레퍼런스만 있음         → reference-to-video (스타일·개체 참고)
+   *   둘 다 없음             → text-to-video     (명세서가 금지. 아래에서 막는다)
+   */
+  const endpoint = req.firstFrameUrl
+    ? ENDPOINT.image(tier)
+    : hasRefs
+      ? ENDPOINT.reference(tier)
+      : ENDPOINT.text(tier);
+
+  /**
+   * T2V 원샷 금지 — 명세서 §6-1-3.
+   *
+   * 스틸도 레퍼런스도 없이 글로만 뽑으면 매 컷이 다른 세계가 된다. 그게
+   * v16 까지의 편차 원인이었다. 실수로 이 경로를 타지 않게 여기서 끊는다.
+   */
+  if (endpoint === ENDPOINT.text(tier) && process.env.ADFILM_ALLOW_T2V !== "1") {
+    throw new Error(
+      "스틸(firstFrameUrl) 없이 영상을 만들 수 없습니다 — 확정 스틸에서 시작해야 합니다",
+    );
+  }
 
   if (req.seconds < 4 || req.seconds > 15) {
     throw new Error(`길이 ${req.seconds}초 — Seedance 는 4~15초만 받습니다`);
@@ -174,13 +233,21 @@ export async function submitShot(req: ShotRequest): Promise<ShotJob> {
     prompt: req.prompt,
     resolution: "720p", // fal 은 480p·720p 만 준다. 우리 규격이 720x1280 이라 충분
     duration: String(req.seconds),
-    aspect_ratio: "9:16",
-    generate_audio: req.generateAudio ?? true,
+    // 기본 꺼짐. 대사가 있는 컷에서 켜면 모델이 한국어를 발음한다
+    generate_audio: req.generateAudio ?? false,
   };
   if (req.seed != null) body.seed = req.seed;
-  if (req.imageUrls?.length) body.image_urls = req.imageUrls;
-  if (req.videoUrls?.length) body.video_urls = req.videoUrls;
-  if (req.audioUrls?.length) body.audio_urls = req.audioUrls;
+
+  if (req.firstFrameUrl) {
+    // i2v 는 단수 image_url 이다. 비율은 스틸이 정하므로 aspect_ratio 를 안 보낸다
+    body.image_url = req.firstFrameUrl;
+    if (req.lastFrameUrl) body.end_image_url = req.lastFrameUrl;
+  } else {
+    body.aspect_ratio = "9:16";
+    if (req.imageUrls?.length) body.image_urls = req.imageUrls;
+    if (req.videoUrls?.length) body.video_urls = req.videoUrls;
+    if (req.audioUrls?.length) body.audio_urls = req.audioUrls;
+  }
 
   const data = (await call(`${FAL_QUEUE}/${endpoint}`, {
     method: "POST",
