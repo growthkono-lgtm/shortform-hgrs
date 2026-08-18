@@ -3,11 +3,23 @@
 import { headers } from "next/headers";
 import { createAdminClient } from "@/lib/supabase/server";
 import { CONSENT_VERSION } from "@/lib/consents";
-import { BROCHURE, brochureMail, brochureUrl, sendMail } from "@/lib/mail";
+import { BROCHURE, brochureMail, brochureUrl, inquiryNoticeMail, sendMail } from "@/lib/mail";
+import {
+  INQUIRY_PLAN_LABEL,
+  INQUIRY_PLAN_VALUES,
+  INQUIRY_SOURCE_LABEL,
+  VOLUME_LABEL,
+  needsCount,
+} from "@/lib/inquiry-plans";
+import { readDiagnosis, type DiagAnswers } from "@/lib/diagnosis";
 
 export type InquiryState = { ok: boolean; error: string | null };
 
-const INTERESTS = ["shorts_only", "full", "unsure"] as const;
+/**
+ * 선택지는 `lib/inquiry-plans.ts` 한 곳에서만 정의한다. (2026-08-18)
+ * 폼·서버·어드민이 각자 목록을 들고 있으면 하나를 늘릴 때 반드시 어긋난다.
+ */
+const INTERESTS = INQUIRY_PLAN_VALUES;
 const VOLUMES = ["v1", "v5", "v10", "v20", "unknown"] as const;
 
 const isOneOf = <T extends readonly string[]>(list: T, v: string) =>
@@ -42,8 +54,11 @@ export async function submitInquiry(
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { ok: false, error: "이메일 주소를 다시 확인해 주세요." };
   }
-  if (!isOneOf(INTERESTS, interest) || !isOneOf(VOLUMES, volume)) {
-    return { ok: false, error: "관심 구성과 예상 편수를 선택해 주세요." };
+  if (!isOneOf(INTERESTS, interest)) {
+    return { ok: false, error: "어떤 프로젝트를 찾으시는지 선택해 주세요." };
+  }
+  if (!isOneOf(VOLUMES, volume)) {
+    return { ok: false, error: "예상 편수를 선택해 주세요." };
   }
   if (!consentRequired) {
     return { ok: false, error: "개인정보 수집·이용에 동의해 주셔야 접수됩니다." };
@@ -65,27 +80,6 @@ export async function submitInquiry(
     null;
 
   const admin = createAdminClient();
-
-  /**
-   * 같은 사람이 연달아 보낸 것은 한 건으로 본다. (2026-08-18)
-   *
-   * 08-18 오전 첫 실사 문의(자보티바)가 **3초 간격으로 두 번** 들어왔고,
-   * 소개서 메일도 두 통 나갔다. 고객이 같은 메일을 두 번 받은 셈이다.
-   * 버튼 연타든 새로고침이든 원인은 사용자 쪽이지만, 결과는 우리 인상이다.
-   *
-   * 10분 창을 두고 같은 이메일이면 새로 넣지 않고 조용히 접수 성공으로
-   * 돌려준다 — 사용자에게 "이미 접수됐다" 는 오류를 띄우면 실패로 읽힌다.
-   * 정말 다시 보내려는 사람은 10분 뒤에 되고, 어드민에는 [소개서 재발송]이 있다.
-   */
-  const since = new Date(Date.now() - 10 * 60 * 1000).toISOString();
-  const { data: recent } = await admin
-    .from("inquiries")
-    .select("id")
-    .eq("email", email)
-    .gte("created_at", since)
-    .limit(1)
-    .maybeSingle();
-  if (recent) return { ok: true, error: null };
 
   const { data: inserted, error } = await admin
     .from("inquiries")
@@ -138,6 +132,53 @@ export async function submitInquiry(
       .update({ status: "sent", brochure_sent_at: new Date().toISOString() })
       .eq("id", inserted.id);
   }
+
+  /**
+   * 소개서가 나간 사실을 contact@h-grs.com 에 알린다. (2026-08-18)
+   *
+   * 사장님 지시 — 어드민을 열지 않고도 받은편지함에서 바로 회신하실 수 있어야
+   * 한다. 그래서 `replyTo` 에 **문의한 분의 주소**를 박는다.
+   *
+   * ⚠️ 이 알림은 **이 경로(신규 접수)에만** 붙인다. 어드민의 [소개서 재발송]
+   * 에는 붙이지 않는다 — 사장님이 직접 누르시는 것이고, 그때마다 알림이 또
+   * 오면 소음이다. 배포 이전에 접수된 건에도 당연히 소급 발송하지 않는다.
+   *
+   * 발송 실패가 접수 실패로 번지지 않는다. 소개서와 같은 원칙이다.
+   */
+  const planLabel = INQUIRY_PLAN_LABEL[interest] ?? interest;
+  const diag = diagnosis as {
+    answers?: DiagAnswers;
+    plan?: { label?: string; composition?: string };
+    source?: string;
+  } | null;
+
+  const notice = inquiryNoticeMail({
+    companyName,
+    contactName,
+    email,
+    phone: phone || null,
+    brandUrl: brandUrl || null,
+    planLabel,
+    // 편수를 묻지 않는 플랜에 "미정" 을 찍으면 고른 것처럼 읽힌다
+    countLabel: needsCount(interest) ? (VOLUME_LABEL[volume] ?? volume) : null,
+    from: INQUIRY_SOURCE_LABEL[diag?.source ?? ""] ?? "숏폼 랜딩 (/shortform)",
+    checkLog: readDiagnosis(diag?.answers),
+    recommended: diag?.plan?.label
+      ? `${diag.plan.label}${diag.plan.composition ? ` (${diag.plan.composition})` : ""}`
+      : null,
+    message: message || null,
+    sentTo: email,
+  });
+
+  await sendMail({
+    kind: "inquiry_notice",
+    to: "contact@h-grs.com",
+    subject: notice.subject,
+    html: notice.html,
+    inquiryId: inserted.id,
+    // 이 한 줄이 이 메일의 존재 이유다 — [답장] 이 고객에게 바로 간다
+    replyTo: email,
+  });
 
   return { ok: true, error: null };
 }

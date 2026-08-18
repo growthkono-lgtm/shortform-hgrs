@@ -8,23 +8,20 @@ import { cn } from "@/lib/cn";
 import { POLICY } from "@/lib/constants";
 import { INQUIRY_CONSENTS, CONSENT_VERSION } from "@/lib/consents";
 import { submitInquiry, type InquiryState } from "@/app/(site)/inquiry/actions";
+import {
+  INQUIRY_PLANS,
+  VOLUMES,
+  fromDiagnosisCode,
+  needsCount,
+} from "@/lib/inquiry-plans";
 import { useDiagnosis } from "./diagnosis-context";
 
 const INITIAL: InquiryState = { ok: false, error: null };
 
-const INTERESTS = [
-  { value: "shorts_only", label: "숏폼 기획제작만" },
-  { value: "full", label: "숏폼 + 인플루언서 시딩" },
-  { value: "unsure", label: "추천받고 싶어요" },
-];
-
-const VOLUMES = [
-  { value: "v1", label: "1편" },
-  { value: "v5", label: "5편" },
-  { value: "v10", label: "10편" },
-  { value: "v20", label: "20편 이상" },
-  { value: "unknown", label: "미정" },
-];
+/**
+ * 선택지는 `lib/inquiry-plans.ts` 한 곳에서만 정의한다. (2026-08-18)
+ * 폼·서버·어드민이 각자 목록을 들고 있으면 하나 늘릴 때 반드시 어긋난다.
+ */
 
 /**
  * 제어형 라디오 — 진단에서 고른 값이 그대로 눌려 있어야 한다.
@@ -64,6 +61,44 @@ function Radios({
 }
 
 /**
+ * 프로젝트 종류 — 한 줄 설명이 붙어야 고를 수 있다. (2026-08-18)
+ *
+ * 알약 버튼으로는 "숏폼 패키지" 가 무엇을 포함하는지 알 수 없다. 이름만 보고
+ * 고르게 하면 상담에서 다시 설명해야 하고, 그러면 이 폼이 한 일이 없다.
+ */
+function PlanCards({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (next: string) => void;
+}) {
+  return (
+    <div className="mt-2 grid gap-2">
+      {INQUIRY_PLANS.map((p) => (
+        <label
+          key={p.value}
+          className="cursor-pointer rounded-2xl border border-line bg-paper px-4 py-3.5 transition-colors duration-200 hover:border-ink/40 has-checked:border-ink has-checked:bg-ink has-checked:text-paper"
+        >
+          <input
+            type="radio"
+            name="interest"
+            value={p.value}
+            checked={value === p.value}
+            onChange={() => onChange(p.value)}
+            className="sr-only"
+          />
+          <span className="block text-sm font-bold">{p.label}</span>
+          <span className="mt-1 block text-xs leading-[1.7] opacity-70">
+            {p.desc}
+          </span>
+        </label>
+      ))}
+    </div>
+  );
+}
+
+/**
  * 신청 — 랜딩의 유일한 전환 경로.
  *
  * 2026-08-10 가격표를 화면에서 내렸다. 편수 단가를 먼저 걸면 "한 편에 얼마" 비교로
@@ -83,7 +118,7 @@ export function Apply() {
    */
   const fromDiagnosis = result
     ? {
-        interest: result.plan.code as string,
+        interest: fromDiagnosisCode(result.plan.code),
         volume:
           result.plan.shortsCount >= 20
             ? "v20"
@@ -104,8 +139,16 @@ export function Apply() {
     setPicked({});
   }
 
-  const interest = picked.interest ?? fromDiagnosis?.interest ?? "unsure";
-  const volume = picked.volume ?? fromDiagnosis?.volume ?? "unknown";
+  const interest = picked.interest ?? fromDiagnosis?.interest ?? "consult";
+  /**
+   * 편수를 묻지 않는 플랜(채널 턴키·AI팀·상담후결정)은 값을 `unknown` 으로
+   * 고정한다. 화면에서 칸을 감추면서 값만 남겨 두면 "20편" 같은 앞선 선택이
+   * 그대로 저장돼 어드민이 거짓을 읽는다. (2026-08-18)
+   */
+  const askCount = needsCount(interest);
+  const volume = askCount
+    ? (picked.volume ?? fromDiagnosis?.volume ?? "unknown")
+    : "unknown";
 
   if (state.ok) {
     return (
@@ -221,27 +264,31 @@ export function Apply() {
 
           <div>
             <p className="text-sm font-bold">
-              관심 구성<span className="ml-1 text-accent">*</span>
+              어떤 프로젝트를 찾으시나요<span className="ml-1 text-accent">*</span>
             </p>
-            <Radios
-              name="interest"
-              options={INTERESTS}
+            <PlanCards
               value={interest}
               onChange={(v) => setPicked((p) => ({ ...p, interest: v }))}
             />
           </div>
 
-          <div>
-            <p className="text-sm font-bold">
-              예상 편수<span className="ml-1 text-accent">*</span>
-            </p>
-            <Radios
-              name="volume"
-              options={VOLUMES}
-              value={volume}
-              onChange={(v) => setPicked((p) => ({ ...p, volume: v }))}
-            />
-          </div>
+          {/* 편수는 숏폼 두 플랜에서만 묻는다. 채널 턴키·AI팀은 편수 단위가
+              아니라, 물으면 답할 수 없는 질문이 된다 */}
+          {askCount ? (
+            <div>
+              <p className="text-sm font-bold">
+                예상 편수<span className="ml-1 text-accent">*</span>
+              </p>
+              <Radios
+                name="volume"
+                options={[...VOLUMES]}
+                value={volume}
+                onChange={(v) => setPicked((p) => ({ ...p, volume: v }))}
+              />
+            </div>
+          ) : (
+            <input type="hidden" name="volume" value="unknown" />
+          )}
 
           <div>
             <label htmlFor="message" className="block text-sm font-bold">

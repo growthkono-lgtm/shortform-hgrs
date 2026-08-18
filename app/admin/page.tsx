@@ -1,4 +1,10 @@
 import { readDiagnosis, type DiagAnswers } from "@/lib/diagnosis";
+import {
+  INQUIRY_PLAN_LABEL,
+  INQUIRY_SOURCE_LABEL,
+  VOLUME_LABEL,
+  needsCount,
+} from "@/lib/inquiry-plans";
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/server";
 import { ActionForm } from "@/components/admin/action-form";
@@ -12,19 +18,10 @@ const STATUS_LABEL: Record<string, string> = {
   closed: "종료",
 };
 
-const INTEREST_LABEL: Record<string, string> = {
-  shorts_only: "숏폼 단독",
-  full: "시딩 포함",
-  unsure: "추천 요청",
-};
-
-const VOLUME_LABEL: Record<string, string> = {
-  v1: "1편",
-  v5: "5편",
-  v10: "10편",
-  v20: "20편+",
-  unknown: "미정",
-};
+/**
+ * 선택지 라벨은 `lib/inquiry-plans.ts` 한 곳에서만 정의한다. (2026-08-18)
+ * 어드민이 자기 목록을 따로 들고 있으면 폼에 하나 늘릴 때 여기가 빈칸이 된다.
+ */
 
 const fmt = (iso: string) =>
   new Date(iso).toLocaleString("ko-KR", {
@@ -166,14 +163,9 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
             } | null;
 
             const log = readDiagnosis(diagnosis?.answers);
-            const SOURCE_LABEL: Record<string, string> = {
-              "sns-brand": "채널 운영 문의 (/sns-brand)",
-            };
-            const from = diagnosis?.source
-              ? (SOURCE_LABEL[diagnosis.source] ?? diagnosis.source)
-              : "랜딩 신청 (/)";
-            /** 플랜을 물어보는 폼에서 온 신청인가 */
-            const asked = !diagnosis?.source;
+            const from =
+              INQUIRY_SOURCE_LABEL[diagnosis?.source ?? ""] ??
+              "숏폼 랜딩 (/shortform)";
 
             return (
               <li
@@ -201,27 +193,30 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
                     <p className="mt-2 text-xs text-muted">
                       <span className="text-muted/70">{from}</span>
                       {" · "}
-                      {asked ? (
-                        <>
-                          관심 {INTEREST_LABEL[row.interest] ?? row.interest} ·
-                          편수 {VOLUME_LABEL[row.volume] ?? row.volume}
-                        </>
-                      ) : (
-                        // 이 폼은 플랜을 묻지 않는다. 안 물어본 것을 고른 것처럼 적지 않는다
-                        <span className="font-medium text-amber-700">
-                          플랜 미작성
-                        </span>
-                      )}
+                      <span className="font-medium text-ink">
+                        {INQUIRY_PLAN_LABEL[row.interest] ?? row.interest}
+                      </span>
+                      {/* 편수를 묻지 않는 플랜에 "미정" 을 찍으면 고른 것처럼 읽힌다 */}
+                      {needsCount(row.interest) &&
+                        ` · ${VOLUME_LABEL[row.volume] ?? row.volume}`}
                       {diagnosis?.plan?.label &&
-                        ` · 진단 ${diagnosis.plan.label} (${diagnosis.plan.composition})`}
+                        ` · 추천 ${diagnosis.plan.label}${diagnosis.plan.composition ? ` (${diagnosis.plan.composition})` : ""}`}
                     </p>
+
+                    {/* 현황 체크를 마치고 신청했는가. 로그가 없으면 없다고 적는다 —
+                        빈칸으로 두면 "안 뜬 건지 안 한 건지" 를 구분할 수 없다 */}
+                    {log.length === 0 && (
+                      <p className="mt-1 text-xs font-medium text-amber-700">
+                        체크 로그 없음
+                      </p>
+                    )}
 
                     {/* 진단을 마치고 신청한 사람은 무엇을 골랐는지 그대로 남긴다 —
                         통화 첫 마디가 달라진다 */}
                     {log.length > 0 && (
                       <details className="mt-2.5 rounded-xl bg-paper-alt px-4 py-3">
                         <summary className="cursor-pointer text-xs font-bold">
-                          진단 응답 {log.length}문항
+                          현황 체크 {log.length}문항
                         </summary>
                         <dl className="mt-3 space-y-2.5">
                           {log.map((r) => (

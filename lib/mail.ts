@@ -72,7 +72,9 @@ export type MailKind =
   | "work_deadline"
   | "preview_ready"
   | "final_ready"
-  | "project_done";
+  | "project_done"
+  /** 문의가 들어왔을 때 contact@h-grs.com 으로 가는 내부 알림 (2026-08-18) */
+  | "inquiry_notice";
 
 type Attachment = { filename: string; path: string };
 
@@ -85,6 +87,14 @@ type SendInput = {
   projectId?: string;
   /** Resend 가 path 를 직접 받아 붙인다 — 10MB 를 base64 로 실어 보내지 않는다 */
   attachments?: Attachment[];
+  /**
+   * 답장이 갈 주소. 안 주면 contact@h-grs.com. (2026-08-18)
+   *
+   * 내부 알림 메일에 쓴다 — 문의가 오면 그 메일의 답장 주소를 **고객 주소**로
+   * 박아 두어야 사장님이 받은편지함에서 [답장]만 눌러 바로 회신하신다.
+   * 주소를 옮겨 적는 한 단계가 실제로는 회신을 하루 늦춘다.
+   */
+  replyTo?: string;
 };
 
 export async function sendMail({
@@ -95,6 +105,7 @@ export async function sendMail({
   inquiryId,
   projectId,
   attachments,
+  replyTo,
 }: SendInput): Promise<{ ok: boolean; skipped: boolean; error?: string }> {
   const key = process.env.RESEND_API_KEY;
   const admin = createAdminClient();
@@ -136,7 +147,7 @@ export async function sendMail({
       body: JSON.stringify({
         from: FROM,
         to: [to],
-        reply_to: REPLY_TO,
+        reply_to: replyTo ?? REPLY_TO,
         subject,
         html,
         ...(attachments?.length ? { attachments } : {}),
@@ -160,7 +171,7 @@ export async function sendMail({
             Authorization: `Bearer ${key}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ from: FROM, to: [to], reply_to: REPLY_TO, subject, html }),
+          body: JSON.stringify({ from: FROM, to: [to], reply_to: replyTo ?? REPLY_TO, subject, html }),
         });
         if (retry.ok) {
           await log("sent", `첨부 실패로 링크만 재발송: ${error}`);
@@ -241,6 +252,16 @@ export function brochureMail(inquiry: BrochureInquiry) {
     subject: `[${SERVICE.name}] 프로젝트 소개서를 전달 드립니다.`,
     html: mailShell(`
 <p style="font-size:16px;font-weight:700;line-height:1.65;margin:0 0 20px">요즘 브랜드는 컨텐츠에서 시작해<br>고객으로 전환시키는 그로스 퍼널로 끝납니다.</p>
+
+<!-- 다음에 무슨 일이 일어나는지 먼저 말한다. (2026-08-18 사장님 지시)
+     소개서만 오고 아무 말이 없으면 문의한 쪽은 "접수가 된 건가" 를 모른다.
+     끝까지 안 읽어도 보이도록 인사 바로 뒤에 박스로 둔다 -->
+<table style="width:100%;border-collapse:collapse;margin:0 0 22px">
+  <tr><td style="background:#f0f4f8;border-radius:12px;padding:16px 18px">
+    <span style="display:block;font-size:14px;font-weight:700;color:#030303;line-height:1.6">영업일 2일 이내 안내 연락이 진행됩니다.</span>
+    <span style="display:block;font-size:13px;color:#5c5c5c;line-height:1.7;margin-top:5px">부재 시 문자를 함께 남겨드립니다.</span>
+  </td></tr>
+</table>
 
 ${para(
   "해그로시는 <strong>종합 마케팅과 브랜드 컨텐츠 덕션을 함께 운영하는 스튜디오</strong>입니다. 브랜드 유튜브·인스타그램 등 SNS 채널과, 인플루언서 시딩 바이럴 그리고 그 소스의 2차 활용을 통한 구매 전환형 숏폼 기획제작을 함께 진행합니다.",
@@ -401,4 +422,106 @@ export function clientNoticeMail(input: {
   `);
 
   return { subject, html };
+}
+
+/**
+ * 문의가 들어오면 contact@h-grs.com 으로 가는 내부 알림. (2026-08-18)
+ *
+ * 사장님 지시: *"우리가 소개서 발송하면 어떤 거 선택한 어떤 누구한테 메일이
+ * 어떻게 나갔다고 contact@h-grs.com 으로 보내줘. 그래야 내가 거기서 바로
+ * 회신하지."*
+ *
+ * 그래서 이 메일의 핵심은 본문이 아니라 **답장 주소**다. `sendMail` 에
+ * `replyTo` 로 문의한 사람의 주소를 넘긴다 — 받은편지함에서 [답장]만 누르면
+ * 고객에게 바로 간다. 주소를 옮겨 적는 한 단계가 회신을 하루 늦춘다.
+ *
+ * 어드민을 열지 않고도 통화가 되게 필요한 것을 다 담는다 — 특히 **무엇을
+ * 골랐는지**와 **현황 체크 로그**. "소스가 거의 없다" 고 답한 브랜드와
+ * "촬영본이 충분하다" 고 답한 브랜드는 첫 마디가 달라야 한다.
+ */
+export function inquiryNoticeMail(input: {
+  companyName: string;
+  contactName: string;
+  email: string;
+  phone: string | null;
+  brandUrl: string | null;
+  /** 화면에 보이던 그대로의 문구 (예: "숏폼 — 패키지 플랜") */
+  planLabel: string;
+  /** 편수를 묻지 않는 플랜이면 null */
+  countLabel: string | null;
+  /** 어느 랜딩에서 왔나 */
+  from: string;
+  /** 현황 체크 문답. 비어 있으면 "체크 로그 없음" 으로 찍는다 */
+  checkLog: { question: string; answer: string }[];
+  /** 진단이 추천한 구성 (있을 때만) */
+  recommended: string | null;
+  message: string | null;
+  sentTo: string;
+}) {
+  const esc = (t: string) =>
+    t.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c] ?? c);
+
+  const row = (label: string, value: string) =>
+    `<tr>
+  <td style="padding:6px 14px 6px 0;font-size:12px;color:#8a8a8a;white-space:nowrap;vertical-align:top">${label}</td>
+  <td style="padding:6px 0;font-size:14px;color:#030303;line-height:1.6">${value}</td>
+</tr>`;
+
+  const plan = input.countLabel
+    ? `${esc(input.planLabel)} · <strong>${esc(input.countLabel)}</strong>`
+    : esc(input.planLabel);
+
+  const log = input.checkLog.length
+    ? `<table style="width:100%;border-collapse:collapse;margin:6px 0 0">
+${input.checkLog
+  .map(
+    (r) => `<tr><td style="padding:7px 0;border-top:1px solid #eee">
+  <span style="display:block;font-size:12px;color:#8a8a8a;line-height:1.6">${esc(r.question)}</span>
+  <span style="display:block;font-size:13px;color:#030303;font-weight:600;line-height:1.7;margin-top:2px">→ ${esc(r.answer)}</span>
+</td></tr>`,
+  )
+  .join("")}
+</table>`
+    : `<span style="color:#b45309;font-weight:600">체크 로그 없음</span>`;
+
+  return {
+    subject: `[문의] ${input.companyName} · ${input.planLabel}`,
+    html: mailShell(`
+<p style="margin:0 0 4px;font-size:12px;color:#8a8a8a">새 프로젝트 문의</p>
+<p style="margin:0 0 18px;font-size:20px;font-weight:800;line-height:1.4">${esc(input.companyName)}</p>
+
+<div style="background:#f7f5f3;border-radius:12px;padding:16px 18px;margin:0 0 20px">
+  <span style="display:block;font-size:12px;color:#8a8a8a">선택한 프로젝트</span>
+  <span style="display:block;font-size:15px;font-weight:700;line-height:1.6;margin-top:3px">${plan}</span>
+</div>
+
+<table style="width:100%;border-collapse:collapse;margin:0 0 20px">
+${row("담당자", esc(input.contactName))}
+${row("이메일", `<a href="mailto:${esc(input.email)}" style="color:#030303">${esc(input.email)}</a>`)}
+${input.phone ? row("연락처", `<a href="tel:${esc(input.phone)}" style="color:#030303">${esc(input.phone)}</a>`) : ""}
+${input.brandUrl ? row("브랜드", `<a href="${esc(input.brandUrl)}" style="color:#030303">${esc(input.brandUrl)}</a>`) : ""}
+${row("유입", esc(input.from))}
+${input.recommended ? row("추천 구성", esc(input.recommended)) : ""}
+</table>
+
+${
+  input.message
+    ? `<p style="margin:0 0 6px;font-size:12px;color:#8a8a8a">남긴 말</p>
+<p style="margin:0 0 20px;background:#f7f5f3;border-radius:12px;padding:14px 16px;font-size:14px;line-height:1.8;white-space:pre-wrap">${esc(input.message)}</p>`
+    : ""
+}
+
+<p style="margin:0 0 2px;font-size:12px;color:#8a8a8a">현황 체크</p>
+${log}
+
+<p style="margin:22px 0 0;padding:14px 16px;background:#f0f4f8;border-radius:12px;font-size:13px;line-height:1.8;color:#4b5563">
+  소개서는 <strong>${esc(input.sentTo)}</strong> 로 이미 나갔습니다.<br>
+  이 메일에 <strong>[답장]</strong> 하시면 문의한 분께 바로 갑니다.
+</p>
+
+<p style="margin:16px 0 0;font-size:12px;color:#9ca3af">
+  <a href="${PUBLIC_ORIGIN}/admin" style="color:#9ca3af">어드민에서 열기</a>
+</p>
+    `),
+  };
 }

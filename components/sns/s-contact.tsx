@@ -1,27 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { Field, SubmitError } from "@/components/auth/field";
 import { CONTACT } from "@/lib/sns-brand";
 import { INQUIRY_CONSENTS, CONSENT_VERSION } from "@/lib/consents";
 import { submitInquiry, type InquiryState } from "@/app/(site)/inquiry/actions";
+import { INQUIRY_PLANS, VOLUMES, needsCount } from "@/lib/inquiry-plans";
 
 const INITIAL: InquiryState = { ok: false, error: null };
 
 /**
  * 문의 — 접수는 숏폼 랜딩과 **같은 서버 액션·같은 테이블**을 쓴다.
  *
- * inquiries 테이블의 interest/volume 은 숏폼 편수 기준으로 만들어져 있어
- * 채널 문의에는 맞는 값이 없다. 스키마를 건드리지 않고 고정값(unsure/unknown)을 넣되,
- * **어디서 들어온 문의인지는 diagnosis(jsonb) 스냅샷에 source 로 남긴다.**
- * 화면에 태그를 노출하지 않으면서 어드민에서는 구분된다.
+ * ── 2026-08-18 개편 ──────────────────────────────────────────────────
+ * 그전까지 이 폼은 `interest=unsure`·`volume=unknown` 을 **하드코딩해** 보냈다.
+ * 팔 것이 숏폼 편수뿐이던 시절 스키마에 채널 문의를 억지로 끼워 넣은 것이다.
+ *
+ * 그 결과 08-18 첫 실사 문의가 어드민에 "관심 추천 요청 · 편수 미정" 으로
+ * 찍혔다. **물어본 적이 없는데 고른 것처럼 보였다.** 사장님이 통화 전에 보는
+ * 화면이 사실과 다르면 첫 마디가 어긋난다.
+ *
+ * 이제 실제로 묻는다. 선택지는 `lib/inquiry-plans.ts` 한 곳에서만 정의한다.
+ * 어디서 들어온 문의인지는 여전히 diagnosis 스냅샷의 source 로 남긴다.
  * (제대로 하려면 inquiries 에 source 컬럼을 추가하는 게 맞다 — 도메인 이전 때 정리)
  */
 const SOURCE = JSON.stringify({ source: "sns-brand", page: "/sns-brand" });
 
 export function Contact() {
   const [state, formAction] = useActionState(submitInquiry, INITIAL);
+  /** 이 페이지로 들어온 사람은 채널 운영을 보러 온 것이다. 그걸 기본으로 둔다 */
+  const [interest, setInterest] = useState<string>("sns_turnkey");
+  const [volume, setVolume] = useState<string>("unknown");
+  const askCount = needsCount(interest);
 
   return (
     <section
@@ -53,9 +64,6 @@ export function Contact() {
             <form action={formAction} className="mt-12 max-w-2xl space-y-5">
               <SubmitError message={state.error} />
 
-              {/* 숏폼 편수 기준 필드 — 채널 문의에는 물어볼 값이 아니라 고정한다 */}
-              <input type="hidden" name="interest" value="unsure" />
-              <input type="hidden" name="volume" value="unknown" />
               <input type="hidden" name="diagnosis" value={SOURCE} />
 
               <div className="grid gap-5 sm:grid-cols-2">
@@ -100,6 +108,63 @@ export function Contact() {
                 placeholder="https://"
                 hint="유튜브·인스타그램·자사몰 중 아무거나 한 곳이면 됩니다"
               />
+
+              <div>
+                <p className="text-sm font-bold">
+                  어떤 프로젝트를 찾으시나요
+                  <span className="ml-1 text-accent">*</span>
+                </p>
+                <div className="mt-2 grid gap-2">
+                  {INQUIRY_PLANS.map((p) => (
+                    <label
+                      key={p.value}
+                      className="cursor-pointer rounded-2xl border border-line bg-paper px-4 py-3.5 transition-colors duration-200 hover:border-ink/40 has-checked:border-ink has-checked:bg-ink has-checked:text-paper"
+                    >
+                      <input
+                        type="radio"
+                        name="interest"
+                        value={p.value}
+                        checked={interest === p.value}
+                        onChange={() => setInterest(p.value)}
+                        className="sr-only"
+                      />
+                      <span className="block text-sm font-bold">{p.label}</span>
+                      <span className="mt-1 block text-xs leading-[1.7] opacity-70">
+                        {p.desc}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* 편수는 숏폼 두 플랜에서만 묻는다. 채널 턴키는 편수 단위가 아니다 */}
+              {askCount ? (
+                <div>
+                  <p className="text-sm font-bold">
+                    예상 편수<span className="ml-1 text-accent">*</span>
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {VOLUMES.map((v) => (
+                      <label
+                        key={v.value}
+                        className="cursor-pointer rounded-full border border-line bg-paper px-4 py-2.5 text-sm transition-colors duration-200 hover:border-ink/40 has-checked:border-ink has-checked:bg-ink has-checked:text-paper"
+                      >
+                        <input
+                          type="radio"
+                          name="volume"
+                          value={v.value}
+                          checked={volume === v.value}
+                          onChange={() => setVolume(v.value)}
+                          className="sr-only"
+                        />
+                        {v.label}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <input type="hidden" name="volume" value="unknown" />
+              )}
 
               <div>
                 <label htmlFor="message" className="block text-sm font-bold">
