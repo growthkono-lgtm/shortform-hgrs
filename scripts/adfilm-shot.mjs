@@ -31,6 +31,8 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import path from "node:path";
 
+import { recordSpend } from "./spend.mjs";
+
 const dir = process.argv[2];
 const shotFile = process.argv[3];
 const go = process.argv.includes("--go");
@@ -188,6 +190,15 @@ writeFileSync(
     2,
   ) + "\n",
 );
+
+/* fal 은 잔액 차분이 곧 실측 차감액이다. 추정할 필요가 없다 */
+await recordSpend("fal", "video", `${path.basename(dir)}/${shot.label}`, balance - after, {
+  endpoint,
+  seconds: shot.seconds,
+  tier,
+  seed: res.seed ?? shot.seed ?? null,
+  balanceAfter: after,
+});
 
 console.log(`\n\n완성: ${out}`);
 console.log(`  seed ${res.seed ?? shot.seed ?? "-"} · 실제 차감 $${(balance - after).toFixed(3)} · 잔액 $${after.toFixed(2)}`);
