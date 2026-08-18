@@ -3,6 +3,7 @@ import "server-only";
 import { USAGE, respond } from "@/lib/blog-ai";
 import { kstDate } from "@/lib/blog-schedule";
 import { PILLARS, type PillarKey } from "@/lib/blog-spec";
+import { recordSpend } from "@/lib/spend";
 import { createAdminClient } from "@/lib/supabase/server";
 
 /**
@@ -213,6 +214,31 @@ ${PILLARS.map((x) => "· " + x.key + " — " + x.label).join("\n")}
 
 export async function collectTrends(now = new Date()): Promise<TrendResult> {
   const supabase = createAdminClient();
+  USAGE.reset();
+
+  /**
+   * 어떻게 끝나든 쓴 돈은 적는다. (2026-08-18)
+   *
+   * 08-18 에 수집이 네 번 빈손으로 끝났는데 **어디에도 안 적혔다.** 0건이면
+   * note 가 비고, note 가 비면 `cronRoute` 가 로그를 안 남기기 때문이다.
+   * 그날 $1.7 이 장부 밖으로 샜고, 사장님이 잔액을 보고서야 알았다.
+   * 실패한 호출도 토큰은 썼다. 성공했을 때만 적는 장부는 장부가 아니다.
+   */
+  const bill = async (outcome: string, added: number) => {
+    await recordSpend({
+      service: "openai",
+      kind: "trend",
+      ref: `trends/${kstDate(now)}`,
+      usd: USAGE.costFloor(),
+      meta: {
+        outcome,
+        added,
+        searches: USAGE.webSearches,
+        input: USAGE.input,
+        output: USAGE.output,
+      },
+    });
+  };
 
   /* 우리가 이미 노리는 니치 검색어 — 겹치면 겹치는 대로 쓸 재료다 */
   const { data: keywords } = await supabase
@@ -229,9 +255,11 @@ export async function collectTrends(now = new Date()): Promise<TrendResult> {
   try {
     news = await findNews(now);
   } catch (e) {
+    await bill("1단계 실패", 0);
     return { added: 0, note: `1단계(검색) 실패 — ${String(e).slice(0, 140)}` };
   }
   if (!news.length) {
+    await bill("소식 없음", 0);
     return { added: 0, note: `1단계 검색 ${USAGE.webSearches}회 — 소식을 못 찾았습니다` };
   }
 
@@ -244,6 +272,7 @@ export async function collectTrends(now = new Date()): Promise<TrendResult> {
   const seen = new Set((had ?? []).map((h) => h.headline));
   const fresh = news.filter((n) => !seen.has(n.headline));
   if (!fresh.length) {
+    await bill("전부 기존 소식", 0);
     return { added: 0, note: `소식 ${news.length}건 전부 이미 쓴 것입니다` };
   }
 
@@ -251,6 +280,7 @@ export async function collectTrends(now = new Date()): Promise<TrendResult> {
   try {
     candidates = await shapeCandidates(fresh, seeds);
   } catch (e) {
+    await bill("2단계 실패", 0);
     return { added: 0, note: `2단계(가공) 실패 — ${String(e).slice(0, 140)}` };
   }
 
@@ -292,6 +322,7 @@ export async function collectTrends(now = new Date()): Promise<TrendResult> {
     }));
 
   if (!rows.length) {
+    await bill("가공 결과 없음", 0);
     return {
       added: 0,
       note: `소식 ${fresh.length}건 → 가공 ${candidates.length}건, 쓸 만한 게 없었습니다`,
@@ -303,6 +334,8 @@ export async function collectTrends(now = new Date()): Promise<TrendResult> {
     .from("blog_trend")
     .upsert(rows, { onConflict: "combined_term", ignoreDuplicates: true })
     .select("combined_term");
+
+  await bill("성공", inserted?.length ?? 0);
 
   return {
     added: inserted?.length ?? 0,

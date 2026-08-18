@@ -10,6 +10,8 @@
  * 열에 아홉은 깨진 글자가 나온다. 글자는 캡션으로 따로 붙인다.
  */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+
+import { recordSpend } from "./spend.mjs";
 import { join } from "node:path";
 
 const [name, prompt, size = "1536x1024"] = process.argv.slice(2);
@@ -50,4 +52,21 @@ const dir = new URL("../public/blog/", import.meta.url).pathname;
 mkdirSync(dir, { recursive: true });
 const out = join(dir, `${name}.png`);
 writeFileSync(out, Buffer.from(b64, "base64"));
+
+/* gpt-image-1 공시가: 입력텍스트 $5 / 입력이미지 $10 / 출력이미지 $40 (per 1M) */
+{
+  const u = json.usage;
+  if (!u) {
+    console.warn("  [장부] usage 가 없어 원가를 못 셌습니다");
+  } else {
+    const d = u.input_tokens_details ?? {};
+    const usd =
+      ((d.text_tokens ?? u.input_tokens ?? 0) / 1e6) * 5 +
+      ((d.image_tokens ?? 0) / 1e6) * 10 +
+      ((u.output_tokens ?? 0) / 1e6) * 40;
+    await recordSpend("openai", "image", `blog/${name}`, usd, {
+      model: "gpt-image-1", size, quality: "high", usage: u,
+    });
+  }
+}
 console.log(out);

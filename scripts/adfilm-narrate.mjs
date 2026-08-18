@@ -23,6 +23,8 @@ import path from "node:path";
 
 import ffmpeg from "ffmpeg-static";
 
+import { recordSpend } from "./spend.mjs";
+
 const VOICE = "sage"; // nova 는 탈락(발음 뭉갬). coral·sage·marin 이 통과했다
 const MODEL = "gpt-4o-mini-tts";
 const GAP = 0.12; // 문장 사이 간격 — NARRATION.gapSeconds
@@ -58,6 +60,16 @@ async function tts(text, file) {
   });
   if (!r.ok) throw new Error(`TTS 실패 ${r.status}: ${(await r.text()).slice(0, 200)}`);
   await writeFile(file, Buffer.from(await r.arrayBuffer()));
+
+  /**
+   * TTS 는 응답에 usage 가 없다. 공시 단가가 **글자 수 기준**이라 우리가 센다.
+   * gpt-4o-mini-tts $0.60 / 1M 입력문자. 한 줄에 40자면 0.000024달러 —
+   * 28줄을 돌려도 1센트가 안 된다. 그래도 적는다. 안 적으면 "왜 줄었나" 를
+   * 물었을 때 후보에서 뺄 수가 없다. (2026-08-18)
+   */
+  await recordSpend("openai", "audio", `tts/${path.basename(file, ".mp3")}`, (text.length / 1e6) * 0.6, {
+    model: MODEL, chars: text.length, voice: VOICE,
+  });
 }
 
 async function transcribe(file) {
@@ -71,6 +83,12 @@ async function transcribe(file) {
     body: fd,
   });
   const j = await r.json();
+
+  /** whisper-1 은 분당 $0.006. 우리 줄은 대개 2~4초라 한 줄에 0.0004달러 안팎 */
+  await recordSpend("openai", "audio", `whisper/${path.basename(file, ".mp3")}`, 0.006 / 60 * 4, {
+    model: "whisper-1", note: "길이를 안 재고 4초로 잡은 근사치",
+  });
+
   return (j.text ?? "").trim();
 }
 

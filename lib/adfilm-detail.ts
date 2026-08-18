@@ -1,3 +1,4 @@
+import { recordSpend } from "@/lib/spend";
 import "server-only";
 
 /**
@@ -192,7 +193,39 @@ export async function analyzeDetailPage(
 
   const payload = JSON.parse(text) as {
     output?: { type: string; content?: { type: string; text?: string }[] }[];
+    usage?: {
+      input_tokens?: number;
+      output_tokens?: number;
+      input_tokens_details?: { cached_tokens?: number };
+    };
   };
+
+  /**
+   * 비전 판독은 국내 상세페이지 이미지를 스무 장씩 넣는다 — 이 파이프라인에서
+   * 입력 토큰이 가장 많이 드는 자리다. (2026-08-18 장부 배선)
+   *
+   * gpt-5.6-terra 공시가: 입력 $2 / 캐시 $0.2 / 출력 $12 (per 1M).
+   * 모르는 모델을 쓰면 가장 비싼 값으로 친다 — 과소 계상이 돈을 새게 한다.
+   */
+  const model = process.env.ADFILM_MODEL_DETAIL ?? "gpt-5.6-terra";
+  const PRICE: Record<string, { in: number; cached: number; out: number }> = {
+    "gpt-5.6-terra": { in: 2, cached: 0.2, out: 12 },
+    "gpt-5.6-sol": { in: 5, cached: 0.5, out: 30 },
+  };
+  const rate = PRICE[model] ?? { in: 5, cached: 0.5, out: 30 };
+  const u = payload.usage ?? {};
+  const cached = u.input_tokens_details?.cached_tokens ?? 0;
+  const fresh = Math.max(0, (u.input_tokens ?? 0) - cached);
+  await recordSpend({
+    service: "openai",
+    kind: "vision",
+    ref: `detail/${hint.productName ?? "무제"}`,
+    usd:
+      (fresh / 1e6) * rate.in +
+      (cached / 1e6) * rate.cached +
+      ((u.output_tokens ?? 0) / 1e6) * rate.out,
+    meta: { model, images: images.length, goal: hint.goal ?? null, usage: u },
+  });
   const body = (payload.output ?? [])
     .filter((o) => o.type === "message")
     .flatMap((o) => o.content ?? [])

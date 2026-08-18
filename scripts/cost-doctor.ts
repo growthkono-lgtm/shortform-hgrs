@@ -63,6 +63,7 @@ async function main() {
     `spend_log?select=service,kind,usd&at=gte.${encodeURIComponent(from)}`,
   );
   const KIND_LABEL: Record<string, string> = {
+    trend: "시의성 수집",
     video: "영상",
     image: "이미지",
     audio: "음성",
