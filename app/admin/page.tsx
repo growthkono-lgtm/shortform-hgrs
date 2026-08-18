@@ -190,31 +190,73 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
                       {row.phone && ` · ${row.phone}`}
                       {` · ${fmt(row.created_at)}`}
                     </p>
-                    <p className="mt-2 text-xs text-muted">
-                      <span className="text-muted/70">{from}</span>
-                      {" · "}
-                      <span className="font-medium text-ink">
-                        {INQUIRY_PLAN_LABEL[row.interest] ?? row.interest}
-                      </span>
-                      {/* 편수를 묻지 않는 플랜에 "미정" 을 찍으면 고른 것처럼 읽힌다 */}
-                      {needsCount(row.interest) &&
-                        ` · ${VOLUME_LABEL[row.volume] ?? row.volume}`}
-                      {diagnosis?.plan?.label &&
-                        ` · 추천 ${diagnosis.plan.label}${diagnosis.plan.composition ? ` (${diagnosis.plan.composition})` : ""}`}
-                    </p>
+                    {/**
+                      * 로그가 둘이다 — 갈라서 보여 준다. (2026-08-18)
+                      *
+                      * 사장님 지적: *"현황 체크 로그 없음이어도 문의 시 신청내역
+                      * 이라고 해서 로그 파악 가능하지 않아?"* 맞다. 폼은 처음부터
+                      * 플랜·편수를 받고 있었다. 그걸 현황 체크 결과와 한 줄에
+                      * 뭉쳐 놓으니 "체크 로그 없음" 이 곧 "아무 기록 없음" 처럼
+                      * 읽혔다. 둘은 다른 기록이다 —
+                      *
+                      *   신청 내역  제출 버튼을 누른 순간 무조건 남는다
+                      *   현황 체크  5문항을 풀고 온 사람만 남는다
+                      */}
+                    <dl className="mt-3 rounded-xl bg-paper-alt px-4 py-3">
+                      <p className="text-[0.6875rem] font-bold text-muted">
+                        문의 시 신청내역
+                      </p>
+                      <div className="mt-2 grid gap-1.5">
+                        {[
+                          ["선택 플랜", INQUIRY_PLAN_LABEL[row.interest] ?? row.interest],
+                          // 편수를 묻지 않는 플랜에 "미정" 을 찍으면 고른 것처럼 읽힌다
+                          [
+                            "예상 편수",
+                            needsCount(row.interest)
+                              ? (VOLUME_LABEL[row.volume] ?? row.volume)
+                              : "해당 없음",
+                          ],
+                          ["유입 경로", from],
+                          ["접수 시각", fmt(row.created_at)],
+                          [
+                            "광고 수신",
+                            row.marketing_agreed ? "동의" : "미동의",
+                          ],
+                        ].map(([k, v]) => (
+                          <div key={k} className="flex gap-3 text-xs">
+                            <dt className="w-16 shrink-0 text-muted">{k}</dt>
+                            <dd className="font-medium">{v}</dd>
+                          </div>
+                        ))}
+                        {diagnosis?.plan?.label && (
+                          <div className="flex gap-3 text-xs">
+                            <dt className="w-16 shrink-0 text-muted">추천 구성</dt>
+                            <dd className="font-medium">
+                              {diagnosis.plan.label}
+                              {diagnosis.plan.composition
+                                ? ` (${diagnosis.plan.composition})`
+                                : ""}
+                            </dd>
+                          </div>
+                        )}
+                      </div>
+                    </dl>
 
-                    {/* 현황 체크를 마치고 신청했는가. 로그가 없으면 없다고 적는다 —
-                        빈칸으로 두면 "안 뜬 건지 안 한 건지" 를 구분할 수 없다 */}
+                    {/* 현황 체크는 별개다. 없으면 없다고 적는다 — 빈칸으로 두면
+                        "안 뜬 건지 안 한 건지" 를 구분할 수 없다 */}
                     {log.length === 0 && (
-                      <p className="mt-1 text-xs font-medium text-amber-700">
-                        체크 로그 없음
+                      <p className="mt-2 text-xs text-muted">
+                        현황 체크{" "}
+                        <span className="font-medium text-amber-700">
+                          체크 로그 없음
+                        </span>
                       </p>
                     )}
 
                     {/* 진단을 마치고 신청한 사람은 무엇을 골랐는지 그대로 남긴다 —
                         통화 첫 마디가 달라진다 */}
                     {log.length > 0 && (
-                      <details className="mt-2.5 rounded-xl bg-paper-alt px-4 py-3">
+                      <details className="mt-2 rounded-xl bg-paper-alt px-4 py-3">
                         <summary className="cursor-pointer text-xs font-bold">
                           현황 체크 {log.length}문항
                         </summary>
