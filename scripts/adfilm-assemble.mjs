@@ -47,6 +47,23 @@ const CHARS = [8, 11];
 
 const durOf = (n) => voice.lines.find((l) => l.n === n)?.seconds ?? 0;
 
+/**
+ * 씬 영상의 **실제 길이**를 잰다. (2026-08-18 신설)
+ *
+ * 예전엔 sora 눈금(4·8·12초)을 계산으로 짐작했다. i2v 로 갈아타면서 우리가
+ * 원하는 초를 그대로 만들 수 있게 됐는데, 조립기가 옛 가정을 들고 있어서
+ * 4.4초 대사에 **8초 자리**를 만들고 5초 영상을 그 길이로 늘렸다.
+ * 그 결과 86초짜리가 111초가 됐다(QC 계층1이 잡았다).
+ *
+ * 짐작하지 않고 판다. 파일이 답을 갖고 있다.
+ */
+function videoSeconds(file) {
+  const out = spawnSync(ffmpeg, ["-hide_banner", "-i", file], { encoding: "utf8" }).stderr || "";
+  const m = out.match(/Duration: (\d+):(\d+):([\d.]+)/);
+  if (!m) throw new Error(`길이를 못 쟀습니다: ${file}`);
+  return +m[1] * 3600 + +m[2] * 60 + +m[3];
+}
+
 /* ── ① 타임라인 계산 ─────────────────────────────────────────────────
  * 씬이 시작하는 시각, 그 안에서 각 문장이 시작하는 시각을 미리 다 구한다.
  * 손으로 적지 않는다 — v10 에서 타임라인을 손으로 써서 자막이 어긋났다. */
@@ -58,11 +75,14 @@ for (const scene of plan.scenes) {
 
   const spoken = scene.lines.reduce((s, n) => s + durOf(n), 0) + GAP * (scene.lines.length - 1);
   /**
-   * sora 는 4·8·12초만 만든다. 말이 12초를 넘는 씬(마지막 씬)은 영상이 모자라므로
-   * **마지막 프레임을 아주 느린 줌으로 늘려** 메운다. 말을 자르지 않는다 —
-   * 길이에 맞춰 내용을 자르는 게 오늘 내내 지적받은 잘못이다.
+   * 씬 길이는 **만들어진 영상이 정한다.** 말이 그보다 길면 마지막 프레임을
+   * 늘려 메운다 — 말을 자르지 않는다. 길이에 맞춰 내용을 자르는 게
+   * 사장님이 계속 지적하신 잘못이다.
+   *
+   * i2v 는 우리가 요청한 초를 그대로 만들고, 그 초는 이미 대사 실측에서
+   * 나왔으므로 늘릴 일이 거의 없다.
    */
-  const made = [4, 8, 12].find((v) => v >= spoken + 0.4) ?? 12;
+  const made = videoSeconds(src);
   const sceneLen = Math.max(made, Number((spoken + 0.6).toFixed(2)));
   // 말이 씬 가운데 오도록 앞에 여유를 조금 준다
   let at = t + (sceneLen - spoken) / 2;
@@ -123,7 +143,7 @@ const normalized = timeline.map((s, i) => {
     "-an", "-c:v", "libx264", "-crf", "20", "-preset", "veryfast", "-pix_fmt", "yuv420p",
     dst,
   ], { stdio: "ignore" });
-  if (short) console.log(`  씬 ${s.no}: 영상 ${s.made}초 < 말 ${s.seconds.toFixed(1)}초 → 마지막 프레임 ${(s.seconds - s.made).toFixed(1)}초 연장`);
+  if (short) console.log(`  씬 ${s.no}: 영상 ${s.made.toFixed(1)}초 < 말 ${s.seconds.toFixed(1)}초 → 마지막 프레임 ${(s.seconds - s.made).toFixed(1)}초 연장`);
   return dst;
 });
 writeFileSync(listFile, normalized.map((f) => `file '${f}'`).join("\n"));

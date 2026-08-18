@@ -60,11 +60,34 @@ if (planFile && existsSync(planFile)) {
     );
   }
 }
+/**
+ * 길이 판정 — **두 방향을 따로 본다.** (2026-08-18 기준 수정)
+ *
+ * 처음엔 "대사 합 ±2초" 로 쟀다가 멀쩡한 영상을 반려했다. 대사 합은
+ * **말하는 시간**이고 영상에는 말 앞뒤 여백이 있어야 한다. 한 방향만 재면
+ * 여백을 오류로 읽는다.
+ *
+ *   너무 짧다  →  말이 잘렸다는 뜻. **반려** (길이에 맞춰 내용을 자르는 것이
+ *                 사장님이 계속 지적하신 바로 그 잘못이다)
+ *   너무 길다  →  빈 화면으로 늘어졌다는 뜻. 15% 를 넘으면 **반려**
+ */
+const MAX_SLACK = 1.15;
 add(
   "길이",
-  !expected ? "⚠️" : Math.abs(seconds - expected) <= 2 ? "✅" : "❌",
+  !expected
+    ? "⚠️"
+    : seconds < expected - 0.5
+      ? "❌"
+      : seconds > expected * MAX_SLACK
+        ? "❌"
+        : "✅",
   expected
-    ? `${seconds.toFixed(1)}초 (대본 ${expected.toFixed(1)}초, 차이 ${(seconds - expected).toFixed(1)}초)`
+    ? `${seconds.toFixed(1)}초 · 대사 ${expected.toFixed(1)}초 · 여백 ${((seconds / expected - 1) * 100).toFixed(0)}% ` +
+      (seconds < expected - 0.5
+        ? "— 말이 잘렸습니다"
+        : seconds > expected * MAX_SLACK
+          ? `— 늘어졌습니다 (상한 ${((MAX_SLACK - 1) * 100).toFixed(0)}%)`
+          : "")
     : `${seconds.toFixed(1)}초 (대본 비교 불가)`,
 );
 

@@ -192,7 +192,18 @@ export async function generateShots(formData: FormData) {
       seconds: p.seconds,
       imageUrls,
       tier,
-      generateAudio: f.audio === "onscreen",
+      /**
+       * ⚠️ **항상 끈다.** (2026-08-18 뒤집음)
+       *
+       * 그전까지 립싱크 유형이면 모델에게 오디오를 만들게 했다. 그래서
+       * 중국 모델이 한국어를 발음했고, 사장님이 *"중국어처럼 어눌하고
+       * 끊긴다"* 고 하신 것의 정체가 이것이다.
+       *
+       * 한국어 음성은 전량 한국어 TTS 로 후합성한다(명세서 §6-1-2).
+       * 화면에서 아무도 입을 움직이지 않게 하면 립싱크 실패 지점이 통째로
+       * 사라진다 — v16 이 이미 그 구조로 갔고 그게 맞았다.
+       */
+      generateAudio: false,
     });
     jobs.push({
       no: p.no,
