@@ -508,6 +508,9 @@ const evFigure = (e: Evidence) =>
  * 그래서 지표가 개선되는 표(kind: 퍼포먼스)를 먼저 세우고, 케이스 슬라이드에는
  * 잘리지 않을 만큼만 싣는다. 나머지는 버리지 않고 뒤의 실적 증빙 슬라이드로 간다.
  */
+/** 가로로 아주 긴 표인가 — 전체 폭에 둬야 숫자가 읽힌다 */
+const isWide = (e: Evidence) => e.width / e.height >= 5;
+
 const PERF_FIRST = (a: Evidence, b: Evidence) =>
   (b.kind === "퍼포먼스" ? 1 : 0) - (a.kind === "퍼포먼스" ? 1 : 0);
 
@@ -534,6 +537,12 @@ CASES.forEach((c) => {
       ${c.stats.map(([v, l]) => `<li><strong class="big">${v}</strong><span>${esc(l)}</span></li>`).join("")}
     </ul>
     <p class="bc-p">${esc(c.role)} — 소재 기획부터 캠페인 운영까지 한 팀이 맡아 진행했습니다.</p>
+    ${/* 세로가 있는 표(편성표 등)는 왼쪽 열 아래 빈 자리가 더 크게 보인다 —
+         전체 폭에 두면 높이 제한에 걸려 오히려 쪼그라든다 */
+      onCase.length && !isWide(onCase[0])
+        ? `<div class="bc-ev">${onCase.map(evFigure).join("")}</div>`
+        : ""
+    }
   </div>
   <div class="bc-media">
     <img src="${asset(c.img)}" alt="">
@@ -543,7 +552,7 @@ ${/* 표는 **가로 전체 폭**이라야 숫자가 읽힌다. 왼쪽 열(절�
      글자가 5pt 아래로 내려가 아무도 못 읽는다 — 두 번 그렇게 냈다. */
   c.key === "모에브"
     ? moevTable()
-    : onCase.length
+    : onCase.length && isWide(onCase[0])
       ? `<div class="bc-ev-wide">${onCase.map(evFigure).join("")}</div>`
       : ""
 }
@@ -1300,8 +1309,8 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 /* 사례 슬라이드의 실적 증빙 (2026-08-19) */
 .bc-ev{display:flex;flex-direction:column;gap:3mm;margin-top:5mm;flex:1 1 auto;min-height:0;overflow:hidden;justify-content:flex-start}
 .bc-ev figure{margin:0;min-height:0}
-.bc-ev img{width:auto;max-width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block}
-.bc-ev-1 img{max-height:62mm}
+.bc-ev img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block;object-fit:contain;object-position:left top}
+.bc-ev-1 img{max-height:70mm}
 .bc-ev-2 img{max-height:30mm}
 .bc-ev-3 img{max-height:19mm}
 .bc-ev figcaption{font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
