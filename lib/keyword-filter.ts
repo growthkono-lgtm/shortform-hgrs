@@ -465,3 +465,30 @@ export const DIFFICULTY_BY_WEEKDAY: Record<number, Difficulty> = {
   5: "니치",
   6: "빅",
 };
+
+/**
+ * 편성 큐 한 항목이 **지금 쓸 수 있는가**. 못 쓰면 그 이유를 돌려준다.
+ *
+ * ── 왜 판정이 여기 있는가 (2026-08-19 저녁) ────────────────────────────
+ * 원래 `lib/blog-queue.ts` 안에 두려 했는데 그 파일은 `server-only` 라
+ * **스크립트로 돌려 볼 수가 없다.** 그러면 내가 고친 것을 배포 전에
+ * 확인할 방법이 없고, 오늘 그렇게 두 번 틀린 것을 내보냈다
+ * (CSV 한글 파일명 · 편성표 유령 행).
+ *
+ * 그래서 **판정은 서버 의존이 없는 이 파일에** 두고, DB 조회만 서버에서 한다.
+ * `npx tsx scripts/blog-doctor.ts` 로 언제든 검증된다.
+ */
+export function queueBlockReasons(input: {
+  term: string;
+  volume: number | null;
+  status: string | null;
+  taken: boolean;
+}): string[] {
+  const reasons: string[] = [];
+  if (input.taken) reasons.push("이미 씀");
+  if (!isOurs(input.term)) reasons.push("우리 일 아님");
+  if (input.status === "dropped") reasons.push("제외됨");
+  if (input.volume === null) reasons.push("검색량 미수집");
+  else if (input.volume < MIN_MAIN_VOLUME) reasons.push(`검색량 ${input.volume}`);
+  return reasons;
+}

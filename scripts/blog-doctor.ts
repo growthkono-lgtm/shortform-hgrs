@@ -16,6 +16,8 @@
 import { auditPost } from "../lib/blog-audit";
 import { FORMATS, type FormatKey } from "../lib/blog-spec";
 import { isDomestic, isVisual, type Source } from "../lib/blog-sources";
+import { TOPIC_QUEUE } from "../lib/blog-schedule";
+import { queueBlockReasons } from "../lib/keyword-filter";
 
 type Check = {
   구분: string;
@@ -195,6 +197,44 @@ async function main() {
     "남은 키워드",
     Number(total) > 30 ? "✅" : "⚠️",
     `${total}개 (하루 1편 기준 ${Math.floor(Number(total))}일치)`,
+  );
+
+  /* ── 4-2. 편성 큐 검증 (2026-08-19 신설) ────────────────────────
+   *
+   * 사장님 스크린샷으로 발견한 두 사고를 여기서 기계가 잡게 한다.
+   *  · 이미 쓴 큐 항목이 미래 슬롯에 유령으로 뜨던 것
+   *  · 큐가 관련성·하한 규칙을 한 번도 안 통과한 채 편성되던 것
+   *    (오늘 편이 `스마트스토어상품등록대행`(510)으로 나간 경로)
+   *
+   * 판정은 화면·편성과 **같은 함수**(`queueBlockReasons`)를 쓴다.
+   * 두 벌로 두면 또 어긋난다 — 오늘 하루에 세 번 그랬다.
+   */
+  const queueTerms = TOPIC_QUEUE.map((t) => t.term);
+  const queueRows = (await rest(
+    `blog_keyword?select=term,total_volume,status&term=in.(${queueTerms.map(encodeURIComponent).join(",")})`,
+  )) as { term: string; total_volume: number | null; status: string }[];
+  const queueByTerm = new Map(queueRows.map((r) => [r.term, r]));
+  const allJobs = (await rest(`blog_job?select=keyword_term`)) as {
+    keyword_term: string | null;
+  }[];
+  const takenTerms = new Set(
+    allJobs.map((j) => j.keyword_term).filter(Boolean) as string[],
+  );
+
+  const queueUsable = TOPIC_QUEUE.filter(
+    (t) =>
+      queueBlockReasons({
+        term: t.term,
+        volume: queueByTerm.get(t.term)?.total_volume ?? null,
+        status: queueByTerm.get(t.term)?.status ?? null,
+        taken: takenTerms.has(t.term),
+      }).length === 0,
+  );
+  add(
+    "편성",
+    "손큐 잔량",
+    queueUsable.length >= 7 ? "✅" : queueUsable.length > 0 ? "⚠️" : "❌",
+    `${queueUsable.length}/${TOPIC_QUEUE.length}개 사용 가능 (부적격 ${TOPIC_QUEUE.length - queueUsable.length})`,
   );
 
   /* ── 5. 돈 ─────────────────────────────────────────────────────── */

@@ -10,8 +10,8 @@ import { SERVICE } from "@/lib/constants";
 import { createAdminClient } from "@/lib/supabase/server";
 
 import { PILLARS, type FormatKey, type PillarKey } from "./blog-spec";
+import { auditQueue } from "@/lib/blog-queue";
 import {
-  TOPIC_QUEUE,
   WEEKLY_SLOTS,
   kstDate,
   upcomingSlots,
@@ -641,6 +641,8 @@ export async function scheduleBoard(weeks = 4): Promise<BoardRow[]> {
     }
   }
 
+  /** 편성과 **같은 판정**을 쓴다. 두 벌이면 표와 실제가 어긋난다 */
+  const { usable: queue } = await auditQueue();
   let queueAt = 0;
   for (const { date, slot } of slots) {
     const post = byDay.get(kstDate(date)) ?? null;
@@ -652,13 +654,21 @@ export async function scheduleBoard(weeks = 4): Promise<BoardRow[]> {
       slot,
       post,
       // 원고가 있으면 예정 주제는 안 보여 준다 — 이미 정해진 걸 두 번 말하는 셈이다
-      planned: post ? null : (TOPIC_QUEUE[queueAt++] ?? null),
+      /**
+       * ⚠️ **검증된 큐만** 세운다. (2026-08-19 저녁 수정)
+       *
+       * 앞 판은 `TOPIC_QUEUE` 를 그대로 순서대로 뿌렸다. 그래서 이미 쓴
+       * 항목이 미래 슬롯에 유령으로 떴다 — 사장님 스크린샷에서
+       * `스마트스토어상품등록대행` 이 #6(오늘 발행분)과 7(내일)에 같이
+       * 보인 이유다. 편성은 안 뽑는데 표만 그렇게 보였다.
+       */
+      planned: post ? null : (queue[queueAt++] ?? null),
       href: post ? `/admin/blog/${post.id}` : null,
       job: jobByDay.get(kstDate(date)) ?? null,
       keyword: metricOf(
         jobByDay.get(kstDate(date))?.keywordTerm ??
           post?.headKeyword ??
-          TOPIC_QUEUE[queueAt - 1]?.term,
+          queue[queueAt - 1]?.term,
       ),
       // 아직 안 나간 회차는 성적이 있을 수 없다
       performance: perfOf(post),

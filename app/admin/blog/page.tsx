@@ -463,11 +463,17 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
                           <span className="font-medium">
                             {nf.format(row.keyword.volume)}
                           </span>
+                          {/**
+                           * ⚠️ 이건 **경쟁도**다(네이버 광고 입찰 경쟁).
+                           * 라벨 없이 "중간" 만 찍으니 옆의 난이도로 읽혔다 —
+                           * 사장님이 검색량 510 에 "중간" 이 붙은 걸 보고
+                           * 난이도가 틀린 것으로 읽으신 게 당연하다. (08-19)
+                           */}
                           {row.keyword.competition && (
                             <span
                               className={`mt-0.5 block rounded px-1 py-0.5 text-[0.625rem] font-bold ${compTone[row.keyword.competition] ?? ""}`}
                             >
-                              {row.keyword.competition}
+                              경쟁 {row.keyword.competition}
                             </span>
                           )}
                         </>

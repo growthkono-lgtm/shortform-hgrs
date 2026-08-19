@@ -11,13 +11,9 @@ import {
 } from "@/lib/blog-ai";
 import { readingTime } from "@/lib/blog-spec";
 import { auditPost } from "@/lib/blog-audit";
-import {
-  WEEKLY_SLOTS,
-  TOPIC_QUEUE,
-  kstDate,
-  kstParts,
-} from "@/lib/blog-schedule";
+import { WEEKLY_SLOTS, kstDate, kstParts } from "@/lib/blog-schedule";
 import { SEASONAL_WEEKDAYS, takeTrend } from "@/lib/blog-trends";
+import { auditQueue } from "@/lib/blog-queue";
 import {
   CORE_TERMS,
   DIFFICULTY_FOR_TRACK,
@@ -333,11 +329,19 @@ export async function ensureJobForToday(now = new Date()): Promise<JobRow | null
     }
   }
 
+  /**
+   * 손으로 적은 편성 큐. **검증을 통과한 것만** 쓴다. (2026-08-19 저녁 수정)
+   *
+   * 앞 판은 `taken` 만 걸렀다. 그래서 오전에 세운 관련성·하한 규칙이 큐에는
+   * 적용되지 않았고, 큐가 DB 풀보다 우선이라 **관문 앞에 우회로가 열려 있었다.**
+   * 오늘 편이 `스마트스토어상품등록대행`(510·관련성 탈락)으로 나간 경로다.
+   * 판정은 `lib/blog-queue.ts` 한 곳에서만 한다 — 어드민 표도 같은 걸 본다.
+   */
   if (!next) {
-    const fresh = TOPIC_QUEUE.filter((t) => !taken.has(t.term));
+    const { usable } = await auditQueue();
     next =
-      fresh.find((t) => t.difficulty && wants.includes(t.difficulty as never)) ??
-      fresh[0] ??
+      usable.find((t) => t.difficulty && wants.includes(t.difficulty as never)) ??
+      usable[0] ??
       null;
   }
 
