@@ -515,7 +515,7 @@ const PERF_FIRST = (a: Evidence, b: Evidence) =>
   (b.kind === "퍼포먼스" ? 1 : 0) - (a.kind === "퍼포먼스" ? 1 : 0);
 
 /** 케이스 슬라이드 왼쪽 열에 안 잘리고 들어가는 최대 장수 */
-const EV_ON_CASE = 1;
+const EV_ON_CASE = 99;
 
 /** 케이스 슬라이드에 못 실어 뒤로 넘긴 증빙 */
 const overflowEvidence: Evidence[] = [];
@@ -539,9 +539,7 @@ CASES.forEach((c) => {
     <p class="bc-p">${esc(c.role)} — 소재 기획부터 캠페인 운영까지 한 팀이 맡아 진행했습니다.</p>
     ${/* 세로가 있는 표(편성표 등)는 왼쪽 열 아래 빈 자리가 더 크게 보인다 —
          전체 폭에 두면 높이 제한에 걸려 오히려 쪼그라든다 */
-      onCase.length && !isWide(onCase[0])
-        ? `<div class="bc-ev">${onCase.map(evFigure).join("")}</div>`
-        : ""
+      ""
     }
   </div>
   <div class="bc-media">
@@ -552,31 +550,13 @@ ${/* 표는 **가로 전체 폭**이라야 숫자가 읽힌다. 왼쪽 열(절�
      글자가 5pt 아래로 내려가 아무도 못 읽는다 — 두 번 그렇게 냈다. */
   c.key === "모에브"
     ? moevTable()
-    : onCase.length && isWide(onCase[0])
-      ? `<div class="bc-ev-wide">${onCase.map(evFigure).join("")}</div>`
+    : onCase.length
+      ? `<div class="bc-ev-wide ev-n${onCase.length}">${onCase.map(evFigure).join("")}</div>`
       : ""
 }
 <p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
   );
 });
-
-// 02-5-2 실적 증빙 — 사례 장표에 다 못 넣은 표를 같은 브랜드 이름으로 이어 싣는다
-
-
-
-
-
-/**
- * 한 장에 최대 2개. 표는 가로 전체 폭으로 크게 — 읽으라고 넣는 자료다.
- */
-for (let from = 0; from < overflowEvidence.length; from += 2) {
-  const rows = overflowEvidence.slice(from, from + 2);
-  pages.push(
-    slide(`
-${head(`${rows[0].brand} 실적 증빙`, "실제 운영 데이터입니다")}
-<div class="evpage${rows.length === 1 ? " evpage-solo" : ""}">${rows.map(evFigure).join("")}</div>`),
-  );
-}
 
 // 02-6-2 숏폼 포트폴리오
 
@@ -1323,7 +1303,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .bp-ev img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block}
 .bp-ev figcaption{font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
 .bp-none{font-size:9pt;color:var(--muted)}
-.brandcase{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:8mm;flex:1 1 auto;min-height:0;overflow:hidden}
+.brandcase{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:8mm;flex:0 0 auto;min-height:48mm;overflow:hidden}
 .bc-body{display:flex;flex-direction:column;min-width:0}
 .bc-p{font-size:9.5pt;line-height:1.9;color:var(--ink-soft, #171717);margin-bottom:4mm}
 .bc-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3mm;list-style:none;margin-bottom:7mm}
@@ -1333,7 +1313,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .bc-stats strong{display:block;font-size:8.5pt;line-height:1.45}
 .bc-stats span{display:block;font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
 .bc-media{display:flex;flex-direction:column;gap:4mm;min-width:0;min-height:0}
-.bc-media img{width:100%;flex:1 1 0;min-height:0;object-fit:cover;border:1px solid var(--line);border-radius:3mm}
+.bc-media img{width:100%;flex:1 1 0;min-height:0;max-height:48mm;object-fit:cover;border:1px solid var(--line);border-radius:3mm}
 
 /* 다시 조판한 데이터 표 — 저해상도 스크린샷 대신 벡터로 인쇄된다 (2026-08-20) */
 .dtable{width:100%;border-collapse:collapse;font-size:7.5pt;font-variant-numeric:tabular-nums}
@@ -1346,7 +1326,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 
 /* 사례 슬라이드의 실적표 — 가로 전체 폭 (2026-08-20)
    왼쪽 열 안에 두면 가로로 긴 표가 40px 높이로 눌려 숫자가 안 읽힌다 */
-.bc-ev-wide{flex:0 0 auto;margin-top:5mm}
+.bc-ev-wide{flex:0 0 auto;margin-top:5mm;display:flex;flex-direction:column;gap:4mm}
 .bc-ev-wide figure{margin:0}
 .bc-ev-wide img{width:auto;max-width:100%;max-height:34mm;border:1px solid var(--line);border-radius:1.5mm;display:block;margin:0 auto}
 .bc-ev-wide figcaption{font-size:7.5pt;color:var(--muted);margin-top:2mm;line-height:1.55}
