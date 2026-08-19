@@ -27,9 +27,6 @@ import {
   PLAN_FAMILY,
   MODEL_OPTION,
   QUOTE_ONLY,
-  PORTFOLIO_FORMATS,
-  PORTFOLIO_BRANDS,
-  PORTFOLIO_RESULTS,
 } from "@/lib/constants";
 import { SEEDING_STAGES, SHORTS_STAGES } from "@/lib/stages";
 import { WALL_CLIPS, clipPoster } from "@/lib/clips";
@@ -437,95 +434,6 @@ ${WALL_CLIPS.slice(0, 12)
   .map((c) => `<div class="short"><img src="${asset(clipPoster(c.slug))}" alt=""></div>`)
   .join("")}
 </div>`),
-);
-
-// 02-6-3 포트폴리오 — 유형별
-
-
-
-
-
-[0, 4].forEach((from, page) => {
-  const rows = PORTFOLIO_FORMATS.slice(from, from + 4);
-  if (!rows.length) return;
-  pages.push(
-    slide(`
-${head(
-  page === 0 ? "포트폴리오 — 유형별" : "포트폴리오 — 유형별 (2)",
-  page === 0
-    ? "성과가 검증된 전환 포맷 중 실제 제작한 소재로 확인한 유형입니다"
-    : "이어서 보여드립니다",
-)}
-<div class="cards4">
-${rows
-  .map(
-    (f) => `<div class="card4">
-  <img class="card4-img" src="${asset(f.poster)}" alt="">
-  <div class="card4-body">
-    <span class="card4-t">${esc(f.type)}</span>
-    <p class="card4-d">${esc(f.desc)}</p>
-    <span class="pf-badge ${f.brand ? "ok" : "pending"}">${f.brand ? esc(f.brand) : "브랜드 확인 필요"}</span>
-  </div>
-</div>`,
-  )
-  .join("")}
-</div>`),
-  );
-});
-
-// 02-6-4 포트폴리오 — 브랜드별
-
-
-
-
-
-[0, 4].forEach((from, page) => {
-  const rows = PORTFOLIO_BRANDS.slice(from, from + 4);
-  if (!rows.length) return;
-  pages.push(
-    slide(`
-${head(
-  page === 0 ? "포트폴리오 — 브랜드별" : "포트폴리오 — 브랜드별 (2)",
-  page === 0
-    ? "실제로 함께 진행한 브랜드별 소재입니다"
-    : "이어서 보여드립니다",
-)}
-<div class="cards4">
-${rows
-  .map(
-    (b) => `<div class="card4">
-  <img class="card4-img" src="${asset(b.assets[0].poster)}" alt="">
-  <div class="card4-body">
-    <span class="card4-t">${esc(b.brand)}</span>
-    ${b.scale ? `<p class="card4-d">${esc(b.scale)}</p>` : ""}
-    <span class="pf-badge ${b.result ? "ok" : "pending"}">${b.result ? esc(b.result) : "성과 데이터 준비 중"}</span>
-  </div>
-</div>`,
-  )
-  .join("")}
-</div>`),
-  );
-});
-
-// 02-6-5 포트폴리오 — 성과별
-
-
-
-
-
-pages.push(
-  slide(`
-${head("포트폴리오 — 성과별", "실측 숫자가 확인된 결과만 싣습니다 — 비공개 브랜드는 코드로 표기합니다")}
-<div class="pf-results">
-${PORTFOLIO_RESULTS.map(
-  (r) => `<div class="pf-r">
-  <p class="pf-r-brand">${esc(r.brand)}${r.anonymized ? `<span class="pf-r-anon">실명 비공개</span>` : ""}</p>
-  <div class="pf-r-stats">${r.metrics.map((m) => `<div><strong>${esc(m.value)}</strong><span>${esc(m.label)}</span></div>`).join("")}</div>
-  <p class="pf-r-scope">${esc(r.scope)}</p>
-</div>`,
-).join("")}
-</div>
-<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
 );
 
 // 10 제작 조직 (현장)
@@ -1169,20 +1077,6 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .card4-no{font-size:7.5pt;font-weight:700;color:#fff;background:var(--indigo);border-radius:50%;width:7mm;height:7mm;display:flex;align-items:center;justify-content:center}
 .card4-t{font-size:13pt;font-weight:700;margin-top:4mm}
 .card4-d{font-size:9.5pt;line-height:1.8;color:var(--muted);margin-top:3.5mm}
-
-/* 포트폴리오 매트릭스 — 유형별·브랜드별·성과별 */
-.pf-badge{display:inline-block;font-size:7pt;font-weight:700;border-radius:99mm;padding:1.5mm 4mm;margin-top:3mm}
-.pf-badge.ok{background:rgba(77,95,232,.1);color:var(--indigo-deep)}
-.pf-badge.pending{background:rgba(184,155,141,.18);color:var(--gold-deep)}
-.pf-results{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:4mm;flex:1;min-height:0}
-.pf-r{border:1px solid var(--line);border-radius:3mm;padding:7mm;display:flex;flex-direction:column;min-height:0}
-.pf-r-brand{font-size:11.5pt;font-weight:700}
-.pf-r-anon{display:block;font-size:6.5pt;font-weight:400;color:#9a9a9a;margin-top:1mm}
-.pf-r-stats{display:flex;gap:3mm;margin-top:3mm;flex-wrap:wrap}
-.pf-r-stats div{background:var(--alt);border-radius:2mm;padding:2.5mm 3.5mm}
-.pf-r-stats strong{display:block;font-size:11pt}
-.pf-r-stats span{font-size:6.5pt;color:#8a8a8a}
-.pf-r-scope{font-size:7pt;color:#9a9a9a;margin-top:auto;padding-top:3mm;border-top:1px solid #f0f0f0}
 
 /* 영상 썸네일 그리드 */
 .thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:3.5mm;flex:1;align-content:start}
