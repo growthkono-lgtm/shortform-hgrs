@@ -33,12 +33,28 @@ export function toCsv(headers: string[], rows: unknown[][]): string {
   return `﻿${lines.join("\r\n")}\r\n`;
 }
 
-/** 파일로 내려보내는 응답. 파일명에 날짜를 박아 어느 시점 값인지 남긴다 */
+/**
+ * 파일로 내려보내는 응답. 파일명에 날짜를 박아 어느 시점 값인지 남긴다.
+ *
+ * ⚠️ **파일명에 한글을 그대로 넣으면 응답 자체가 터진다.** (2026-08-19 수정)
+ *
+ * HTTP 헤더 값은 ByteString(0~255)이라 한글이 들어가면
+ * `Cannot convert argument to a ByteString` 로 던진다 — 실제로 첫 판이
+ * `filename="키워드_2026-08-19.csv"` 여서 로그인한 어드민이 눌렀을 때
+ * 500 이 났다. 비로그인 404 만 확인하고 통과로 판단한 것이 잘못이었다.
+ *
+ * RFC 5987 이 이 경우를 위해 있다 — ASCII 대체 이름을 `filename` 에 두고,
+ * 진짜 이름은 `filename*=UTF-8''` 뒤에 퍼센트 인코딩으로 붙인다.
+ * 요즘 브라우저는 전부 뒤쪽을 우선한다.
+ */
 export function csvResponse(name: string, body: string): Response {
+  const ascii = name.replace(/[^\x20-\x7E]/g, "_").replace(/"/g, "");
+  const encoded = encodeURIComponent(name);
+
   return new Response(body, {
     headers: {
       "content-type": "text/csv; charset=utf-8",
-      "content-disposition": `attachment; filename="${name}"`,
+      "content-disposition": `attachment; filename="${ascii}"; filename*=UTF-8''${encoded}`,
       // 받은 파일이 캐시된 옛 값이면 판단이 틀어진다
       "cache-control": "no-store",
     },
