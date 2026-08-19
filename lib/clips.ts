@@ -11,7 +11,18 @@
  *  · 빌고빌었는데.mp4    → 탈모가 아니라 펫 사료 (pet-treats-plea)
  */
 
-export type Clip = { slug: string; ratio: "9/16" | "1/1" };
+export type Clip = {
+  slug: string;
+  ratio: "9/16" | "1/1";
+  /**
+   * 어느 브랜드 소재인가. (2026-08-19 사장님이 직접 매칭해 주심)
+   *
+   * ⚠️ **랜딩의 크리에이티브 월에는 쓰지 않는다.** 거기는 브랜드명을 붙이지
+   * 않기로 한 자리다(파일 머리말 참고). 이 값은 **소개서**에서만 쓴다 —
+   * 소개서는 문의한 브랜드에게 나가는 문서라 "누구 것인지" 가 증빙이 된다.
+   */
+  brand?: string;
+};
 
 const P = "/portfolio/clips";
 
@@ -40,19 +51,22 @@ export const CASE_CLIPS = [
  * 순서도 손댔다 — 같은 브랜드가 이웃하지 않게 흩는다.
  */
 export const WALL_CLIPS: Clip[] = [
-  { slug: "riiid-momcafe", ratio: "9/16" },
-  { slug: "pet-portion", ratio: "9/16" },
-  { slug: "moen-shampoo-ppl", ratio: "9/16" },
-  { slug: "bone-w40s", ratio: "9/16" },
-  { slug: "zeroblock-interview", ratio: "9/16" },
-  { slug: "riiid-self-study", ratio: "9/16" },
-  { slug: "seeding-patty", ratio: "9/16" },
-  { slug: "pet-vet-pancreas", ratio: "9/16" },
-  { slug: "bone-m50s", ratio: "9/16" },
-  { slug: "gaehogang-square", ratio: "1/1" },
-  { slug: "pet-treats-plea", ratio: "9/16" },
-  { slug: "riiid-parent-itv", ratio: "9/16" },
-  { slug: "seeding-garnish", ratio: "9/16" },
+  // 브랜드는 2026-08-19 사장님이 그리드 순서대로 직접 매칭해 주신 값이다
+  // (왼쪽 위 → 오른쪽, 아랫줄도 왼쪽 → 오른쪽으로 1~12)
+  { slug: "riiid-momcafe", ratio: "9/16", brand: "리얼아카데미" },
+  { slug: "pet-portion", ratio: "9/16", brand: "트러스티푸드" },
+  { slug: "moen-shampoo-ppl", ratio: "9/16", brand: "모에브" },
+  { slug: "bone-w40s", ratio: "9/16", brand: "내추럴헬스(블루헬스)" },
+  { slug: "zeroblock-interview", ratio: "9/16", brand: "제로블럭" },
+  { slug: "riiid-self-study", ratio: "9/16", brand: "리얼아카데미" },
+  { slug: "seeding-patty", ratio: "9/16", brand: "트러스티푸드" },
+  { slug: "pet-vet-pancreas", ratio: "9/16", brand: "트러스티푸드" },
+  { slug: "bone-m50s", ratio: "9/16", brand: "내추럴헬스(블루헬스)" },
+  { slug: "gaehogang-square", ratio: "1/1", brand: "트러스티푸드" },
+  { slug: "pet-treats-plea", ratio: "9/16", brand: "트러스티푸드" },
+  { slug: "riiid-parent-itv", ratio: "9/16", brand: "리얼아카데미" },
+  // 13번째 — 소개서 그리드는 12칸이라 여기까지 안 내려온다
+  { slug: "seeding-garnish", ratio: "9/16", brand: "트러스티푸드" },
 ];
 
 export const clipVideo = (slug: string) => `${P}/${slug}.mp4`;
@@ -116,3 +130,57 @@ export const ytThumbFallback = (id: string) =>
   `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 export const ytWatch = (id: string) => `https://www.youtube.com/watch?v=${id}`;
 export const igUrl = (code: string) => `https://www.instagram.com/reel/${code}/`;
+
+
+/* ─────────────────────────────────────────────────────────────
+ * 브랜드별 전체 소재 목록. (2026-08-19)
+ *
+ * 사장님: *"폴더에 있는 영상들 있잖아. 그거 소개서에 안 들어간 것도 꽤
+ * 있을 거야. 소개서에는 다 넣어야 돼."* 실제로 `public/portfolio/clips` 에
+ * 22편이 있는데 소개서 그리드는 12칸이라 **7편이 어디에도 안 나오고 있었다.**
+ *
+ * ⚠️ 브랜드 판정 근거를 갈라 둔다 —
+ *  · 12편은 사장님이 그리드 순서대로 **직접 매칭**해 주신 값이다(WALL_CLIPS)
+ *  · 나머지는 **파일명 접두어로 유추**했다. 접두어 규칙이 사장님 매칭과
+ *    하나도 어긋나지 않아 그대로 따랐지만, 확인받은 값은 아니다.
+ *      riiid- 리얼아카데미 · pet-/seeding-/gaehogang- 트러스티푸드
+ *      bone- 내추럴헬스(블루헬스) · moen- 모에브
+ *      zeroblock-/parkron- 제로블럭 · krafton- 크래프톤
+ * ───────────────────────────────────────────────────────────── */
+
+export type BrandClips = { brand: string; slugs: string[] };
+
+export const CLIPS_BY_BRAND: BrandClips[] = [
+  {
+    brand: "리얼아카데미",
+    slugs: [
+      "riiid-momcafe",
+      "riiid-self-study",
+      "riiid-parent-itv",
+      "riiid-report",
+      "riiid-parent-empathy",
+      "riiid-toefl-junior",
+      "riiid-trial-reviews",
+    ],
+  },
+  {
+    brand: "트러스티푸드",
+    slugs: [
+      "pet-portion",
+      "pet-vet-pancreas",
+      "pet-treats-plea",
+      "pet-custom-meal",
+      "pet-dangterview-3",
+      "seeding-patty",
+      "seeding-garnish",
+      "gaehogang-square",
+    ],
+  },
+  { brand: "제로블럭", slugs: ["zeroblock-interview", "parkron-tpu"] },
+  { brand: "내추럴헬스(블루헬스)", slugs: ["bone-w40s", "bone-m50s"] },
+  { brand: "크래프톤", slugs: ["krafton-pnc-inonix", "krafton-pnc-salute"] },
+  { brand: "모에브", slugs: ["moen-shampoo-ppl"] },
+];
+
+/** 등록된 소재가 전부 몇 편인가 — 누락 점검용 */
+export const ALL_BRAND_CLIPS = CLIPS_BY_BRAND.flatMap((b) => b.slugs);

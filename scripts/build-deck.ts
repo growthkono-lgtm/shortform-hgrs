@@ -15,13 +15,13 @@
  *   npm run deck        # HTML 생성 + Chrome 헤드리스로 인쇄
  *   소개서.html#pg7     # 그 장만 띄워 조판 확인
  */
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { PLANS, POLICY, COMPANY, SERVICE, formatKRW,
   MODEL_OPTION,
 } from "@/lib/constants";
 import { SEEDING_STAGES, SHORTS_STAGES } from "@/lib/stages";
-import { WALL_CLIPS, clipPoster } from "@/lib/clips";
+import { CLIPS_BY_BRAND, WALL_CLIPS, clipPoster } from "@/lib/clips";
 /**
  * 소개서의 SNS·종합 파트는 **랜딩(/sns-brand)과 같은 데이터를 읽는다.**
  * 예전엔 여기서 문안을 새로 지어 썼는데, 사이트와 내용이 갈라져 두 번 고쳐야 했다.
@@ -42,6 +42,24 @@ const plain = (t: string) => t.replace(/<\/?em>/g, "");
 const ROOT = resolve(import.meta.dirname, "..");
 const BASE = process.env.DECK_BASE ?? `file://${ROOT}`;
 const asset = (p: string) => `${BASE}/public${p}`;
+
+/**
+ * **PDF 안에서 영상을 재생하는 방법.** (2026-08-19 사장님 질문)
+ *
+ * *"소개서가 포트폴리오 역할 할 수 있게 영상 재생도 되긴 해야 하는데
+ * 그건 어떻게 해결하나 pdf라."*
+ *
+ * PDF 규격에 영상 임베드(Rich Media)가 있긴 하지만 **Acrobat 에서만** 재생된다.
+ * 맥 미리보기·크롬 뷰어·카톡 미리보기에서는 빈 칸으로 뜬다. 받는 사람이
+ * 무엇으로 열지 우리가 못 정하므로 그 방식은 못 쓴다.
+ *
+ * 대신 **썸네일에 링크를 건다.** 링크는 어느 뷰어에서든 살아 있고, 누르면
+ * 브라우저가 열려 실제 mp4 가 재생된다. 파일은 이미 공개 경로에 있다.
+ */
+const PLAY_ORIGIN = SERVICE.url.includes("localhost")
+  ? "https://hgrs.io"
+  : SERVICE.url;
+const playUrl = (slug: string) => `${PLAY_ORIGIN}/portfolio/clips/${slug}.mp4`;
 const font = (f: string) => `${BASE}/app/fonts/${f}`;
 
 const singles = PLANS.filter((p) => p.code === "shorts_only");
@@ -60,19 +78,56 @@ const CLIENTS = [
 ];
 
 const CASES = [
-  { no: "01", brand: "뤼이드 리얼 아카데미", scale: "투자 2,000억", role: "소재 제작 + 캠페인 운영",
+  { no: "01", key: "리얼아카데미", brand: "뤼이드 리얼 아카데미", scale: "투자 2,000억", role: "소재 제작 + 캠페인 운영",
     img: "/portfolio/clips/riiid-report.jpg",
     stats: [["3주", "연속 고지출"], ["1위", "CPA 단가"]] },
-  { no: "02", brand: "파크론 제로블럭", scale: "매출 200억대", role: "소재 제작 + 캠페인 운영",
+  { no: "02", key: "제로블럭", brand: "파크론 제로블럭", scale: "매출 200억대", role: "소재 제작 + 캠페인 운영",
     img: "/portfolio/clips/parkron-tpu.jpg",
     stats: [["5배", "메타 예산 증액"], ["9만원", "CPA 절감"]] },
-  { no: "03", brand: "이노바인코리아 모에브", scale: "매출 300억대", role: "출시 고투마켓 소재 부스팅",
+  { no: "03", key: "모에브", brand: "이노바인코리아 모에브", scale: "매출 300억대", role: "출시 고투마켓 소재 부스팅",
     img: "/portfolio/cases/inovine-moev.jpg",
     stats: [["₩4,000만", "3개월 매출"], ["3배", "ROAS"]] },
-  { no: "04", brand: "크래프톤 배틀그라운드", scale: "글로벌", role: "연간 공식 바이럴 쇼츠 기획·제작",
+  { no: "04", key: "크래프톤", brand: "크래프톤 배틀그라운드", scale: "글로벌", role: "연간 공식 바이럴 쇼츠 기획·제작",
     img: "/portfolio/cases/krafton-jonathan.jpg",
     stats: [["연간", "공식 프로젝트"], ["팬덤", "바이럴"]] },
 ];
+
+/* ─────────────────────────────────────────────────────────────
+ * 실적 증빙 이미지. (2026-08-19 사장님이 직접 매칭해 주신 자료)
+ *
+ * `public/evidence/index.json` 을 읽는다 — 이미지 가공(개인정보 가리기)은
+ * `scripts/evidence-prep.ts` 가 하고, 여기서는 **결과만 읽어 붙인다.**
+ * 파일이 아직 없으면 조용히 건너뛴다: 증빙이 없다고 소개서 생성이 멈추면
+ * 나머지 29장까지 못 만든다.
+ *
+ * ⚠️ **이 이미지들은 소개서에만 넣는다.** 사장님 지시 — 랜딩 페이지에는
+ * 브랜드 내부 실적을 노출하지 않는다.
+ * ───────────────────────────────────────────────────────────── */
+type Evidence = {
+  file: string;
+  brand: string;
+  kind: string;
+  caption: string;
+  width?: number;
+  height?: number;
+  masked?: boolean;
+};
+
+const EVIDENCE: Evidence[] = (() => {
+  try {
+    const raw = readFileSync(
+      new URL("../public/evidence/index.json", import.meta.url),
+      "utf8",
+    );
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as Evidence[]) : [];
+  } catch {
+    return [];
+  }
+})();
+
+const evidenceOf = (brandKey: string) =>
+  EVIDENCE.filter((e) => e.brand.replace(/\s+/g, "").includes(brandKey.replace(/\s+/g, "")));
 
 const FLOW = [
   ["01", "브랜드 AI 기본 분석", "상세페이지 URL로 타겟·USP·객단가·금지 표현 구조화"],
@@ -411,6 +466,18 @@ CASES.forEach((c) => {
       ${c.stats.map(([v, l]) => `<li><strong class="big">${v}</strong><span>${esc(l)}</span></li>`).join("")}
     </ul>
     <p class="bc-p">${esc(c.role)} — 소재 기획부터 캠페인 운영까지 한 팀이 맡아 진행했습니다.</p>
+    ${(() => {
+      /* 사례 슬라이드 왼쪽이 통계 두 칸 아래로 비어 있었다.
+         그 자리에 이 브랜드의 실적 증빙을 세운다 (2026-08-19 사장님 지시) */
+      const ev = evidenceOf(c.key).slice(0, 2);
+      if (!ev.length) return "";
+      return `<div class="bc-ev">${ev
+        .map(
+          (e) =>
+            `<figure><img src="${asset(`/evidence/${e.file}`)}" alt=""><figcaption>${esc(e.caption)}${e.masked ? ' <span class="ev-mask">일부 가림</span>' : ""}</figcaption></figure>`,
+        )
+        .join("")}</div>`;
+    })()}
   </div>
   <div class="bc-media">
     <img src="${asset(c.img)}" alt="">
@@ -431,10 +498,55 @@ pages.push(
 ${head("최근 주요 숏폼 포트폴리오", "브랜드 광고 계정에 바로 태운 구매 전환형 소재입니다")}
 <div class="shorts">
 ${WALL_CLIPS.slice(0, 12)
-  .map((c) => `<div class="short"><img src="${asset(clipPoster(c.slug))}" alt=""></div>`)
+  .map(
+    (c) =>
+      `<a class="short" href="${playUrl(c.slug)}"><img src="${asset(clipPoster(c.slug))}" alt=""><span class="play">▶</span>${
+        c.brand ? `<span class="short-b">${esc(c.brand)}</span>` : ""
+      }</a>`,
+  )
   .join("")}
 </div>`),
 );
+
+/* ── 브랜드별 포트폴리오 · 소재 + 실적 증빙 (2026-08-19 신설) ──
+ *
+ * 사장님 지시 둘을 한 장표에 합쳤다 —
+ *  · *"폴더에 있는 영상들 소개서에 다 넣어야 돼"* → 브랜드별로 소재 전부
+ *  · *"소재들과 함께 숫자 실적을 함께 증빙하는 게 목표"* → 그 옆에 실적표
+ *
+ * 소재가 없는 브랜드는 건너뛴다. 증빙만 있는 브랜드도 장표는 나간다 —
+ * 숫자만으로도 증빙이 되기 때문이다.
+ */
+CLIPS_BY_BRAND.forEach((b) => {
+  const ev = evidenceOf(b.brand);
+  if (!b.slugs.length && !ev.length) return;
+
+  pages.push(
+    slide(`
+${head(`${b.brand} 포트폴리오`, "제작한 소재와 그 소재가 만든 숫자를 함께 싣습니다")}
+<div class="bp">
+  <div class="bp-clips">
+${b.slugs
+  .map(
+    (slug) =>
+      `<a class="short" href="${playUrl(slug)}"><img src="${asset(clipPoster(slug))}" alt=""><span class="play">▶</span></a>`,
+  )
+  .join("")}
+  </div>
+  ${
+    ev.length
+      ? `<div class="bp-ev">${ev
+          .map(
+            (e) =>
+              `<figure><img src="${asset(`/evidence/${e.file}`)}" alt=""><figcaption>${esc(e.caption)}${e.masked ? ' <span class="ev-mask">일부 가림</span>' : ""}</figcaption></figure>`,
+          )
+          .join("")}</div>`
+      : `<p class="bp-none">이 브랜드의 수치 증빙은 준비 중입니다.</p>`
+  }
+</div>
+<p class="foot-note">소재를 누르면 브라우저에서 실제 영상이 재생됩니다 · ${esc(POLICY.noGuarantee)}</p>`),
+  );
+});
 
 // 10 제작 조직 (현장)
 
@@ -1062,6 +1174,20 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .bc-title{font-size:19pt;font-weight:700;line-height:1.45;margin-top:3mm;max-width:200mm}
 
 /* 브랜드 케이스 — 한 브랜드 한 장 */
+/* 사례 슬라이드의 실적 증빙 (2026-08-19) */
+.bc-ev{display:flex;flex-direction:column;gap:3mm;margin-top:5mm;min-height:0;overflow:hidden}
+.bc-ev figure{margin:0;min-height:0}
+.bc-ev img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block}
+.bc-ev figcaption{font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
+.ev-mask{display:inline-block;background:#f0f0f0;color:#666;border-radius:1mm;padding:.3mm 1.5mm;font-size:6.5pt;font-weight:700}
+/* 브랜드별 포트폴리오 장표 */
+.bp{display:flex;flex-direction:column;gap:5mm;flex:1;min-height:0;overflow:hidden}
+.bp-clips{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:3mm;flex:0 0 auto}
+.bp-ev{display:flex;flex-direction:column;gap:3mm;min-height:0;overflow:hidden}
+.bp-ev figure{margin:0}
+.bp-ev img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block}
+.bp-ev figcaption{font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
+.bp-none{font-size:9pt;color:var(--muted)}
 .brandcase{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:8mm;flex:1;min-height:0;overflow:hidden}
 .bc-body{display:flex;flex-direction:column;min-width:0}
 .bc-p{font-size:9.5pt;line-height:1.9;color:var(--ink-soft, #171717);margin-bottom:4mm}
@@ -1075,6 +1201,10 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .bc-media img{width:100%;flex:1 1 0;min-height:0;object-fit:cover;border:1px solid var(--line);border-radius:3mm}
 
 /* 숏폼 포트폴리오 */
+/* 소재마다 어느 브랜드 것인지 밝힌다 — 소개서는 증빙 문서다 (2026-08-19) */
+.short{position:relative;display:block;text-decoration:none}
+.play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:9mm;height:9mm;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:8pt;display:flex;align-items:center;justify-content:center;padding-left:.6mm}
+.short-b{position:absolute;left:2mm;bottom:2mm;background:rgba(0,0,0,.72);color:#fff;font-size:6.5pt;font-weight:700;padding:.8mm 2mm;border-radius:1mm;letter-spacing:-.01em}
 .shorts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:3.5mm;flex:1 1 0;min-height:0;overflow:hidden}
 .short{border-radius:2.5mm;overflow:hidden;background:var(--alt);min-height:0}
 .short img{width:100%;height:100%;object-fit:cover;display:block}

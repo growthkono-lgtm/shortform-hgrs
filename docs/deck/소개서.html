@@ -307,6 +307,20 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .bc-title{font-size:19pt;font-weight:700;line-height:1.45;margin-top:3mm;max-width:200mm}
 
 /* 브랜드 케이스 — 한 브랜드 한 장 */
+/* 사례 슬라이드의 실적 증빙 (2026-08-19) */
+.bc-ev{display:flex;flex-direction:column;gap:3mm;margin-top:5mm;min-height:0;overflow:hidden}
+.bc-ev figure{margin:0;min-height:0}
+.bc-ev img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block}
+.bc-ev figcaption{font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
+.ev-mask{display:inline-block;background:#f0f0f0;color:#666;border-radius:1mm;padding:.3mm 1.5mm;font-size:6.5pt;font-weight:700}
+/* 브랜드별 포트폴리오 장표 */
+.bp{display:flex;flex-direction:column;gap:5mm;flex:1;min-height:0;overflow:hidden}
+.bp-clips{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:3mm;flex:0 0 auto}
+.bp-ev{display:flex;flex-direction:column;gap:3mm;min-height:0;overflow:hidden}
+.bp-ev figure{margin:0}
+.bp-ev img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block}
+.bp-ev figcaption{font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
+.bp-none{font-size:9pt;color:var(--muted)}
 .brandcase{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:8mm;flex:1;min-height:0;overflow:hidden}
 .bc-body{display:flex;flex-direction:column;min-width:0}
 .bc-p{font-size:9.5pt;line-height:1.9;color:var(--ink-soft, #171717);margin-bottom:4mm}
@@ -320,6 +334,10 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .bc-media img{width:100%;flex:1 1 0;min-height:0;object-fit:cover;border:1px solid var(--line);border-radius:3mm}
 
 /* 숏폼 포트폴리오 */
+/* 소재마다 어느 브랜드 것인지 밝힌다 — 소개서는 증빙 문서다 (2026-08-19) */
+.short{position:relative;display:block;text-decoration:none}
+.play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:9mm;height:9mm;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:8pt;display:flex;align-items:center;justify-content:center;padding-left:.6mm}
+.short-b{position:absolute;left:2mm;bottom:2mm;background:rgba(0,0,0,.72);color:#fff;font-size:6.5pt;font-weight:700;padding:.8mm 2mm;border-radius:1mm;letter-spacing:-.01em}
 .shorts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:3.5mm;flex:1 1 0;min-height:0;overflow:hidden}
 .short{border-radius:2.5mm;overflow:hidden;background:var(--alt);min-height:0}
 .short img{width:100%;height:100%;object-fit:cover;display:block}
@@ -548,6 +566,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
       <li><strong class="big">3주</strong><span>연속 고지출</span></li><li><strong class="big">1위</strong><span>CPA 단가</span></li>
     </ul>
     <p class="bc-p">소재 제작 + 캠페인 운영 — 소재 기획부터 캠페인 운영까지 한 팀이 맡아 진행했습니다.</p>
+    <div class="bc-ev"><figure><img src="http://localhost:8909/public/evidence/real-academy-creative.png" alt=""><figcaption>리얼아카데미 광고 소재별(맘카페 리포트, MBTI 유형별 공부법 등) 지출·노출·클릭·Lead Complete·CPM·CTR·CPC·CPA 실적표.</figcaption></figure><figure><img src="http://localhost:8909/public/evidence/real-academy-growth.png" alt=""><figcaption>리얼아카데미 콘텐츠 소재별 학년(고학년/저학년/미기입) 반응 비중과 고학년 비율을 정리한 그로스 분석표.</figcaption></figure></div>
   </div>
   <div class="bc-media">
     <img src="http://localhost:8909/public/portfolio/clips/riiid-report.jpg" alt="">
@@ -568,6 +587,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
       <li><strong class="big">5배</strong><span>메타 예산 증액</span></li><li><strong class="big">9만원</strong><span>CPA 절감</span></li>
     </ul>
     <p class="bc-p">소재 제작 + 캠페인 운영 — 소재 기획부터 캠페인 운영까지 한 팀이 맡아 진행했습니다.</p>
+    <div class="bc-ev"><figure><img src="http://localhost:8909/public/evidence/zeroblock-creative.png" alt=""><figcaption>제로블럭 광고 소재별 지출·노출·도달·클릭·링크 클릭·CPC·CTR·상담문의시도 실적표(20개 소재 행).</figcaption></figure><figure><img src="http://localhost:8909/public/evidence/zeroblock-performance.png" alt=""><figcaption>제로블럭 3~6월 월별 지출·노출·도달·클릭·CPC·CTR·상담문의시도·견적문의시도·문의 시도당 최종 단가 실적표.</figcaption></figure></div>
   </div>
   <div class="bc-media">
     <img src="http://localhost:8909/public/portfolio/clips/parkron-tpu.jpg" alt="">
@@ -588,6 +608,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
       <li><strong class="big">₩4,000만</strong><span>3개월 매출</span></li><li><strong class="big">3배</strong><span>ROAS</span></li>
     </ul>
     <p class="bc-p">출시 고투마켓 소재 부스팅 — 소재 기획부터 캠페인 운영까지 한 팀이 맡아 진행했습니다.</p>
+    
   </div>
   <div class="bc-media">
     <img src="http://localhost:8909/public/portfolio/cases/inovine-moev.jpg" alt="">
@@ -608,6 +629,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
       <li><strong class="big">연간</strong><span>공식 프로젝트</span></li><li><strong class="big">팬덤</strong><span>바이럴</span></li>
     </ul>
     <p class="bc-p">연간 공식 바이럴 쇼츠 기획·제작 — 소재 기획부터 캠페인 운영까지 한 팀이 맡아 진행했습니다.</p>
+    <div class="bc-ev"><figure><img src="http://localhost:8909/public/evidence/krafton-battlegrounds-schedule.png" alt=""><figcaption>크래프톤 배틀그라운드(PNC 2024) 채널 콘텐츠 편성표. 일자별 Long/Shorts 업로드 스케줄과 촬영·인터뷰 일정.</figcaption></figure></div>
   </div>
   <div class="bc-media">
     <img src="http://localhost:8909/public/portfolio/cases/krafton-jonathan.jpg" alt="">
@@ -624,11 +646,107 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   <p class="subline">브랜드 광고 계정에 바로 태운 구매 전환형 소재입니다</p>
 </div>
 <div class="shorts">
-<div class="short"><img src="http://localhost:8909/public/portfolio/clips/riiid-momcafe.jpg" alt=""></div><div class="short"><img src="http://localhost:8909/public/portfolio/clips/pet-portion.jpg" alt=""></div><div class="short"><img src="http://localhost:8909/public/portfolio/clips/moen-shampoo-ppl.jpg" alt=""></div><div class="short"><img src="http://localhost:8909/public/portfolio/clips/bone-w40s.jpg" alt=""></div><div class="short"><img src="http://localhost:8909/public/portfolio/clips/zeroblock-interview.jpg" alt=""></div><div class="short"><img src="http://localhost:8909/public/portfolio/clips/riiid-self-study.jpg" alt=""></div><div class="short"><img src="http://localhost:8909/public/portfolio/clips/seeding-patty.jpg" alt=""></div><div class="short"><img src="http://localhost:8909/public/portfolio/clips/pet-vet-pancreas.jpg" alt=""></div><div class="short"><img src="http://localhost:8909/public/portfolio/clips/bone-m50s.jpg" alt=""></div><div class="short"><img src="http://localhost:8909/public/portfolio/clips/gaehogang-square.jpg" alt=""></div><div class="short"><img src="http://localhost:8909/public/portfolio/clips/pet-treats-plea.jpg" alt=""></div><div class="short"><img src="http://localhost:8909/public/portfolio/clips/riiid-parent-itv.jpg" alt=""></div>
+<a class="short" href="https://hgrs.io/portfolio/clips/riiid-momcafe.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-momcafe.jpg" alt=""><span class="play">▶</span><span class="short-b">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/pet-portion.mp4"><img src="http://localhost:8909/public/portfolio/clips/pet-portion.jpg" alt=""><span class="play">▶</span><span class="short-b">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/moen-shampoo-ppl.mp4"><img src="http://localhost:8909/public/portfolio/clips/moen-shampoo-ppl.jpg" alt=""><span class="play">▶</span><span class="short-b">모에브</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-w40s.mp4"><img src="http://localhost:8909/public/portfolio/clips/bone-w40s.jpg" alt=""><span class="play">▶</span><span class="short-b">내추럴헬스(블루헬스)</span></a><a class="short" href="https://hgrs.io/portfolio/clips/zeroblock-interview.mp4"><img src="http://localhost:8909/public/portfolio/clips/zeroblock-interview.jpg" alt=""><span class="play">▶</span><span class="short-b">제로블럭</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-self-study.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-self-study.jpg" alt=""><span class="play">▶</span><span class="short-b">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/seeding-patty.mp4"><img src="http://localhost:8909/public/portfolio/clips/seeding-patty.jpg" alt=""><span class="play">▶</span><span class="short-b">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/pet-vet-pancreas.mp4"><img src="http://localhost:8909/public/portfolio/clips/pet-vet-pancreas.jpg" alt=""><span class="play">▶</span><span class="short-b">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-m50s.mp4"><img src="http://localhost:8909/public/portfolio/clips/bone-m50s.jpg" alt=""><span class="play">▶</span><span class="short-b">내추럴헬스(블루헬스)</span></a><a class="short" href="https://hgrs.io/portfolio/clips/gaehogang-square.mp4"><img src="http://localhost:8909/public/portfolio/clips/gaehogang-square.jpg" alt=""><span class="play">▶</span><span class="short-b">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/pet-treats-plea.mp4"><img src="http://localhost:8909/public/portfolio/clips/pet-treats-plea.jpg" alt=""><span class="play">▶</span><span class="short-b">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-parent-itv.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-parent-itv.jpg" alt=""><span class="play">▶</span><span class="short-b">리얼아카데미</span></a>
 </div></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>13</span></footer>
 </section>
 <section id="pg14" class="page">
+  <div class="page-body">
+
+<div class="shead">
+  <h2>리얼아카데미 포트폴리오</h2>
+  <p class="subline">제작한 소재와 그 소재가 만든 숫자를 함께 싣습니다</p>
+</div>
+<div class="bp">
+  <div class="bp-clips">
+<a class="short" href="https://hgrs.io/portfolio/clips/riiid-momcafe.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-momcafe.jpg" alt=""><span class="play">▶</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-self-study.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-self-study.jpg" alt=""><span class="play">▶</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-parent-itv.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-parent-itv.jpg" alt=""><span class="play">▶</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-report.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-report.jpg" alt=""><span class="play">▶</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-parent-empathy.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-parent-empathy.jpg" alt=""><span class="play">▶</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-toefl-junior.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-toefl-junior.jpg" alt=""><span class="play">▶</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-trial-reviews.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-trial-reviews.jpg" alt=""><span class="play">▶</span></a>
+  </div>
+  <div class="bp-ev"><figure><img src="http://localhost:8909/public/evidence/real-academy-creative.png" alt=""><figcaption>리얼아카데미 광고 소재별(맘카페 리포트, MBTI 유형별 공부법 등) 지출·노출·클릭·Lead Complete·CPM·CTR·CPC·CPA 실적표.</figcaption></figure><figure><img src="http://localhost:8909/public/evidence/real-academy-growth.png" alt=""><figcaption>리얼아카데미 콘텐츠 소재별 학년(고학년/저학년/미기입) 반응 비중과 고학년 비율을 정리한 그로스 분석표.</figcaption></figure><figure><img src="http://localhost:8909/public/evidence/real-academy-performance.png" alt=""><figcaption>리얼아카데미 월별 퍼포먼스 마케팅 실적(지출·노출·클릭·Lead Complete·CPM·CTR·CPC·CPA). 2월·3월의 지출·노출·클릭 값은 비공개 처리. <span class="ev-mask">일부 가림</span></figcaption></figure><figure><img src="http://localhost:8909/public/evidence/real-academy-response-rate.png" alt=""><figcaption>리얼아카데미 R진단지(고객 미응답률) 개선 추이. 9월 56%에서 6월4주 10%까지 미응답률이 낮아지는 그래프.</figcaption></figure></div>
+</div>
+<p class="foot-note">소재를 누르면 브라우저에서 실제 영상이 재생됩니다 · 위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>14</span></footer>
+</section>
+<section id="pg15" class="page">
+  <div class="page-body">
+
+<div class="shead">
+  <h2>트러스티푸드 포트폴리오</h2>
+  <p class="subline">제작한 소재와 그 소재가 만든 숫자를 함께 싣습니다</p>
+</div>
+<div class="bp">
+  <div class="bp-clips">
+<a class="short" href="https://hgrs.io/portfolio/clips/pet-portion.mp4"><img src="http://localhost:8909/public/portfolio/clips/pet-portion.jpg" alt=""><span class="play">▶</span></a><a class="short" href="https://hgrs.io/portfolio/clips/pet-vet-pancreas.mp4"><img src="http://localhost:8909/public/portfolio/clips/pet-vet-pancreas.jpg" alt=""><span class="play">▶</span></a><a class="short" href="https://hgrs.io/portfolio/clips/pet-treats-plea.mp4"><img src="http://localhost:8909/public/portfolio/clips/pet-treats-plea.jpg" alt=""><span class="play">▶</span></a><a class="short" href="https://hgrs.io/portfolio/clips/pet-custom-meal.mp4"><img src="http://localhost:8909/public/portfolio/clips/pet-custom-meal.jpg" alt=""><span class="play">▶</span></a><a class="short" href="https://hgrs.io/portfolio/clips/pet-dangterview-3.mp4"><img src="http://localhost:8909/public/portfolio/clips/pet-dangterview-3.jpg" alt=""><span class="play">▶</span></a><a class="short" href="https://hgrs.io/portfolio/clips/seeding-patty.mp4"><img src="http://localhost:8909/public/portfolio/clips/seeding-patty.jpg" alt=""><span class="play">▶</span></a><a class="short" href="https://hgrs.io/portfolio/clips/seeding-garnish.mp4"><img src="http://localhost:8909/public/portfolio/clips/seeding-garnish.jpg" alt=""><span class="play">▶</span></a><a class="short" href="https://hgrs.io/portfolio/clips/gaehogang-square.mp4"><img src="http://localhost:8909/public/portfolio/clips/gaehogang-square.jpg" alt=""><span class="play">▶</span></a>
+  </div>
+  <div class="bp-ev"><figure><img src="http://localhost:8909/public/evidence/trusty-creative-1.png" alt=""><figcaption>트러스티푸드 광고 소재(이미지·영상)별 지출·CTR·구매·결과당 비용·구매 전환값·ROAS 실적표.</figcaption></figure><figure><img src="http://localhost:8909/public/evidence/trusty-creative-2.png" alt=""><figcaption>트러스티푸드 캠페인별 지출·노출·클릭·CTR·CPM·CPC·구매·결과당 비용·구매 전환값·ROAS 실적표.</figcaption></figure><figure><img src="http://localhost:8909/public/evidence/trusty-performance.png" alt=""><figcaption>트러스티푸드 4~7월 월별 지출금액·노출·클릭·CTR·CPC·구매 수·구매당 비용·전환 매출·ROAS 실적표.</figcaption></figure></div>
+</div>
+<p class="foot-note">소재를 누르면 브라우저에서 실제 영상이 재생됩니다 · 위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>15</span></footer>
+</section>
+<section id="pg16" class="page">
+  <div class="page-body">
+
+<div class="shead">
+  <h2>제로블럭 포트폴리오</h2>
+  <p class="subline">제작한 소재와 그 소재가 만든 숫자를 함께 싣습니다</p>
+</div>
+<div class="bp">
+  <div class="bp-clips">
+<a class="short" href="https://hgrs.io/portfolio/clips/zeroblock-interview.mp4"><img src="http://localhost:8909/public/portfolio/clips/zeroblock-interview.jpg" alt=""><span class="play">▶</span></a><a class="short" href="https://hgrs.io/portfolio/clips/parkron-tpu.mp4"><img src="http://localhost:8909/public/portfolio/clips/parkron-tpu.jpg" alt=""><span class="play">▶</span></a>
+  </div>
+  <div class="bp-ev"><figure><img src="http://localhost:8909/public/evidence/zeroblock-creative.png" alt=""><figcaption>제로블럭 광고 소재별 지출·노출·도달·클릭·링크 클릭·CPC·CTR·상담문의시도 실적표(20개 소재 행).</figcaption></figure><figure><img src="http://localhost:8909/public/evidence/zeroblock-performance.png" alt=""><figcaption>제로블럭 3~6월 월별 지출·노출·도달·클릭·CPC·CTR·상담문의시도·견적문의시도·문의 시도당 최종 단가 실적표.</figcaption></figure></div>
+</div>
+<p class="foot-note">소재를 누르면 브라우저에서 실제 영상이 재생됩니다 · 위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>16</span></footer>
+</section>
+<section id="pg17" class="page">
+  <div class="page-body">
+
+<div class="shead">
+  <h2>내추럴헬스(블루헬스) 포트폴리오</h2>
+  <p class="subline">제작한 소재와 그 소재가 만든 숫자를 함께 싣습니다</p>
+</div>
+<div class="bp">
+  <div class="bp-clips">
+<a class="short" href="https://hgrs.io/portfolio/clips/bone-w40s.mp4"><img src="http://localhost:8909/public/portfolio/clips/bone-w40s.jpg" alt=""><span class="play">▶</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-m50s.mp4"><img src="http://localhost:8909/public/portfolio/clips/bone-m50s.jpg" alt=""><span class="play">▶</span></a>
+  </div>
+  <p class="bp-none">이 브랜드의 수치 증빙은 준비 중입니다.</p>
+</div>
+<p class="foot-note">소재를 누르면 브라우저에서 실제 영상이 재생됩니다 · 위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>17</span></footer>
+</section>
+<section id="pg18" class="page">
+  <div class="page-body">
+
+<div class="shead">
+  <h2>크래프톤 포트폴리오</h2>
+  <p class="subline">제작한 소재와 그 소재가 만든 숫자를 함께 싣습니다</p>
+</div>
+<div class="bp">
+  <div class="bp-clips">
+<a class="short" href="https://hgrs.io/portfolio/clips/krafton-pnc-inonix.mp4"><img src="http://localhost:8909/public/portfolio/clips/krafton-pnc-inonix.jpg" alt=""><span class="play">▶</span></a><a class="short" href="https://hgrs.io/portfolio/clips/krafton-pnc-salute.mp4"><img src="http://localhost:8909/public/portfolio/clips/krafton-pnc-salute.jpg" alt=""><span class="play">▶</span></a>
+  </div>
+  <div class="bp-ev"><figure><img src="http://localhost:8909/public/evidence/krafton-battlegrounds-schedule.png" alt=""><figcaption>크래프톤 배틀그라운드(PNC 2024) 채널 콘텐츠 편성표. 일자별 Long/Shorts 업로드 스케줄과 촬영·인터뷰 일정.</figcaption></figure></div>
+</div>
+<p class="foot-note">소재를 누르면 브라우저에서 실제 영상이 재생됩니다 · 위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>18</span></footer>
+</section>
+<section id="pg19" class="page">
+  <div class="page-body">
+
+<div class="shead">
+  <h2>모에브 포트폴리오</h2>
+  <p class="subline">제작한 소재와 그 소재가 만든 숫자를 함께 싣습니다</p>
+</div>
+<div class="bp">
+  <div class="bp-clips">
+<a class="short" href="https://hgrs.io/portfolio/clips/moen-shampoo-ppl.mp4"><img src="http://localhost:8909/public/portfolio/clips/moen-shampoo-ppl.jpg" alt=""><span class="play">▶</span></a>
+  </div>
+  <p class="bp-none">이 브랜드의 수치 증빙은 준비 중입니다.</p>
+</div>
+<p class="foot-note">소재를 누르면 브라우저에서 실제 영상이 재생됩니다 · 위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>19</span></footer>
+</section>
+<section id="pg20" class="page">
   <div class="page-body">
 
 <div class="shead">
@@ -641,9 +759,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 <div class="crew">
 <img src="http://localhost:8909/public/portfolio/crew/crew-01.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-02.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-03.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-04.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-05.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-06.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-07.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-08.webp" alt="">
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>14</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>20</span></footer>
 </section>
-<section id="pg15" class="page">
+<section id="pg21" class="page">
   <div class="page-body">
 
 <div class="shead">
@@ -666,9 +784,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     <p class="cap">진행중인 캠페인 — 진행 단계 · 플랜 · 기한을 한 화면에서</p>
   </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>15</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>21</span></footer>
 </section>
-<section id="pg16" class="page">
+<section id="pg22" class="page">
   <div class="page-body">
 
 <div class="shead">
@@ -735,9 +853,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 </div>
 
 <p class="vat">※ 부가세 별도 · 싱글 플랜 편당 ₩250,000 → ₩220,000 (편수가 늘수록 낮아집니다) · 인플루언서 시딩은 멀티 플랜으로만 진행됩니다 — 규모에 따라 5·10·15명</p></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>16</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>22</span></footer>
 </section>
-<section id="pg17" class="page">
+<section id="pg23" class="page">
   <div class="page-body">
 
 <div class="shead">
@@ -748,9 +866,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 <div class="ct"><span class="ct-no">01</span><p class="ct-t">플랜 문의</p><p class="ct-d">브랜드 상황 접수 · 컨텐츠 진단 연동</p></div><div class="ct"><span class="ct-no">02</span><p class="ct-t">구성 안내</p><p class="ct-d">편수별 구성과 금액 회신</p></div><div class="ct"><span class="ct-no">03</span><p class="ct-t">구성 확정</p><p class="ct-d">편수 · 시딩 인원 · 일정 확정, 견적서 발행</p></div><div class="ct"><span class="ct-no">04</span><p class="ct-t">결제</p><p class="ct-d">세금계산서 발행 후 현금(계좌이체) 기본 · 카드 가능</p></div><div class="ct"><span class="ct-no">05</span><p class="ct-t">프로젝트 개설</p><p class="ct-d">대시보드 진행 단계 오픈</p></div><div class="ct"><span class="ct-no">06</span><p class="ct-t">가이드라인 제출</p><p class="ct-d">브랜드 정보 입력 · 확정까지 D-7</p></div><div class="ct"><span class="ct-no">07</span><p class="ct-t">진행 · 검수</p><p class="ct-d">단계 확인 · 편당 1회 무상 수정</p></div><div class="ct"><span class="ct-no">08</span><p class="ct-t">납품</p><p class="ct-d">프로젝트 폴더 전체 다운로드</p></div>
 </div>
 <div class="pay-band">세금계산서 발행 후 현금(계좌이체)이 기본이며, 카드 결제도 가능합니다 · 부가세 별도</div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>17</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>23</span></footer>
 </section>
-<section id="pg18" class="page dark">
+<section id="pg24" class="page dark">
   <div class="page-body"><div class="part">
   <p class="part-k">LINE 02</p>
   <p class="part-t">브랜드 SNS 채널 컨텐츠 활성화</p>
@@ -758,7 +876,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 </div></div>
   
 </section>
-<section id="pg19" class="page">
+<section id="pg25" class="page">
   <div class="page-body">
 
 <div class="shead">
@@ -796,9 +914,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   </div>
 </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>19</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>25</span></footer>
 </section>
-<section id="pg20" class="page">
+<section id="pg26" class="page">
   <div class="page-body">
 <div class="bc-head">
   <p class="bc-meta">크래프톤 (배틀그라운드 / 12개월) · GAME · FANDOM</p>
@@ -815,9 +933,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     <img src="http://localhost:8909/public/sns/krafton-contents.jpg" alt="">
   </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>20</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>26</span></footer>
 </section>
-<section id="pg21" class="page">
+<section id="pg27" class="page">
   <div class="page-body">
 <div class="bc-head">
   <p class="bc-meta">럽디 (연애 상담 서비스 / 12개월) · SERVICE · OWNED GROWTH</p>
@@ -834,9 +952,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     <img src="http://localhost:8909/public/sns/lovedy-funnel.png" alt="">
   </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>21</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>27</span></footer>
 </section>
-<section id="pg22" class="page">
+<section id="pg28" class="page">
   <div class="page-body">
 <div class="bc-head">
   <p class="bc-meta">열다 (옷장정리 O2O 플랫폼 / 4개월) · STARTUP · PERSON BRANDING</p>
@@ -853,9 +971,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     <img src="http://localhost:8909/public/sns/yeolda-shoot.jpg" alt="">
   </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>22</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>28</span></footer>
 </section>
-<section id="pg23" class="page">
+<section id="pg29" class="page">
   <div class="page-body">
 <div class="bc-head">
   <p class="bc-meta">트러스티푸드 (펫푸드 커머스) · COMMERCE · IMC</p>
@@ -872,9 +990,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     <img src="http://localhost:8909/public/sns/trusty-vet.jpg" alt="">
   </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>23</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>29</span></footer>
 </section>
-<section id="pg24" class="page">
+<section id="pg30" class="page">
   <div class="page-body">
 
 <div class="shead">
@@ -901,9 +1019,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 </div>
 </div>
 <p class="foot-note">인하우스 안에는 또 다른 인하우스 팀이 필요합니다. 이제 단순 구독이 아닌 진짜 시스템을 경험하세요.</p></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>24</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>30</span></footer>
 </section>
-<section id="pg25" class="page">
+<section id="pg31" class="page">
   <div class="page-body">
 
 <div class="shead">
@@ -914,9 +1032,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 <div class="thumb"><img src="https://i.ytimg.com/vi/aEbmZ3H5EWo/mqdefault.jpg" alt=""><span>배그극장</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/f5QK9Hik2C8/mqdefault.jpg" alt=""><span>PNC</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/_h3PLQlhs1s/mqdefault.jpg" alt=""><span>PNC</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/yNsu5XfTN1E/mqdefault.jpg" alt=""><span>이스포츠 스케치</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/kN57OTVMSD0/mqdefault.jpg" alt=""><span>이스포츠 하이라이트</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/Yy9K61hUC3Y/mqdefault.jpg" alt=""><span>핏플렉스 브랜드 캠페인</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/EU26OQv6ATE/mqdefault.jpg" alt=""><span>열다 옷장정리</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/6gfORrmxY2Q/mqdefault.jpg" alt=""><span>열다 옷장정리</span></div>
 </div>
 </div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>25</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>31</span></footer>
 </section>
-<section id="pg26" class="page">
+<section id="pg32" class="page">
   <div class="page-body">
 
 <div class="shead">
@@ -927,9 +1045,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 <div class="thumb"><img src="https://i.ytimg.com/vi/Th4pjIRJUz8/mqdefault.jpg" alt=""><span>우리 강아지 비만·피부염 해결 (후편)</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/IzXDfxBQw5A/mqdefault.jpg" alt=""><span>노아만을 위한 식단 (전편)</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/ta2ILzOdiOQ/mqdefault.jpg" alt=""><span>영양수의사가 답합니다 (후편)</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/L3W_Uif3sjo/mqdefault.jpg" alt=""><span>수의사가 경고하는 강아지 간식의 숨겨진 위험</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/my3vzEv5YkQ/mqdefault.jpg" alt=""><span>사료 하나로 달라지는 건강</span></div><div class="thumb"><img src="https://i.ytimg.com/vi/JTO0-Cedrs8/mqdefault.jpg" alt=""><span>강아지 사료 언제 바꿔야 할까?</span></div>
 </div>
 <p class="foot-note">(다수 숏폼 생략)</p></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>26</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>32</span></footer>
 </section>
-<section id="pg27" class="page dark">
+<section id="pg33" class="page dark">
   <div class="page-body"><div class="part">
   <p class="part-k">LINE 03</p>
   <p class="part-t">종합 브랜드 마케팅 전개</p>
@@ -937,7 +1055,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 </div></div>
   
 </section>
-<section id="pg28" class="page">
+<section id="pg34" class="page">
   <div class="page-body">
 
 <div class="shead">
@@ -984,9 +1102,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 </div>
 </div>
 </div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>28</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>34</span></footer>
 </section>
-<section id="pg29" class="page">
+<section id="pg35" class="page">
   <div class="page-body">
 
 <div class="shead">
@@ -1033,9 +1151,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 </div>
 </div>
 <p class="foot-note">위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>29</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>35</span></footer>
 </section>
-<section id="pg30" class="page dark">
+<section id="pg36" class="page dark">
   <div class="page-body"><div class="cover end">
   <div class="cover-l">
     <p class="cover-en">CONTACT</p>
