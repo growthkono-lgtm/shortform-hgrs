@@ -17,16 +17,8 @@
  */
 import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import {
-  PLANS,
-  POLICY,
-  COMPANY,
-  SERVICE,
-  formatKRW,
-  AI_EFFICIENCY_NOTE,
-  PLAN_FAMILY,
+import { PLANS, POLICY, COMPANY, SERVICE, formatKRW,
   MODEL_OPTION,
-  QUOTE_ONLY,
 } from "@/lib/constants";
 import { SEEDING_STAGES, SHORTS_STAGES } from "@/lib/stages";
 import { WALL_CLIPS, clipPoster } from "@/lib/clips";
@@ -54,6 +46,7 @@ const font = (f: string) => `${BASE}/app/fonts/${f}`;
 
 const singles = PLANS.filter((p) => p.code === "shorts_only");
 const packages = PLANS.filter((p) => p.code === "full");
+const perUnit = (won: number, count: number) => formatKRW(Math.round(won / count));
 
 /* ───────────────────────── 내용 ───────────────────────── */
 
@@ -174,22 +167,21 @@ const head = (keyword: string, subline: string) => `
   <p class="subline">${subline}</p>
 </div>`;
 
-/**
- * 편당 표시는 `unitPrice`(싱글 플랜 편당 판매 단가)가 있을 때만 보여준다.
- * 멀티 플랜은 unitPrice가 없다 — 시딩과 숏폼이 섞인 총액을 편수로 나누면
- * 시딩 리워드가 역산되니 총액만 보여준다.
- */
-const planRows = (rows: typeof singles) =>
+const planRows = (rows: typeof singles, kind: "single" | "package") =>
   rows
     .map((p) => {
-      const unit =
-        p.unitPrice && p.shortsCount > 1
-          ? `<span>편당 ${formatKRW(p.unitPrice)}</span>`
-          : "";
+      /**
+       * ⚠️ **편당은 표 안에 안 넣는다.** (2026-08-19 사장님 지시)
+       *
+       * 싱글에만 "편당 ₩250,000" 이 붙고 멀티에는 안 붙어서 **양쪽 행 높이가
+       * 어긋났다.** 멀티는 시딩이 섞여 편당이 성립하지 않으니 맞출 수도 없다.
+       * 편당 할인 구조는 표 아래 각주 한 줄로 옮긴다.
+       */
+      const unit = "";
       return `<tr>
   <td class="t-name">${esc(p.label)}</td>
   <td class="t-desc">${esc(p.composition)}</td>
-  <td class="t-price">${formatKRW(p.betaPrice)}${unit}</td>
+  <td class="t-price">${formatKRW(p.betaPrice)}${unit ? `<span>${unit}</span>` : ""}</td>
 </tr>`;
     })
     .join("");
@@ -210,7 +202,6 @@ pages.push(
   <div class="cover-l">
     <p class="cover-en">HGRS STUDIO</p>
     <h1>해그로시<br>스튜디오<br><span class="chip-title">종합 소개서</span></h1>
-    <p class="cover-note">${esc(AI_EFFICIENCY_NOTE)}</p>
     <p class="cover-sub">브랜드 SNS 채널 커뮤니케이션부터 구매 전환 숏폼까지<br>브랜드 퍼널을 완성하는 두 서비스 라인을 함께 소개합니다.</p>
     <div class="cover-stats">
       <div><strong>30+</strong><span>브랜드 프로젝트</span></div>
@@ -485,7 +476,7 @@ ${head("프로젝트 대시보드 확인", "인플루언서 시딩부터 2차 �
 
 pages.push(
   slide(`
-${head("플랜 안내", `브랜드 상황에 맞는 구성을 고르시면 됩니다 — ${PLAN_FAMILY.shorts_only.label}과 ${PLAN_FAMILY.full.label}은 택일입니다`)}
+${head("플랜 안내", "브랜드 상황에 맞는 구성을 고르시면 됩니다 — 싱글과 멀티는 택일입니다")}
 
 <div class="journey">
 ${[
@@ -503,27 +494,31 @@ ${[
 
 <div class="two plans">
   <div class="plan-col">
-    <p class="plan-k">${esc(PLAN_FAMILY.shorts_only.label)}</p>
+    <p class="plan-k">싱글 플랜</p>
     <p class="plan-h">보유 소스로 숏폼만</p>
     <p class="plan-d">촬영본 · UGC · 제품컷이 있으실 때. 구매 전환형 숏폼 기획제작만 편수 단위로 진행합니다.</p>
-    <table class="tbl"><tbody>${planRows(singles)}</tbody></table>
+    <table class="tbl"><tbody>${planRows(singles, "single")}</tbody></table>
   </div>
-  <div class="plan-col plan-col-pkg">
-    <p class="plan-k">${esc(PLAN_FAMILY.full.label)}</p>
-    <p class="plan-h">시딩으로 소스부터 확보</p>
-    <p class="plan-d">찍을 소스부터 없으실 때. 인플루언서 시딩으로 소스컷을 확보하고 숏폼까지 이어서 만듭니다.</p>
-    <table class="tbl"><tbody>${planRows(packages)}</tbody></table>
+  <div class="plan-stack">
+    <div class="plan-col plan-col-pkg">
+      <p class="plan-k">멀티 플랜</p>
+      <p class="plan-h">시딩으로 소스부터 확보</p>
+      <p class="plan-d">찍을 소스부터 없으실 때. 인플루언서 시딩으로 소스컷을 확보하고 숏폼까지 이어서 만듭니다.</p>
+      <table class="tbl"><tbody>${planRows(packages, "package")}</tbody></table>
+    </div>
+    <!-- 모델 섭외 옵션 — 싱글 열이 4행이라 오른쪽이 짧다. 이 박스로 높이를 맞춘다 -->
+    <div class="plan-opt">
+      <div>
+        <p class="opt-k">싱글 플랜 옵션</p>
+        <p class="opt-h">${esc(MODEL_OPTION.label)}</p>
+        <p class="opt-d">셀프캠 · 광고형 · 전용 기획 · 대본 · 콘티 · 수정 1회 포함</p>
+      </div>
+      <p class="opt-p">인당 ${formatKRW(MODEL_OPTION.unitPrice)}</p>
+    </div>
   </div>
 </div>
 
-<div class="terms">
-  <p class="term"><strong>${esc(MODEL_OPTION.label)}</strong> — ${esc(PLAN_FAMILY.shorts_only.label)} 전용 옵션 · 인당 ${formatKRW(MODEL_OPTION.unitPrice)} · ${MODEL_OPTION.includes.map(esc).join(" · ")}</p>
-  <p class="term">${MODEL_OPTION.terms.map(esc).join(" · ")}</p>
-  <p class="term">${esc(PLAN_FAMILY.full.label)}의 인플루언서 시딩은 인원이 아니라 회수한 소재 편수를 약속드립니다.</p>
-  <p class="term">${esc(QUOTE_ONLY[0].label)}은 정가로 걸지 않습니다 — ${esc(QUOTE_ONLY[0].note)}</p>
-</div>
-
-<p class="vat">※ 부가세 별도 · ${esc(POLICY.seedingBundleOnly)}</p>`),
+<p class="vat">※ 부가세 별도 · 싱글 플랜 편당 ₩250,000 → ₩220,000 (편수가 늘수록 낮아집니다) · ${esc(POLICY.seedingBundleOnly)}</p>`),
 );
 
 // 16 계약 · 결제
@@ -787,8 +782,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .cover{height:100%;display:grid;grid-template-columns:1fr 118mm;gap:14mm;align-items:center}
 .cover-l{display:flex;flex-direction:column;justify-content:center;height:100%}
 .cover-en{font-size:7.5pt;letter-spacing:.3em;color:var(--gold);font-weight:700;margin-bottom:7mm}
-.cover-note{font-size:9.5pt;font-weight:700;color:var(--gold);margin-top:6mm}
-.cover-sub{font-size:10.5pt;line-height:1.9;color:rgba(255,255,255,.62);margin-top:5mm}
+.cover-sub{font-size:10.5pt;line-height:1.9;color:rgba(255,255,255,.62);margin-top:7mm}
 .cover-stats{display:flex;gap:12mm;margin-top:auto;padding-top:9mm;border-top:1px solid rgba(255,255,255,.16)}
 .cover-stats strong{display:block;font-size:16pt;font-weight:700}
 .cover-stats span{font-size:7.5pt;color:rgba(255,255,255,.5)}
@@ -961,6 +955,13 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .plans{margin-top:6mm;align-items:start;flex:1}
 .plan-col{border:1px solid var(--line);border-radius:3mm;padding:7mm}
 .plan-col-pkg{border-color:var(--indigo);background:rgba(77,95,232,.04)}
+/* 오른쪽 열 — 멀티 박스 아래에 옵션 박스를 쌓아 왼쪽 열과 높이를 맞춘다 */
+.plan-stack{display:flex;flex-direction:column;gap:4mm}
+.plan-opt{border:1px solid var(--line);border-radius:3mm;padding:5mm 6mm;display:flex;align-items:center;justify-content:space-between;gap:5mm}
+.opt-k{font-size:8pt;font-weight:700;color:var(--gold-deep)}
+.opt-h{font-size:11.5pt;font-weight:700;margin-top:1mm}
+.opt-d{font-size:8pt;color:var(--muted);margin-top:1.5mm;line-height:1.6}
+.opt-p{font-size:12pt;font-weight:700;white-space:nowrap}
 .plan-k{font-size:9pt;font-weight:700;color:var(--gold-deep)}
 .plan-h{font-size:15pt;font-weight:700;margin-top:2mm}
 .plan-d{font-size:9.5pt;color:var(--muted);line-height:1.7;margin-top:2mm;margin-bottom:4mm}

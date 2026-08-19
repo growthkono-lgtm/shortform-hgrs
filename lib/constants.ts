@@ -232,7 +232,13 @@ export const PLANS: Plan[] = [
   {
     code: "full",
     tier: "starter",
-    label: "스타터",
+    /**
+     * ⚠️ 멀티 플랜 티어에는 **"패키지" 를 붙인다.** (2026-08-19 사장님 지시)
+     *
+     * 싱글과 멀티가 스타터·그로스·스케일로 이름이 똑같아 표에서 어느 쪽
+     * 스타터인지 구분이 안 됐다. *"명칭 헷갈리나. 둘 다 동일하니까."*
+     */
+    label: "스타터 패키지",
     composition: "전환 숏폼 5편 + 인플루언서 시딩 5명",
     influencerCount: 5,
     shortsCount: 5,
@@ -242,7 +248,7 @@ export const PLANS: Plan[] = [
   {
     code: "full",
     tier: "growth",
-    label: "그로스",
+    label: "그로스 패키지",
     composition: "전환 숏폼 10편 + 인플루언서 시딩 10명",
     influencerCount: 10,
     shortsCount: 10,
@@ -253,7 +259,7 @@ export const PLANS: Plan[] = [
   {
     code: "full",
     tier: "scale",
-    label: "스케일",
+    label: "스케일 패키지",
     composition: "전환 숏폼 20편 + 인플루언서 시딩 15명",
     influencerCount: 15,
     shortsCount: 20,
