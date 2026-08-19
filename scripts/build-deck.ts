@@ -512,7 +512,7 @@ const PERF_FIRST = (a: Evidence, b: Evidence) =>
   (b.kind === "퍼포먼스" ? 1 : 0) - (a.kind === "퍼포먼스" ? 1 : 0);
 
 /** 케이스 슬라이드 왼쪽 열에 안 잘리고 들어가는 최대 장수 */
-const EV_ON_CASE = 3;
+const EV_ON_CASE = 1;
 
 /** 케이스 슬라이드에 못 실어 뒤로 넘긴 증빙 */
 const overflowEvidence: Evidence[] = [];
@@ -534,21 +534,40 @@ CASES.forEach((c) => {
       ${c.stats.map(([v, l]) => `<li><strong class="big">${v}</strong><span>${esc(l)}</span></li>`).join("")}
     </ul>
     <p class="bc-p">${esc(c.role)} — 소재 기획부터 캠페인 운영까지 한 팀이 맡아 진행했습니다.</p>
-    ${/* 증빙은 왼쪽 열 아래 빈 자리에 넣는다. 서로 덮지 않게 장수만큼 높이를 나눈다 */
-      c.key === "모에브"
-        ? moevTable()
-        : onCase.length
-          ? `<div class="bc-ev bc-ev-${onCase.length}">${onCase.map(evFigure).join("")}</div>`
-          : ""
-    }
   </div>
   <div class="bc-media">
     <img src="${asset(c.img)}" alt="">
   </div>
 </div>
+${/* 표는 **가로 전체 폭**이라야 숫자가 읽힌다. 왼쪽 열(절반 폭)에 두면
+     글자가 5pt 아래로 내려가 아무도 못 읽는다 — 두 번 그렇게 냈다. */
+  c.key === "모에브"
+    ? moevTable()
+    : onCase.length
+      ? `<div class="bc-ev-wide">${onCase.map(evFigure).join("")}</div>`
+      : ""
+}
 <p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
   );
 });
+
+// 02-5-2 실적 증빙 — 사례 장표에 다 못 넣은 표를 같은 브랜드 이름으로 이어 싣는다
+
+
+
+
+
+/**
+ * 한 장에 최대 2개. 표는 가로 전체 폭으로 크게 — 읽으라고 넣는 자료다.
+ */
+for (let from = 0; from < overflowEvidence.length; from += 2) {
+  const rows = overflowEvidence.slice(from, from + 2);
+  pages.push(
+    slide(`
+${head(`${rows[0].brand} 실적 증빙`, "실제 운영 데이터입니다")}
+<div class="evpage${rows.length === 1 ? " evpage-solo" : ""}">${rows.map(evFigure).join("")}</div>`),
+  );
+}
 
 // 02-6-2 숏폼 포트폴리오
 
@@ -1326,7 +1345,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 /* 실적 증빙 전용 장표 */
 .evpage{display:flex;flex-direction:column;gap:7mm;flex:1;min-height:0;overflow:hidden;justify-content:center}
 .evpage figure{margin:0}
-.evpage-solo img{max-height:95mm}
+.evpage-solo img{max-height:105mm}
 .evpage img{width:auto;max-width:100%;max-height:48mm;border:1px solid var(--line);border-radius:1.5mm;display:block;margin:0 auto}
 .evpage figcaption{font-size:8pt;color:var(--muted);margin-top:2mm;line-height:1.6}
 
