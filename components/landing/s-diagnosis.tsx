@@ -6,6 +6,7 @@ import { cn } from "@/lib/cn";
 import { formatKRW, PLAN_FAMILY, POLICY } from "@/lib/constants";
 import { DIAGNOSIS } from "@/lib/diagnosis";
 import { useDiagnosis } from "./diagnosis-context";
+import { shortformFromLine } from "@/lib/inquiry-plans";
 
 /**
  * 플랜 진단 — 신청 폼 바로 앞.
@@ -55,8 +56,23 @@ export function Diagnosis() {
               숙제처럼 느껴진다고 보고, 제목을 판별 결과 중심으로 바꾸고
               문항 수·소요 시간을 뱃지로, 완료 시 받는 것(편수·구성·예상
               금액)을 첫 문단으로 끌어올렸다. 로직·문항·판정은 그대로다. */}
-          <p className="mt-4 inline-block rounded-full border border-gold/40 bg-gold/10 px-3.5 py-1.5 text-xs font-bold tracking-wide text-gold">
-            5문항 · 약 1분
+          <p className="mt-4 flex flex-wrap items-center gap-2">
+            <span className="inline-block rounded-full border border-gold/40 bg-gold/10 px-3.5 py-1.5 text-xs font-bold tracking-wide text-gold">
+              5문항 · 약 1분
+            </span>
+            {/**
+             * 가격 한 줄. (2026-08-19 사장님 지시)
+             *
+             * 08-10 에 가격표를 화면에서 내린 판단은 그대로 둔다 — 표를 걸면
+             * "한 편에 얼마" 비교로 끌려간다. 대신 **표가 아니라 한 줄**만
+             * 건다. 값을 아예 안 보여 주니 지금도 단가 문의가 메일로 계속
+             * 오고, 그 통화가 매번 "얼마예요" 로 시작한다.
+             *
+             * 값은 `PLANS` 에서 파생한다 — 손으로 적으면 가격을 올릴 때 어긋난다.
+             */}
+            <span className="inline-block rounded-full border border-white/20 px-3.5 py-1.5 text-xs font-bold tracking-wide text-white/80">
+              {shortformFromLine()}
+            </span>
           </p>
           {/* 2026-08-13 사장님 지시: "30초 · 답변은…" 안내 문구를 빼고,
               AI 제작 가능 여부와 단가 확인 경로를 문단으로 나눠 덧붙였다.

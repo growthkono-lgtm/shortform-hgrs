@@ -219,6 +219,25 @@ export function planPriceLine(plan: (typeof INQUIRY_PLANS)[number]): string {
  * 기준은 **주력 티어(10편)** 다. 최저가(20편 220,000)로 적으면 실제 견적이
  * 그보다 비싸지고, 최고가로 적으면 문턱이 높아진다.
  */
+/**
+ * 랜딩에 거는 **가격 한 줄**. (2026-08-19 사장님 지시)
+ *
+ * 08-10 에 가격표를 화면에서 내린 이유는 *"편수 단가를 먼저 걸면 브랜드
+ * 상황과 무관하게 '한 편에 얼마' 비교로 끌려간다"* 였다. 그 판단은 그대로
+ * 두고 **표가 아니라 한 줄**만 건다 — 사장님: *"1번은 건당 얼마 선이라고
+ * 남겨주면 되지 않을까."*
+ *
+ * 값은 **가장 낮은 편당**(20편 기준)이다. "선부터" 로 열어야 문턱이 낮고,
+ * 정확한 금액은 현황 체크와 상담에서 확정한다.
+ */
+export function shortformFromLine(): string {
+  const prices = PLANS.filter((p) => p.code === "shorts_only" && p.unitPrice).map(
+    (p) => p.unitPrice as number,
+  );
+  if (!prices.length) return "";
+  return `숏폼 건당 ${Math.round(Math.min(...prices) / 10000)}만원 선부터`;
+}
+
 export function planUnitLine(plan: (typeof INQUIRY_PLANS)[number]): string {
   if ("priceNote" in plan && plan.priceNote) return plan.priceNote;
   if (!("priceFrom" in plan)) return "";
@@ -230,8 +249,14 @@ export function planUnitLine(plan: (typeof INQUIRY_PLANS)[number]): string {
     return main?.unitPrice ? `숏폼 건당 ${만(main.unitPrice)} 내외` : "";
   }
 
-  // 멀티는 시딩이 섞여 편당이 성립하지 않는다. 숏폼 편수로 나눈 값으로 안내한다
+  /**
+   * 멀티는 **숏폼 1편 + 시딩 1명을 한 묶음**으로 센다. (2026-08-19 사장님 지시)
+   *
+   * 주력인 그로스 패키지가 숏폼 10편 + 시딩 10명으로 정확히 1:1 이라
+   * "숏폼 + 인플 시딩당" 이 실제 구성과 맞는 표현이다. "시딩 포함" 이라고만
+   * 적으면 시딩이 덤처럼 읽히는데, 값의 절반은 소재 확보에서 나온다.
+   */
   const main = PLANS.find((p) => p.code === "full" && p.tier === "growth");
   if (!main) return "";
-  return `숏폼 건당 ${만(main.betaPrice / main.shortsCount)} 내외 (시딩 포함)`;
+  return `숏폼 + 인플 시딩당 ${만(main.betaPrice / main.shortsCount)} 내외`;
 }
