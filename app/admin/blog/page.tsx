@@ -75,6 +75,34 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
     searchSummary(),
   ]);
 
+  /**
+   * 이번 주 깔때기 합계. (2026-08-19)
+   *
+   * 편성표 행이 이미 글별 값을 들고 있으므로 여기서 더하기만 한다. 한 글도
+   * 집계되지 않았으면 `weekStart` 가 null 이고, 화면은 0 대신 "아직 안 쟀다"
+   * 를 적는다 — 둘은 다른 말이다.
+   */
+  const funnel = board.reduce(
+    (acc, r) => {
+      if (!r.funnel) return acc;
+      acc.weekStart ??= r.funnel.weekStart;
+      acc.impressions += r.funnel.impressions;
+      acc.clicks += r.funnel.clicks;
+      acc.views += r.funnel.views;
+      acc.inquiries += r.funnel.inquiries;
+      if (r.funnel.position !== null) acc.ranked.push(r.funnel.position);
+      return acc;
+    },
+    {
+      weekStart: null as string | null,
+      impressions: 0,
+      clicks: 0,
+      views: 0,
+      inquiries: 0,
+      ranked: [] as number[],
+    },
+  );
+
   const qs = (over: Record<string, string | number | undefined>) => {
     const p = new URLSearchParams();
     const merged = { difficulty, sort, page, ...over };
@@ -156,6 +184,105 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
         </section>
       )}
 
+      {/**
+       * ── 이번 주 깔때기 ──────────────────────────────────────────────
+       *
+       * 사장님 지시(08-19): *"컨텐츠를 통한 타겟 상위노출과 도달유입 >
+       * 전환성공의 각 모수와 전환율, 그리고 노출순위를 보는 게 중요하다."*
+       *
+       * 네 단을 한 줄로 세운다. 단 사이의 비율을 같이 적어야 **어디가
+       * 막혔는지**가 보인다 — 노출은 나오는데 클릭이 없으면 제목 문제고,
+       * 유입은 있는데 전환이 없으면 글 끝의 다음 행동이 약한 것이다.
+       */}
+      <section>
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="text-sm font-bold">
+            이번 주 깔때기{" "}
+            {funnel.weekStart && (
+              <span className="font-normal text-muted">
+                {funnel.weekStart.slice(5).replace("-", "/")} 월요일부터
+              </span>
+            )}
+          </h2>
+          <span className="text-xs text-muted">
+            7일 구간 · 매일 갱신 · 검색 지표는 2~3일 늦게 들어옵니다
+          </span>
+        </div>
+
+        {funnel.weekStart === null ? (
+          <p className="mt-4 rounded-xl border border-line bg-paper-alt px-5 py-6 text-sm text-muted">
+            아직 이번 주 집계가 돌지 않았습니다. 리포트 크론이 하루 한 번
+            채웁니다 — 값이 없는 것과 0 은 다르므로 비워 둡니다.
+          </p>
+        ) : (
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                label: "노출",
+                sub: "검색 결과에 뜬 횟수",
+                value: nf.format(funnel.impressions),
+                rate: null as string | null,
+              },
+              {
+                label: "검색 클릭",
+                sub: "거기서 눌린 횟수",
+                value: nf.format(funnel.clicks),
+                rate: funnel.impressions
+                  ? `CTR ${((funnel.clicks / funnel.impressions) * 100).toFixed(1)}%`
+                  : null,
+              },
+              {
+                label: "유입",
+                sub: "글이 실제로 열린 횟수",
+                value: nf.format(funnel.views),
+                rate: funnel.clicks
+                  ? `검색 밖 ${nf.format(Math.max(0, funnel.views - funnel.clicks))}`
+                  : null,
+              },
+              {
+                label: "전환",
+                sub: "그 글로 들어와 신청",
+                value: `${funnel.inquiries}건`,
+                rate: funnel.views
+                  ? `전환율 ${((funnel.inquiries / funnel.views) * 100).toFixed(1)}%`
+                  : null,
+              },
+            ].map((s) => (
+              <div
+                key={s.label}
+                className="rounded-xl border border-line bg-paper px-5 py-4"
+              >
+                <p className="text-xs font-bold text-muted">{s.label}</p>
+                <p className="mt-1.5 text-2xl font-bold tabular-nums">
+                  {s.value}
+                </p>
+                <p className="mt-1 text-[0.6875rem] text-muted/70">{s.sub}</p>
+                {s.rate && (
+                  <p className="mt-1.5 text-xs font-medium text-accent-deep">
+                    {s.rate}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* 노출순위 — 깔때기 맨 위의 품질이다. 상위 10위 안에 몇 편인가 */}
+        {funnel.ranked.length > 0 && (
+          <p className="mt-3 text-xs text-muted">
+            순위가 잡힌 글 {funnel.ranked.length}편 · 10위 이내{" "}
+            <b className="text-ink">
+              {funnel.ranked.filter((p) => p <= 10).length}편
+            </b>{" "}
+            · 30위 이내 {funnel.ranked.filter((p) => p <= 30).length}편 · 평균{" "}
+            {Math.round(
+              funnel.ranked.reduce((a, b) => a + b, 0) / funnel.ranked.length,
+            )}
+            위
+          </p>
+        )}
+      </section>
+
       {/* ── 편성표 ── */}
       <section>
         <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -190,6 +317,14 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
                 <th className="px-3 py-2.5 text-right font-medium">CTR</th>
                 <th className="px-3 py-2.5 text-right font-medium">노출</th>
                 <th className="px-3 py-2.5 text-right font-medium">순위</th>
+                {/* 사장님 지시(08-19) — 콘텐츠 한 편이 데려온 사람과 그중
+                    신청까지 간 건수를 같은 줄에서 본다. 7일 구간이라 매주 바뀐다 */}
+                <th className="px-3 py-2.5 text-right font-medium">
+                  유입 <span className="font-normal text-muted/60">7일</span>
+                </th>
+                <th className="px-3 py-2.5 text-right font-medium">
+                  전환 <span className="font-normal text-muted/60">7일</span>
+                </th>
                 <th className="px-3 py-2.5 font-medium">타겟</th>
                 <th className="px-3 py-2.5 font-medium">세부타겟</th>
                 <th className="px-3 py-2.5 font-medium">주제</th>
@@ -238,10 +373,29 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
                     key={row.date.toISOString()}
                     className="border-t border-line align-top"
                   >
+                    {/**
+                     * 회차 번호는 **배포된 글로 가는 문**이다. (2026-08-19)
+                     *
+                     * 훅 제목은 어드민 상세(검수 화면)로 간다. 그런데 실적을
+                     * 볼 때 확인하고 싶은 건 손님이 실제로 보는 화면이라,
+                     * 지금까지는 주소를 손으로 쳐서 열어야 했다.
+                     */}
                     <td className="px-3 py-3 tabular-nums">
-                      <span className={row.fixed ? "font-bold" : "text-muted"}>
-                        {row.no}
-                      </span>
+                      {row.liveUrl ? (
+                        <a
+                          href={row.liveUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-bold underline decoration-line underline-offset-4 hover:decoration-ink"
+                          title="배포된 글 열기"
+                        >
+                          #{row.no}
+                        </a>
+                      ) : (
+                        <span className={row.fixed ? "font-bold" : "text-muted"}>
+                          {row.no}
+                        </span>
+                      )}
                     </td>
                     <td className="px-3 py-3">
                       {/* 슬러그(영문 주소)가 아니라 **노리는 검색어**다.
@@ -340,6 +494,60 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
                         >
                           {Math.round(row.performance.position)}위
                         </span>
+                      )}
+                    </td>
+                    {/**
+                     * 유입 — 이번 주 우리 페이지가 열린 횟수(실측). 그 아래
+                     * 검색 클릭 수를 같이 둔다. 조회가 클릭보다 크면 검색 밖
+                     * 경로(인스타·직접·타사이트)가 일하고 있다는 뜻이다.
+                     */}
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      {row.funnel === null ? (
+                        <span className="text-muted/40">—</span>
+                      ) : (
+                        <>
+                          <span
+                            className={
+                              row.funnel.views ? "font-medium" : "text-muted/50"
+                            }
+                          >
+                            {nf.format(row.funnel.views)}
+                          </span>
+                          <span className="mt-0.5 block text-[0.6875rem] text-muted/60">
+                            검색 클릭 {nf.format(row.funnel.clicks)}
+                          </span>
+                        </>
+                      )}
+                    </td>
+                    {/**
+                     * 전환 — 이 글로 **처음 들어와** 신청까지 간 건수.
+                     * 전환율은 유입이 0 이면 계산하지 않는다 (0으로 나눈 값을
+                     * 0% 로 적으면 "실패" 로 읽힌다. 아직 모수가 없는 것이다)
+                     */}
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      {row.funnel === null ? (
+                        <span className="text-muted/40">—</span>
+                      ) : (
+                        <>
+                          <span
+                            className={
+                              row.funnel.inquiries
+                                ? "font-bold text-emerald-700"
+                                : "text-muted/50"
+                            }
+                          >
+                            {row.funnel.inquiries}건
+                          </span>
+                          {row.funnel.views > 0 && (
+                            <span className="mt-0.5 block text-[0.6875rem] text-muted/60">
+                              {(
+                                (row.funnel.inquiries / row.funnel.views) *
+                                100
+                              ).toFixed(1)}
+                              %
+                            </span>
+                          )}
+                        </>
                       )}
                     </td>
                     <td className="px-3 py-3 text-xs text-muted">

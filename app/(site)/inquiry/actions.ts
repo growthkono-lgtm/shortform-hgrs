@@ -1,6 +1,12 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
+import {
+  FIRST_TOUCH_COOKIE,
+  VISITOR_COOKIE,
+  blogSlugOf,
+  decodeTouch,
+} from "@/lib/attribution";
 import { createAdminClient } from "@/lib/supabase/server";
 import { CONSENT_VERSION } from "@/lib/consents";
 import { BROCHURE, brochureMail, brochureUrl, inquiryNoticeMail, sendMail } from "@/lib/mail";
@@ -103,6 +109,9 @@ export async function submitInquiry(
     return { ok: false, error: "접수 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요." };
   }
 
+  // 어디로 처음 들어온 사람인지 붙인다. 실패해도 접수는 이미 끝났다
+  await attachFirstTouch(inserted.id);
+
   /**
    * 접수 즉시 소개서를 보낸다 (2026-08-11).
    *
@@ -179,4 +188,75 @@ export async function submitInquiry(
   });
 
   return { ok: true, error: null };
+}
+
+/**
+ * 접수된 신청에 **첫 접점**을 붙인다. (2026-08-19)
+ *
+ * ── 왜 insert 와 따로 하나 ─────────────────────────────────────────────
+ * insert 페이로드에 새 컬럼을 섞으면, 마이그레이션이 아직 안 들어간 상태에서
+ * **접수 자체가 통째로 실패한다.** 유입 분석은 있으면 좋은 것이고 접수는
+ * 반드시 되어야 하는 것이다. 둘의 무게가 다르니 실패도 따로 떨어져야 한다.
+ * 소개서 메일을 접수와 분리한 것과 같은 원칙이다.
+ *
+ * ── 무엇을 붙이나 ──────────────────────────────────────────────────────
+ * 첫 착지가 `/blog/무엇` 이면 그 회차가 **데려온 글**이다(entry_post_id).
+ * 첫 착지는 랜딩이었더라도 그 전후로 읽은 편이 있으면 어시스트로 남긴다 —
+ * "블로그를 읽고 랜딩으로 넘어와 신청" 이 실제로 제일 흔한 모양이고,
+ * 그걸 0 으로 세면 콘텐츠가 한 일이 장부에서 사라진다.
+ */
+async function attachFirstTouch(inquiryId: string) {
+  try {
+    const jar = await cookies();
+    const visitorId = jar.get(VISITOR_COOKIE)?.value ?? null;
+    const touch = decodeTouch(jar.get(FIRST_TOUCH_COOKIE)?.value);
+    if (!visitorId && !touch) return;
+
+    const admin = createAdminClient();
+
+    /* 이 방문자가 본 블로그 글 — 처음 본 순서대로 */
+    const seen = visitorId
+      ? ((
+          await admin
+            .from("blog_visit")
+            .select("slug, landing, first_seen")
+            .eq("visitor_id", visitorId)
+            .order("first_seen", { ascending: true })
+        ).data ?? [])
+      : [];
+
+    const slugs = seen.map((v) => v.slug);
+    const entrySlug = blogSlugOf(touch?.p);
+    if (entrySlug && !slugs.includes(entrySlug)) slugs.push(entrySlug);
+
+    /* 슬러그를 회차 id 로 바꾼다 */
+    const byslug = new Map<string, string>();
+    if (slugs.length) {
+      const { data } = await admin
+        .from("blog_post")
+        .select("id, slug")
+        .in("slug", slugs);
+      for (const p of data ?? []) byslug.set(p.slug, p.id);
+    }
+
+    const entryId = entrySlug ? (byslug.get(entrySlug) ?? null) : null;
+    const assists = seen
+      .map((v) => byslug.get(v.slug))
+      .filter((id): id is string => !!id && id !== entryId);
+
+    await admin
+      .from("inquiries")
+      .update({
+        visitor_id: visitorId,
+        first_path: touch?.p ?? null,
+        first_referrer: touch?.r ?? null,
+        first_at: touch?.t ?? null,
+        utm: (touch?.u ?? null) as never,
+        entry_post_id: entryId,
+        assist_post_ids: assists.length ? assists : null,
+      })
+      .eq("id", inquiryId);
+  } catch {
+    // 유입 기록 때문에 신청이 흔들리는 일은 없어야 한다
+  }
 }

@@ -1,4 +1,4 @@
-import { recordDueMetrics } from "@/lib/blog-metrics";
+import { recordDueMetrics, recordWeekly } from "@/lib/blog-metrics";
 import { cronRoute } from "@/lib/blog-ops";
 import { isReportDay, sendDailyReport } from "@/lib/blog-report";
 import { kstParts } from "@/lib/blog-schedule";
@@ -41,15 +41,32 @@ export const GET = cronRoute("report", async (now, request) => {
    * 잴 차례인 글이 없으면 DB 조회 두 번으로 끝난다. 매 틱 불려도 싸다.
    */
   const metrics = await recordDueMetrics(now);
-  const metricNote = metrics.measured
-    ? `성적 측정 ${metrics.measured}건 — ${metrics.note}`
-    : undefined;
+
+  /**
+   * 주간 깔때기도 같은 자리에서 갱신한다. (2026-08-19)
+   *
+   * 고정 검침(D+7·21·60)과 달리 이건 **매일 덮어써야** 맞다 — 주중에도
+   * "이번 주 지금까지" 를 봐야 하고, Search Console 값이 2~3일 늦게 들어와
+   * 주가 끝난 뒤에도 지난 주 숫자가 채워지기 때문이다.
+   *
+   * 이 라우트는 5분마다 불린다. 매 틱마다 GSC 를 두 번씩 두드리면 하루
+   * 576회다. 값이 실제로 바뀌는 건 하루 한두 번이라 **6시간에 한 번**만
+   * 실제로 돈다 — 그 판단은 `recordWeekly` 안에서 마지막 갱신 시각을 보고 한다.
+   */
+  const weekly = await recordWeekly(now, force);
+
+  const metricNote = [
+    metrics.measured ? `성적 측정 ${metrics.measured}건 — ${metrics.note}` : null,
+    weekly?.rows ? `주간 집계 ${weekly.rows}줄` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ") || undefined;
 
   if (!force && !isReportDay(now)) {
-    return { note: metricNote, body: { skipped: "편성일이 아닙니다", metrics } };
+    return { note: metricNote, body: { skipped: "편성일이 아닙니다", metrics, weekly } };
   }
   if (!force && kstParts(now).hour < REPORT_HOUR) {
-    return { note: metricNote, body: { skipped: `${REPORT_HOUR}시 전`, metrics } };
+    return { note: metricNote, body: { skipped: `${REPORT_HOUR}시 전`, metrics, weekly } };
   }
 
   const result = await sendDailyReport(now);

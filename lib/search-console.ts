@@ -346,6 +346,14 @@ export async function pagePerformance(
   paths: string[],
   since: Date,
   now = new Date(),
+  /**
+   * 구간의 끝을 직접 지정한다. (2026-08-19)
+   *
+   * 기본은 "발행일 ~ 지금" 누적이라 끝을 알아서 2일 당긴다(GSC 지연분).
+   * 주간 집계는 **지난 주 월~일** 처럼 닫힌 구간을 물어야 하므로 끝이 필요하다.
+   * 그때도 2일 지연은 그대로 적용된다 — 둘 중 이른 쪽이 끝이다.
+   */
+  until?: Date,
 ): Promise<Map<string, PagePerformance>> {
   const out = new Map<string, PagePerformance>();
   if (!paths.length || !searchConsoleConfigured()) return out;
@@ -354,7 +362,8 @@ export async function pagePerformance(
     const token = await accessToken();
     const site = await resolveSite(token);
 
-    const end = new Date(now.getTime() - 2 * 86_400_000);
+    const lagged = new Date(now.getTime() - 2 * 86_400_000);
+    const end = until && until.getTime() < lagged.getTime() ? until : lagged;
     if (end.getTime() < since.getTime()) return out; // 아직 잴 구간이 없다
 
     const res = await query(token, site, {

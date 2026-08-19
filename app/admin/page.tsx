@@ -6,6 +6,12 @@ import {
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/server";
 import { ActionForm } from "@/components/admin/action-form";
+import {
+  TRACKING_SINCE,
+  leadSources,
+  postLabel,
+  type LeadSource,
+} from "@/lib/lead-source";
 import { sendBrochure, startProject } from "./actions";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -20,6 +26,110 @@ const STATUS_LABEL: Record<string, string> = {
  * 선택지 라벨은 `lib/inquiry-plans.ts` 한 곳에서만 정의한다. (2026-08-18)
  * 어드민이 자기 목록을 따로 들고 있으면 폼에 하나 늘릴 때 여기가 빈칸이 된다.
  */
+
+/**
+ * 블로그유입 — 이 신청을 데려온 회차. (2026-08-19)
+ *
+ * 세 가지를 **다른 말로** 적는다. 셋을 뭉치면 판단이 뒤집힌다.
+ *
+ *   데려온 글    첫 착지가 그 글이었다 — 콘텐츠가 만든 전환이다
+ *   읽고 옴      다른 데로 들어왔지만 그 글도 읽었다 (어시스트)
+ *   기록 이전    08-19 전 접수. 블로그를 안 거친 게 **아니라** 안 재고 있었다
+ */
+function BlogEntry({ source }: { source?: LeadSource }) {
+  const body = (() => {
+    if (!source || !source.recorded) {
+      return (
+        <span className="text-amber-700">
+          기록 이전 ({TRACKING_SINCE}부터 수집)
+        </span>
+      );
+    }
+    if (source.entry) {
+      return (
+        <a
+          href={source.entry.url}
+          target="_blank"
+          rel="noreferrer"
+          className="font-bold text-accent-deep underline underline-offset-2"
+        >
+          {postLabel(source.entry)} {source.entry.title}
+        </a>
+      );
+    }
+    if (source.assists.length) {
+      return (
+        <span>
+          {source.assists.map((p, i) => (
+            <span key={p.id}>
+              {i > 0 && " · "}
+              <a
+                href={p.url}
+                target="_blank"
+                rel="noreferrer"
+                className="underline underline-offset-2"
+              >
+                {postLabel(p)}
+              </a>
+            </span>
+          ))}
+          <span className="ml-1 text-muted">읽고 옴 (첫 착지는 아님)</span>
+        </span>
+      );
+    }
+    return <span className="text-muted">블로그 경유 아님</span>;
+  })();
+
+  return (
+    <>
+      <div className="flex gap-3 text-xs">
+        <dt className="w-16 shrink-0 text-muted">블로그유입</dt>
+        <dd className="min-w-0 font-medium">{body}</dd>
+      </div>
+      {source?.recorded && (
+        <div className="flex gap-3 text-xs">
+          <dt className="w-16 shrink-0 text-muted">첫 유입</dt>
+          <dd className="min-w-0 font-medium break-all">
+            {source.from}
+            {source.firstPath && (
+              <span className="text-muted"> → {source.firstPath}</span>
+            )}
+            {source.utm && (
+              <span className="text-muted">
+                {" "}
+                · {Object.entries(source.utm).map(([k, v]) => `${k}=${v}`).join(" ")}
+              </span>
+            )}
+          </dd>
+        </div>
+      )}
+    </>
+  );
+}
+
+/** 진행 중 목록용 한 줄판. 카드가 아니라 줄이라 라벨 없이 짧게 */
+function BlogEntryLine({ source }: { source?: LeadSource }) {
+  if (!source?.recorded) return null;
+  const p = source.entry ?? source.assists[0] ?? null;
+  return (
+    <p className="mt-1 text-xs text-muted">
+      블로그유입{" "}
+      {p ? (
+        <a
+          href={p.url}
+          target="_blank"
+          rel="noreferrer"
+          className="font-bold text-accent-deep underline underline-offset-2"
+        >
+          {postLabel(p)}
+        </a>
+      ) : (
+        "없음"
+      )}
+      {source.from && ` · 첫 유입 ${source.from}`}
+    </p>
+  );
+}
 
 const fmt = (iso: string) =>
   new Date(iso).toLocaleString("ko-KR", {
@@ -97,6 +207,15 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
    */
   const waiting = rows.filter((r) => !r.project_id && r.status !== "closed");
   const running = rows.filter((r) => r.project_id);
+
+  /**
+   * 블로그유입 — 이 신청이 **어느 회차를 밟고 왔는지**. (2026-08-19)
+   *
+   * 사장님 질문: *"프로젝트신청 한 건이 블로그 어떤 경로로 처음 유입됐는지
+   * 알 수 있어?"* 그동안은 알 수 없었다. 이제 첫 접점을 쿠키로 잡아
+   * `inquiries.entry_post_id` 에 적는다. 목록 전체를 한 번에 조회한다.
+   */
+  const sources = await leadSources(rows as never[]);
 
   return (
     <>
@@ -213,7 +332,10 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
                         {[
                           ["선택 플랜", picked.plan],
                           ["예상 편수", picked.count],
-                          ["유입 경로", from],
+                          // 이건 "어디서 왔나" 가 아니라 **폼이 놓인 자리**다.
+                          // 라벨을 유입 경로라고 적어 둔 탓에 08-18 까지
+                          // 그 값을 유입 경로로 읽고 있었다 (2026-08-19 정정)
+                          ["신청 폼", from],
                           ["접수 시각", fmt(row.created_at)],
                           [
                             "광고 수신",
@@ -246,6 +368,7 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
                             </dd>
                           </div>
                         )}
+                        <BlogEntry source={sources.get(row.id)} />
                       </div>
                     </dl>
 
@@ -418,6 +541,9 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
                     {row.email}
                     {row.applied_at && ` · ${fmt(row.applied_at)} 적용`}
                   </p>
+                  {/* 이미 굴러가는 브랜드도 **무엇이 데려왔는지**는 남아야 한다.
+                      그게 다음 편을 무엇으로 쓸지의 근거가 된다 */}
+                  <BlogEntryLine source={sources.get(row.id)} />
                 </div>
                 <Link
                   href={`/admin/projects/${row.project_id}`}

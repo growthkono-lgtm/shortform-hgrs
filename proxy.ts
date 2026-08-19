@@ -1,13 +1,23 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+import {
+  FIRST_TOUCH_COOKIE,
+  TOUCH_BOT,
+  TOUCH_MAX_AGE,
+  VISITOR_COOKIE,
+  encodeTouch,
+  readTouch,
+} from "@/lib/attribution";
+
 /**
  * Next.js 16에서 Middleware는 Proxy로 이름이 바뀌었다 (동작은 동일).
  *
- * 여기서 하는 일은 둘이다.
+ * 여기서 하는 일은 셋이다.
  *  1) 세션 토큰 갱신 — 실제 접근 제어는 각 레이아웃에서 getClaims()로 판단한다
  *     (Next 문서가 proxy를 전체 인증 해법으로 쓰지 말라고 명시한다)
  *  2) **호스트 분리** — 작업자 도메인과 우리 도메인을 같은 배포에서 갈라 준다
+ *  3) **첫 접점 심기** — 이 방문자가 어디로 처음 들어왔는지 (2026-08-19)
  */
 
 /**
@@ -76,7 +86,55 @@ export async function proxy(request: NextRequest) {
   // 만료 임박 토큰을 갱신하고 새 쿠키를 응답에 실어 보낸다
   await supabase.auth.getClaims();
 
+  if (!onWorkHost) markFirstTouch(request, response);
+
   return response;
+}
+
+/**
+ * 첫 접점 쿠키 두 장. (2026-08-19)
+ *
+ * **이미 있으면 절대 덮지 않는다.** 덮는 순간 "블로그로 들어와서 나중에
+ * 랜딩에서 신청" 이 "랜딩에서 들어옴" 으로 바뀐다 — 그러면 콘텐츠가 한 일이
+ * 통째로 지워진다. 첫 접점은 처음 그 한 번이 전부다.
+ *
+ * 사람이 실제로 본 페이지에만 심는다. HTML 문서 요청이 아니면(이미지·API·
+ * 프리페치) 건너뛴다 — `/api/blog/view` 가 첫 접점으로 찍히면 아무 의미가 없다.
+ *
+ * 작업자 호스트에서는 심지 않는다. 그쪽은 고객 표면이 아니고, 유입 분석 대상도
+ * 아니다. 쿠키가 굴러다닐 이유가 없다.
+ */
+function markFirstTouch(request: NextRequest, response: NextResponse) {
+  const accept = request.headers.get("accept") ?? "";
+  const dest = request.headers.get("sec-fetch-dest");
+  const isDocument = dest ? dest === "document" : accept.includes("text/html");
+  if (!isDocument) return;
+  if (TOUCH_BOT.test(request.headers.get("user-agent") ?? "")) return;
+
+  const { pathname } = request.nextUrl;
+  // 우리 내부 화면은 유입이 아니다. 어드민·작업자·인증 콜백은 세지 않는다
+  if (/^\/(admin|work|auth|api)(\/|$)/.test(pathname)) return;
+
+  const secure = request.nextUrl.protocol === "https:";
+  const base = {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    secure,
+    path: "/",
+    maxAge: TOUCH_MAX_AGE,
+  };
+
+  if (!request.cookies.get(VISITOR_COOKIE)) {
+    response.cookies.set(VISITOR_COOKIE, crypto.randomUUID(), base);
+  }
+  if (!request.cookies.get(FIRST_TOUCH_COOKIE)) {
+    const touch = readTouch(
+      request.nextUrl,
+      request.headers.get("referer"),
+      new Date(),
+    );
+    response.cookies.set(FIRST_TOUCH_COOKIE, encodeTouch(touch), base);
+  }
 }
 
 export const config = {

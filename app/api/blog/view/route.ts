@@ -1,5 +1,12 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
+import {
+  FIRST_TOUCH_COOKIE,
+  VISITOR_COOKIE,
+  blogSlugOf,
+  decodeTouch,
+} from "@/lib/attribution";
 import { kstParts } from "@/lib/blog-schedule";
 import { createAdminClient } from "@/lib/supabase/server";
 
@@ -44,7 +51,31 @@ export async function POST(request: Request) {
   const { year, month, day } = kstParts(new Date());
   const kstDay = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
-  await createAdminClient().rpc("blog_view_bump", { p_slug: slug, p_day: kstDay });
+  const admin = createAdminClient();
+  await admin.rpc("blog_view_bump", { p_slug: slug, p_day: kstDay });
+
+  /**
+   * 누가 읽었는지도 한 줄 남긴다. (2026-08-19)
+   *
+   * 위의 `blog_view` 는 **날짜별 합계**라 나중에 신청이 들어와도 "이 사람이
+   * 무엇을 읽고 왔나" 를 되짚을 수 없다. 이름을 남기는 게 아니라 우리가 심은
+   * 익명 id 를 남기는 것이고, 그 id 는 신청 폼을 제출하는 순간에만
+   * 실명 레코드와 이어진다.
+   *
+   * ⚠️ 실패해도 조회수는 이미 올라갔다. 여기서 던지면 멀쩡한 집계까지 500 이
+   * 된다. 마이그레이션 적용 전에도 이 라우트는 그대로 돌아야 한다.
+   */
+  const jar = await cookies();
+  const visitor = jar.get(VISITOR_COOKIE)?.value;
+  if (visitor) {
+    const touch = decodeTouch(jar.get(FIRST_TOUCH_COOKIE)?.value);
+    // rpc 는 던지지 않고 `error` 로 돌려준다. 여기서는 그걸 그냥 버린다
+    await admin.rpc("blog_visit_mark", {
+      p_visitor: visitor,
+      p_slug: slug,
+      p_landing: blogSlugOf(touch?.p) === slug,
+    });
+  }
 
   return NextResponse.json({ counted: true });
 }

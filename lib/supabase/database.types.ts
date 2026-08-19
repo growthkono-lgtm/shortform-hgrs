@@ -526,6 +526,68 @@ export type Database = {
           },
         ]
       }
+      blog_post_week: {
+        Row: {
+          captured_at: string
+          clicks: number
+          impressions: number
+          inquiries: number
+          position: number | null
+          post_id: string
+          views: number
+          week_start: string
+        }
+        Insert: {
+          captured_at?: string
+          clicks?: number
+          impressions?: number
+          inquiries?: number
+          position?: number | null
+          post_id: string
+          views?: number
+          week_start: string
+        }
+        Update: {
+          captured_at?: string
+          clicks?: number
+          impressions?: number
+          inquiries?: number
+          position?: number | null
+          post_id?: string
+          views?: number
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_post_week_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_post"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_visit: {
+        Row: {
+          first_seen: string
+          landing: boolean
+          slug: string
+          visitor_id: string
+        }
+        Insert: {
+          first_seen?: string
+          landing?: boolean
+          slug: string
+          visitor_id: string
+        }
+        Update: {
+          first_seen?: string
+          landing?: boolean
+          slug?: string
+          visitor_id?: string
+        }
+        Relationships: []
+      }
       blog_remind_log: {
         Row: {
           day: string
@@ -1116,6 +1178,13 @@ export type Database = {
       inquiries: {
         Row: {
           applied_at: string | null
+          assist_post_ids: string[] | null
+          entry_post_id: string | null
+          first_at: string | null
+          first_path: string | null
+          first_referrer: string | null
+          utm: Json | null
+          visitor_id: string | null
           brand_url: string | null
           brochure_sent_at: string | null
           company_name: string
@@ -1137,6 +1206,13 @@ export type Database = {
         }
         Insert: {
           applied_at?: string | null
+          assist_post_ids?: string[] | null
+          entry_post_id?: string | null
+          first_at?: string | null
+          first_path?: string | null
+          first_referrer?: string | null
+          utm?: Json | null
+          visitor_id?: string | null
           brand_url?: string | null
           brochure_sent_at?: string | null
           company_name: string
@@ -1158,6 +1234,13 @@ export type Database = {
         }
         Update: {
           applied_at?: string | null
+          assist_post_ids?: string[] | null
+          entry_post_id?: string | null
+          first_at?: string | null
+          first_path?: string | null
+          first_referrer?: string | null
+          utm?: Json | null
+          visitor_id?: string | null
           brand_url?: string | null
           brochure_sent_at?: string | null
           company_name?: string
@@ -1178,6 +1261,13 @@ export type Database = {
           volume?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "inquiries_entry_post_id_fkey"
+            columns: ["entry_post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_post"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "inquiries_project_id_fkey"
             columns: ["project_id"]
@@ -1754,6 +1844,10 @@ export type Database = {
     }
     Functions: {
       blog_cron_hit: { Args: { path: string }; Returns: number }
+      blog_visit_mark: {
+        Args: { p_landing: boolean; p_slug: string; p_visitor: string }
+        Returns: undefined
+      }
       blog_view_bump: {
         Args: { p_day: string; p_slug: string }
         Returns: undefined

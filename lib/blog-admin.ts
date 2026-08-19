@@ -1,6 +1,12 @@
 import "server-only";
 
-import { metricsByPost, type PostMetric } from "@/lib/blog-metrics";
+import {
+  metricsByPost,
+  weekStart,
+  weeklyByPost,
+  type PostMetric,
+} from "@/lib/blog-metrics";
+import { SERVICE } from "@/lib/constants";
 import { createAdminClient } from "@/lib/supabase/server";
 
 import { PILLARS, type FormatKey, type PillarKey } from "./blog-spec";
@@ -381,6 +387,25 @@ export type BoardRow = {
     /** 아직 첫 측정(D+7) 전이면 며칠 남았나 */
     daysUntilFirst: number | null;
   };
+  /**
+   * 이번 주 깔때기 — 노출 → 클릭 → 유입 → 전환. (2026-08-19)
+   *
+   * 위의 `performance` 는 발행일부터의 **누적**이라 "지금 이 글이 돌고 있나" 를
+   * 못 답한다. 이건 이번 주(월~일, KST) 구간 값이고 매일 다시 계산된다.
+   *
+   * `views` 는 우리 실측(blog_view)이라 검색 밖에서 들어온 사람까지 잡힌다.
+   * `inquiries` 는 **이 글로 처음 들어와** 신청까지 간 건수다.
+   */
+  funnel: {
+    weekStart: string | null;
+    impressions: number;
+    clicks: number;
+    views: number;
+    inquiries: number;
+    position: number | null;
+  } | null;
+  /** 발행됐다면 실제 라이브 주소. 어드민 상세가 아니라 손님이 보는 그 화면 */
+  liveUrl: string | null;
 };
 
 const JOB_STAGE_LABEL: Record<string, string> = {
@@ -483,6 +508,33 @@ export async function scheduleBoard(weeks = 4): Promise<BoardRow[]> {
   };
 
   /**
+   * 이번 주 깔때기. (2026-08-19)
+   *
+   * 주간 표에 그 글의 이번 주 행이 아직 없을 수 있다(방금 발행됐거나 집계가
+   * 아직 안 돈 경우). 그때는 **0 을 지어내지 않고 null** 을 준다 — 화면에서
+   * "0 건" 과 "아직 안 쟀다" 는 완전히 다른 말이다.
+   */
+  const weekly = await weeklyByPost(4);
+  const thisWeek = weekStart(new Date());
+  const funnelOf = (post: PostRow | null | undefined) => {
+    if (!post?.publishedAt) return null;
+    const hit = weekly.get(post.id)?.find((w) => w.weekStart === thisWeek);
+    return hit
+      ? {
+          weekStart: hit.weekStart,
+          impressions: hit.impressions,
+          clicks: hit.clicks,
+          views: hit.views,
+          inquiries: hit.inquiries,
+          position: hit.position,
+        }
+      : null;
+  };
+
+  const liveOf = (post: PostRow | null | undefined) =>
+    post?.publishedAt ? `${SERVICE.url}/blog/${post.slug}` : null;
+
+  /**
    * 편성 큐의 검색어는 사람이 손으로 적은 것("숏폼 소재 교체 주기")이고
    * 네이버 수집분은 붙여 쓴 것("숏폼소재교체주기")이다. 띄어쓰기 때문에
    * 매칭이 통째로 빗나가므로 공백을 지우고 맞춘다.
@@ -575,6 +627,8 @@ export async function scheduleBoard(weeks = 4): Promise<BoardRow[]> {
       // 노리는 검색어가 먼저다. 기획안 문구는 그게 없을 때의 차선책이다
       keyword: metricOf(settledJob(post)?.keywordTerm ?? post.headKeyword),
       performance: perfOf(post),
+      funnel: funnelOf(post),
+      liveUrl: liveOf(post),
     });
   }
 
@@ -608,6 +662,8 @@ export async function scheduleBoard(weeks = 4): Promise<BoardRow[]> {
       ),
       // 아직 안 나간 회차는 성적이 있을 수 없다
       performance: perfOf(post),
+      funnel: funnelOf(post),
+      liveUrl: liveOf(post),
     });
   }
 
