@@ -6,6 +6,8 @@ import { JsonLd, breadcrumb } from "@/components/seo/structured-data";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { FRAMER_CASES } from "@/lib/framer-portfolio";
+import { storyOf } from "@/lib/framer-story-map";
+import { SERVICE } from "@/lib/constants";
 
 /**
  * /portfolio/{slug} — 프레이머 시절 상세 페이지가 있던 그 주소 그대로.
@@ -43,6 +45,26 @@ export default async function FramerCasePage({ params }: Props) {
   const c = caseOf((await params).slug);
   if (!c) notFound();
 
+  const story = storyOf(c.slug);
+
+  /**
+   * AEO — 답변 엔진이 "해그로시가 이 브랜드에 무엇을 했나"를 문장으로 집어
+   * 갈 수 있게 케이스를 CreativeWork 로 명시한다. about 에 클라이언트를 두고
+   * abstract 에 프레이머 원문 두 줄을 그대로 넣는다.
+   */
+  const caseSchema = {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    name: c.name,
+    abstract: c.summary.join(" · "),
+    url: `${SERVICE.url}/portfolio/${encodeURIComponent(c.slug)}`,
+    inLanguage: "ko-KR",
+    genre: "마케팅 프로젝트 사례",
+    creator: { "@type": "Organization", name: "해그로시", url: SERVICE.url },
+    about: { "@type": "Organization", name: c.name.replace(/\s*\(.*$/, "") },
+    ...(story ? { mainEntityOfPage: `${SERVICE.url}/blog/${story}` } : {}),
+  };
+
   const crumbs = breadcrumb([
     { name: "해그로시", path: "/" },
     { name: "성과 사례", path: "/portfolio" },
@@ -52,6 +74,7 @@ export default async function FramerCasePage({ params }: Props) {
   return (
     <>
       <JsonLd data={crumbs} />
+      <JsonLd data={caseSchema} />
       <SiteHeader cta={{ href: "/sns-brand#contact", label: "프로젝트 문의" }} />
       <main className="bg-night px-5 pb-24 pt-28 sm:px-8">
         <article className="mx-auto max-w-3xl">
@@ -66,6 +89,16 @@ export default async function FramerCasePage({ params }: Props) {
               {s}
             </p>
           ))}
+
+          {story ? (
+            <Link
+              href={`/blog/${story}`}
+              className="mt-8 flex items-center justify-between gap-4 rounded-xl border border-lime-300/30 bg-lime-300/[0.06] px-5 py-4 text-sm text-white/80 hover:bg-lime-300/10"
+            >
+              <span>이 프로젝트를 정리해서 다시 쓴 기록이 있습니다</span>
+              <span className="shrink-0 font-semibold text-lime-300">읽기 →</span>
+            </Link>
+          ) : null}
 
           <div className="mt-10 space-y-6">
             {c.blocks.map((b, i) =>

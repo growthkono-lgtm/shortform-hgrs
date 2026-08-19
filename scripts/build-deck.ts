@@ -17,6 +17,7 @@
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { FRAMER_CASES } from "../lib/framer-portfolio";
 import { PLANS, POLICY, COMPANY, SERVICE, formatKRW,
   MODEL_OPTION,
 } from "@/lib/constants";
@@ -812,6 +813,46 @@ pages.push(
   ),
 );
 
+// 15-4 IMC 프로젝트 기록 — 프레이머 CMS 포트폴리오 28건을 그대로 싣는다 (2026-08-20)
+
+
+
+
+
+/**
+ * 사장님: *"그 프레이머 읽은 건 홈페이지에 포트폴리오인가 성장사례 있는 칸에도
+ * 다 동일하게 넣으면 돼. 소개서에도 넣고."* — 요약하거나 골라 담지 않는다.
+ * 두 줄 설명은 프레이머 원문 그대로다.
+ */
+for (let from = 0; from < FRAMER_CASES.length; from += 6) {
+  const rows = FRAMER_CASES.slice(from, from + 6);
+  const page = from / 6;
+  const total = Math.ceil(FRAMER_CASES.length / 6);
+  pages.push(
+    slide(`
+${head(
+  total > 1 ? `IMC 프로젝트 기록 (${page + 1}/${total})` : "IMC 프로젝트 기록",
+  page === 0
+    ? `브랜드를 통으로 맡았던 프로젝트 ${FRAMER_CASES.length}건입니다`
+    : "이어서 보여드립니다",
+)}
+<div class="imc">
+${rows
+  .map((c) => {
+    const cover = c.blocks.find((b) => "img" in b) as { img: string } | undefined;
+    return `<div class="imc-card">
+  ${cover ? `<img src="${asset(cover.img)}" alt="">` : `<div class="imc-nopic"></div>`}
+  <div class="imc-body">
+    <strong>${esc(c.name)}</strong>
+    ${c.summary.map((line) => `<span>${esc(line)}</span>`).join("")}
+  </div>
+</div>`;
+  })
+  .join("")}
+</div>`),
+  );
+}
+
 // 15-5 통합 브랜드 액션 — 랜딩의 원형 다이어그램을 정지 상태로
 
 
@@ -1208,6 +1249,15 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .bc-stats span{display:block;font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
 .bc-media{display:flex;flex-direction:column;gap:4mm;min-width:0;min-height:0}
 .bc-media img{width:100%;flex:1 1 0;min-height:0;object-fit:cover;border:1px solid var(--line);border-radius:3mm}
+
+/* IMC 프로젝트 기록 — 프레이머 포트폴리오 (2026-08-20) */
+.imc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5mm;flex:1;min-height:0;overflow:hidden;align-content:start}
+.imc-card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:2.5mm;overflow:hidden;min-height:0}
+.imc-card img{width:100%;height:26mm;object-fit:cover;display:block}
+.imc-nopic{width:100%;height:26mm;background:var(--alt)}
+.imc-body{padding:3.5mm;display:flex;flex-direction:column;gap:1.5mm}
+.imc-body strong{font-size:9pt;line-height:1.4}
+.imc-body span{font-size:7.5pt;color:var(--muted);line-height:1.55}
 
 /* 숏폼 포트폴리오 */
 /* 소재마다 어느 브랜드 것인지 밝힌다 — 소개서는 증빙 문서다 (2026-08-19) */
