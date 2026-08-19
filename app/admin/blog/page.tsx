@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { keywordSummary, listKeywords, scheduleBoard } from "@/lib/blog-admin";
 import { MAX_COST_PER_MONTH_USD, monthlySpend } from "@/lib/blog-runner";
-import { PILLARS, segment } from "@/lib/blog-spec";
+import { PILLARS, leadTargetOf, segment } from "@/lib/blog-spec";
 import { PUBLISH_HOUR, kstParts } from "@/lib/blog-schedule";
 import { TRACK_BY_WEEKDAY } from "@/lib/keyword-filter";
 import { dropKeyword } from "./actions";
@@ -587,8 +587,32 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
                         </>
                       )}
                     </td>
-                    <td className="px-3 py-3 text-xs text-muted">
-                      브랜드 대표·이사급
+                    {/**
+                     * 타겟 — 하드코딩에서 **데이터**로. (2026-08-19)
+                     *
+                     * 08-18 까지 이 칸은 `"브랜드 대표·이사급"` 문자열을 그대로
+                     * 박아 놨다. 34행이든 300행이든 전부 같은 글자였으니
+                     * "이 회차가 누구를 데려오는 글인가" 를 볼 수가 없었다.
+                     * 이제 노리는 검색어에서 리드 타겟을 판정해 보여 준다.
+                     */}
+                    <td className="px-3 py-3 text-xs">
+                      {(() => {
+                        const term =
+                          row.keyword.term ??
+                          row.planned?.term ??
+                          row.post?.headKeyword ??
+                          null;
+                        if (!term) return <span className="text-muted">—</span>;
+                        const t = leadTargetOf(term);
+                        return (
+                          <>
+                            <span className="font-medium text-ink">{t.label}</span>
+                            <span className="mt-0.5 block text-muted">
+                              {t.bottleneck}
+                            </span>
+                          </>
+                        );
+                      })()}
                     </td>
                     <td className="px-3 py-3 text-xs">
                       {seg ? (

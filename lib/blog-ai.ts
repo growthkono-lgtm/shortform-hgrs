@@ -11,6 +11,7 @@ import {
   STRUCTURE,
   VISUAL_SPEC,
   WRITING_RULES,
+  leadTargetOf,
   segment,
   type SegmentKey,
   format,
@@ -304,16 +305,49 @@ ${POSITIONING.identity}
 · 숏폼 라인: ${POSITIONING.shortform}
 · 브랜드 SNS 라인: ${POSITIONING.brandSns}`;
 
-/** 독자 정의 — 조사·기획·집필 세 호출이 같은 독자를 본다 */
-const AUDIENCE_CONTEXT = `[독자]
-주 독자: ${AUDIENCE.primary}
-부 독자: ${AUDIENCE.secondary}
+/**
+ * 독자 정의 — 조사·기획·집필 세 호출이 같은 독자를 본다.
+ *
+ * ⚠️ **글마다 달라진다.** (2026-08-19)
+ *
+ * 08-18 까지 이건 고정 상수였다. `AUDIENCE.primary` = "브랜드 대표·이사급"
+ * 하나뿐이라, 검색어가 무엇이든 글은 브랜드 대표에게 말했다. 그래서 사장님이
+ * 판매 타겟 넷을 정의하셨을 때 **셋째(인플루언서 본인)를 담을 자리가 아예
+ * 없었다** — "구독자 늘리기" 로 글을 쓰면 인플루언서에게 손익 용어로 말한다.
+ *
+ * 이제 검색어를 보고 리드 타겟을 판정해(`leadTargetOf`) 그 타겟의 독자
+ * 프로파일을 싣는다. 사장님이 말한 "키워드-타겟 매칭률" 이 이 자리에서
+ * 실제 글로 바뀐다.
+ */
+function audienceContext(term?: string | null): string {
+  const target = leadTargetOf(term);
+  const creator = target.key === "creator";
+
+  return `[독자 — 이 글이 데려와야 할 사람]
+${target.label}
+${target.audience}
+
+[이 사람의 병목]
+${target.bottleneck}
+
+[이 사람이 실제로 묻는 것]
+${target.question}
 
 [독자에게 하지 않을 것]
 ${AUDIENCE.never.map((n) => `- ${n}`).join("\n")}
-
+${
+  creator
+    ? `
+⚠️ 이 글의 독자는 **브랜드 담당자가 아니라 크리에이터 본인**이다.
+- 손익 지표(ROAS·CAC)로만 말하지 않는다. 이 사람은 단가·수수료·정산으로 판단한다.
+- "브랜드가 시딩할 때" 관점으로 쓰지 않는다. 이 사람은 시딩을 **받는** 쪽이다.
+- 우리 서비스는 "대행" 이 아니라 **함께 파는 구조**(시딩·수익쉐어·판매채널)로 붙는다.`
+    : `
 [이 층이 실제로 쓰는 말 — 맥락에 맞을 때만 쓴다. 억지로 다 넣지 않는다]
-${AUDIENCE.vocabulary.map((v) => `- ${v}`).join("\n")}`;
+${AUDIENCE.vocabulary.map((v) => `- ${v}`).join("\n")}`
+}`;
+}
+
 
 // ─────────────────────────────────────────────────────────────────────────
 // 1단계 — 조사
@@ -437,7 +471,7 @@ async function runResearchPass(
 
 ${BRAND_CONTEXT}
 
-${AUDIENCE_CONTEXT}
+${audienceContext(input.topic)}
 
 [조사 규칙 — 이 규칙이 이 회사 콘텐츠의 신뢰도를 결정한다]
 - **검색해서 확인한 것만 보고한다.** 기억으로 아는 수치나 URL 을 쓰지 않는다.
@@ -993,7 +1027,7 @@ export async function planPost(input: {
 
 ${BRAND_CONTEXT}
 
-${AUDIENCE_CONTEXT}
+${audienceContext(input.topic)}
 
 ${editorialRules(input.formatKey, input.segmentKey)}
 
@@ -1101,7 +1135,7 @@ export async function writePost(input: {
 
 ${BRAND_CONTEXT}
 
-${AUDIENCE_CONTEXT}
+${audienceContext(input.plan.head_keyword)}
 
 ${editorialRules(input.formatKey, input.segmentKey)}
 
@@ -1234,7 +1268,7 @@ export async function revisePost(input: {
 
 ${BRAND_CONTEXT}
 
-${AUDIENCE_CONTEXT}
+${audienceContext(input.plan.head_keyword)}
 
 ${editorialRules(input.formatKey, input.segmentKey)}
 
