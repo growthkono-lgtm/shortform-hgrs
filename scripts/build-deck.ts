@@ -21,7 +21,12 @@ import { PLANS, POLICY, COMPANY, SERVICE, formatKRW,
   MODEL_OPTION,
 } from "@/lib/constants";
 import { SEEDING_STAGES, SHORTS_STAGES } from "@/lib/stages";
-import { CLIPS_BY_BRAND, WALL_CLIPS, clipPoster } from "@/lib/clips";
+import {
+  CLIPS_BY_BRAND,
+  WALL_CLIPS,
+  clipPoster,
+  type BrandClips,
+} from "@/lib/clips";
 /**
  * 소개서의 SNS·종합 파트는 **랜딩(/sns-brand)과 같은 데이터를 읽는다.**
  * 예전엔 여기서 문안을 새로 지어 썼는데, 사이트와 내용이 갈라져 두 번 고쳐야 했다.
@@ -517,7 +522,20 @@ ${WALL_CLIPS.slice(0, 12)
  * 소재가 없는 브랜드는 건너뛴다. 증빙만 있는 브랜드도 장표는 나간다 —
  * 숫자만으로도 증빙이 되기 때문이다.
  */
-CLIPS_BY_BRAND.forEach((b) => {
+/**
+ * 소재가 있는 브랜드 + **증빙만 있는 브랜드**를 합친다. (2026-08-19)
+ *
+ * `CLIPS_BY_BRAND` 만 돌면 핏플렉스·신선행처럼 **영상은 없고 실적표만 있는
+ * 브랜드가 통째로 빠진다.** 숫자만으로도 증빙이 되므로 장표는 나가야 한다.
+ */
+const PORTFOLIO_BRANDS: BrandClips[] = [
+  ...CLIPS_BY_BRAND,
+  ...[...new Set(EVIDENCE.map((e) => e.brand))]
+    .filter((b) => !CLIPS_BY_BRAND.some((c) => c.brand.includes(b) || b.includes(c.brand)))
+    .map((brand) => ({ brand, slugs: [] as string[] })),
+];
+
+PORTFOLIO_BRANDS.forEach((b) => {
   const ev = evidenceOf(b.brand);
   if (!b.slugs.length && !ev.length) return;
 
@@ -528,7 +546,7 @@ ${head(`${b.brand} 포트폴리오`, "제작한 소재와 그 소재가 만든 �
   <div class="bp-clips">
 ${b.slugs
   .map(
-    (slug) =>
+    (slug: string) =>
       `<a class="short" href="${playUrl(slug)}"><img src="${asset(clipPoster(slug))}" alt=""><span class="play">▶</span></a>`,
   )
   .join("")}

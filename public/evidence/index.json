@@ -1,0 +1,110 @@
+[
+  {
+    "file": "real-academy-creative.png",
+    "brand": "리얼아카데미",
+    "kind": "소재",
+    "caption": "리얼아카데미 광고 소재별(맘카페 리포트, MBTI 유형별 공부법 등) 지출·노출·클릭·Lead Complete·CPM·CTR·CPC·CPA 실적표.",
+    "width": 2360,
+    "height": 446,
+    "masked": false
+  },
+  {
+    "file": "real-academy-growth.png",
+    "brand": "리얼아카데미",
+    "kind": "그로스",
+    "caption": "리얼아카데미 콘텐츠 소재별 학년(고학년/저학년/미기입) 반응 비중과 고학년 비율을 정리한 그로스 분석표.",
+    "width": 1738,
+    "height": 616,
+    "masked": false
+  },
+  {
+    "file": "real-academy-performance.png",
+    "brand": "리얼아카데미",
+    "kind": "퍼포먼스",
+    "caption": "리얼아카데미 월별 퍼포먼스 마케팅 실적(지출·노출·클릭·Lead Complete·CPM·CTR·CPC·CPA). 2월·3월의 지출·노출·클릭 값은 비공개 처리.",
+    "width": 2218,
+    "height": 186,
+    "masked": true
+  },
+  {
+    "file": "real-academy-response-rate.png",
+    "brand": "리얼아카데미",
+    "kind": "그로스",
+    "caption": "리얼아카데미 R진단지(고객 미응답률) 개선 추이. 9월 56%에서 6월4주 10%까지 미응답률이 낮아지는 그래프.",
+    "width": 1600,
+    "height": 790,
+    "masked": false
+  },
+  {
+    "file": "sinseonhaeng-performance.png",
+    "brand": "신선행",
+    "kind": "퍼포먼스",
+    "caption": "신선행 캠페인별(새 잠재 고객 캠페인, 탈리 랜딩 테스트) 월별 지출·노출·도달·클릭·CPC·CTR·결과 수·결과당 비용 실적표.",
+    "width": 2826,
+    "height": 222,
+    "masked": false
+  },
+  {
+    "file": "zeroblock-creative.png",
+    "brand": "제로블럭",
+    "kind": "소재",
+    "caption": "제로블럭 광고 소재별 지출·노출·도달·클릭·링크 클릭·CPC·CTR·상담문의시도 실적표(20개 소재 행).",
+    "width": 1692,
+    "height": 874,
+    "masked": false
+  },
+  {
+    "file": "zeroblock-performance.png",
+    "brand": "제로블럭",
+    "kind": "퍼포먼스",
+    "caption": "제로블럭 3~6월 월별 지출·노출·도달·클릭·CPC·CTR·상담문의시도·견적문의시도·문의 시도당 최종 단가 실적표.",
+    "width": 2668,
+    "height": 212,
+    "masked": false
+  },
+  {
+    "file": "krafton-battlegrounds-schedule.png",
+    "brand": "크래프톤",
+    "kind": "편성",
+    "caption": "크래프톤 배틀그라운드(PNC 2024) 채널 콘텐츠 편성표. 일자별 Long/Shorts 업로드 스케줄과 촬영·인터뷰 일정.",
+    "width": 2118,
+    "height": 988,
+    "masked": false
+  },
+  {
+    "file": "trusty-creative-1.png",
+    "brand": "트러스티푸드",
+    "kind": "소재",
+    "caption": "트러스티푸드 광고 소재(이미지·영상)별 지출·CTR·구매·결과당 비용·구매 전환값·ROAS 실적표.",
+    "width": 2524,
+    "height": 1096,
+    "masked": false
+  },
+  {
+    "file": "trusty-creative-2.png",
+    "brand": "트러스티푸드",
+    "kind": "소재",
+    "caption": "트러스티푸드 캠페인별 지출·노출·클릭·CTR·CPM·CPC·구매·결과당 비용·구매 전환값·ROAS 실적표.",
+    "width": 2888,
+    "height": 288,
+    "masked": false
+  },
+  {
+    "file": "trusty-performance.png",
+    "brand": "트러스티푸드",
+    "kind": "퍼포먼스",
+    "caption": "트러스티푸드 4~7월 월별 지출금액·노출·클릭·CTR·CPC·구매 수·구매당 비용·전환 매출·ROAS 실적표.",
+    "width": 2056,
+    "height": 182,
+    "masked": false
+  },
+  {
+    "file": "fitflex-influencer-list.png",
+    "brand": "핏플렉스",
+    "kind": "인플루언서",
+    "caption": "핏플렉스 인플루언서 협업 리스트. 채널명·상품명·계약일·PPL 업로드일·상품 링크 등 진행 현황표(인플루언서 성함·컨택포인트는 비공개 처리).",
+    "width": 2386,
+    "height": 738,
+    "masked": true
+  }
+]
