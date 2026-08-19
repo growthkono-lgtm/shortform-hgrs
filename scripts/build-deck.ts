@@ -515,7 +515,7 @@ const PERF_FIRST = (a: Evidence, b: Evidence) =>
   (b.kind === "퍼포먼스" ? 1 : 0) - (a.kind === "퍼포먼스" ? 1 : 0);
 
 /** 케이스 슬라이드 왼쪽 열에 안 잘리고 들어가는 최대 장수 */
-const EV_ON_CASE = 99;
+const EV_ON_CASE = 1;
 
 /** 케이스 슬라이드에 못 실어 뒤로 넘긴 증빙 */
 const overflowEvidence: Evidence[] = [];
@@ -539,7 +539,9 @@ CASES.forEach((c) => {
     <p class="bc-p">${esc(c.role)} — 소재 기획부터 캠페인 운영까지 한 팀이 맡아 진행했습니다.</p>
     ${/* 세로가 있는 표(편성표 등)는 왼쪽 열 아래 빈 자리가 더 크게 보인다 —
          전체 폭에 두면 높이 제한에 걸려 오히려 쪼그라든다 */
-      ""
+      onCase.length && onCase[0].width / onCase[0].height < 5
+        ? `<div class="bc-ev">${onCase.map(evFigure).join("")}</div>`
+        : ""
     }
   </div>
   <div class="bc-media">
@@ -550,7 +552,7 @@ ${/* 표는 **가로 전체 폭**이라야 숫자가 읽힌다. 왼쪽 열(절�
      글자가 5pt 아래로 내려가 아무도 못 읽는다 — 두 번 그렇게 냈다. */
   c.key === "모에브"
     ? moevTable()
-    : onCase.length
+    : onCase.length && onCase[0].width / onCase[0].height >= 5
       ? `<div class="bc-ev-wide ev-n${onCase.length}">${onCase.map(evFigure).join("")}</div>`
       : ""
 }
@@ -1290,7 +1292,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .bc-ev{display:flex;flex-direction:column;gap:3mm;margin-top:5mm;flex:1 1 auto;min-height:0;overflow:hidden;justify-content:flex-start}
 .bc-ev figure{margin:0;min-height:0}
 .bc-ev img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block;object-fit:contain;object-position:left top}
-.bc-ev-1 img{max-height:70mm}
+.bc-ev-1 img{max-height:74mm}
 .bc-ev-2 img{max-height:30mm}
 .bc-ev-3 img{max-height:19mm}
 .bc-ev figcaption{font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
@@ -1303,7 +1305,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .bp-ev img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block}
 .bp-ev figcaption{font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
 .bp-none{font-size:9pt;color:var(--muted)}
-.brandcase{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:8mm;flex:0 0 auto;min-height:48mm;overflow:hidden}
+.brandcase{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:8mm;flex:1 1 auto;min-height:0;overflow:hidden}
 .bc-body{display:flex;flex-direction:column;min-width:0}
 .bc-p{font-size:9.5pt;line-height:1.9;color:var(--ink-soft, #171717);margin-bottom:4mm}
 .bc-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3mm;list-style:none;margin-bottom:7mm}
@@ -1313,7 +1315,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .bc-stats strong{display:block;font-size:8.5pt;line-height:1.45}
 .bc-stats span{display:block;font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
 .bc-media{display:flex;flex-direction:column;gap:4mm;min-width:0;min-height:0}
-.bc-media img{width:100%;flex:1 1 0;min-height:0;max-height:48mm;object-fit:cover;border:1px solid var(--line);border-radius:3mm}
+.bc-media img{width:100%;flex:1 1 0;min-height:0;object-fit:cover;border:1px solid var(--line);border-radius:3mm}
 
 /* 다시 조판한 데이터 표 — 저해상도 스크린샷 대신 벡터로 인쇄된다 (2026-08-20) */
 .dtable{width:100%;border-collapse:collapse;font-size:7.5pt;font-variant-numeric:tabular-nums}
