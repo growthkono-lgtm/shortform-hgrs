@@ -62,7 +62,7 @@ const ITEMS: EvidenceItem[] = [
   },
   {
     srcFile:
-      "리얼아카데미 퍼포먼스마케팅실적 (1월 행 놔두고 2월3월은 지출~노출수클릭수 블러처리).png",
+      "리얼아카데미 퍼포먼스실적.png",
     outFile: "real-academy-performance.png",
     brand: BRAND.realAcademy,
     kind: "퍼포먼스",
@@ -143,7 +143,7 @@ const ITEMS: EvidenceItem[] = [
   },
   {
     srcFile:
-      "핏플렉스 인플루언서마케팅 리스트(인플 실명 등 개인정보 좀 가리기 채널명은공개).png",
+      "핏플렉스 인플루언서 리스트.png",
     outFile: "fitflex-influencer-list.png",
     brand: BRAND.fitflex,
     kind: "인플루언서",
