@@ -16,6 +16,7 @@ import { join } from "node:path";
 
 import { toCsv } from "../lib/csv";
 import { isCore } from "../lib/keyword-filter";
+import { leadTargetOf } from "../lib/blog-spec";
 
 const REST = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -98,6 +99,8 @@ async function main() {
   const headers = [
     ...HEAD.map(([, label]) => label),
     "상태(설명)",
+    // 사장님이 타겟별로 필터를 걸 수 있어야 한다 — 매칭률이 이 열로 보인다
+    "리드타겟",
     "코어키워드",
     "쓴 날짜",
     "쓴 회차",
@@ -107,6 +110,7 @@ async function main() {
   const body = rows.map((r) => [
     ...known.map((k) => r[k]),
     STATUS_MEANING[String(r.status)] ?? String(r.status),
+    leadTargetOf(String(r.term)).label,
     isCore(String(r.term)) ? "코어" : "",
     usedByTerm.get(String(r.term)) ?? "",
     used.get(String(r.id)) ?? "",
