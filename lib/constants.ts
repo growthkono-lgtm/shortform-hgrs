@@ -328,3 +328,263 @@ export const KAKAO_CHANNEL = {
   /** 채팅 바로 열기 — 홈을 거치지 않고 대화창으로 떨어진다 */
   chatUrl: "https://pf.kakao.com/_QExiiX/chat",
 } as const;
+
+/* ═══════════════════════════ 포트폴리오 매트릭스 (2026-08-19 신설) ═══════════════════════════
+ *
+ * 사장님: "소개서는 나한테 따로 줘. 근데 포트폴리오를 달라고들 하거든. 그래서 소개서 내
+ * 숏폼들이 좀 유형별로 브랜드별로 성과별로 분류되어 있어야 할 것 같아."
+ *
+ * 여기 값은 전부 lib/cases.ts(GROWTH_CASES) · lib/portfolio.ts(FORMAT_SHOTS/REELS 캡션) ·
+ * lib/wall.ts(WALL_SQUARE 브랜드 태그) · lib/landing-data.ts(OUTCOME_CASES)에 **이미 있는**
+ * 실자산·실수치를 소개서 조판용으로 세 축(유형/브랜드/성과)에 다시 인덱싱한 것이다.
+ * 숫자·카피를 새로 짓지 않았다 — 원본에 없는 값은 채우지 않고 비워 뒀다.
+ *
+ * ⚠️ Supabase(projects/deliverables/influencer_candidates)는 확인해 봤지만 지금 도는
+ * 실제 진행 프로젝트(테스트성 데이터 포함)만 있고, 과거 브랜드 사례의 조회수·ROAS 같은
+ * 실측 수치는 없다. 성과 수치의 유일한 출처는 위 lib 파일들에 이미 정리된 값뿐이다.
+ */
+
+export type PortfolioFormatItem = {
+  /** s7-formats.tsx 여섯 유형 + REELS 캡션에서 확인된 인터뷰형 */
+  type: string;
+  /** s7-formats.tsx 문구 그대로 */
+  desc: string;
+  poster: string;
+  video?: string;
+  /** 브랜드가 파일·주석으로 확인된 경우만 채운다. 미상이면 undefined로 둔다 — 지어내지 않는다 */
+  brand?: string;
+};
+
+/**
+ * 유형별 — 실제로 그 유형이라고 확인된 소재만 묶었다.
+ * fmt-expert(전문가형)는 어떤 브랜드 소재인지 파일·주석 어디에도 표기가 없어 브랜드를 비워 뒀다.
+ */
+export const PORTFOLIO_FORMATS: PortfolioFormatItem[] = [
+  {
+    type: "비포애프터형",
+    desc: "변화의 폭을 한 화면에 담아 결과를 각인시킵니다.",
+    poster: "/portfolio/reels/zeroblock-itv.jpg",
+    video: "/portfolio/reels/zeroblock-itv.mp4",
+    brand: "파크론 제로블럭",
+  },
+  {
+    type: "후기형",
+    desc: "실사용 경험을 1인칭으로. 신뢰가 구매 장벽을 낮춥니다.",
+    poster: "/portfolio/reels/fmt-review.jpg",
+    video: "/portfolio/reels/fmt-review.mp4",
+    brand: "파크론 제로블럭",
+  },
+  {
+    type: "제품 실험형",
+    desc: "눈으로 확인되는 실험 장면으로 성능을 증명합니다.",
+    poster: "/portfolio/reels/white-bg-01.jpg",
+    video: "/portfolio/reels/white-bg-01.mp4",
+    brand: "파크론 제로블럭",
+  },
+  {
+    type: "비교형",
+    desc: "대안과 나란히 두어 선택 이유를 명확하게 만듭니다.",
+    poster: "/portfolio/reels/fmt-compare.jpg",
+    video: "/portfolio/reels/fmt-compare.mp4",
+    brand: "파크론 제로블럭",
+  },
+  {
+    type: "문제제기형",
+    desc: "타겟이 겪는 상황을 먼저 꺼내 스크롤을 멈춥니다.",
+    poster: "/portfolio/reels/moen-ppl.jpg",
+    video: "/portfolio/reels/moen-ppl.mp4",
+    brand: "모엔",
+  },
+  {
+    type: "인터뷰형",
+    desc: "반려견·사연 등 인물 인터뷰로 시리즈 팬층을 만듭니다.",
+    poster: "/portfolio/reels/dangterview-3.jpg",
+    video: "/portfolio/reels/dangterview-3.mp4",
+    brand: "트러스티랩스",
+  },
+  {
+    type: "전문가형",
+    desc: "권위 있는 화자가 근거를 설명해 설득 강도를 올립니다.",
+    poster: "/portfolio/reels/fmt-expert.jpg",
+    video: "/portfolio/reels/fmt-expert.mp4",
+    // brand 미상 — 어느 브랜드 소재인지 사장님 확인 필요
+  },
+];
+
+export type PortfolioAsset = { poster: string; video?: string };
+
+export type PortfolioBrandItem = {
+  brand: string;
+  /** GROWTH_CASES에 있는 경우만 */
+  scale?: string;
+  /** 검증된 실측 성과 한 줄. 없으면 undefined — 소개서에서 "성과 데이터 준비 중"으로 표시한다 */
+  result?: string;
+  assets: PortfolioAsset[];
+};
+
+/**
+ * 브랜드별 — 영상·이미지가 실제로 그 브랜드로 확인되는 것만 묶었다.
+ * 30개 클라이언트 로고(build-deck.ts CLIENTS) 중 실제 영상·이미지 자산까지 연결되는
+ * 브랜드만 여기 들어간다. 로고만 있고 소재가 없는 나머지 브랜드는 포함하지 않았다.
+ *
+ * ⚠️ "모엔"은 lib/landing-data.ts OUTCOME_CASES의 "M 헤어뷰티 커머스"(월 광고비
+ * 300만원→2,000만원)와 같은 영상(moen-ppl)을 쓰고 있어 같은 브랜드로 보이지만,
+ * OUTCOME_CASES 쪽은 의도적으로 브랜드명을 가려 둔 익명 후기다. 같은 브랜드가
+ * 맞는지, 실명으로 성과를 붙여도 되는지 사장님 확인 전에는 여기 result를 비워 둔다.
+ */
+export const PORTFOLIO_BRANDS: PortfolioBrandItem[] = [
+  {
+    brand: "뤼이드 리얼 아카데미",
+    scale: "투자 2,000억",
+    result: "3주 연속 고지출 · CPA 단가 1위",
+    assets: [
+      { poster: "/portfolio/clips/riiid-report.jpg", video: "/portfolio/clips/riiid-report.mp4" },
+      { poster: "/portfolio/clips/riiid-momcafe.jpg", video: "/portfolio/clips/riiid-momcafe.mp4" },
+      { poster: "/portfolio/clips/riiid-self-study.jpg", video: "/portfolio/clips/riiid-self-study.mp4" },
+      { poster: "/portfolio/clips/riiid-parent-itv.jpg", video: "/portfolio/clips/riiid-parent-itv.mp4" },
+      { poster: "/portfolio/clips/riiid-parent-empathy.jpg", video: "/portfolio/clips/riiid-parent-empathy.mp4" },
+    ],
+  },
+  {
+    brand: "파크론 제로블럭",
+    scale: "매출 200억대",
+    result: "메타 예산 5배 증액 · CPA 9만원 절감",
+    assets: [
+      { poster: "/portfolio/clips/parkron-tpu.jpg", video: "/portfolio/clips/parkron-tpu.mp4" },
+      { poster: "/portfolio/reels/zeroblock-itv.jpg", video: "/portfolio/reels/zeroblock-itv.mp4" },
+      { poster: "/portfolio/reels/tpu-compare.jpg", video: "/portfolio/reels/tpu-compare.mp4" },
+      { poster: "/portfolio/reels/white-bg-01.jpg", video: "/portfolio/reels/white-bg-01.mp4" },
+      { poster: "/portfolio/clips/zeroblock-interview.jpg", video: "/portfolio/clips/zeroblock-interview.mp4" },
+    ],
+  },
+  {
+    brand: "이노바인코리아 모에브",
+    scale: "매출 300억대",
+    result: "3개월 매출 4천만원 · ROAS 3배",
+    // 모에브는 확보된 소재가 이 컷 하나뿐이다 (lib/cases.ts와 동일한 이유)
+    assets: [{ poster: "/portfolio/cases/inovine-moev.jpg" }],
+  },
+  {
+    brand: "크래프톤 배틀그라운드",
+    scale: "글로벌",
+    // 정량 성과 없음 — "연간 공식 프로젝트"라는 계약 형태만 확인된다
+    assets: [
+      { poster: "/portfolio/cases/krafton-jonathan.jpg" },
+      { poster: "/portfolio/clips/krafton-pnc-inonix.jpg", video: "/portfolio/clips/krafton-pnc-inonix.mp4" },
+    ],
+  },
+  {
+    brand: "트러스티랩스",
+    // 정량 성과 없음 — 소재만 다수 보유
+    assets: [
+      { poster: "/portfolio/clips/pet-portion.jpg", video: "/portfolio/clips/pet-portion.mp4" },
+      { poster: "/portfolio/clips/pet-vet-pancreas.jpg", video: "/portfolio/clips/pet-vet-pancreas.mp4" },
+      { poster: "/portfolio/clips/pet-treats-plea.jpg", video: "/portfolio/clips/pet-treats-plea.mp4" },
+      { poster: "/portfolio/clips/seeding-patty.jpg", video: "/portfolio/clips/seeding-patty.mp4" },
+      { poster: "/portfolio/clips/seeding-garnish.jpg", video: "/portfolio/clips/seeding-garnish.mp4" },
+      { poster: "/portfolio/clips/gaehogang-square.jpg", video: "/portfolio/clips/gaehogang-square.mp4" },
+      { poster: "/portfolio/reels/dangterview-3.jpg", video: "/portfolio/reels/dangterview-3.mp4" },
+    ],
+  },
+  {
+    brand: "모엔",
+    // result 의도적으로 비움 — 위 주석 참고 (M 헤어뷰티 커머스와 동일 소재 여부 확인 필요)
+    assets: [
+      { poster: "/portfolio/clips/moen-shampoo-ppl.jpg", video: "/portfolio/clips/moen-shampoo-ppl.mp4" },
+      { poster: "/portfolio/reels/moen-ppl.jpg", video: "/portfolio/reels/moen-ppl.mp4" },
+    ],
+  },
+  {
+    brand: "핏플렉스",
+    // 정량 성과 없음 — 소셜 배너·상세페이지 소재만 보유
+    assets: [
+      { poster: "/portfolio/wall/sq-00.webp" },
+      { poster: "/portfolio/wall/sq-10.webp" },
+      { poster: "/portfolio/wall/dv-핏플렉스14.webp" },
+    ],
+  },
+  {
+    brand: "고초대졸닷컴",
+    assets: [
+      { poster: "/portfolio/wall/sq-03.webp" },
+      { poster: "/portfolio/wall/dv-고초모음-001.webp" },
+    ],
+  },
+];
+
+export type PortfolioResultItem = {
+  /** 실명 또는 (익명 처리된) 회사 코드 */
+  brand: string;
+  metrics: { value: string; label: string }[];
+  scope: string;
+  poster?: string;
+  video?: string;
+  /** true면 브랜드명이 사장님 지시로 가려진 익명 후기다 */
+  anonymized?: boolean;
+};
+
+/**
+ * 성과별 — 실측 숫자가 있는 것만 담았다. 조회수·좋아요 같은 자체 집계 수치는
+ * 어디에도 확보돼 있지 않아 여기 없다 — 없는 숫자를 지어내지 않는다.
+ *
+ * 앞 3건은 실명 브랜드(GROWTH_CASES), 뒤 3건은 lib/landing-data.ts OUTCOME_CASES에서
+ * 가져온 익명 후기다 — 익명 처리는 원본 그대로 유지했다(브랜드명을 임의로 밝히지 않는다).
+ */
+export const PORTFOLIO_RESULTS: PortfolioResultItem[] = [
+  {
+    brand: "뤼이드 리얼 아카데미",
+    metrics: [
+      { value: "3주", label: "연속 고지출" },
+      { value: "1위", label: "CPA 단가" },
+    ],
+    scope: "풀 프로젝트 수행 성과 (소재 제작 + 캠페인 운영)",
+    poster: "/portfolio/clips/riiid-report.jpg",
+    video: "/portfolio/clips/riiid-report.mp4",
+  },
+  {
+    brand: "파크론 제로블럭",
+    metrics: [
+      { value: "5배", label: "메타 예산 증액" },
+      { value: "9만원", label: "CPA 절감" },
+    ],
+    scope: "풀 프로젝트 수행 성과 (소재 제작 + 캠페인 운영)",
+    poster: "/portfolio/clips/parkron-tpu.jpg",
+    video: "/portfolio/clips/parkron-tpu.mp4",
+  },
+  {
+    brand: "이노바인코리아 모에브",
+    metrics: [
+      { value: "₩4,000만", label: "3개월 매출" },
+      { value: "3배", label: "ROAS" },
+    ],
+    scope: "풀 프로젝트 수행 성과",
+    poster: "/portfolio/cases/inovine-moev.jpg",
+  },
+  {
+    brand: "M 헤어뷰티 커머스",
+    metrics: [{ value: "300만→2,000만", label: "월 광고비 (5개월)" }],
+    scope: "브랜드가 밝힌 결과 · 실명 비공개",
+    poster: "/portfolio/reels/moen-ppl.jpg",
+    video: "/portfolio/reels/moen-ppl.mp4",
+    anonymized: true,
+  },
+  {
+    brand: "G 대기업",
+    metrics: [
+      { value: "3년 내 최고", label: "ROAS" },
+      { value: "40%", label: "가입 CPA 절감" },
+    ],
+    scope: "브랜드가 밝힌 결과 · 실명 비공개",
+    anonymized: true,
+  },
+  {
+    brand: "Y 상담 스타트업",
+    metrics: [
+      { value: "2배", label: "오가닉 매출" },
+      { value: "+10%P", label: "구매전환율" },
+      { value: "600%", label: "KPI 달성" },
+    ],
+    scope: "브랜드가 밝힌 결과 · 실명 비공개",
+    anonymized: true,
+  },
+];
