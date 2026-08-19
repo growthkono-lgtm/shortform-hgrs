@@ -4,7 +4,7 @@ import { keywordSummary, listKeywords, scheduleBoard } from "@/lib/blog-admin";
 import { MAX_COST_PER_MONTH_USD, monthlySpend } from "@/lib/blog-runner";
 import { PILLARS, segment } from "@/lib/blog-spec";
 import { PUBLISH_HOUR, kstParts } from "@/lib/blog-schedule";
-import { DIFFICULTY_BY_WEEKDAY } from "@/lib/keyword-filter";
+import { TRACK_BY_WEEKDAY } from "@/lib/keyword-filter";
 import { dropKeyword } from "./actions";
 import { searchConsoleConfigured } from "@/lib/search-console";
 import { searchSummary } from "@/lib/search-console";
@@ -32,10 +32,25 @@ const compTone: Record<string, string> = {
   높음: "text-muted bg-ink/[0.04]",
 };
 
+/**
+ * 트랙 배지 — 그날 편성이 무엇을 노리는가. (2026-08-19)
+ *
+ * 예전엔 요일별 난이도("니치"/"빅")를 찍었다. 난이도는 이길 수 있는지만
+ * 말하고 **왜 그 검색어를 먹어야 하는지**는 말하지 않는다. 그래서 실제로
+ * `포장지제작`(월 540) 이 1순위로 뽑히고 있었다.
+ */
+const TRACK_LABEL: Record<string, string> = {
+  core: "코어 반복",
+  niche: "니치 확보",
+  big: "빅 장기전",
+  convert: "전환 직결",
+};
+
 const diffTone: Record<string, string> = {
-  니치: "text-emerald-700 bg-emerald-50",
-  중간: "text-sky-700 bg-sky-50",
-  빅: "text-violet-700 bg-violet-50",
+  core: "text-rose-700 bg-rose-50",
+  niche: "text-emerald-700 bg-emerald-50",
+  convert: "text-amber-700 bg-amber-50",
+  big: "text-violet-700 bg-violet-50",
 };
 
 function Delta({ value }: { value: number | null }) {
@@ -358,7 +373,7 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
             </thead>
             <tbody>
               {board.map((row) => {
-                const want = DIFFICULTY_BY_WEEKDAY[kstParts(row.date).weekday];
+                const want = TRACK_BY_WEEKDAY[kstParts(row.date).weekday];
                 /**
                  * 세부타겟 — 앞으로의 슬롯은 편성 큐에서, 이미 만든 회차는
                  * **작업표에서** 가져온다. (2026-08-18)
@@ -429,7 +444,7 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
                         <span
                           className={`ml-1.5 rounded px-1.5 py-0.5 text-[0.625rem] font-bold ${diffTone[want]}`}
                         >
-                          {want}
+                          {TRACK_LABEL[want] ?? want}
                         </span>
                       )}
                       {row.post?.slug && (

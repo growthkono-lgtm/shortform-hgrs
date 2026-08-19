@@ -193,7 +193,7 @@ select at, route, ok, note from blog_ops_log order by at desc limit 20;
 이미 키를 주셨고 444개 키워드가 DB 에 들어갔습니다. 주 1회 갱신:
 
 ```
-cd ~/Documents/hgrs-boost && node --env-file=.env.local scripts/keyword-sync.mjs
+cd ~/Documents/hgrs-boost && npx tsx --env-file=.env.local scripts/keyword-sync.ts
 ```
 
 ---

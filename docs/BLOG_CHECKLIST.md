@@ -125,7 +125,7 @@ cd ~/Documents/hgrs-boost && npx tsx --env-file=.env.local scripts/blog-doctor.t
 
 | 확인 | 어디에 쌓이나 | 비고 |
 | --- | --- | --- |
-| 키워드 검색량·CTR | `blog_keyword` · `blog_keyword_metric`(주차별 이력) | 네이버 검색광고 실측. 주 1회 `keyword-sync.mjs` |
+| 키워드 검색량·CTR | `blog_keyword` · `blog_keyword_metric`(주차별 이력) | 네이버 검색광고 실측. 주 1회 `keyword-sync.ts` |
 | 사이트 전체 노출·클릭·순위 | `blog_search_daily` (18시 리포트가 매일 한 줄) | 08-16 신설 |
 | **글별 성적** | **`blog_post_metric`** | **08-18 신설.** 아래 체크포인트 |
 | 조회수 | `blog_view` | 우리가 직접 셈, 봇 제외, 세션당 1회 |
@@ -252,7 +252,7 @@ sora(초×단가)·gpt-image-2(usage×토큰단가)가 호출마다 한 줄씩 �
 | **일요일 07:20** | **그 주 시의성 복합키워드 수집** | 서버(자동) |
 | 세션마다 | `blog-doctor.ts` 13항목 | 클로드 |
 | 배포·규격 변경 뒤 | `blog-doctor.ts` + **발행 실물 확인** | 클로드 |
-| 주 1회 | `keyword-sync.mjs` 로 검색량 갱신 | 클로드 |
+| 주 1회 | `keyword-sync.ts` 로 검색량 갱신 | 클로드 |
 | 돈 얘기가 나오면 | `cost-doctor.ts` 로 전 계정 한 표 | 클로드 |
 
 관련 스크립트:

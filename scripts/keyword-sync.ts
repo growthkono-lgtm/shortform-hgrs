@@ -1,8 +1,14 @@
 /**
  * 키워드 수집 → DB 반영. 주 1회 돌린다. (2026-08-13)
  *
- *   node --env-file=.env.local scripts/keyword-sync.mjs
- *   node --env-file=.env.local scripts/keyword-sync.mjs --dry
+ *   npx tsx --env-file=.env.local scripts/keyword-sync.ts
+ *   npx tsx --env-file=.env.local scripts/keyword-sync.ts --dry
+ *
+ * ⚠️ 2026-08-19: `.mjs` 에서 `.ts` 로 옮겼다. 이 파일이 **자기만의 필터 정규식을
+ * 따로 들고 있어서** `lib/keyword-filter.ts` 의 판정이 한 번도 실제로 돈 적이
+ * 없었다. 규칙이 두 벌이면 반드시 어긋나고, 실제로 어긋나 있었다 —
+ * `키링제작`·`네이버영수증리뷰`·`홈페이지제작` 이 그대로 들어와 편성 후보
+ * 상위를 차지했다. 이제 판정은 `lib/keyword-filter.ts` **한 곳**에서만 한다.
  *
  * 하는 일 두 가지:
  *  1. blog_keyword 의 현재 지표를 최신값으로 갱신(upsert)
@@ -26,7 +32,7 @@ const {
   NAVER_AD_SECRET_KEY: SECRET,
   NEXT_PUBLIC_SUPABASE_URL: SB_URL,
   SUPABASE_SERVICE_ROLE_KEY: SB_KEY,
-} = process.env;
+} = process.env as Record<string, string>;
 
 for (const [name, v] of Object.entries({
   NAVER_AD_CUSTOMER_ID: CUSTOMER,
@@ -44,24 +50,36 @@ for (const [name, v] of Object.entries({
 /** 씨앗 — keyword-expand.mjs 와 같은 목록을 쓴다 */
 const { SEEDS } = await import("./keyword-seeds.mjs");
 
-const KEEP =
-  /마케팅|광고|브랜딩|브랜드|숏폼|릴스|쇼츠|인플루언서|체험단|서포터즈|앰버서더|바이럴|콘텐츠|컨텐츠|소재|퍼포먼스|그로스|자사몰|쇼핑몰|카페24|스마트스토어|D2C|이커머스|커머스|팝업|프로모션|CRM|IMC|BTL|SNS|인스타|유튜브|틱톡|대행|제작|영상|촬영|편집|검색광고|SEO|AEO|상위노출|리뷰|후기|캠페인|모델|섭외|스타트업|PMF|USP|전환|ROAS|퍼널|랜딩|상세페이지|리타겟|어트리뷰션|리텐션|LTV|객단가|재구매|런칭|포지셔닝|카피|스토리텔링|AI|AX|머신러닝|딥러닝|프로덕트|펀딩|와디즈|라이브커머스|공동구매|멤버십|쿠폰|이벤트|기획/i;
-const DROP =
-  /자격증|시험|기사자격|알바|채용|구인|학원|국비|내일배움|공연|연극|전시회|골프|제주|맛집|놀거리|관광|대출|보험|부동산|주식|코인|전지|엔비디아|SQLD|ADSP|키오스크|밀수|관세|수익창출|월급|연봉|취업|자소서|면접|과제|레포트|논문|영화|드라마제작사|웹툰|소설|게임|다이어트|병원|한의원|피부과|성형|변호사|세무사|노무|법률/i;
-const B2B =
-  /대행|업체|비용|견적|단가|가격|제작|외주|의뢰|전략|방법|하는법|어떻게|추천|순위|비교|사례|운영|기획|매출|전환|ROAS|퍼널|리드|스타트업|B2B|마케팅|브랜딩|IMC|BTL|그로스|퍼포먼스|런칭|포지셔닝|소재|캠페인/i;
-const NOT_B2B =
-  /수익|알바|셀프|자격|취업|연봉|입점|정산|환불|배송|반품|고객센터|로그인|다운로드|무료로|공짜/i;
+import {
+  MIN_MAIN_VOLUME,
+  difficultyOf,
+  hasBuyerIntent,
+  isOurs,
+  nicheScore,
+} from "../lib/keyword-filter";
 
-function sign(method, path) {
+/** 네이버 검색광고 키워드도구가 주는 한 줄. 필요한 칸만 적는다 */
+type KeywordRow = {
+  relKeyword: string;
+  monthlyPcQcCnt: unknown;
+  monthlyMobileQcCnt: unknown;
+  monthlyAvePcClkCnt: unknown;
+  monthlyAveMobileClkCnt: unknown;
+  monthlyAvePcCtr: unknown;
+  monthlyAveMobileCtr: unknown;
+  compIdx: string | null;
+  plAvgDepth: unknown;
+};
+
+function sign(method: string, path: string) {
   const ts = Date.now().toString();
   const mac = crypto.createHmac("sha256", SECRET);
   mac.update(`${ts}.${method}.${path}`);
   return { ts, signature: mac.digest("base64") };
 }
 
-async function keywordTool(seeds) {
-  const hint = seeds.map((k) => k.replace(/\s+/g, "")).join(",");
+async function keywordTool(seeds: string[]) {
+  const hint = seeds.map((k: string) => k.replace(/\s+/g, "")).join(",");
   const { ts, signature } = sign("GET", PATH);
   const res = await fetch(
     `${HOST}${PATH}?hintKeywords=${encodeURIComponent(hint)}&showDetail=1`,
@@ -75,10 +93,10 @@ async function keywordTool(seeds) {
     },
   );
   if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
-  return (await res.json()).keywordList ?? [];
+  return ((await res.json()) as { keywordList?: KeywordRow[] }).keywordList ?? [];
 }
 
-const num = (v) => {
+const num = (v: unknown): number | null => {
   if (typeof v === "number") return v;
   if (typeof v !== "string") return null;
   if (v.includes("<")) return 9;
@@ -94,7 +112,7 @@ function weekStart(d = new Date()) {
   return x.toISOString().slice(0, 10);
 }
 
-async function sb(path, init = {}) {
+async function sb(path: string, init: RequestInit = {}) {
   const res = await fetch(`${SB_URL}/rest/v1/${path}`, {
     ...init,
     headers: {
@@ -134,7 +152,7 @@ async function main() {
         });
       }
     } catch (error) {
-      console.error(`  ✗ ${chunk.join(", ")} — ${error.message}`);
+      console.error(`  ✗ ${chunk.join(", ")} — ${(error as Error).message}`);
     }
     if (i + 5 < SEEDS.length) await new Promise((r) => setTimeout(r, 400));
   }
@@ -149,35 +167,38 @@ async function main() {
    * 구매의도는 버리지 않고 `buyer_intent` 로 남긴다 — 편성에서 같은 조건이면
    * 돈 되는 검색어를 위로 올리는 데 쓴다.
    */
+  /**
+   * 판정은 `lib/keyword-filter.ts` 한 곳에서만 한다. (2026-08-19)
+   *
+   * 하한을 100 → `MIN_MAIN_VOLUME`(500) 으로 올렸다. 사장님 기준:
+   * *"500 내외 혹은 그 미만은 그냥 엄청나게 작은 키워드라 컨텐츠 메인으로
+   * 걸 건 사실 원래 아닌데."* 08-19 실측에서 1,998개 중 1,358개(68%)가
+   * 100~499 였고, 그 구간이 매일 편성에 뽑히고 있었다.
+   *
+   * 하한 밑을 아예 안 담는 이유: 담아 두면 표가 그걸로 뒤덮여 판단이 안 된다.
+   * 본문 보조 검색어는 기획 단계에서 헤드 키워드로부터 파생시킨다.
+   */
   const keep = [...rows.values()]
-    .filter(
-      (r) =>
-        KEEP.test(r.term) &&
-        !DROP.test(r.term) &&
-        !NOT_B2B.test(r.term) &&
-        r.total_volume >= 100,
-    )
-    .map((r) => ({
-      ...r,
-      buyer_intent: B2B.test(r.term),
-      // SEO 난이도는 검색량과 롱테일 여부로 본다. 네이버 competition 은
-      // 광고 입찰 경쟁이라 마케팅 축에서는 거의 전부 '높음' 이 나온다
-      difficulty:
-        r.total_volume >= 5000
-          ? "빅"
-          : r.total_volume >= 2000
-            ? r.term.length >= 12
-              ? "중간"
-              : "빅"
-            : r.total_volume >= 1000
-              ? r.term.length >= 12
-                ? "니치"
-                : "중간"
-              : "니치",
-    }));
+    .filter((r) => isOurs(r.term) && r.total_volume >= MIN_MAIN_VOLUME)
+    .map((r) => {
+      const metrics = {
+        term: r.term,
+        totalVolume: r.total_volume,
+        mobileCtr: r.mobile_ctr ?? null,
+        pcCtr: r.pc_ctr ?? null,
+        competition: r.competition ?? null,
+      };
+      return {
+        ...r,
+        buyer_intent: hasBuyerIntent(r.term),
+        difficulty: difficultyOf(metrics),
+        // 08-19 이전에는 아무도 안 채워서 1,998개 중 1,460개가 비어 있었다
+        niche_score: nicheScore(metrics),
+      };
+    });
 
   console.error(
-    `\n수집 ${rows.size} → 우리 키워드 ${keep.length}개 (월 100회 이상)`,
+    `\n수집 ${rows.size} → 우리 키워드 ${keep.length}개 (월 ${MIN_MAIN_VOLUME}회 이상)`,
   );
   if (dry) {
     console.log(JSON.stringify(keep.slice(0, 20), null, 2));
@@ -207,7 +228,9 @@ async function main() {
   const saved = await sb(
     `blog_keyword?select=id,term&limit=5000`,
   );
-  const idByTerm = new Map(saved.map((k) => [k.term, k.id]));
+  const idByTerm = new Map(
+    (saved as { id: string; term: string }[]).map((k) => [k.term, k.id]),
+  );
 
   const snaps = keep
     .filter((r) => idByTerm.has(r.term))

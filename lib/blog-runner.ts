@@ -18,7 +18,13 @@ import {
   kstParts,
 } from "@/lib/blog-schedule";
 import { SEASONAL_WEEKDAYS, takeTrend } from "@/lib/blog-trends";
-import { DIFFICULTY_BY_WEEKDAY } from "@/lib/keyword-filter";
+import {
+  CORE_TERMS,
+  DIFFICULTY_FOR_TRACK,
+  MIN_MAIN_VOLUME,
+  TRACK_BY_WEEKDAY,
+  isOurs,
+} from "@/lib/keyword-filter";
 import { isDomestic, verifySources, type Source } from "@/lib/blog-sources";
 import { format, type FormatKey, type PillarKey, type SegmentKey } from "@/lib/blog-spec";
 import { createAdminClient } from "@/lib/supabase/server";
@@ -261,12 +267,78 @@ export async function ensureJobForToday(now = new Date()): Promise<JobRow | null
     }
   }
 
-  /** 그날 요일이 원하는 난이도. 시의성 슬롯이 비면 이 기준으로 니치 풀을 뒤진다 */
-  const want = DIFFICULTY_BY_WEEKDAY[weekday];
+  /**
+   * 그날의 **트랙**. (2026-08-19 — 난이도 단독 판단에서 갈아탐)
+   *
+   * 난이도만 보면 "이길 수 있나" 만 묻고 "왜 이 검색어를 먹어야 하나" 는
+   * 묻지 않는다. 그래서 08-19 실측에서 평일 픽업 1순위가 **`포장지제작`
+   * (월 540)** 이었다 — 이길 수는 있지만 우리 사업이 아니다.
+   * 트랙은 사장님의 SEO 4원칙을 그대로 옮긴 것이다(`lib/keyword-filter.ts`).
+   */
+  const track = TRACK_BY_WEEKDAY[weekday];
+  const wants = DIFFICULTY_FOR_TRACK[track];
+
+  /**
+   * 코어 트랙 — **반복 배포**. 여기서만 `taken` 을 무시한다.
+   *
+   * 사장님: *"우리 서비스와 직결되는 키워드들 중 중요한 것들은 격주 단위나
+   * 많으면 주 단위로도 정기적으로 배포 루틴을 반복해야 하는 거야."*
+   *
+   * 나머지 트랙은 한 번 쓴 검색어를 다시 쓰지 않는다(카니발라이제이션).
+   * 코어만 예외인 이유는, 그 자리는 한 편으로 못 먹고 문서 뭉치로 먹기
+   * 때문이다. 대신 **최소 간격**을 지킨다 — 같은 검색어가 연달아 나가면
+   * 우리 글끼리 순위를 나눠 갖는다.
+   */
+  if (!next && track === "core") {
+    const { data: history } = await supabase
+      .from("blog_job")
+      .select("keyword_term, scheduled_for")
+      .in("keyword_term", CORE_TERMS.map((c) => c.term))
+      .order("scheduled_for", { ascending: false });
+
+    const lastUsed = new Map<string, string>();
+    for (const h of history ?? []) {
+      if (h.keyword_term && !lastUsed.has(h.keyword_term)) {
+        lastUsed.set(h.keyword_term, h.scheduled_for as string);
+      }
+    }
+
+    /** 간격을 채운 것 중 **가장 오래 안 쓴** 것부터. 한 번도 안 쓴 게 먼저다 */
+    const ready = CORE_TERMS.filter((c) => {
+      const last = lastUsed.get(c.term);
+      if (!last) return true;
+      const gap = Math.floor(
+        (new Date(`${day}T00:00:00+09:00`).getTime() -
+          new Date(`${last}T00:00:00+09:00`).getTime()) /
+          86_400_000,
+      );
+      return gap >= c.days;
+    }).sort((a, b) => (lastUsed.get(a.term) ?? "").localeCompare(lastUsed.get(b.term) ?? ""));
+
+    const pickCore = ready[0];
+    if (pickCore) {
+      const { data: meta } = await supabase
+        .from("blog_keyword")
+        .select("pillar, total_volume")
+        .eq("term", pickCore.term)
+        .maybeSingle();
+      next = {
+        pillar: meta?.pillar && meta.pillar !== "unassigned" ? meta.pillar : "shortform",
+        // 각도는 회차마다 달라야 한다 — 같은 검색어를 같은 각도로 또 쓰면 중복 문서다
+        angle: `${pickCore.term} — 이번 회차는 앞선 편과 다른 각도로(사례·비교·체크리스트 순환)`,
+        segment: null,
+        term: pickCore.term,
+        difficulty: "코어",
+      };
+    }
+  }
 
   if (!next) {
     const fresh = TOPIC_QUEUE.filter((t) => !taken.has(t.term));
-    next = fresh.find((t) => t.difficulty === want) ?? fresh[0] ?? null;
+    next =
+      fresh.find((t) => t.difficulty && wants.includes(t.difficulty as never)) ??
+      fresh[0] ??
+      null;
   }
 
   /**
@@ -289,17 +361,44 @@ export async function ensureJobForToday(now = new Date()): Promise<JobRow | null
      *
      * 검색량 하한 300 — 사장님 기준(*"그 이하는 정말 별 의미가 없어서"*).
      */
-    const { data: pool } = await supabase
+    let query = supabase
       .from("blog_keyword")
       .select("term, pillar, total_volume, niche_score, buyer_intent")
       .eq("status", "idle")
-      .eq("difficulty", want)
-      .gte("total_volume", 300)
+      .in("difficulty", wants)
+      /**
+       * 하한을 300 → 500 으로 올렸다. (2026-08-19 사장님 기준)
+       *
+       * *"500 내외 혹은 그 미만은 그냥 엄청나게 작은 키워드라 컨텐츠 메인으로
+       * 걸 건 사실 원래 아닌데."* 실측으로도 1,998개 중 1,358개(68%)가
+       * 100~499 였고, 그게 매일 뽑히고 있었다.
+       */
+      .gte("total_volume", MIN_MAIN_VOLUME)
+      /**
+       * 정렬은 **구매의도 먼저, 그다음 검색량**이다. (2026-08-19)
+       *
+       * 검색량만으로 줄 세우면 `카페24쇼핑몰`(2,970) 이 `광고대행사`(2,960)
+       * 를 이긴다. 열 건 더 검색되는 대신 우리에게 올 사람이 아니다.
+       * 예전에는 `niche_score` 를 2차 키로 썼는데 그 값이 1,998개 중 1,460개가
+       * **비어 있어서**(08-19 실측) 사실상 정렬이 없었다. 지금은 전량 채웠지만,
+       * 1차 키는 돈이 오가는 신호여야 한다.
+       */
       .order("buyer_intent", { ascending: false })
-      .order("niche_score", { ascending: false })
-      .limit(120);
+      .order("total_volume", { ascending: false });
 
-    const pick = (pool ?? []).find((k) => !taken.has(k.term));
+    /** 전환 트랙은 검색량이 아니라 **구매의도**로 고른다 */
+    if (track === "convert") query = query.eq("buyer_intent", true);
+
+    const { data: pool } = await query.limit(200);
+
+    /**
+     * 관련성을 **뽑는 순간에 한 번 더** 본다. (2026-08-19)
+     *
+     * DB 의 status 로 이미 걸러 두지만, 재분류가 아직 안 돌았거나 수집이
+     * 새 규칙보다 앞서 있으면 옛 쓰레기가 남아 있다. 편성은 마지막 관문이라
+     * 여기서 한 번 더 막는 게 싸다 — 한 편이 잘못 나가면 되돌릴 수 없다.
+     */
+    const pick = (pool ?? []).find((k) => !taken.has(k.term) && isOurs(k.term));
     if (pick) {
       /**
        * 업종을 검색어에서 짐작한다.
@@ -325,7 +424,7 @@ export async function ensureJobForToday(now = new Date()): Promise<JobRow | null
         angle: `${pick.term} — 이 검색어를 치는 결정권자가 지금 무엇을 판단하려는지에서 출발한다`,
         segment: guessed,
         term: pick.term,
-        difficulty: want,
+        difficulty: track,
       };
     }
   }
