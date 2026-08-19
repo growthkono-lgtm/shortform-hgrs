@@ -40,6 +40,7 @@ const BRAND = {
   krafton: "크래프톤",
   fitflex: "핏플렉스",
   sinseonhaeng: "신선행",
+  lubdi: "럽디 리데이트",
 } as const;
 
 const ITEMS: EvidenceItem[] = [
@@ -75,12 +76,14 @@ const ITEMS: EvidenceItem[] = [
     ],
   },
   {
-    srcFile: "스크린샷 2026-08-19 오후 11.10.15.png",
-    outFile: "real-academy-response-rate.png",
-    brand: BRAND.realAcademy,
+    srcFile: "럽디 리데이트.png",
+    outFile: "lubdi-redate-response-rate.png",
+    // 2026-08-19 사장님 정정 — 리얼아카데미가 아니라 **럽디 리데이트** 자료이고,
+    // 소개서 29번 장표(유튜브 인물 브랜딩 → 고객 DB)에 붙는다
+    brand: BRAND.lubdi,
     kind: "그로스",
     caption:
-      "리얼아카데미 R진단지(고객 미응답률) 개선 추이. 9월 56%에서 6월4주 10%까지 미응답률이 낮아지는 그래프.",
+      "럽디 리데이트 R진단지(고객 미응답률) 개선 추이. 9월 56%에서 6월4주 10%까지 미응답률이 낮아졌습니다.",
   },
   {
     srcFile: "신선행(기타) 퍼포먼스마케팅실적.png",

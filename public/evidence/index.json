@@ -27,10 +27,10 @@
     "masked": true
   },
   {
-    "file": "real-academy-response-rate.png",
-    "brand": "리얼아카데미",
+    "file": "lubdi-redate-response-rate.png",
+    "brand": "럽디 리데이트",
     "kind": "그로스",
-    "caption": "리얼아카데미 R진단지(고객 미응답률) 개선 추이. 9월 56%에서 6월4주 10%까지 미응답률이 낮아지는 그래프.",
+    "caption": "럽디 리데이트 R진단지(고객 미응답률) 개선 추이. 9월 56%에서 6월4주 10%까지 미응답률이 낮아졌습니다.",
     "width": 1600,
     "height": 790,
     "masked": false

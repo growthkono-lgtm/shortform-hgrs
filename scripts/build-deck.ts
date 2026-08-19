@@ -21,12 +21,7 @@ import { PLANS, POLICY, COMPANY, SERVICE, formatKRW,
   MODEL_OPTION,
 } from "@/lib/constants";
 import { SEEDING_STAGES, SHORTS_STAGES } from "@/lib/stages";
-import {
-  CLIPS_BY_BRAND,
-  WALL_CLIPS,
-  clipPoster,
-  type BrandClips,
-} from "@/lib/clips";
+import { ALL_BRAND_CLIPS, CLIPS_BY_BRAND, clipPoster } from "@/lib/clips";
 /**
  * 소개서의 SNS·종합 파트는 **랜딩(/sns-brand)과 같은 데이터를 읽는다.**
  * 예전엔 여기서 문안을 새로 지어 썼는데, 사이트와 내용이 갈라져 두 번 고쳐야 했다.
@@ -474,7 +469,15 @@ CASES.forEach((c) => {
     ${(() => {
       /* 사례 슬라이드 왼쪽이 통계 두 칸 아래로 비어 있었다.
          그 자리에 이 브랜드의 실적 증빙을 세운다 (2026-08-19 사장님 지시) */
-      const ev = evidenceOf(c.key).slice(0, 2);
+      /**
+       * ⚠️ **전부 넣는다.** (2026-08-19 사장님 지적)
+       *
+       * 앞 판은 `.slice(0, 2)` 로 두 장만 골랐다. 그런데 내가 고른 두 장이
+       * 하필 정적인 표였고 *"정작 지표가 개선되는 건들은 다 뺐네. 월별로
+       * 지표 나와 있는 것들도 있잖아"* 는 지적을 받았다. 무엇이 더 중요한지
+       * 내가 고를 일이 아니다 — 사장님이 파일명으로 매칭해 주신 건 다 싣는다.
+       */
+      const ev = evidenceOf(c.key);
       if (!ev.length) return "";
       return `<div class="bc-ev">${ev
         .map(
@@ -498,73 +501,43 @@ CASES.forEach((c) => {
 
 
 
-pages.push(
-  slide(`
-${head("최근 주요 숏폼 포트폴리오", "브랜드 광고 계정에 바로 태운 구매 전환형 소재입니다")}
+/**
+ * 숏폼 포트폴리오 — **폴더에 있는 소재를 전부** 싣는다. (2026-08-19)
+ *
+ * 사장님: *"영상 포트폴리오로 안 채워진 것들은 마저 넣어. 폴더에서 반영
+ * 안 된 건 넣으라고 했잖아 거기 넣어."* 앞 판은 12칸 한 장이라 22편 중
+ * 10편이 어디에도 안 나왔다. **12칸씩 끊어 필요한 만큼 장을 늘린다.**
+ *
+ * 브랜드명은 사장님이 그리드 순서대로 매칭해 주신 값이다(`lib/clips.ts`).
+ */
+{
+  const perPage = 12;
+  const all = ALL_BRAND_CLIPS;
+  const brandOf = (slug: string) =>
+    CLIPS_BY_BRAND.find((b) => b.slugs.includes(slug))?.brand ?? "";
+
+  for (let i = 0; i < all.length; i += perPage) {
+    const chunk = all.slice(i, i + perPage);
+    const page = Math.floor(i / perPage) + 1;
+    const total = Math.ceil(all.length / perPage);
+
+    pages.push(
+      slide(`
+${head(
+  total > 1 ? `숏폼 포트폴리오 (${page}/${total})` : "숏폼 포트폴리오",
+  "브랜드 광고 계정에 바로 태운 구매 전환형 소재입니다 — 누르면 영상이 재생됩니다",
+)}
 <div class="shorts">
-${WALL_CLIPS.slice(0, 12)
+${chunk
   .map(
-    (c) =>
-      `<a class="short" href="${playUrl(c.slug)}"><img src="${asset(clipPoster(c.slug))}" alt=""><span class="play">▶</span>${
-        c.brand ? `<span class="short-b">${esc(c.brand)}</span>` : ""
-      }</a>`,
+    (slug) =>
+      `<a class="short" href="${playUrl(slug)}"><img src="${asset(clipPoster(slug))}" alt=""><span class="play">▶</span><span class="short-b">${esc(brandOf(slug))}</span></a>`,
   )
   .join("")}
 </div>`),
-);
-
-/* ── 브랜드별 포트폴리오 · 소재 + 실적 증빙 (2026-08-19 신설) ──
- *
- * 사장님 지시 둘을 한 장표에 합쳤다 —
- *  · *"폴더에 있는 영상들 소개서에 다 넣어야 돼"* → 브랜드별로 소재 전부
- *  · *"소재들과 함께 숫자 실적을 함께 증빙하는 게 목표"* → 그 옆에 실적표
- *
- * 소재가 없는 브랜드는 건너뛴다. 증빙만 있는 브랜드도 장표는 나간다 —
- * 숫자만으로도 증빙이 되기 때문이다.
- */
-/**
- * 소재가 있는 브랜드 + **증빙만 있는 브랜드**를 합친다. (2026-08-19)
- *
- * `CLIPS_BY_BRAND` 만 돌면 핏플렉스·신선행처럼 **영상은 없고 실적표만 있는
- * 브랜드가 통째로 빠진다.** 숫자만으로도 증빙이 되므로 장표는 나가야 한다.
- */
-const PORTFOLIO_BRANDS: BrandClips[] = [
-  ...CLIPS_BY_BRAND,
-  ...[...new Set(EVIDENCE.map((e) => e.brand))]
-    .filter((b) => !CLIPS_BY_BRAND.some((c) => c.brand.includes(b) || b.includes(c.brand)))
-    .map((brand) => ({ brand, slugs: [] as string[] })),
-];
-
-PORTFOLIO_BRANDS.forEach((b) => {
-  const ev = evidenceOf(b.brand);
-  if (!b.slugs.length && !ev.length) return;
-
-  pages.push(
-    slide(`
-${head(`${b.brand} 포트폴리오`, "제작한 소재와 그 소재가 만든 숫자를 함께 싣습니다")}
-<div class="bp">
-  <div class="bp-clips">
-${b.slugs
-  .map(
-    (slug: string) =>
-      `<a class="short" href="${playUrl(slug)}"><img src="${asset(clipPoster(slug))}" alt=""><span class="play">▶</span></a>`,
-  )
-  .join("")}
-  </div>
-  ${
-    ev.length
-      ? `<div class="bp-ev">${ev
-          .map(
-            (e) =>
-              `<figure><img src="${asset(`/evidence/${e.file}`)}" alt=""><figcaption>${esc(e.caption)}${e.masked ? ' <span class="ev-mask">일부 가림</span>' : ""}</figcaption></figure>`,
-          )
-          .join("")}</div>`
-      : `<p class="bp-none">이 브랜드의 수치 증빙은 준비 중입니다.</p>`
+    );
   }
-</div>
-<p class="foot-note">소재를 누르면 브라우저에서 실제 영상이 재생됩니다 · ${esc(POLICY.noGuarantee)}</p>`),
-  );
-});
+}
 
 // 10 제작 조직 (현장)
 
@@ -750,6 +723,24 @@ FEATURES.forEach((f) => {
         .join("")}
     </ul>
     ${f.body.map((t) => `<p class="bc-p">${esc(plain(t))}</p>`).join("")}
+    ${(() => {
+      /**
+       * SNS 사례에도 실적 증빙을 붙인다. (2026-08-19)
+       *
+       * 사장님이 `럽디 리데이트.png` 를 넣으며 **이 장표**라고 지목하셨다.
+       * `meta` 첫 낱말이 브랜드명이라(예: "럽디 (연애 상담 서비스…") 그걸로
+       * 증빙을 찾는다.
+       */
+      const brandName = f.meta.split(/[\s(]/)[0];
+      const ev = EVIDENCE.filter((e) => e.brand.startsWith(brandName));
+      if (!ev.length) return "";
+      return `<div class="bc-ev">${ev
+        .map(
+          (e) =>
+            `<figure><img src="${asset(`/evidence/${e.file}`)}" alt=""><figcaption>${esc(e.caption)}${e.masked ? ' <span class="ev-mask">일부 가림</span>' : ""}</figcaption></figure>`,
+        )
+        .join("")}</div>`;
+    })()}
   </div>
   <div class="bc-media">
     <img src="${asset(DECK_HERO[f.id] ?? f.hero.src)}" alt="">
