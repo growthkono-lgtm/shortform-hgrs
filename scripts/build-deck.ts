@@ -495,7 +495,7 @@ const moevTable = () => `<div class="bc-ev-wide">
  * 증빙 한 장을 그리는 조각. 케이스 슬라이드와 증빙 슬라이드가 같이 쓴다.
  */
 const evFigure = (e: Evidence) =>
-  `<figure class="${e.width / e.height < 3 ? "ev-tall" : ""}"><img src="${asset(`/evidence/${e.file}`)}" alt=""><figcaption>${esc(e.caption)}${e.masked ? ' <span class="ev-mask">일부 가림</span>' : ""}</figcaption></figure>`;
+  `<figure><img src="${asset(`/evidence/${e.file}`)}" alt=""><figcaption>${esc(e.caption)}${e.masked ? ' <span class="ev-mask">일부 가림</span>' : ""}</figcaption></figure>`;
 
 /**
  * 케이스 슬라이드에 실을 증빙을 고른다.
@@ -515,7 +515,7 @@ const PERF_FIRST = (a: Evidence, b: Evidence) =>
   (b.kind === "퍼포먼스" ? 1 : 0) - (a.kind === "퍼포먼스" ? 1 : 0);
 
 /** 케이스 슬라이드 왼쪽 열에 안 잘리고 들어가는 최대 장수 */
-const EV_ON_CASE = 2;
+const EV_ON_CASE = 1;
 
 /** 케이스 슬라이드에 못 실어 뒤로 넘긴 증빙 */
 const overflowEvidence: Evidence[] = [];
@@ -553,7 +553,7 @@ ${/* 표는 **가로 전체 폭**이라야 숫자가 읽힌다. 왼쪽 열(절�
   c.key === "모에브"
     ? moevTable()
     : onCase.length && onCase[0].width / onCase[0].height >= 5
-      ? `<div class="bc-ev-wide ev-n${onCase.length}">${[...onCase].reverse().map(evFigure).join("")}</div>`
+      ? `<div class="bc-ev-wide ev-n${onCase.length}">${onCase.map(evFigure).join("")}</div>`
       : ""
 }
 <p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
@@ -1305,7 +1305,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .bp-ev img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block}
 .bp-ev figcaption{font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
 .bp-none{font-size:9pt;color:var(--muted)}
-.brandcase{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:8mm;flex:0 0 auto;min-height:0;overflow:hidden}
+.brandcase{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:8mm;flex:1 1 auto;min-height:0;overflow:hidden}
 .bc-body{display:flex;flex-direction:column;min-width:0}
 .bc-p{font-size:9.5pt;line-height:1.9;color:var(--ink-soft, #171717);margin-bottom:4mm}
 .bc-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3mm;list-style:none;margin-bottom:7mm}
@@ -1315,7 +1315,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .bc-stats strong{display:block;font-size:8.5pt;line-height:1.45}
 .bc-stats span{display:block;font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
 .bc-media{display:flex;flex-direction:column;gap:4mm;min-width:0;min-height:0}
-.bc-media img{width:100%;flex:1 1 0;min-height:0;max-height:44mm;object-fit:cover;border:1px solid var(--line);border-radius:3mm}
+.bc-media img{width:100%;flex:1 1 0;min-height:0;object-fit:cover;border:1px solid var(--line);border-radius:3mm}
 
 /* 다시 조판한 데이터 표 — 저해상도 스크린샷 대신 벡터로 인쇄된다 (2026-08-20) */
 .dtable{width:100%;border-collapse:collapse;font-size:7.5pt;font-variant-numeric:tabular-nums}
@@ -1330,8 +1330,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
    왼쪽 열 안에 두면 가로로 긴 표가 40px 높이로 눌려 숫자가 안 읽힌다 */
 .bc-ev-wide{flex:0 0 auto;margin-top:5mm;display:flex;flex-direction:column;gap:4mm}
 .bc-ev-wide figure{margin:0}
-.bc-ev-wide img{width:100%;object-fit:contain;object-position:left top;max-height:46mm;border:1px solid var(--line);border-radius:1.5mm;display:block}
-.bc-ev-wide .ev-tall img{max-height:62mm}
+.bc-ev-wide img{width:auto;max-width:100%;max-height:34mm;border:1px solid var(--line);border-radius:1.5mm;display:block;margin:0 auto}
 .bc-ev-wide figcaption{font-size:7.5pt;color:var(--muted);margin-top:2mm;line-height:1.55}
 
 /* 실적 증빙 전용 장표 */
