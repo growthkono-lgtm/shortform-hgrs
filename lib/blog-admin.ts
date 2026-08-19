@@ -202,10 +202,18 @@ export async function keywordSummary() {
         .select("id", { count: "exact", head: true })
         .neq("pillar", "unassigned")
         .neq("status", "dropped"),
+      /**
+       * ⚠️ **`blog_keyword.status='done'` 을 세면 영원히 0 이다.** (08-19 수정)
+       *
+       * 자동 발행 파이프라인이 `blog_post.keyword_id` 를 채우지 않아
+       * `lib/blog-publish.ts` 의 `status='done'` 전환이 한 번도 안 돌았다.
+       * 그래서 6편을 발행했는데 화면에 "발행 완료 0" 이 찍혀 있었다.
+       * 발행 편수는 **발행된 회차**를 세는 것이 맞다 — 키워드 상태는 부산물이다.
+       */
       supabase
-        .from("blog_keyword")
+        .from("blog_post")
         .select("id", { count: "exact", head: true })
-        .eq("status", "done"),
+        .eq("status", "published"),
     ]);
 
   const { data: latest } = await supabase
@@ -224,7 +232,15 @@ export async function keywordSummary() {
    *
    * 세는 일은 DB 에 시킨다. 행을 안 가져오므로 몇 만 개가 되어도 정확하다.
    */
-  const DIFFICULTIES = ["니치", "빅"] as const;
+  /**
+   * ⚠️ **["니치","빅"] 두 개만 세고 있었다.** (2026-08-19 저녁 수정)
+   *
+   * 화면 상단에 "난이도 — 니치 189 · 빅 19" 만 찍혀서, 실제로 있는
+   * **중간 45개·마이크로 1,069개·일반어 6개가 통째로 안 보였다.**
+   * 08-19 오전에 난이도 구간을 다섯으로 늘렸는데 이 집계는 안 따라왔다.
+   * 구간을 늘릴 때 세는 곳까지 같이 봐야 한다.
+   */
+  const DIFFICULTIES = ["마이크로", "니치", "중간", "빅", "일반어"] as const;
   const counted = await Promise.all(
     DIFFICULTIES.map(async (d) => {
       const { count } = await supabase

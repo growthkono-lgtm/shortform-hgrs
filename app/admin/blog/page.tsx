@@ -345,7 +345,9 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
         </div>
 
         <div className="mt-4 overflow-x-auto rounded-xl border border-line">
-          <table className="w-full min-w-[1080px] text-sm">
+          {/* 열이 13 → 17개로 늘었다(유입·전환·타겟). 1,080px 로는 글자가 세로로
+              깨져 표를 읽을 수가 없다 — 화면에서 직접 보고 알았다 (08-19) */}
+          <table className="w-full min-w-[1560px] text-sm">
             <thead className="bg-paper-alt text-left text-xs text-muted">
               <tr>
                 <th className="px-3 py-2.5 font-medium">No.</th>
