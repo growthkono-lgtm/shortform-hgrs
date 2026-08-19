@@ -454,7 +454,74 @@ ${FLOW.map(
 
 
 
+/**
+ * 모에브 구매·ROAS 표. (2026-08-20 사장님 지시)
+ *
+ * 프레이머 포트폴리오 원문에 붙어 있던 표인데, 원본이 저해상도 스크린샷이라
+ * 소개서에 그대로 넣으면 글자가 뭉갠다. 사장님: *"화질 개선해서 올려야 하고.
+ * 다시 만들던가 동일하게."* → **같은 값으로 HTML 표를 다시 그렸다.** 인쇄가
+ * 벡터로 나가므로 확대해도 깨지지 않는다. 숫자는 원문 그대로다.
+ *
+ * 원문 표는 중간 행이 잘려 있었고 마지막 줄만 강조(합계)되어 있었다. 보이지
+ * 않는 행을 지어내지 않았다 — 캡션에 생략 사실을 적는다.
+ */
+const MOEV_ROAS = {
+  head: ["Npay 구매금액", "일반 구매금액", "총 구매건수", "총 구매금액", "ROAS"],
+  rows: [
+    ["₩4,870,439", "₩3,246,556", "205", "₩8,116,995", "140%"],
+    ["₩2,279,421", "₩1,359,791", "91", "₩3,639,212", "154%"],
+    ["₩2,361,129", "₩1,679,416", "101", "₩4,040,545", "134%"],
+    ["₩7,033,630", "₩3,905,706", "266", "₩10,939,336", "206%"],
+  ],
+  total: ["₩38,912,432", "₩22,177,453", "1,493", "₩61,089,885", "286%"],
+  caption:
+    "모에브 구매금액·구매건수·ROAS 실적. 프레이머 포트폴리오 원문 표를 같은 값으로 다시 조판했습니다(중간 행 일부 생략, 마지막 줄은 합계).",
+};
+
+const moevTable = () => `<div class="bc-ev-wide">
+  <figure>
+    <table class="dtable">
+      <thead><tr>${MOEV_ROAS.head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead>
+      <tbody>
+        ${MOEV_ROAS.rows.map((r) => `<tr>${r.map((v) => `<td>${esc(v)}</td>`).join("")}</tr>`).join("")}
+        <tr class="dtable-sum">${MOEV_ROAS.total.map((v) => `<td>${esc(v)}</td>`).join("")}</tr>
+      </tbody>
+    </table>
+    <figcaption>${esc(MOEV_ROAS.caption)}</figcaption>
+  </figure>
+</div>`;
+
+/**
+ * 증빙 한 장을 그리는 조각. 케이스 슬라이드와 증빙 슬라이드가 같이 쓴다.
+ */
+const evFigure = (e: Evidence) =>
+  `<figure><img src="${asset(`/evidence/${e.file}`)}" alt=""><figcaption>${esc(e.caption)}${e.masked ? ' <span class="ev-mask">일부 가림</span>' : ""}</figcaption></figure>`;
+
+/**
+ * 케이스 슬라이드에 실을 증빙을 고른다.
+ *
+ * ⚠️ **월별 실적표를 맨 앞에 세운다.** 앞 판은 매칭된 순서대로 전부 넣었는데,
+ * `.bc-ev` 가 `overflow:hidden` 이라 화면에 들어가는 만큼만 보이고 **뒤로 밀린
+ * 장은 통째로 사라졌다.** 하필 사라진 게 월별 퍼포먼스 표였다 — 사장님이
+ * *"정작 중요한 지표 좋아지는 실적이 안 들어갔다"* 고 한 것이 이것이다.
+ *
+ * 그래서 지표가 개선되는 표(kind: 퍼포먼스)를 먼저 세우고, 케이스 슬라이드에는
+ * 잘리지 않을 만큼만 싣는다. 나머지는 버리지 않고 뒤의 실적 증빙 슬라이드로 간다.
+ */
+const PERF_FIRST = (a: Evidence, b: Evidence) =>
+  (b.kind === "퍼포먼스" ? 1 : 0) - (a.kind === "퍼포먼스" ? 1 : 0);
+
+/** 케이스 슬라이드 왼쪽 열에 안 잘리고 들어가는 최대 장수 */
+const EV_ON_CASE = 1;
+
+/** 케이스 슬라이드에 못 실어 뒤로 넘긴 증빙 */
+const overflowEvidence: Evidence[] = [];
+
 CASES.forEach((c) => {
+  const ev = evidenceOf(c.key).sort(PERF_FIRST);
+  const onCase = ev.slice(0, EV_ON_CASE);
+  overflowEvidence.push(...ev.slice(EV_ON_CASE));
+
   pages.push(
     slide(`
 <div class="bc-head">
@@ -467,34 +534,49 @@ CASES.forEach((c) => {
       ${c.stats.map(([v, l]) => `<li><strong class="big">${v}</strong><span>${esc(l)}</span></li>`).join("")}
     </ul>
     <p class="bc-p">${esc(c.role)} — 소재 기획부터 캠페인 운영까지 한 팀이 맡아 진행했습니다.</p>
-    ${(() => {
-      /* 사례 슬라이드 왼쪽이 통계 두 칸 아래로 비어 있었다.
-         그 자리에 이 브랜드의 실적 증빙을 세운다 (2026-08-19 사장님 지시) */
-      /**
-       * ⚠️ **전부 넣는다.** (2026-08-19 사장님 지적)
-       *
-       * 앞 판은 `.slice(0, 2)` 로 두 장만 골랐다. 그런데 내가 고른 두 장이
-       * 하필 정적인 표였고 *"정작 지표가 개선되는 건들은 다 뺐네. 월별로
-       * 지표 나와 있는 것들도 있잖아"* 는 지적을 받았다. 무엇이 더 중요한지
-       * 내가 고를 일이 아니다 — 사장님이 파일명으로 매칭해 주신 건 다 싣는다.
-       */
-      const ev = evidenceOf(c.key);
-      if (!ev.length) return "";
-      return `<div class="bc-ev">${ev
-        .map(
-          (e) =>
-            `<figure><img src="${asset(`/evidence/${e.file}`)}" alt=""><figcaption>${esc(e.caption)}${e.masked ? ' <span class="ev-mask">일부 가림</span>' : ""}</figcaption></figure>`,
-        )
-        .join("")}</div>`;
-    })()}
   </div>
   <div class="bc-media">
     <img src="${asset(c.img)}" alt="">
   </div>
 </div>
+${
+  /* 실적표는 **가로 전체 폭**으로 뺀다. (2026-08-20)
+     왼쪽 열(폭 절반) 안에 두었더니 원본이 가로로 긴 표라 높이가 40px 대로
+     눌려 숫자가 안 읽혔다. 표는 읽히라고 넣는 것이다. */
+  c.key === "모에브"
+    ? moevTable()
+    : onCase.length
+      ? `<div class="bc-ev-wide">${onCase.map(evFigure).join("")}</div>`
+      : ""
+}
 <p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
   );
 });
+
+// 02-5-2 실적 증빙 — 케이스 슬라이드에서 넘친 자료를 버리지 않고 모아 싣는다
+
+
+
+
+
+/**
+ * 사장님이 파일명으로 직접 매칭해 주신 자료다. 케이스 슬라이드 공간이 모자라
+ * 뒤로 밀린 것뿐이므로 **한 장도 빼지 않는다.** 한 장에 두 개씩 담는다 —
+ * 표 이미지는 가로로 길어서 세 개를 넣으면 다시 아래가 잘린다.
+ */
+for (let from = 0; from < overflowEvidence.length; from += 2) {
+  const rows = overflowEvidence.slice(from, from + 2);
+  const page = from / 2;
+  const total = Math.ceil(overflowEvidence.length / 2);
+  pages.push(
+    slide(`
+${head(
+  total > 1 ? `실적 증빙 (${page + 1}/${total})` : "실적 증빙",
+  page === 0 ? "앞 사례의 실제 운영 데이터입니다" : "이어서 보여드립니다",
+)}
+<div class="evpage">${rows.map(evFigure).join("")}</div>`),
+  );
+}
 
 // 02-6-2 숏폼 포트폴리오
 
@@ -1238,7 +1320,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .bp-ev img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block}
 .bp-ev figcaption{font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
 .bp-none{font-size:9pt;color:var(--muted)}
-.brandcase{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:8mm;flex:1;min-height:0;overflow:hidden}
+.brandcase{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:8mm;flex:1 1 auto;min-height:0;overflow:hidden}
 .bc-body{display:flex;flex-direction:column;min-width:0}
 .bc-p{font-size:9.5pt;line-height:1.9;color:var(--ink-soft, #171717);margin-bottom:4mm}
 .bc-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3mm;list-style:none;margin-bottom:7mm}
@@ -1249,6 +1331,28 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .bc-stats span{display:block;font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
 .bc-media{display:flex;flex-direction:column;gap:4mm;min-width:0;min-height:0}
 .bc-media img{width:100%;flex:1 1 0;min-height:0;object-fit:cover;border:1px solid var(--line);border-radius:3mm}
+
+/* 다시 조판한 데이터 표 — 저해상도 스크린샷 대신 벡터로 인쇄된다 (2026-08-20) */
+.dtable{width:100%;border-collapse:collapse;font-size:7.5pt;font-variant-numeric:tabular-nums}
+.dtable th{background:#1f3864;color:#fff;font-weight:700;padding:1.8mm 1.5mm;text-align:right;white-space:nowrap}
+.dtable th:first-child{text-align:left}
+.dtable td{padding:1.6mm 1.5mm;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+.dtable tbody tr:nth-child(even){background:var(--alt)}
+.dtable .dtable-sum{background:#fff7d6;font-weight:700}
+.dtable .dtable-sum td{border-bottom:none}
+
+/* 사례 슬라이드의 실적표 — 가로 전체 폭 (2026-08-20)
+   왼쪽 열 안에 두면 가로로 긴 표가 40px 높이로 눌려 숫자가 안 읽힌다 */
+.bc-ev-wide{flex:0 0 auto;margin-top:5mm}
+.bc-ev-wide figure{margin:0}
+.bc-ev-wide img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block}
+.bc-ev-wide figcaption{font-size:7.5pt;color:var(--muted);margin-top:2mm;line-height:1.55}
+
+/* 실적 증빙 전용 장표 */
+.evpage{display:flex;flex-direction:column;gap:7mm;flex:1;min-height:0;overflow:hidden;justify-content:center}
+.evpage figure{margin:0}
+.evpage img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block}
+.evpage figcaption{font-size:8pt;color:var(--muted);margin-top:2mm;line-height:1.6}
 
 /* IMC 프로젝트 기록 — 프레이머 포트폴리오 (2026-08-20) */
 .imc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5mm;flex:1;min-height:0;overflow:hidden;align-content:start}
