@@ -11,6 +11,7 @@ import { Portfolio } from "@/components/sns/s-portfolio";
 import { Cases } from "@/components/sns/s-cases";
 import { Actions } from "@/components/sns/s-actions";
 import { PortfolioHero } from "@/components/sns/s-portfolio-hero";
+import { FramerCases } from "@/components/sns/s-framer-cases";
 
 /**
  * /portfolio — 성과 사례를 한 페이지로 모은다.
@@ -61,6 +62,7 @@ export default function PortfolioPage() {
         <Clients />
         <Portfolio />
         <Cases />
+        <FramerCases />
         <Actions />
       </main>
       <SiteFooter />
