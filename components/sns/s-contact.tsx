@@ -28,7 +28,7 @@ const INITIAL: InquiryState = { ok: false, error: null };
 const SOURCE = JSON.stringify({ source: "sns-brand", page: "/sns-brand" });
 
 export function Contact() {
-  const [state, formAction] = useActionState(submitInquiry, INITIAL);
+  const [state, formAction, isPending] = useActionState(submitInquiry, INITIAL);
   /** 이 페이지로 들어온 사람은 채널 운영을 보러 온 것이다. 그걸 기본으로 둔다 */
   const [interest, setInterest] = useState<string>("sns_turnkey");
   const [volume, setVolume] = useState<string>("unknown");
@@ -218,9 +218,10 @@ export function Contact() {
 
               <button
                 type="submit"
-                className="w-full rounded-full bg-ink px-6 py-4 text-sm font-bold text-paper transition-colors duration-200 hover:bg-ink-soft"
+            disabled={isPending}
+                className="w-full rounded-full bg-ink px-6 py-4 text-sm font-bold text-paper transition-colors duration-200 hover:bg-ink-soft disabled:cursor-not-allowed disabled:opacity-60"
               >
-                프로젝트 문의하기
+                {isPending ? "보내는 중…" : "프로젝트 문의하기"}
               </button>
             </form>
           </>

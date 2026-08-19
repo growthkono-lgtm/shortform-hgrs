@@ -108,7 +108,7 @@ function PlanCards({
  * 진단을 마친 방문자는 답변·추천 구성이 hidden 으로 함께 실린다.
  */
 export function Apply() {
-  const [state, formAction] = useActionState(submitInquiry, INITIAL);
+  const [state, formAction, isPending] = useActionState(submitInquiry, INITIAL);
   const { answers, result } = useDiagnosis();
 
   /**
@@ -341,9 +341,10 @@ export function Apply() {
 
           <button
             type="submit"
-            className="w-full rounded-full bg-ink px-6 py-3.5 text-sm font-bold text-paper transition-colors duration-200 hover:bg-ink-soft"
+            disabled={isPending}
+            className="w-full rounded-full bg-ink px-6 py-3.5 text-sm font-bold text-paper transition-colors duration-200 hover:bg-ink-soft disabled:cursor-not-allowed disabled:opacity-60"
           >
-            플랜 안내 받기
+            {isPending ? "보내는 중…" : "플랜 안내 받기"}
           </button>
         </form>
 

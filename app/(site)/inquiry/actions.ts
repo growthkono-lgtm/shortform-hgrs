@@ -85,6 +85,34 @@ export async function submitInquiry(
 
   const admin = createAdminClient();
 
+  /**
+   * **중복 접수 차단.** (2026-08-19 사고 수습)
+   *
+   * 08-19 09:57, 실제 문의 한 건이 **22초 동안 7번 접수되고 고객에게 소개서
+   * 메일이 7통 나갔다.** 화면 쪽 원인(제출 버튼이 안 잠김)은 따로 고쳤지만,
+   * 그것만으로는 부족하다 — 새로고침·뒤로가기·네트워크 재시도에서 또 난다.
+   * 보낸 메일은 되돌릴 수 없으니 **서버에서도** 막는다.
+   *
+   * 기준은 **같은 이메일 + 10분**이다. 같은 사람이 10분 안에 두 번 신청할
+   * 이유는 없고, 정말 다시 보내고 싶으면 10분 뒤에 되거나 사장님이 받는다.
+   * 회사명까지 열쇠로 쓰지 않는 이유: 이번 건도 `스크럽대디`·`스크럽 대디`
+   * 로 띄어쓰기가 달랐다. 사람이 매번 똑같이 칠 거라고 가정하면 안 된다.
+   *
+   * ⚠️ 화면에는 **성공으로 돌려준다.** 여기서 "이미 신청하셨습니다" 를
+   * 띄우면 고객은 자기가 뭘 잘못한 줄 안다. 실제로 접수는 되어 있다.
+   */
+  const TEN_MIN_AGO = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+  const { data: recent } = await admin
+    .from("inquiries")
+    .select("id")
+    .eq("email", email)
+    .gte("created_at", TEN_MIN_AGO)
+    .limit(1);
+
+  if (recent?.length) {
+    return { ok: true, error: null };
+  }
+
   const { data: inserted, error } = await admin
     .from("inquiries")
     .insert({
