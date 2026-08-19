@@ -509,7 +509,7 @@ const evFigure = (e: Evidence) =>
  * 잘리지 않을 만큼만 싣는다. 나머지는 버리지 않고 뒤의 실적 증빙 슬라이드로 간다.
  */
 /** 가로로 아주 긴 표인가 — 전체 폭에 둬야 숫자가 읽힌다 */
-const isWide = (e: Evidence) => e.width / e.height >= 5;
+const isWide = (e?: Evidence) => !!e && (e.width ?? 0) / (e.height ?? 1) >= 5;
 
 const PERF_FIRST = (a: Evidence, b: Evidence) =>
   (b.kind === "퍼포먼스" ? 1 : 0) - (a.kind === "퍼포먼스" ? 1 : 0);
@@ -539,7 +539,7 @@ CASES.forEach((c) => {
     <p class="bc-p">${esc(c.role)} — 소재 기획부터 캠페인 운영까지 한 팀이 맡아 진행했습니다.</p>
     ${/* 세로가 있는 표(편성표 등)는 왼쪽 열 아래 빈 자리가 더 크게 보인다 —
          전체 폭에 두면 높이 제한에 걸려 오히려 쪼그라든다 */
-      onCase.length && onCase[0].width / onCase[0].height < 5
+      onCase.length && !isWide(onCase[0])
         ? `<div class="bc-ev">${onCase.map(evFigure).join("")}</div>`
         : ""
     }
@@ -552,7 +552,7 @@ ${/* 표는 **가로 전체 폭**이라야 숫자가 읽힌다. 왼쪽 열(절�
      글자가 5pt 아래로 내려가 아무도 못 읽는다 — 두 번 그렇게 냈다. */
   c.key === "모에브"
     ? moevTable()
-    : onCase.length && onCase[0].width / onCase[0].height >= 5
+    : onCase.length && isWide(onCase[0])
       ? `<div class="bc-ev-wide ev-n${onCase.length}">${onCase.map(evFigure).join("")}</div>`
       : ""
 }
