@@ -512,7 +512,7 @@ const PERF_FIRST = (a: Evidence, b: Evidence) =>
   (b.kind === "퍼포먼스" ? 1 : 0) - (a.kind === "퍼포먼스" ? 1 : 0);
 
 /** 케이스 슬라이드 왼쪽 열에 안 잘리고 들어가는 최대 장수 */
-const EV_ON_CASE = 1;
+const EV_ON_CASE = 3;
 
 /** 케이스 슬라이드에 못 실어 뒤로 넘긴 증빙 */
 const overflowEvidence: Evidence[] = [];
@@ -534,49 +534,21 @@ CASES.forEach((c) => {
       ${c.stats.map(([v, l]) => `<li><strong class="big">${v}</strong><span>${esc(l)}</span></li>`).join("")}
     </ul>
     <p class="bc-p">${esc(c.role)} — 소재 기획부터 캠페인 운영까지 한 팀이 맡아 진행했습니다.</p>
+    ${/* 증빙은 왼쪽 열 아래 빈 자리에 넣는다. 서로 덮지 않게 장수만큼 높이를 나눈다 */
+      c.key === "모에브"
+        ? moevTable()
+        : onCase.length
+          ? `<div class="bc-ev bc-ev-${onCase.length}">${onCase.map(evFigure).join("")}</div>`
+          : ""
+    }
   </div>
   <div class="bc-media">
     <img src="${asset(c.img)}" alt="">
   </div>
 </div>
-${
-  /* 실적표는 **가로 전체 폭**으로 뺀다. (2026-08-20)
-     왼쪽 열(폭 절반) 안에 두었더니 원본이 가로로 긴 표라 높이가 40px 대로
-     눌려 숫자가 안 읽혔다. 표는 읽히라고 넣는 것이다. */
-  c.key === "모에브"
-    ? moevTable()
-    : onCase.length
-      ? `<div class="bc-ev-wide">${onCase.map(evFigure).join("")}</div>`
-      : ""
-}
 <p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
   );
 });
-
-// 02-5-2 실적 증빙 — 케이스 슬라이드에서 넘친 자료를 버리지 않고 모아 싣는다
-
-
-
-
-
-/**
- * 사장님이 파일명으로 직접 매칭해 주신 자료다. 케이스 슬라이드 공간이 모자라
- * 뒤로 밀린 것뿐이므로 **한 장도 빼지 않는다.** 한 장에 두 개씩 담는다 —
- * 표 이미지는 가로로 길어서 세 개를 넣으면 다시 아래가 잘린다.
- */
-for (let from = 0; from < overflowEvidence.length; from += 2) {
-  const rows = overflowEvidence.slice(from, from + 2);
-  const page = from / 2;
-  const total = Math.ceil(overflowEvidence.length / 2);
-  pages.push(
-    slide(`
-${head(
-  total > 1 ? `실적 증빙 (${page + 1}/${total})` : "실적 증빙",
-  page === 0 ? "앞 사례의 실제 운영 데이터입니다" : "이어서 보여드립니다",
-)}
-<div class="evpage${rows.length === 1 ? " evpage-solo" : ""}">${rows.map(evFigure).join("")}</div>`),
-  );
-}
 
 // 02-6-2 숏폼 포트폴리오
 
@@ -1307,9 +1279,12 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 
 /* 브랜드 케이스 — 한 브랜드 한 장 */
 /* 사례 슬라이드의 실적 증빙 (2026-08-19) */
-.bc-ev{display:flex;flex-direction:column;gap:3mm;margin-top:5mm;min-height:0;overflow:hidden}
+.bc-ev{display:flex;flex-direction:column;gap:3mm;margin-top:5mm;flex:1 1 auto;min-height:0;overflow:hidden;justify-content:flex-start}
 .bc-ev figure{margin:0;min-height:0}
-.bc-ev img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block}
+.bc-ev img{width:auto;max-width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block}
+.bc-ev-1 img{max-height:62mm}
+.bc-ev-2 img{max-height:30mm}
+.bc-ev-3 img{max-height:19mm}
 .bc-ev figcaption{font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
 .ev-mask{display:inline-block;background:#f0f0f0;color:#666;border-radius:1mm;padding:.3mm 1.5mm;font-size:6.5pt;font-weight:700}
 /* 브랜드별 포트폴리오 장표 */
