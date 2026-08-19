@@ -324,7 +324,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .bp-ev img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block}
 .bp-ev figcaption{font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
 .bp-none{font-size:9pt;color:var(--muted)}
-.brandcase{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:8mm;flex:1 1 auto;min-height:0;overflow:hidden}
+.brandcase{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:8mm;flex:0 0 auto;min-height:0;overflow:hidden}
 .bc-body{display:flex;flex-direction:column;min-width:0}
 .bc-p{font-size:9.5pt;line-height:1.9;color:var(--ink-soft, #171717);margin-bottom:4mm}
 .bc-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3mm;list-style:none;margin-bottom:7mm}
@@ -334,7 +334,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .bc-stats strong{display:block;font-size:8.5pt;line-height:1.45}
 .bc-stats span{display:block;font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
 .bc-media{display:flex;flex-direction:column;gap:4mm;min-width:0;min-height:0}
-.bc-media img{width:100%;flex:1 1 0;min-height:0;object-fit:cover;border:1px solid var(--line);border-radius:3mm}
+.bc-media img{width:100%;flex:1 1 0;min-height:0;max-height:44mm;object-fit:cover;border:1px solid var(--line);border-radius:3mm}
 
 /* 다시 조판한 데이터 표 — 저해상도 스크린샷 대신 벡터로 인쇄된다 (2026-08-20) */
 .dtable{width:100%;border-collapse:collapse;font-size:7.5pt;font-variant-numeric:tabular-nums}
@@ -349,7 +349,8 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
    왼쪽 열 안에 두면 가로로 긴 표가 40px 높이로 눌려 숫자가 안 읽힌다 */
 .bc-ev-wide{flex:0 0 auto;margin-top:5mm;display:flex;flex-direction:column;gap:4mm}
 .bc-ev-wide figure{margin:0}
-.bc-ev-wide img{width:auto;max-width:100%;max-height:34mm;border:1px solid var(--line);border-radius:1.5mm;display:block;margin:0 auto}
+.bc-ev-wide img{width:100%;object-fit:contain;object-position:left top;max-height:46mm;border:1px solid var(--line);border-radius:1.5mm;display:block}
+.bc-ev-wide .ev-tall img{max-height:62mm}
 .bc-ev-wide figcaption{font-size:7.5pt;color:var(--muted);margin-top:2mm;line-height:1.55}
 
 /* 실적 증빙 전용 장표 */
@@ -607,7 +608,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     <img src="http://localhost:8909/public/portfolio/clips/riiid-report.jpg" alt="">
   </div>
 </div>
-<div class="bc-ev-wide ev-n1"><figure><img src="http://localhost:8909/public/evidence/real-academy-performance.png" alt=""><figcaption>리얼아카데미 월별 퍼포먼스 마케팅 실적(지출·노출·클릭·Lead Complete·CPM·CTR·CPC·CPA). 2월·3월의 지출·노출·클릭 값은 비공개 처리. <span class="ev-mask">일부 가림</span></figcaption></figure></div>
+<div class="bc-ev-wide ev-n2"><figure class=""><img src="http://localhost:8909/public/evidence/real-academy-creative.png" alt=""><figcaption>리얼아카데미 광고 소재별(맘카페 리포트, MBTI 유형별 공부법 등) 지출·노출·클릭·Lead Complete·CPM·CTR·CPC·CPA 실적표.</figcaption></figure><figure class=""><img src="http://localhost:8909/public/evidence/real-academy-performance.png" alt=""><figcaption>리얼아카데미 월별 퍼포먼스 마케팅 실적(지출·노출·클릭·Lead Complete·CPM·CTR·CPC·CPA). 2월·3월의 지출·노출·클릭 값은 비공개 처리. <span class="ev-mask">일부 가림</span></figcaption></figure></div>
 <p class="foot-note">위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>09</span></footer>
 </section>
@@ -629,7 +630,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     <img src="http://localhost:8909/public/portfolio/clips/parkron-tpu.jpg" alt="">
   </div>
 </div>
-<div class="bc-ev-wide ev-n1"><figure><img src="http://localhost:8909/public/evidence/zeroblock-performance.png" alt=""><figcaption>제로블럭 3~6월 월별 지출·노출·도달·클릭·CPC·CTR·상담문의시도·견적문의시도·문의 시도당 최종 단가 실적표.</figcaption></figure></div>
+<div class="bc-ev-wide ev-n2"><figure class="ev-tall"><img src="http://localhost:8909/public/evidence/zeroblock-creative.png" alt=""><figcaption>제로블럭 광고 소재별 지출·노출·도달·클릭·링크 클릭·CPC·CTR·상담문의시도 실적표(20개 소재 행).</figcaption></figure><figure class=""><img src="http://localhost:8909/public/evidence/zeroblock-performance.png" alt=""><figcaption>제로블럭 3~6월 월별 지출·노출·도달·클릭·CPC·CTR·상담문의시도·견적문의시도·문의 시도당 최종 단가 실적표.</figcaption></figure></div>
 <p class="foot-note">위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>10</span></footer>
 </section>
@@ -678,7 +679,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
       <li><strong class="big">연간</strong><span>공식 프로젝트</span></li><li><strong class="big">팬덤</strong><span>바이럴</span></li>
     </ul>
     <p class="bc-p">연간 공식 바이럴 쇼츠 기획·제작 — 소재 기획부터 캠페인 운영까지 한 팀이 맡아 진행했습니다.</p>
-    <div class="bc-ev"><figure><img src="http://localhost:8909/public/evidence/krafton-battlegrounds-schedule.png" alt=""><figcaption>크래프톤 배틀그라운드(PNC 2024) 채널 콘텐츠 편성표. 일자별 Long/Shorts 업로드 스케줄과 촬영·인터뷰 일정(스태프 성함은 비공개 처리). <span class="ev-mask">일부 가림</span></figcaption></figure></div>
+    <div class="bc-ev"><figure class="ev-tall"><img src="http://localhost:8909/public/evidence/krafton-battlegrounds-schedule.png" alt=""><figcaption>크래프톤 배틀그라운드(PNC 2024) 채널 콘텐츠 편성표. 일자별 Long/Shorts 업로드 스케줄과 촬영·인터뷰 일정(스태프 성함은 비공개 처리). <span class="ev-mask">일부 가림</span></figcaption></figure></div>
   </div>
   <div class="bc-media">
     <img src="http://localhost:8909/public/portfolio/cases/krafton-jonathan.jpg" alt="">
