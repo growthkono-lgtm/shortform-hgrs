@@ -1179,6 +1179,7 @@ export type Database = {
         Row: {
           applied_at: string | null
           assist_post_ids: string[] | null
+          contact_title: string | null
           entry_post_id: string | null
           first_at: string | null
           first_path: string | null
@@ -1207,6 +1208,7 @@ export type Database = {
         Insert: {
           applied_at?: string | null
           assist_post_ids?: string[] | null
+          contact_title?: string | null
           entry_post_id?: string | null
           first_at?: string | null
           first_path?: string | null
@@ -1235,6 +1237,7 @@ export type Database = {
         Update: {
           applied_at?: string | null
           assist_post_ids?: string[] | null
+          contact_title?: string | null
           entry_post_id?: string | null
           first_at?: string | null
           first_path?: string | null

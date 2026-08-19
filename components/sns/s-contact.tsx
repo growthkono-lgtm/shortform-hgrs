@@ -82,6 +82,16 @@ export function Contact() {
                 />
               </div>
 
+              {/* 직함 — 자유 입력. 선택지를 만들면 전부 "기타" 로 몰린다 (2026-08-19) */}
+              <div className="grid gap-5 sm:grid-cols-2">
+                <Field
+                  label="직함"
+                  name="contact_title"
+                  autoComplete="organization-title"
+                  placeholder="대표 · 마케팅 이사 · 팀장 …"
+                />
+              </div>
+
               <div className="grid gap-5 sm:grid-cols-2">
                 <Field
                   label="이메일"

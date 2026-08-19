@@ -302,6 +302,12 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
                       </span>
                       <span className="text-sm text-muted">
                         {row.contact_name}
+                        {/* 직함 — 통화 첫 마디의 호칭이다. 이름 옆에 붙여야 눈에 든다 */}
+                        {row.contact_title && (
+                          <span className="ml-1 font-medium text-ink">
+                            {row.contact_title}님
+                          </span>
+                        )}
                       </span>
                       <span className="rounded-full bg-paper-alt px-2.5 py-0.5 text-[0.6875rem] font-bold">
                         {STATUS_LABEL[row.status] ?? row.status}

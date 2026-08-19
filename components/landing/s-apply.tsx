@@ -235,6 +235,24 @@ export function Apply() {
             />
           </div>
 
+          {/**
+           * 직함 — **자유 입력**이다. (2026-08-19 사장님 지시)
+           *
+           * 선택지를 만들면 회사마다 다른 직함 체계가 전부 "기타" 로 몰린다.
+           * 그러면 안 물어본 것과 같다. 적어 준 그대로 부르는 게 맞다.
+           *
+           * 필수로 두지 않는다 — 이걸 막아서 접수를 놓치면 손해가 더 크다.
+           */}
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field
+              label="직함"
+              name="contact_title"
+              autoComplete="organization-title"
+              placeholder="대표 · 마케팅 이사 · 팀장 …"
+              hint="통화드릴 때 어떻게 불러 드릴지를 위해 여쭙습니다"
+            />
+          </div>
+
           <div className="grid gap-5 sm:grid-cols-2">
             <Field
               label="이메일"

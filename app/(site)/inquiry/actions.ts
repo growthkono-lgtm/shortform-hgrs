@@ -42,6 +42,7 @@ export async function submitInquiry(
 ): Promise<InquiryState> {
   const companyName = String(formData.get("company_name") ?? "").trim();
   const contactName = String(formData.get("contact_name") ?? "").trim();
+  const contactTitle = String(formData.get("contact_title") ?? "").trim().slice(0, 60);
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const phone = String(formData.get("phone") ?? "").trim();
   const brandUrl = String(formData.get("brand_url") ?? "").trim();
@@ -135,6 +136,20 @@ export async function submitInquiry(
 
   if (error || !inserted) {
     return { ok: false, error: "접수 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요." };
+  }
+
+  /**
+   * 직함을 붙인다. (2026-08-19)
+   *
+   * ⚠️ insert 페이로드에 섞지 않는다 — 마이그레이션이 아직 안 들어간 상태에서
+   * 없는 컬럼을 보내면 **접수 자체가 실패한다.** 첫 접점(`attachFirstTouch`)과
+   * 같은 원칙이다: 있으면 좋은 값이 반드시 되어야 하는 일을 망치면 안 된다.
+   */
+  if (contactTitle) {
+    await admin
+      .from("inquiries")
+      .update({ contact_title: contactTitle })
+      .eq("id", inserted.id);
   }
 
   // 어디로 처음 들어온 사람인지 붙인다. 실패해도 접수는 이미 끝났다
