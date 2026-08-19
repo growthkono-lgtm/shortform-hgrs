@@ -139,6 +139,28 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
             .map(([k, v]) => `${k} ${v}`)
             .join(" · ")}
         </p>
+
+        {/**
+         * CSV 내려받기. (2026-08-19 사장님 지시)
+         *
+         * 화면 표는 쪽당 50개로 잘려 있어 "검색량 500 미만 전부" 같은 판단을
+         * 못 한다. 전체를 받아 엑셀에서 필터를 거는 게 맞다.
+         * 링크 한 줄이면 되므로 버튼 컴포넌트를 따로 두지 않는다.
+         */}
+        <p className="mt-3 flex flex-wrap gap-2">
+          <a
+            href="/api/blog/export?kind=keywords"
+            className="rounded-lg border border-line px-3.5 py-2 text-xs font-bold hover:border-ink"
+          >
+            키워드 전체 CSV ({nf.format(summary.total)}개)
+          </a>
+          <a
+            href="/api/blog/export?kind=schedule"
+            className="rounded-lg border border-line px-3.5 py-2 text-xs font-bold hover:border-ink"
+          >
+            편성표 전체 CSV
+          </a>
+        </p>
       </header>
 
       {/**
