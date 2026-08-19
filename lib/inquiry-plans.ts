@@ -1,3 +1,5 @@
+import { PLANS, type PlanCode } from "@/lib/constants";
+
 /**
  * 문의 폼에서 고르는 프로젝트 종류. (2026-08-18)
  *
@@ -22,30 +24,50 @@ export const INQUIRY_PLANS = [
     desc: "구매전환형 광고숏폼 기획·제작",
     /** 편수를 물어볼 플랜인가 */
     needsCount: true,
+    /**
+     * 화면에 보여 줄 가격 안내. (2026-08-19 신설)
+     *
+     * 사장님: *"이거 안 하고 문의 남기게 되면 플랜이 각 뭔지 모르고 가격도
+     * 모를 거라. 지금도 다 메일로 단가 문의 오고 있거든."*
+     *
+     * 진단(현황 체크)을 마치면 정확한 금액이 나오지만, **건너뛰고 바로 폼으로
+     * 오는 사람이 대부분**이다. 그 사람이 아무 값도 모른 채 신청하면 첫 통화가
+     * "얼마예요"로 시작하고, 그건 우리도 고객도 손해다. 범위라도 여기서 밝힌다.
+     *
+     * ⚠️ 값은 `lib/constants.ts` 의 PLANS 에서 파생시킨다(아래 `planRange`).
+     * 여기 숫자를 손으로 적으면 가격을 올릴 때 반드시 어긋난다.
+     */
+    priceFrom: "shorts_only" as const,
   },
   {
     value: "shorts_package",
-    label: "숏폼 — 패키지 플랜",
-    desc: "인플루언서 시딩 + 2차 컷 확보 + 구매전환형 광고숏폼 기획·제작",
+    // 2026-08-19 "패키지" → "멀티" 로 개명. 무엇이 묶였는지 말해 주는 이름이다
+    label: "숏폼 — 멀티 플랜",
+    desc: "인플루언서 시딩 5·10·15명 + 구매전환형 광고숏폼 기획·제작",
     needsCount: true,
+    priceFrom: "full" as const,
   },
   {
     value: "sns_turnkey",
     label: "브랜드 SNS 채널 턴키 운영",
     desc: "채널 전략부터 콘텐츠 제작·운영까지 통째로",
     needsCount: false,
+    /** 정가가 없는 구성 — 범위 대신 이 문구가 나간다 */
+    priceNote: "채널 수·편성 주기에 따라 별도 견적",
   },
   {
     value: "ai_team",
     label: "AI팀 구축 프로젝트",
     desc: "사내에 AI 제작 역량을 심는 구축형 프로젝트",
     needsCount: false,
+    priceNote: "인원·기간·범위에 따라 별도 견적",
   },
   {
     value: "consult",
     label: "상담 후 결정",
     desc: "무엇이 맞는지부터 같이 정하고 싶어요",
     needsCount: false,
+    priceNote: "현황을 먼저 듣고 구성부터 같이 정합니다",
   },
 ] as const;
 
@@ -141,4 +163,42 @@ export function describeSelection(input: {
       : "해당 없음",
     chosen: true,
   };
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+ * 폼에 붙는 가격 안내. (2026-08-19)
+ *
+ * 값은 전부 `lib/constants.ts` 의 PLANS 에서 파생한다 — 가격이 두 벌이 되면
+ * 폼에 적힌 값과 실제 청구액이 달라진다. 오늘만 같은 종류로 세 번 어긋났다.
+ * ───────────────────────────────────────────────────────────── */
+
+/** 그 계열에서 제일 싼 값 ~ 제일 비싼 값 */
+export function planRange(code: PlanCode): { min: number; max: number } | null {
+  const rows = PLANS.filter((p) => p.code === code);
+  if (!rows.length) return null;
+  const prices = rows.map((p) => p.betaPrice);
+  return { min: Math.min(...prices), max: Math.max(...prices) };
+}
+
+/** 폼 선택지 한 장에 들어갈 한 줄. 정가가 없으면 안내 문구를 그대로 돌려준다 */
+export function planPriceLine(plan: (typeof INQUIRY_PLANS)[number]): string {
+  if ("priceNote" in plan && plan.priceNote) return plan.priceNote;
+  if (!("priceFrom" in plan)) return "";
+  const range = planRange(plan.priceFrom);
+  if (!range) return "";
+  const won = (n: number) => `${(n / 10000).toLocaleString("ko-KR")}만원`;
+  return `${won(range.min)} ~ ${won(range.max)} · 규모에 따라`;
+}
+
+/** 그 계열의 티어를 한 줄씩 — 폼에서 펼쳐 보여 준다 */
+export function planTiers(
+  plan: (typeof INQUIRY_PLANS)[number],
+): { label: string; composition: string; price: number }[] {
+  if (!("priceFrom" in plan)) return [];
+  return PLANS.filter((p) => p.code === plan.priceFrom).map((p) => ({
+    label: p.label,
+    composition: p.composition,
+    price: p.betaPrice,
+  }));
 }

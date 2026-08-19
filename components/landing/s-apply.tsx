@@ -5,11 +5,15 @@ import { useActionState, useState } from "react";
 import { Section, SectionHeading } from "@/components/ui/section";
 import { Field, SubmitError } from "@/components/auth/field";
 import { cn } from "@/lib/cn";
-import { POLICY } from "@/lib/constants";
+import { POLICY,
+  formatKRW,
+} from "@/lib/constants";
 import { INQUIRY_CONSENTS, CONSENT_VERSION } from "@/lib/consents";
 import { submitInquiry, type InquiryState } from "@/app/(site)/inquiry/actions";
 import {
   INQUIRY_PLANS,
+  planPriceLine,
+  planTiers,
   VOLUMES,
   fromDiagnosisCode,
   needsCount,
@@ -88,10 +92,46 @@ function PlanCards({
             onChange={() => onChange(p.value)}
             className="sr-only"
           />
-          <span className="block text-sm font-bold">{p.label}</span>
+          <span className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+            <span className="text-sm font-bold">{p.label}</span>
+            {/**
+             * 가격을 여기서 밝힌다. (2026-08-19)
+             *
+             * 사장님: *"이거(현황 체크) 안 하고 문의 남기게 되면 플랜이 각
+             * 뭔지 모르고 가격도 모를 거라. 지금도 다 메일로 단가 문의
+             * 오고 있거든."*
+             *
+             * 진단을 마치면 정확한 금액이 나오지만 **대부분 건너뛰고 바로
+             * 여기로 온다.** 아무 값도 모른 채 신청하면 첫 통화가 "얼마예요"
+             * 로 시작한다. 값은 PLANS 에서 파생되므로 가격을 올리면 여기도
+             * 같이 움직인다 — 손으로 적지 않는다.
+             */}
+            <span className="stat-figure text-xs font-bold opacity-90">
+              {planPriceLine(p)}
+            </span>
+          </span>
           <span className="mt-1 block text-xs leading-[1.7] opacity-70">
             {p.desc}
           </span>
+
+          {/* 고른 것만 티어를 펼친다. 다섯 장을 다 펼치면 폼이 가격표가 된다 */}
+          {value === p.value && planTiers(p).length > 0 && (
+            <span className="mt-3 block space-y-1.5 rounded-xl bg-paper/15 px-3.5 py-3">
+              {planTiers(p).map((t) => (
+                <span key={t.label} className="flex justify-between gap-3 text-xs">
+                  <span className="opacity-75">
+                    {t.label} · {t.composition}
+                  </span>
+                  <span className="stat-figure shrink-0">
+                    {formatKRW(t.price)}
+                  </span>
+                </span>
+              ))}
+              <span className="block pt-1 text-[0.6875rem] opacity-60">
+                부가세 별도 · 정확한 금액은 편수와 구성에 따라 상담에서 확정합니다
+              </span>
+            </span>
+          )}
         </label>
       ))}
     </div>
@@ -283,6 +323,23 @@ export function Apply() {
           <div>
             <p className="text-sm font-bold">
               어떤 프로젝트를 찾으시나요<span className="ml-1 text-accent">*</span>
+            </p>
+            {/**
+             * 진단을 건너뛴 사람에게 되돌아갈 문을 연다. (2026-08-19)
+             *
+             * 아래 카드가 가격 **범위**는 밝히지만, 편수까지 정해진 정확한
+             * 금액은 진단을 마쳐야 나온다. 그 차이를 여기서 한 줄로 알린다 —
+             * 안 알리면 "범위만 보고" 신청하고 통화가 다시 금액에서 시작한다.
+             */}
+            <p className="mb-3 text-xs leading-[1.7] text-muted">
+              고르시면 규모별 금액이 펼쳐집니다.{" "}
+              <a
+                href="#diagnosis"
+                className="font-bold text-accent-deep underline underline-offset-2"
+              >
+                1분 현황 체크
+              </a>
+              를 먼저 하시면 지금 필요한 편수와 정확한 금액이 바로 나옵니다.
             </p>
             <PlanCards
               value={interest}
