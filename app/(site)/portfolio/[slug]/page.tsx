@@ -67,7 +67,7 @@ export default async function FramerCasePage({ params }: Props) {
 
   const crumbs = breadcrumb([
     { name: "해그로시", path: "/" },
-    { name: "성과 사례", path: "/portfolio" },
+    { name: "포트폴리오", path: "/portfolio" },
     { name: c.name, path: `/portfolio/${encodeURIComponent(c.slug)}` },
   ]);
 
@@ -79,7 +79,7 @@ export default async function FramerCasePage({ params }: Props) {
       <main className="bg-night px-5 pb-24 pt-28 sm:px-8">
         <article className="mx-auto max-w-3xl">
           <Link href="/portfolio" className="text-xs text-white/50 hover:text-white">
-            ← 성과 사례
+            ← 포트폴리오
           </Link>
           <h1 className="mt-4 text-2xl font-bold leading-snug text-white sm:text-3xl">
             {c.name}

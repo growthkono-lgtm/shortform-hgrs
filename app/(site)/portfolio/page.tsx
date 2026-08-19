@@ -27,12 +27,12 @@ import { FramerCases } from "@/components/sns/s-framer-cases";
  * 로고월에서 "이 브랜드들과 했다"를 본 사람이 곧바로 그 프로젝트 목록을 만나야 한다.
  */
 export const metadata: Metadata = {
-  title: { absolute: "성과 사례 · 포트폴리오 | 해그로시" },
+  title: { absolute: "포트폴리오 · 성과 사례 | 해그로시" },
   description:
     "크래프톤·럽디·열다·트러스티푸드 등 30여 브랜드의 SNS 채널·컨텐츠 프로젝트 기록. 실제 편성한 롱폼 영상과 브랜드별 통합 액션 조합을 함께 봅니다.",
   alternates: { canonical: "/portfolio" },
   openGraph: {
-    title: "성과 사례 · 포트폴리오 | 해그로시",
+    title: "포트폴리오 · 성과 사례 | 해그로시",
     description:
       "30여 브랜드의 SNS 채널·컨텐츠 프로젝트 기록. 실제 편성한 영상과 브랜드별 통합 액션 조합.",
     images: ["/sns/krafton-contents.jpg"],
@@ -50,7 +50,7 @@ const SCHEMA = serviceSchema({
 
 const CRUMBS = breadcrumb([
   { name: "해그로시", path: "/" },
-  { name: "성과 사례", path: "/portfolio" },
+  { name: "포트폴리오", path: "/portfolio" },
 ]);
 
 export default function PortfolioPage() {

@@ -18,7 +18,14 @@ import { HeaderAuth } from "@/components/auth/header-auth";
 export const NAV = [
   { href: "/shortform", label: "숏폼 스튜디오" },
   { href: "/sns-brand", label: "브랜드 SNS 채널" },
-  { href: "/portfolio", label: "성과 사례" },
+  /**
+   * 2026-08-20: "성과 사례" → "포트폴리오".
+   *
+   * 사장님: *"근데 포트폴리오를 달라고들 하거든."* 메일로 오는 요청이 실제로
+   * 그 단어다. "성과 사례"는 우리가 쓰는 말이고, 고객이 찾는 말은 포트폴리오다.
+   * 주소도 /portfolio 라 라벨과 URL 이 같은 말이 된다.
+   */
+  { href: "/portfolio", label: "포트폴리오" },
   /**
    * 2026-08-13: 자체 `/blog` 로 되돌린다.
    *
