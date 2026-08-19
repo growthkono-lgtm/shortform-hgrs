@@ -50,7 +50,17 @@ const STATUS_MEANING: Record<string, string> = {
 };
 
 async function main() {
-  const outDir = process.argv[2] ?? process.env.HOME + "/Desktop";
+  /**
+   * ⚠️ **프로젝트 폴더 안에만 쓴다.** (2026-08-19 수정)
+   *
+   * 앞 판은 기본값이 `~/Desktop` 이었다. 사장님이 "파일로 달라" 고 하셨을 때
+   * 내가 위치를 임의로 바탕화면으로 고른 것이고, 여쭙지 않았다.
+   * **작업 권한을 받은 곳은 이 레포다.** 그 밖에 쓰려면 경로를 인자로
+   * 명시적으로 받는다 — 기본값으로 나가지 않는다.
+   */
+  const outDir = process.argv[2] ?? "exports";
+  const { mkdirSync } = await import("node:fs");
+  mkdirSync(outDir, { recursive: true });
   if (!REST || !KEY) throw new Error("Supabase 환경변수가 없습니다");
 
   /* ⚠️ PostgREST 는 1,000행에서 자른다 */

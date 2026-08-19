@@ -69,3 +69,6 @@ public/logos/_raw/
 
 # 구글 서비스 계정 키 — 절대 커밋 금지
 gcp-key.json
+
+# 내보낸 CSV·표 — 생성물이라 커밋하지 않는다 (2026-08-19)
+exports/
