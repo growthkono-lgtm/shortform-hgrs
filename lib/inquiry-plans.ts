@@ -205,14 +205,33 @@ export function planPriceLine(plan: (typeof INQUIRY_PLANS)[number]): string {
   return "규모별 구성과 금액입니다 — 정확한 값은 상담에서 확정합니다";
 }
 
-/** 그 계열의 티어를 한 줄씩 — 폼에서 펼쳐 보여 준다 */
-export function planTiers(
-  plan: (typeof INQUIRY_PLANS)[number],
-): { label: string; composition: string; price: number }[] {
-  if (!("priceFrom" in plan)) return [];
-  return PLANS.filter((p) => p.code === plan.priceFrom).map((p) => ({
-    label: p.label,
-    composition: p.composition,
-    price: p.betaPrice,
-  }));
+/**
+ * **건당 얼마 내외** 한 줄. (2026-08-19 사장님 지시)
+ *
+ * 앞 판은 고르면 규모별 금액 4줄이 펼쳐졌다. 사장님 지적:
+ * *"플랜 확인이 아래에 있으니 안 보인다. 눌러보지도 않을걸 사람들은.
+ * 그리고 저렇게 가격 다 노출하지 말고 건당 얼마 내외 이것만 표기하라니까?"*
+ *
+ * 두 가지가 틀렸다 — (1) **눌러야 보이는 값은 안 보이는 값이다.**
+ * (2) 총액 네 줄을 늘어놓으면 440만·520만이 먼저 눈에 들어와 비싸 보인다.
+ * 그래서 **항상 보이는 자리에 건당 한 줄만** 둔다.
+ *
+ * 기준은 **주력 티어(10편)** 다. 최저가(20편 220,000)로 적으면 실제 견적이
+ * 그보다 비싸지고, 최고가로 적으면 문턱이 높아진다.
+ */
+export function planUnitLine(plan: (typeof INQUIRY_PLANS)[number]): string {
+  if ("priceNote" in plan && plan.priceNote) return plan.priceNote;
+  if (!("priceFrom" in plan)) return "";
+
+  const 만 = (n: number) => `${Math.round(n / 10000)}만원`;
+
+  if (plan.priceFrom === "shorts_only") {
+    const main = PLANS.find((p) => p.code === "shorts_only" && p.tier === "10");
+    return main?.unitPrice ? `숏폼 건당 ${만(main.unitPrice)} 내외` : "";
+  }
+
+  // 멀티는 시딩이 섞여 편당이 성립하지 않는다. 숏폼 편수로 나눈 값으로 안내한다
+  const main = PLANS.find((p) => p.code === "full" && p.tier === "growth");
+  if (!main) return "";
+  return `숏폼 건당 ${만(main.betaPrice / main.shortsCount)} 내외 (시딩 포함)`;
 }

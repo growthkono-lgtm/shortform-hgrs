@@ -12,8 +12,7 @@ import { INQUIRY_CONSENTS, CONSENT_VERSION } from "@/lib/consents";
 import { submitInquiry, type InquiryState } from "@/app/(site)/inquiry/actions";
 import {
   INQUIRY_PLANS,
-  planPriceLine,
-  planTiers,
+  planUnitLine,
   VOLUMES,
   fromDiagnosisCode,
   needsCount,
@@ -118,23 +117,17 @@ function PlanCards({
             </span>
           )}
 
-          {/* 고른 것만 규모별 금액을 펼친다. 다섯 장을 다 펼치면 폼이 가격표가 된다 */}
-          {value === p.value && (
-            <span className="mt-3 block space-y-1.5 rounded-xl bg-paper/15 px-3.5 py-3">
-              {planTiers(p).map((t) => (
-                <span key={t.label} className="flex justify-between gap-3 text-xs">
-                  <span className="opacity-75">
-                    {t.label} · {t.composition}
-                  </span>
-                  <span className="stat-figure shrink-0">
-                    {formatKRW(t.price)}
-                  </span>
-                </span>
-              ))}
-              <span className="block pt-1 text-[0.6875rem] leading-[1.6] opacity-60">
-                {planPriceLine(p)}
-                {planTiers(p).length > 0 && " · 부가세 별도"}
-              </span>
+          {/**
+           * **건당 한 줄만, 항상 보이게.** (2026-08-19 사장님 지시)
+           *
+           * 앞 판은 고른 것만 규모별 금액 4줄을 펼쳤다. 사장님:
+           * *"플랜 확인이 아래에 있으니 안 보인다. 눌러보지도 않을걸."*
+           * 눌러야 보이는 값은 안 보이는 값이고, 총액 네 줄을 늘어놓으면
+           * 상한이 먼저 눈에 들어와 비싸 보인다. 둘 다 없앤다.
+           */}
+          {planUnitLine(p) && (
+            <span className="mt-2.5 block text-xs font-bold opacity-90">
+              {planUnitLine(p)}
             </span>
           )}
         </label>

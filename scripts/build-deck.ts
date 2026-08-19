@@ -177,7 +177,16 @@ const planRows = (rows: typeof singles, kind: "single" | "package") =>
        * 어긋났다.** 멀티는 시딩이 섞여 편당이 성립하지 않으니 맞출 수도 없다.
        * 편당 할인 구조는 표 아래 각주 한 줄로 옮긴다.
        */
-      const unit = "";
+      /**
+       * 체험 티어는 **깎아 준 값**이라는 걸 밝힌다. (2026-08-19 사장님 지적)
+       *
+       * *"체험 1건은 20% 할인 들어간 게 왜 표기가 안 됐어? 원가 원래
+       * 얼마인데 깎아준 거잖아."* 216,000 만 적으면 그냥 싼 상품으로 읽히고,
+       * **첫 거래를 트시라고 내준 값**이라는 뜻이 사라진다.
+       */
+      const unit = p.trialDiscount
+        ? `정가 ${formatKRW(p.listPrice)} · ${Math.round(p.trialDiscount * 100)}% 할인`
+        : "";
       return `<tr>
   <td class="t-name">${esc(p.label)}</td>
   <td class="t-desc">${esc(p.composition)}</td>
