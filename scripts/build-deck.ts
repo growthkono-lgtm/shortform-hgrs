@@ -574,7 +574,7 @@ ${head(
   total > 1 ? `실적 증빙 (${page + 1}/${total})` : "실적 증빙",
   page === 0 ? "앞 사례의 실제 운영 데이터입니다" : "이어서 보여드립니다",
 )}
-<div class="evpage">${rows.map(evFigure).join("")}</div>`),
+<div class="evpage${rows.length === 1 ? " evpage-solo" : ""}">${rows.map(evFigure).join("")}</div>`),
   );
 }
 
@@ -1345,13 +1345,14 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
    왼쪽 열 안에 두면 가로로 긴 표가 40px 높이로 눌려 숫자가 안 읽힌다 */
 .bc-ev-wide{flex:0 0 auto;margin-top:5mm}
 .bc-ev-wide figure{margin:0}
-.bc-ev-wide img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block}
+.bc-ev-wide img{width:auto;max-width:100%;max-height:34mm;border:1px solid var(--line);border-radius:1.5mm;display:block;margin:0 auto}
 .bc-ev-wide figcaption{font-size:7.5pt;color:var(--muted);margin-top:2mm;line-height:1.55}
 
 /* 실적 증빙 전용 장표 */
 .evpage{display:flex;flex-direction:column;gap:7mm;flex:1;min-height:0;overflow:hidden;justify-content:center}
 .evpage figure{margin:0}
-.evpage img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block}
+.evpage-solo img{max-height:95mm}
+.evpage img{width:auto;max-width:100%;max-height:48mm;border:1px solid var(--line);border-radius:1.5mm;display:block;margin:0 auto}
 .evpage figcaption{font-size:8pt;color:var(--muted);margin-top:2mm;line-height:1.6}
 
 /* IMC 프로젝트 기록 — 프레이머 포트폴리오 (2026-08-20) */

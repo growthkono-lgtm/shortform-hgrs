@@ -66,10 +66,10 @@
     "file": "krafton-battlegrounds-schedule.png",
     "brand": "크래프톤",
     "kind": "편성",
-    "caption": "크래프톤 배틀그라운드(PNC 2024) 채널 콘텐츠 편성표. 일자별 Long/Shorts 업로드 스케줄과 촬영·인터뷰 일정.",
+    "caption": "크래프톤 배틀그라운드(PNC 2024) 채널 콘텐츠 편성표. 일자별 Long/Shorts 업로드 스케줄과 촬영·인터뷰 일정(스태프 성함은 비공개 처리).",
     "width": 2118,
     "height": 988,
-    "masked": false
+    "masked": true
   },
   {
     "file": "trusty-creative-1.png",
