@@ -330,7 +330,7 @@ export function Apply() {
              * 안 알리면 "범위만 보고" 신청하고 통화가 다시 금액에서 시작한다.
              */}
             <p className="mb-3 text-xs leading-[1.7] text-muted">
-              고르시면 규모별 금액이 펼쳐집니다.{" "}
+              건당 단가는 아래에 적어 두었습니다.{" "}
               <a
                 href="#diagnosis"
                 className="font-bold text-accent-deep underline underline-offset-2"
@@ -433,7 +433,8 @@ export function Apply() {
                 ],
                 [
                   "편수별 금액",
-                  "싱글·패키지 전 구간 단가와 시딩 단가 분리 표기",
+                  // 시딩 단가를 따로 적지 않는다 — 인원으로 나누면 리워드가 역산된다
+                  "싱글·멀티 전 구간 구성과 금액",
                 ],
                 ["제작 사례", "같은 카테고리에서 진행한 소재와 성과 흐름"],
               ].map(([title, body]) => (
