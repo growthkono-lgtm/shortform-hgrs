@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { cn } from "@/lib/cn";
-import { formatKRW, POLICY } from "@/lib/constants";
+import { formatKRW, PLAN_FAMILY, POLICY } from "@/lib/constants";
 import { DIAGNOSIS } from "@/lib/diagnosis";
 import { useDiagnosis } from "./diagnosis-context";
 
@@ -46,19 +46,27 @@ export function Diagnosis() {
         <div className="min-w-0 lg:sticky lg:top-24 lg:self-start">
           <p className="eyebrow">Diagnosis</p>
           <h2 className="mt-5 text-[1.5rem] leading-[1.35] font-bold sm:text-[2.125rem] sm:leading-[1.3] lg:text-[2.75rem]">
-            매출용 컨텐츠
+            지금 소재를 갈아야 할 때인지
             <br />
-            <strong className="font-bold">컨디션 체크</strong>
+            <strong className="font-bold">1분이면 판별됩니다</strong>
           </h2>
+          {/* 2026-08-19 사장님 지시: 접수 21건 중 현황 체크를 마치고 온 건이
+              거의 없다("현황 체크 로그 없음"). 문구가 "체크/진단"으로 읽혀
+              숙제처럼 느껴진다고 보고, 제목을 판별 결과 중심으로 바꾸고
+              문항 수·소요 시간을 뱃지로, 완료 시 받는 것(편수·구성·예상
+              금액)을 첫 문단으로 끌어올렸다. 로직·문항·판정은 그대로다. */}
+          <p className="mt-4 inline-block rounded-full border border-gold/40 bg-gold/10 px-3.5 py-1.5 text-xs font-bold tracking-wide text-gold">
+            5문항 · 약 1분
+          </p>
           {/* 2026-08-13 사장님 지시: "30초 · 답변은…" 안내 문구를 빼고,
               AI 제작 가능 여부와 단가 확인 경로를 문단으로 나눠 덧붙였다.
               단가를 페이지에 박지 않는 이유는 브랜드마다 소스 보유 상태가
               달라 확정가가 상담 단계에서만 나오기 때문이다. */}
           <div className="mt-5 flex max-w-lg flex-col gap-4 text-[0.9375rem] leading-[1.8] text-white/60 sm:text-base">
             <p>
-              인플루언서 시딩과 함께 소스컷을 확보해 광고 전환용 숏폼을
-              기획제작하거나, 소스가 충분할 경우 후자만 진행합니다. 단,
-              브랜드마다 상황이 다양하므로 상세 안내를 꼭 받아보세요.
+              다섯 질문에 답하면 지금 필요한 편수·구성과 예상 금액이 그
+              자리에서 나옵니다. 소스컷을 인플루언서 시딩으로 새로 확보해야
+              하는 상황인지, 보유한 소스만으로 충분한지도 여기서 갈립니다.
             </p>
             <p>
               기획과 AI만으로도 제작은 가능합니다. 다만 광고 매출 성과는 명확한
@@ -137,25 +145,22 @@ export function Diagnosis() {
                 <div className="mt-6 rounded-2xl border border-gold/30 bg-gold/[0.07] p-5 sm:p-6">
                   <p className="text-xs text-white/50">필요한 구성</p>
                   <p className="mt-2 text-lg font-bold text-gold">
-                    {result.plan.label}
+                    {PLAN_FAMILY[result.plan.code].label} · {result.plan.label}
                   </p>
                   <p className="mt-1 text-sm text-white/60">
                     {result.plan.composition}
                   </p>
 
+                  {/* 2026-08-19 constants.ts 단가 재설계: 멀티 플랜의
+                      shortsPrice·seedingPrice 를 삭제했다. 인원으로 나누면
+                      인플루언서 리워드가 역산되기 때문이다. 이제 총액 하나만
+                      보여준다 — 구성 내역은 바로 위 composition 줄이 이미
+                      말하고 있어 따로 쪼갤 필요가 없다. */}
                   <div className="mt-5 border-t border-white/10 pt-4">
                     <p className="stat-figure text-3xl">
                       {formatKRW(result.plan.betaPrice)}
                     </p>
-                    {result.plan.shortsPrice != null &&
-                    result.plan.seedingPrice != null ? (
-                      <p className="mt-2 text-xs leading-[1.7] text-white/50">
-                        숏폼 기획제작 {result.plan.shortsCount}편{" "}
-                        {formatKRW(result.plan.shortsPrice)} + 인플루언서 시딩{" "}
-                        {result.plan.influencerCount}명{" "}
-                        {formatKRW(result.plan.seedingPrice)}
-                      </p>
-                    ) : (
+                    {result.plan.code === "shorts_only" ? (
                       <p className="mt-2 text-xs text-white/50">
                         전환 숏폼 {result.plan.shortsCount}편 · 편당{" "}
                         {formatKRW(
@@ -163,6 +168,10 @@ export function Diagnosis() {
                             result.plan.betaPrice / result.plan.shortsCount,
                           ),
                         )}
+                      </p>
+                    ) : (
+                      <p className="mt-2 text-xs leading-[1.7] text-white/50">
+                        {PLAN_FAMILY.full.scope}
                       </p>
                     )}
                     <p className="mt-2 text-[0.6875rem] text-white/35">

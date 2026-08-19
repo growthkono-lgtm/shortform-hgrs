@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Section, SectionHeading } from "@/components/ui/section";
 import { cn } from "@/lib/cn";
 import {
+  AI_EFFICIENCY_NOTE,
+  MODEL_OPTION,
   PLANS,
   PLAN_COPY,
   PLAN_GROUPS,
@@ -89,18 +91,35 @@ function PlanCard({
           {tagline}
         </span>
 
-        {/* 총액만 보여주면 숏폼 편당 값이 가려진다 — 시딩 단가를 쪼개 적는다 */}
-        {plan.shortsPrice != null && plan.seedingPrice != null && (
-          <span className="mt-4 block space-y-1.5 rounded-xl border border-line bg-paper-alt px-3.5 py-3 text-xs text-muted">
-            <span className="flex justify-between gap-3">
-              <span>숏폼 기획제작 {plan.shortsCount}편</span>
-              <span className="stat-figure">{formatKRW(plan.shortsPrice)}</span>
+        {/**
+         * ⚠️ **내역을 쪼개 적지 않는다.** (2026-08-19)
+         *
+         * 앞 판은 "숏폼 X원 / 시딩 Y원" 으로 나눠 보여 줬다. 그런데 시딩
+         * 금액을 인원으로 나누면 **우리가 인플루언서에게 주는 리워드가 그대로
+         * 역산된다**(990,000 ÷ 20명 = 49,500원). 마진 역산을 막자고 정해 놓고
+         * 가격표가 스스로 그걸 하고 있었다.
+         *
+         * 대신 **편당 단가**를 적는다. 고객이 실제로 비교하는 값은 총액이 아니라
+         * 나눴을 때의 값이고, 그 값이 편수가 늘수록 싸지는 게 보여야 묶음을
+         * 살 이유가 생긴다.
+         */}
+        {plan.unitPrice != null && plan.shortsCount > 1 && (
+          <span className="mt-4 flex justify-between gap-3 rounded-xl border border-line bg-paper-alt px-3.5 py-3 text-xs text-muted">
+            <span>숏폼 편당</span>
+            <span className="stat-figure text-ink">
+              {formatKRW(plan.unitPrice)}
             </span>
-            <span className="flex justify-between gap-3">
-              <span>인플루언서 시딩 {plan.influencerCount}명</span>
-              <span className="stat-figure">
-                {formatKRW(plan.seedingPrice)}
-              </span>
+          </span>
+        )}
+
+        {/* 체험 티어 — 정가에서 깎아 주는 것이므로 원래 값을 같이 보여 준다 */}
+        {plan.trialDiscount != null && (
+          <span className="mt-4 flex justify-between gap-3 rounded-xl border border-line bg-paper-alt px-3.5 py-3 text-xs text-muted">
+            <span>
+              정가 <s className="stat-figure">{formatKRW(plan.listPrice)}</s>
+            </span>
+            <span className="stat-figure font-bold text-accent-deep">
+              {Math.round(plan.trialDiscount * 100)}% 할인
             </span>
           </span>
         )}
@@ -151,8 +170,14 @@ export function Pricing() {
       </SectionHeading>
 
       <p className="mt-6 max-w-2xl text-base leading-[1.75] text-muted sm:text-lg">
-        스타터·그로스·스케일 세 규모입니다. 숏폼 기획제작만 받는 싱글과,
-        인플루언서 시딩까지 묶은 패키지 중 하나를 고르시면 됩니다.
+        스타터·그로스·스케일 세 규모입니다. 숏폼 기획제작만 받는 <b>싱글</b>과,
+        인플루언서 시딩까지 묶은 <b>멀티</b> 중 하나를 고르시면 됩니다.
+      </p>
+
+      {/* 헤드라인 밑 공통 명시 — 라인마다 "AI로 만듭니다" 를 반복하지 않고
+          여기 한 번만 밝힌다 (2026-08-19 사장님 지시) */}
+      <p className="mt-4 inline-block rounded-full border border-accent/40 bg-accent/[0.06] px-4 py-1.5 text-xs font-bold text-accent-deep">
+        {AI_EFFICIENCY_NOTE}
       </p>
 
       {/* 가격부터 보면 "한 편에 얼마" 비교로 끌려간다 — 진단으로 되돌아갈 문을 열어 둔다 */}
@@ -246,11 +271,54 @@ export function Pricing() {
           })}
         </div>
 
-        {/* ── 패키지 플랜 ── */}
+        {/**
+         * 출연 모델 섭외 — **싱글 플랜에만 붙는 옵션**이다. (2026-08-19)
+         *
+         * 사장님: *"출연 모델 기획 섭외형은 인당 35로 붙이고 섭외비를, 거기에
+         * 기존 숏폼기획제작 금액이 붙으면 되는 거잖아. 별도 플랜으로 빼기엔
+         * 애매해서."*
+         *
+         * 멀티 플랜에는 붙이지 않는다 — 그쪽은 시딩으로 이미 소재를 확보하므로
+         * 두 방식을 겹쳐 팔면 고객이 무엇을 사는지 알 수 없게 된다.
+         */}
+        <div className="mt-8 rounded-2xl border border-line bg-paper-alt p-6">
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
+            <p className="text-sm font-bold">
+              {MODEL_OPTION.label}
+              <span className="ml-2 rounded-full border border-line bg-paper px-2.5 py-0.5 text-[0.6875rem] font-medium text-muted">
+                싱글 플랜 옵션
+              </span>
+            </p>
+            <p className="stat-figure text-lg text-accent-deep">
+              인당 {formatKRW(MODEL_OPTION.unitPrice)}
+            </p>
+          </div>
+          <p className="mt-3 text-xs leading-[1.8] text-muted">
+            소재가 없고 사람이 나와야 전환되는 카테고리라면, 위 플랜에 인원 단위로 더합니다.
+            인원 비례라 수량 할인은 없습니다.
+          </p>
+          <ul className="mt-4 grid gap-1.5 text-xs leading-[1.7] text-muted sm:grid-cols-3">
+            {MODEL_OPTION.includes.map((line) => (
+              <li key={line} className="flex gap-2">
+                <span aria-hidden className="text-accent-deep">·</span>
+                {line}
+              </li>
+            ))}
+          </ul>
+          <ul className="mt-4 space-y-1 border-t border-line pt-4 text-[0.6875rem] leading-[1.7] text-muted/80">
+            {MODEL_OPTION.terms.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        </div>
+
+        {/* ── 멀티 플랜 (구 패키지 플랜) ──
+            2026-08-19 사장님 지시로 이름을 바꿨다. "패키지" 는 무엇이 묶였는지
+            말하지 않는데, "멀티" 는 소재 확보 경로가 하나 더 있다는 뜻이 된다 */}
         <div className="mt-14">
           <RowHeading
-            title={`패키지 플랜 · ${PLAN_COPY.full.label}`}
-            note="찍을 소스부터 없다면 인플루언서 시딩을 함께 붙입니다."
+            title={`멀티 플랜 · ${PLAN_COPY.full.label}`}
+            note="찍을 소스부터 없다면 인플루언서 시딩을 함께 붙입니다. 시딩 인원은 5·10·15명입니다."
           />
 
           <div className="mt-5 grid gap-5 sm:grid-cols-3">
@@ -279,6 +347,8 @@ export function Pricing() {
           POLICY.usagePeriod,
           POLICY.sourceRequired,
           POLICY.seedingBundleOnly,
+          POLICY.modelOptionSingleOnly,
+          POLICY.quoteOnlyShoot,
           POLICY.trialSingle,
         ].map((line) => (
           <li key={line} className="flex gap-2">

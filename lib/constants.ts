@@ -118,95 +118,78 @@ export const POLICY = {
   downloadExpiry: "다운로드 링크는 발급 후 14일간 유효합니다",
   noGuarantee:
     "위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.",
-  // 1편은 "믿고 거래를 트는" 자리다. 시딩은 크리에이터 모집·배포 단위라 1편에 붙일 수 없다
+  // 체험 1편은 "믿고 거래를 트는" 자리다. 시딩은 크리에이터 모집·배포 단위라 붙일 수 없다
   trialSingle:
-    "1편 단품은 결과를 먼저 보고 판단하시라고 여는 자리입니다 — 인플루언서 시딩은 포함되지 않습니다",
-  seedingBundleOnly: "인플루언서 시딩은 숏폼 5편 이상 묶음부터 함께 진행됩니다",
-  // 싱글과 패키지를 세로로 묶어 뒀더니 같이 사는 구성으로 읽혔다 — 택일임을 문장으로도 못 박는다
+    "체험 1편은 결과를 먼저 보고 판단하시라고 정가에서 20% 낮춰 여는 자리입니다 — 인플루언서 시딩은 포함되지 않습니다",
+  seedingBundleOnly:
+    "인플루언서 시딩은 멀티 플랜으로만 진행됩니다 — 규모에 따라 5·10·15명",
+  // 싱글과 멀티를 세로로 묶어 뒀더니 같이 사는 구성으로 읽혔다 — 택일임을 문장으로도 못 박는다
   singleOrPackage:
-    "싱글과 패키지는 함께 구매하는 구성이 아닙니다 — 둘 중 하나를 고르시면 됩니다",
+    "싱글과 멀티는 함께 구매하는 구성이 아닙니다 — 둘 중 하나를 고르시면 됩니다",
+  // 2026-08-19 신설. 모델 옵션이 어디에 붙는지 밝히지 않으면 멀티에도 붙는 줄 안다
+  modelOptionSingleOnly:
+    "출연 모델 섭외는 싱글 플랜에만 더할 수 있습니다 — 멀티 플랜은 시딩으로 소재를 확보합니다",
+  quoteOnlyShoot:
+    "현장 실사 촬영은 정가 없이 별도 견적입니다 — 촬영 회차와 장소 조건으로 산정합니다",
 } as const;
 
 export type PlanCode = "full" | "shorts_only";
 
 export type Plan = {
+  /** shorts_only = 싱글 플랜 / full = 멀티 플랜. 코드값은 결제 슬러그 호환으로 유지한다 */
   code: PlanCode;
   tier: string;
   label: string;
   composition: string;
   influencerCount: number;
   shortsCount: number;
-  /**
-   * 2026-08-10 확정가. 정가/베타가 이원화는 걷어냈다 —
-   * 화면에 뜨는 값은 betaPrice 하나뿐이었고, 지어낸 정가로 할인율을 만들 이유가 없다.
-   * listPrice는 DB 컬럼(NOT NULL) 호환용으로만 남기고 betaPrice와 같은 값을 넣는다.
-   */
+  /** DB 컬럼(NOT NULL) 호환용. betaPrice 와 같은 값을 넣는다 */
   listPrice: number;
   betaPrice: number;
-  /**
-   * 시딩 포함 플랜(full)의 내역 분리 — 총액만 보여주면 숏폼 편당 값이 가려진다.
-   * shortsPrice는 같은 편수의 숏폼 단독가와 정확히 같은 값이어야 한다.
-   */
-  shortsPrice?: number;
-  seedingPrice?: number;
-  /** 첫 거래용 소량 티어 — 시딩을 붙일 수 없다 */
+  /** 편당(싱글) 판매 단가. **표시용이 아니라 이 값에 편수를 곱해 총액을 만든다** */
+  unitPrice?: number;
+  /** 체험 티어 — 정가에서 깎아 주는 비율 */
+  trialDiscount?: number;
   trial?: boolean;
   recommended?: boolean;
 };
 
-/**
- * DB(plans 테이블) 시딩 전까지의 폴백.
- * 런타임에서는 DB를 우선 읽고, 값이 없을 때만 이 배열을 쓴다.
- * PART I-2: 스케일 티어는 챌린지비 실단가 재검산 후 게시 여부 확정 → published 플래그로 제어
- */
+/* ─────────────────────────────────────────────────────────────
+ * 2026-08-19 단가 전면 재설계 — 사장님 확정.
+ *
+ * ── 무엇이 바뀌었나 ───────────────────────────────────────────────────
+ *  1. **편당가를 먼저 정하고 편수를 곱한다.** 총액을 반올림하던 앞 판은
+ *     나눴을 때 값이 뒤집혔다 — 1편 210,000 인데 5편 묶음은 편당 260,000 이라
+ *     1편을 다섯 번 사는 게 25만원 쌌다. 묶음을 살 이유가 없는 가격표였다.
+ *  2. **수량이 적으면 외주 원가가 올라간다**(1편 ×1.15 · 5편 ×1.08 ·
+ *     10편 ×1.00 · 20편 ×0.92). 10건 벌크 기준 편당 130,000.
+ *  3. `shortsPrice`·`seedingPrice` **삭제.** 멀티 플랜에서 시딩 금액을 따로
+ *     찍고 있었는데, 인원으로 나누면 우리가 주는 리워드가 그대로 역산된다
+ *     (990,000 ÷ 20명 = 49,500원). 총액만 보여 준다.
+ *  4. 패키지 플랜 → **멀티 플랜**. 시딩 인원은 5·10·15명 세 가지뿐.
+ *  5. **출연 모델 섭외는 플랜이 아니라 옵션**이다(`MODEL_OPTION`).
+ *     싱글 플랜에만 붙고, 기획·대본·콘티가 전용으로 따라간다.
+ *
+ * 마진은 목표 45% 기준이며 **기획·관리 인건비를 빼기 전** 값이다.
+ * ───────────────────────────────────────────────────────────── */
+
+/** 헤드라인 바로 밑에 공통으로 들어가는 한 줄 */
+export const AI_EFFICIENCY_NOTE = "AI 활용한 효율화는 전반적으로 반영됩니다";
+
 export const PLANS: Plan[] = [
+  // ── 싱글 플랜 · 숏폼 기획제작만 ──────────────────────────────
   {
-    code: "full",
-    tier: "starter",
-    label: "스타터 패키지",
-    composition: "인플루언서 10 + 숏폼 5",
-    influencerCount: 10,
-    shortsCount: 5,
-    listPrice: 1_540_000,
-    betaPrice: 1_540_000,
-    shortsPrice: 990_000,
-    seedingPrice: 550_000,
-  },
-  {
-    code: "full",
-    tier: "growth",
-    label: "그로스 패키지",
-    composition: "인플루언서 20 + 숏폼 10",
-    influencerCount: 20,
-    shortsCount: 10,
-    listPrice: 2_880_000,
-    betaPrice: 2_880_000,
-    shortsPrice: 1_890_000,
-    seedingPrice: 990_000,
-    recommended: true,
-  },
-  {
-    code: "full",
-    tier: "scale",
-    label: "스케일 패키지",
-    composition: "인플루언서 30 + 숏폼 20",
-    influencerCount: 30,
-    shortsCount: 20,
-    listPrice: 4_870_000,
-    betaPrice: 4_870_000,
-    shortsPrice: 3_490_000,
-    seedingPrice: 1_380_000,
-  },
-  {
-    // 첫 거래를 트기 위한 단품. 시딩은 붙지 않는다 (5편 묶음부터)
     code: "shorts_only",
     tier: "1",
-    label: "1편",
+    label: "체험",
     composition: "전환 숏폼 1편",
     influencerCount: 0,
     shortsCount: 1,
-    listPrice: 210_000,
-    betaPrice: 210_000,
+    unitPrice: 270_000,
+    // 첫 거래를 트는 자리. 정가 270,000 에서 20% 깎아 216,000
+    listPrice: 270_000,
+    betaPrice: 216_000,
+    trialDiscount: 0.2,
     trial: true,
   },
   {
@@ -216,8 +199,9 @@ export const PLANS: Plan[] = [
     composition: "전환 숏폼 5편",
     influencerCount: 0,
     shortsCount: 5,
-    listPrice: 990_000,
-    betaPrice: 990_000,
+    unitPrice: 250_000,
+    listPrice: 1_250_000,
+    betaPrice: 1_250_000,
   },
   {
     code: "shorts_only",
@@ -226,8 +210,9 @@ export const PLANS: Plan[] = [
     composition: "전환 숏폼 10편",
     influencerCount: 0,
     shortsCount: 10,
-    listPrice: 1_890_000,
-    betaPrice: 1_890_000,
+    unitPrice: 240_000,
+    listPrice: 2_400_000,
+    betaPrice: 2_400_000,
     recommended: true,
   },
   {
@@ -237,10 +222,93 @@ export const PLANS: Plan[] = [
     composition: "전환 숏폼 20편",
     influencerCount: 0,
     shortsCount: 20,
-    listPrice: 3_490_000,
-    betaPrice: 3_490_000,
+    unitPrice: 220_000,
+    listPrice: 4_400_000,
+    betaPrice: 4_400_000,
+  },
+
+  // ── 멀티 플랜 · 숏폼 + 인플루언서 시딩 ───────────────────────
+  // ⚠️ 시딩 금액을 따로 적지 않는다. 인원으로 나누면 리워드가 역산된다
+  {
+    code: "full",
+    tier: "starter",
+    label: "스타터",
+    composition: "전환 숏폼 5편 + 인플루언서 시딩 5명",
+    influencerCount: 5,
+    shortsCount: 5,
+    listPrice: 1_700_000,
+    betaPrice: 1_700_000,
+  },
+  {
+    code: "full",
+    tier: "growth",
+    label: "그로스",
+    composition: "전환 숏폼 10편 + 인플루언서 시딩 10명",
+    influencerCount: 10,
+    shortsCount: 10,
+    listPrice: 3_000_000,
+    betaPrice: 3_000_000,
+    recommended: true,
+  },
+  {
+    code: "full",
+    tier: "scale",
+    label: "스케일",
+    composition: "전환 숏폼 20편 + 인플루언서 시딩 15명",
+    influencerCount: 15,
+    shortsCount: 20,
+    listPrice: 5_200_000,
+    betaPrice: 5_200_000,
   },
 ];
+
+/** 플랜 계열 이름 — 화면·소개서가 같은 말을 쓰게 한 곳에서만 정의한다 */
+export const PLAN_FAMILY: Record<PlanCode, { label: string; scope: string }> = {
+  shorts_only: {
+    label: "싱글 플랜",
+    scope: "구매 전환형 숏폼 기획·제작. 소재는 브랜드가 제공합니다.",
+  },
+  full: {
+    label: "멀티 플랜",
+    scope: "숏폼 기획·제작에 인플루언서 시딩을 함께. 소재를 우리가 확보합니다.",
+  },
+};
+
+/**
+ * 출연 모델 섭외 — **플랜이 아니라 옵션**이다. (2026-08-19)
+ *
+ * 사장님: *"출연 모델 기획 섭외형은 인당 35로 붙이고 섭외비를, 거기에 기존
+ * 숏폼기획제작 금액이 붙으면 되는 거잖아. 별도 플랜으로 빼기엔 애매해서."*
+ *
+ * **싱글 플랜에만** 붙는다. 멀티 플랜은 시딩으로 이미 소재를 확보하므로
+ * 두 방식을 겹쳐 팔면 고객이 무엇을 사는지 알 수 없게 된다.
+ *
+ * 인원 비례라 **수량 할인이 없다** — 섭외비가 명수만큼 그대로 나간다.
+ */
+export const MODEL_OPTION = {
+  label: "출연 모델 섭외",
+  /** 인당. 기획·대본·콘티가 전용으로 붙는다 */
+  unitPrice: 350_000,
+  attachesTo: "shorts_only" as PlanCode,
+  includes: [
+    "출연 모델 섭외 (셀프캠 · 광고형)",
+    "이 편성 전용 기획 · 대본 · 콘티",
+    "수정 요청 1회 포함",
+  ],
+  terms: [
+    "제품·서비스를 사전 발송해야 진행됩니다 (발송비·제품 원가는 브랜드 부담)",
+    "수정 1회를 넘기면 재섭외 비용이 발생합니다",
+  ],
+} as const;
+
+/** 정가로 걸지 않는 것 — 문의가 오면 회차·장소 조건으로 견적한다 */
+export const QUOTE_ONLY = [
+  {
+    label: "현장 촬영",
+    why: "감독 데이페이와 장소 섭외가 붙는데 3시간이면 컷 1~2편이 현실이라, 편당 원가가 다른 라인의 두세 배가 됩니다.",
+    note: "실사 촬영이 꼭 필요한 경우 촬영 회차와 장소 조건으로 별도 견적",
+  },
+] as const;
 
 export const formatKRW = (won: number) => `₩${won.toLocaleString("ko-KR")}`;
 
