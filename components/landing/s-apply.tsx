@@ -92,30 +92,34 @@ function PlanCards({
             onChange={() => onChange(p.value)}
             className="sr-only"
           />
-          <span className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-            <span className="text-sm font-bold">{p.label}</span>
-            {/**
-             * 가격을 여기서 밝힌다. (2026-08-19)
-             *
-             * 사장님: *"이거(현황 체크) 안 하고 문의 남기게 되면 플랜이 각
-             * 뭔지 모르고 가격도 모를 거라. 지금도 다 메일로 단가 문의
-             * 오고 있거든."*
-             *
-             * 진단을 마치면 정확한 금액이 나오지만 **대부분 건너뛰고 바로
-             * 여기로 온다.** 아무 값도 모른 채 신청하면 첫 통화가 "얼마예요"
-             * 로 시작한다. 값은 PLANS 에서 파생되므로 가격을 올리면 여기도
-             * 같이 움직인다 — 손으로 적지 않는다.
-             */}
-            <span className="stat-figure text-xs font-bold opacity-90">
-              {planPriceLine(p)}
-            </span>
-          </span>
+          <span className="block text-sm font-bold">{p.label}</span>
           <span className="mt-1 block text-xs leading-[1.7] opacity-70">
             {p.desc}
           </span>
 
-          {/* 고른 것만 티어를 펼친다. 다섯 장을 다 펼치면 폼이 가격표가 된다 */}
-          {value === p.value && planTiers(p).length > 0 && (
+          {/**
+           * **포함 내역을 보여 준다. 가격 범위는 안 박는다.** (2026-08-19)
+           *
+           * 앞 판은 오른쪽에 "21.6만원 ~ 440만원" 을 크게 박았다.
+           * 사장님: *"가격만 저렇게 통으로 넣으면 비싸 보여."* 맞다 —
+           * 상한이 먼저 눈에 들어오면 그 숫자가 기준점이 되고, 정작 무엇을
+           * 사는지는 안 읽힌다. 금액은 **고른 뒤 규모별로** 펼친다.
+           */}
+          {p.includes.length > 0 && (
+            <span className="mt-2.5 flex flex-wrap gap-x-1.5 gap-y-1">
+              {p.includes.map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-current/20 px-2 py-0.5 text-[0.6875rem] leading-[1.6] opacity-80"
+                >
+                  {item}
+                </span>
+              ))}
+            </span>
+          )}
+
+          {/* 고른 것만 규모별 금액을 펼친다. 다섯 장을 다 펼치면 폼이 가격표가 된다 */}
+          {value === p.value && (
             <span className="mt-3 block space-y-1.5 rounded-xl bg-paper/15 px-3.5 py-3">
               {planTiers(p).map((t) => (
                 <span key={t.label} className="flex justify-between gap-3 text-xs">
@@ -127,8 +131,9 @@ function PlanCards({
                   </span>
                 </span>
               ))}
-              <span className="block pt-1 text-[0.6875rem] opacity-60">
-                부가세 별도 · 정확한 금액은 편수와 구성에 따라 상담에서 확정합니다
+              <span className="block pt-1 text-[0.6875rem] leading-[1.6] opacity-60">
+                {planPriceLine(p)}
+                {planTiers(p).length > 0 && " · 부가세 별도"}
               </span>
             </span>
           )}

@@ -25,26 +25,36 @@ export const INQUIRY_PLANS = [
     /** 편수를 물어볼 플랜인가 */
     needsCount: true,
     /**
-     * 화면에 보여 줄 가격 안내. (2026-08-19 신설)
+     * **가격이 아니라 포함 내역을 보여 준다.** (2026-08-19 오후 수정)
      *
-     * 사장님: *"이거 안 하고 문의 남기게 되면 플랜이 각 뭔지 모르고 가격도
-     * 모를 거라. 지금도 다 메일로 단가 문의 오고 있거든."*
+     * 앞 판은 카드 오른쪽에 "21.6만원 ~ 440만원" 처럼 범위를 크게 박았다.
+     * 사장님 지적: *"가격 저렇게 표현하지 말고 뭐뭐가 포함되는지 위주로 넣어.
+     * 가격만 저렇게 통으로 넣으면 비싸 보여."*
      *
-     * 진단(현황 체크)을 마치면 정확한 금액이 나오지만, **건너뛰고 바로 폼으로
-     * 오는 사람이 대부분**이다. 그 사람이 아무 값도 모른 채 신청하면 첫 통화가
-     * "얼마예요"로 시작하고, 그건 우리도 고객도 손해다. 범위라도 여기서 밝힌다.
-     *
-     * ⚠️ 값은 `lib/constants.ts` 의 PLANS 에서 파생시킨다(아래 `planRange`).
-     * 여기 숫자를 손으로 적으면 가격을 올릴 때 반드시 어긋난다.
+     * 맞다. 상한(440만·520만)이 먼저 눈에 들어오면 그 숫자가 기준점이 되고,
+     * 실제로 사는 구성이 무엇인지는 안 읽힌다. 금액은 **고른 뒤 규모별로**
+     * 펼쳐 보여 준다 — 거기서는 "무엇에 얼마" 라는 맥락이 붙는다.
      */
+    includes: [
+      "기획 · 대본 · 콘티",
+      "편집 · 자막 · 보정",
+      "AI 활용 효율화",
+      "1회 무상 수정",
+    ],
     priceFrom: "shorts_only" as const,
   },
   {
     value: "shorts_package",
     // 2026-08-19 "패키지" → "멀티" 로 개명. 무엇이 묶였는지 말해 주는 이름이다
     label: "숏폼 — 멀티 플랜",
-    desc: "인플루언서 시딩 5·10·15명 + 구매전환형 광고숏폼 기획·제작",
+    desc: "인플루언서 시딩으로 소재부터 확보해 광고 숏폼까지",
     needsCount: true,
+    includes: [
+      "인플루언서 시딩 5·10·15명",
+      "콘텐츠 가이드라인 설계",
+      "회수 소재 광고용 재편집",
+      "싱글 플랜의 기획·제작 전부",
+    ],
     priceFrom: "full" as const,
   },
   {
@@ -52,21 +62,20 @@ export const INQUIRY_PLANS = [
     label: "브랜드 SNS 채널 턴키 운영",
     desc: "채널 전략부터 콘텐츠 제작·운영까지 통째로",
     needsCount: false,
-    /** 정가가 없는 구성 — 범위 대신 이 문구가 나간다 */
-    priceNote: "채널 수·편성 주기에 따라 별도 견적",
-  },
-  {
-    value: "ai_team",
-    label: "AI팀 구축 프로젝트",
-    desc: "사내에 AI 제작 역량을 심는 구축형 프로젝트",
-    needsCount: false,
-    priceNote: "인원·기간·범위에 따라 별도 견적",
+    includes: [
+      "채널 포지셔닝 · 전략",
+      "콘텐츠 기획 · 제작",
+      "편성 · 운영 대행",
+      "성과 리포트",
+    ],
+    priceNote: "채널 수·편성 주기에 따라 구성",
   },
   {
     value: "consult",
     label: "상담 후 결정",
     desc: "무엇이 맞는지부터 같이 정하고 싶어요",
     needsCount: false,
+    includes: [],
     priceNote: "현황을 먼저 듣고 구성부터 같이 정합니다",
   },
 ] as const;
@@ -84,6 +93,9 @@ export const needsCount = (v: string) =>
  */
 export const INQUIRY_PLAN_LABEL: Record<string, string> = {
   ...Object.fromEntries(INQUIRY_PLANS.map((p) => [p.value, p.label])),
+  // ── 폼에서 내린 선택지 (2026-08-19 사장님 지시) ──
+  // 값은 남긴다 — 이 값으로 접수된 건이 있으면 어드민이 빈칸이 된다
+  ai_team: "AI팀 구축 프로젝트 (폼에서 내림)",
   // ── 2026-08-18 이전 접수건 ──
   shorts_only: "숏폼 단독 (구 버전)",
   full: "시딩 포함 (구 버전)",
@@ -181,14 +193,16 @@ export function planRange(code: PlanCode): { min: number; max: number } | null {
   return { min: Math.min(...prices), max: Math.max(...prices) };
 }
 
-/** 폼 선택지 한 장에 들어갈 한 줄. 정가가 없으면 안내 문구를 그대로 돌려준다 */
+/**
+ * 선택지를 고른 뒤 펼쳐지는 영역의 안내 한 줄.
+ *
+ * ⚠️ **카드 오른쪽에 범위를 박는 데 쓰지 마라.** 상한이 먼저 보이면 그 숫자가
+ * 기준점이 되어 비싸 보이고, 정작 무엇을 사는지는 안 읽힌다 (2026-08-19).
+ * 정가가 없는 구성은 안내 문구를 그대로 돌려준다.
+ */
 export function planPriceLine(plan: (typeof INQUIRY_PLANS)[number]): string {
   if ("priceNote" in plan && plan.priceNote) return plan.priceNote;
-  if (!("priceFrom" in plan)) return "";
-  const range = planRange(plan.priceFrom);
-  if (!range) return "";
-  const won = (n: number) => `${(n / 10000).toLocaleString("ko-KR")}만원`;
-  return `${won(range.min)} ~ ${won(range.max)} · 규모에 따라`;
+  return "규모별 구성과 금액입니다 — 정확한 값은 상담에서 확정합니다";
 }
 
 /** 그 계열의 티어를 한 줄씩 — 폼에서 펼쳐 보여 준다 */
