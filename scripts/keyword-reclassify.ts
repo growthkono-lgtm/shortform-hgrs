@@ -163,7 +163,12 @@ async function main() {
   /* 200개씩 끊어 upsert. 한 번에 다 밀면 요청이 거절된다 */
   const CHUNK = 200;
   for (let i = 0; i < changes.length; i += CHUNK) {
-    const slice = changes.slice(i, i + CHUNK).map(({ was: _was, ...rest }) => rest);
+    // `was` 는 화면 출력용이라 DB 로 보내지 않는다
+    const slice = changes.slice(i, i + CHUNK).map((c) => {
+      const row = { ...c };
+      delete (row as { was?: string }).was;
+      return row;
+    });
     const r = await fetch(`${REST}/rest/v1/blog_keyword?on_conflict=id`, {
       method: "POST",
       headers: { ...H, Prefer: "resolution=merge-duplicates,return=minimal" },

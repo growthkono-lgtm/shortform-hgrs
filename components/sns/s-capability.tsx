@@ -417,12 +417,24 @@ export function Capability() {
   // 첫 카드는 460px)이 화면보다 넓어서, 가로 트랙을 유지하는 한 무슨 수를 써도
   // 잘린다. 좁은 화면에서는 트랙을 풀어 세로로 쌓는다 — 카드 폭은 전부
   // 화면 안에 들어오는 치수라 그대로 두면 된다.
-  const track = useStickyProgress<HTMLDivElement>();
+  /**
+   * ⚠️ **구조 분해로 받는다.** (2026-08-19)
+   *
+   * `const track = useStickyProgress()` 로 받아 `track.ref`·`track.p` 로 쓰면
+   * `react-hooks/refs` 가 "Cannot access refs during render" 로 잡는다 —
+   * 훅이 돌려준 객체에서 렌더 중에 ref 를 꺼내 읽는 모양이라 컴파일러가
+   * 안전을 보장할 수 없다. 값을 바로 받으면 그 모호함이 없어진다.
+   *
+   * 이 에러는 전부터 있었는데 오늘 처음 잡혔다. 그동안 내가 **바꾼 파일만**
+   * 린트했기 때문이다(`npx eslint <파일>`). `npm run qa` 가 이제 레포 전체를
+   * 돌린다.
+   */
+  const { ref: trackRef, p: trackProgress } = useStickyProgress<HTMLDivElement>();
 
   return (
     <section id="capability" className="scroll-mt-16 bg-paper">
       {/* 스크롤 길이 확보용 래퍼 — 이 높이만큼 트랙이 흐른다 (데스크톱 한정) */}
-      <div ref={track.ref} className="relative lg:h-[300vh]">
+      <div ref={trackRef} className="relative lg:h-[300vh]">
         <div className="py-16 lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:overflow-hidden">
           <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
             <p className="eyebrow">Capability</p>
@@ -437,7 +449,7 @@ export function Capability() {
             <div
               className="flex flex-col items-start gap-12 px-5 sm:px-8 lg:w-max lg:flex-row lg:gap-10 lg:will-change-transform lg:[transform:translateX(var(--track-x))]"
               style={
-                { "--track-x": `calc(-72% * ${track.p})` } as CSSProperties
+                { "--track-x": `calc(-72% * ${trackProgress})` } as CSSProperties
               }
             >
               {CAPABILITY.cards.map((card) =>
