@@ -1,0 +1,12 @@
+-- blog_keyword_metric 에 RLS 를 켠다. (2026-08-20 보안 점검)
+--
+-- `20260813000004_blog_keyword_metrics.sql` 이 이 표를 만들면서 RLS 를
+-- 빠뜨렸고 이후 어떤 마이그레이션도 켜지 않았다. 그래서 **브라우저 번들에
+-- 실려 나가는 anon 키로 1,594행이 그대로 읽혔다** (실제로 조회해 확인).
+-- anon·authenticated 에 SELECT/INSERT/UPDATE/DELETE/TRUNCATE 가 전부 열려 있어
+-- 읽기뿐 아니라 삭제도 가능한 상태였다.
+--
+-- 정책은 만들지 않는다. `blog_ops_log`·`blog_view` 등 다른 내부 표와 같은
+-- 방식이다 — RLS 만 켜면 anon 은 아무것도 못 하고, 서비스 롤은 RLS 를
+-- 우회하므로 `scripts/keyword-sync.ts` 는 그대로 돈다.
+alter table public.blog_keyword_metric enable row level security;

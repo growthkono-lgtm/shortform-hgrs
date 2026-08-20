@@ -80,7 +80,7 @@ export const GROWTH_CASES: GrowthCase[] = [
       { label: "ROAS", to: 3, suffix: "배" },
     ],
     result:
-      "제품 출시 고투마켓 단계 소재 부스팅, 3개월 내 매출 4천만원 · ROAS 3배",
+      "제품 출시 고투마켓 단계 소재 부스팅, 3개월 내 매출 6천만원 · ROAS 3배",
     scope: "풀 프로젝트 수행 성과",
   },
   {

@@ -36,10 +36,10 @@ export function SiteHeader({
           : "fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-night/70 text-white backdrop-blur-md"
       }
     >
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-3 px-5 sm:gap-4 sm:px-8">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-2 px-5 sm:gap-4 sm:px-8">
         <Link
           href="/"
-          className="flex shrink-0 items-center"
+          className="-my-3 flex shrink-0 items-center py-3"
           aria-label={SERVICE.name}
         >
           {/* 심볼만 쓰고 이름은 텍스트로 — 워드마크 파일은 다른 브랜드 것이었다 */}

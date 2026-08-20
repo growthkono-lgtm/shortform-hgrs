@@ -43,8 +43,8 @@ export function HeaderAuth({ paper }: { paper?: boolean } = {}) {
           href="/login"
           className={
             paper
-              ? "shrink-0 text-[0.6875rem] whitespace-nowrap text-muted hover:text-ink sm:text-sm"
-              : "shrink-0 text-[0.6875rem] whitespace-nowrap text-white/60 hover:text-white sm:text-sm"
+              ? "-my-3.5 shrink-0 py-3.5 text-[0.6875rem] whitespace-nowrap text-muted hover:text-ink sm:text-sm"
+              : "-my-3.5 shrink-0 py-3.5 text-[0.6875rem] whitespace-nowrap text-white/60 hover:text-white sm:text-sm"
           }
         >
           로그인
@@ -52,7 +52,7 @@ export function HeaderAuth({ paper }: { paper?: boolean } = {}) {
       )}
       <Link
         href="/app"
-        className="shrink-0 rounded-full bg-accent px-3 py-1.5 text-[0.6875rem] font-bold whitespace-nowrap text-white transition-colors duration-200 hover:bg-accent-deep sm:px-4 sm:py-2 sm:text-xs"
+        className="shrink-0 rounded-full bg-accent px-3 py-3 text-[0.6875rem] font-bold whitespace-nowrap text-white transition-colors duration-200 hover:bg-accent-deep sm:px-4 sm:py-2 sm:text-xs"
       >
         내 프로젝트
       </Link>

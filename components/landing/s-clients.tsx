@@ -26,6 +26,7 @@ const CLIENTS: [string, string][] = [
   ["real-class", "REAL CLASS"],
   ["zeroblock", "ZERO block"],
   ["feliway", "FELIWAY"],
+  ["cucinito", "CUCINITO"],
   ["banaco", "BANACO"],
   ["fitflex", "FITFLEX"],
   ["dmand", "dmand"],

@@ -52,17 +52,34 @@ export default async function FramerCasePage({ params }: Props) {
    * 갈 수 있게 케이스를 CreativeWork 로 명시한다. about 에 클라이언트를 두고
    * abstract 에 프레이머 원문 두 줄을 그대로 넣는다.
    */
+  const caseUrl = `${SERVICE.url}/portfolio/${encodeURIComponent(c.slug)}`;
+  /** 본문 첫 이미지 — 스키마의 대표 그림 */
+  const firstImage = c.blocks.find(
+    (b): b is { img: string; alt: string } => "img" in b,
+  );
+
   const caseSchema = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
+    "@id": `${caseUrl}#case`,
     name: c.name,
     abstract: c.summary.join(" · "),
-    url: `${SERVICE.url}/portfolio/${encodeURIComponent(c.slug)}`,
+    url: caseUrl,
     inLanguage: "ko-KR",
     genre: "마케팅 프로젝트 사례",
-    creator: { "@type": "Organization", name: "해그로시", url: SERVICE.url },
+    /**
+     * creator 를 인라인으로 다시 적으면 그래프에 Organization 이 두 개
+     * 생긴다("해그로시" / "주식회사 해그로시"). 사이트 레이아웃이 이미 내보내는
+     * 노드를 @id 로 가리킨다.
+     */
+    creator: { "@id": `${SERVICE.url}#organization` },
+    publisher: { "@id": `${SERVICE.url}#organization` },
     about: { "@type": "Organization", name: c.name.replace(/\s*\(.*$/, "") },
-    ...(story ? { mainEntityOfPage: `${SERVICE.url}/blog/${story}` } : {}),
+    /** mainEntityOfPage 는 "이 개체를 주로 설명하는 페이지" — 곧 이 페이지다 */
+    mainEntityOfPage: caseUrl,
+    ...(firstImage ? { image: `${SERVICE.url}${firstImage.img}` } : {}),
+    /** 관련 글은 subjectOf 가 아니라 relatedLink 로 건다 */
+    ...(story ? { relatedLink: `${SERVICE.url}/blog/${story}` } : {}),
   };
 
   const crumbs = breadcrumb([
@@ -106,7 +123,7 @@ export default async function FramerCasePage({ params }: Props) {
                 <Image
                   key={`${b.img}-${i}`}
                   src={b.img}
-                  alt={b.alt || c.name}
+                  alt={b.alt}
                   width={1200}
                   height={800}
                   sizes="(min-width: 768px) 768px, 100vw"

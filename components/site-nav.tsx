@@ -18,13 +18,13 @@ import { HeaderAuth } from "@/components/auth/header-auth";
 export const NAV = [
   { href: "/shortform", label: "숏폼 스튜디오" },
   /**
-   * 2026-08-20: "브랜드 SNS 채널" → "브랜드 채널 마케팅".
+   * 2026-08-20: "브랜드 SNS 채널" → "브랜드 채널 그로스".
    *
    * 소개서에서 SNS 채널 서비스와 종합 브랜드 마케팅을 하나로 합치고 이름을
-   * **브랜드 채널 마케팅 프로젝트**로 확정했다. 주소는 그대로 `/sns-brand` 다 —
+   * **브랜드 채널 그로스**으로 확정했다. 주소는 그대로 `/sns-brand` 다 —
    * 외부에 이미 나간 링크가 있어 URL 은 건드리지 않는다.
    */
-  { href: "/sns-brand", label: "브랜드 채널 마케팅" },
+  { href: "/sns-brand", label: "브랜드 채널 그로스" },
   /**
    * 2026-08-20: "성과 사례" → "포트폴리오".
    *
@@ -93,7 +93,7 @@ export function SiteNav({
         )}
       </nav>
 
-      <div className="flex shrink-0 items-center gap-2.5 sm:gap-3.5">
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3.5">
         <HeaderAuth paper={paper} />
 
         {/* 페이지별 CTA 는 데스크톱만 — 모바일에서는 햄버거 패널 하단에 크게 들어간다 */}
@@ -115,7 +115,7 @@ export function SiteNav({
           onClick={() => setOpen(true)}
           aria-label="메뉴 열기"
           aria-expanded={open}
-          className={`grid size-9 place-items-center rounded-full border lg:hidden ${
+          className={`grid size-11 place-items-center rounded-full border lg:hidden ${
             paper ? "border-line text-ink" : "border-white/20 text-white"
           }`}
         >
@@ -146,7 +146,7 @@ export function SiteNav({
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="메뉴 닫기"
-                className="grid size-9 place-items-center rounded-full border border-line"
+                className="grid size-11 place-items-center rounded-full border border-line"
               >
                 <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />

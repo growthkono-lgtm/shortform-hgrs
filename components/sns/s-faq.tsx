@@ -1,6 +1,7 @@
 import { Section, SectionHeading } from "@/components/ui/section";
 import { Cta } from "@/components/ui/cta";
 import { ARCHIVE, FAQ, FINAL_CTA } from "@/lib/sns-brand";
+import { KeepDots } from "@/components/ui/keep-dots";
 
 /**
  * 브런치북 카드 — /sns-brand 와 숏폼 랜딩이 같이 쓴다.
@@ -74,10 +75,10 @@ export function Faq() {
             className={i > 0 ? "border-t border-line" : undefined}
           >
             <summary className="cursor-pointer list-none px-6 py-5 text-base font-bold marker:hidden hover:bg-paper-alt">
-              {faq.q}
+              <KeepDots text={faq.q} />
             </summary>
-            <p className="px-6 pb-6 text-sm leading-[1.8] text-muted">
-              {faq.a}
+            <p className="max-w-3xl px-6 pb-6 text-sm leading-[1.8] text-muted">
+              <KeepDots text={faq.a} />
             </p>
           </details>
         ))}

@@ -55,12 +55,27 @@ export const GET = cronRoute("announce", async (now) => {
 
   if (fresh.length === 0) return { body: { sent: 0 } };
 
+  /**
+   * ⚠️ **한 번에 나갈 수 있는 통수를 막아 둔다.** (2026-08-20 과금 점검)
+   *
+   * 앞 판은 `.limit()` 없이 전부 읽어 1인당 1콜씩 직렬 발송했다. 지금은
+   * 구독자가 0명이라 사고가 안 났을 뿐, 생기는 순간 **글 수 × 구독자 수**
+   * 만큼 Resend 콜이 나간다. 상한을 걸고, 넘치면 로그로 알린다.
+   */
+  const MAX_RECIPIENTS = 200;
   const { data: subs } = await supabase
     .from("blog_subscriber")
     .select("email")
-    .is("unsubscribed_at", null);
+    .is("unsubscribed_at", null)
+    .limit(MAX_RECIPIENTS + 1);
 
-  const recipients = (subs ?? []).map((s) => s.email);
+  const all = (subs ?? []).map((s) => s.email);
+  const recipients = all.slice(0, MAX_RECIPIENTS);
+  if (all.length > MAX_RECIPIENTS) {
+    console.warn(
+      `[announce] 구독자가 상한(${MAX_RECIPIENTS})을 넘었습니다 — 배치 발송으로 바꿔야 합니다`,
+    );
+  }
 
   let sent = 0;
   for (const post of fresh) {

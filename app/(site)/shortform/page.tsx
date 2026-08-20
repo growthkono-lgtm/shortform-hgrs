@@ -2,10 +2,13 @@ import type { Metadata } from "next";
 import {
   JsonLd,
   breadcrumb,
+  faqSchema,
   serviceSchema,
 } from "@/components/seo/structured-data";
+import { SHORTFORM_FAQ } from "@/lib/shortform-faq";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { ORG } from "@/lib/constants";
 import { Hero } from "@/components/landing/s1-hero";
 import { ServiceFlow } from "@/components/landing/s-service-flow";
 import { Services } from "@/components/landing/s-services";
@@ -60,7 +63,12 @@ export const metadata: Metadata = {
   description:
     "인플루언서 시딩부터 구매 전환형 숏폼까지 편수 단위로. 30여 브랜드의 그로스·컨텐츠 프로젝트를 굴려 온 팀이 소재 제작 시스템만 패키지로 열었습니다.",
   alternates: { canonical: "/shortform" },
+  // openGraph 는 부모와 병합되지 않고 통째로 교체된다 —
+  // 루트에 적어 둔 type·locale·siteName 이 여기서 사라지므로 다시 적는다
   openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    siteName: ORG.name,
     title: "숏폼 스튜디오 — 구매 전환형 광고 소재 | 해그로시",
     description:
       "인플루언서 시딩부터 구매 전환형 숏폼까지 편수 단위로. 결제 한 번으로 한 파이프라인에서 처리됩니다.",
@@ -86,6 +94,8 @@ export default function LandingPage() {
     <DiagnosisProvider>
       <JsonLd data={SCHEMA} />
       <JsonLd data={CRUMBS} />
+      {/* FAQ 스키마 — 화면의 7문항을 생성형 검색이 그대로 인용할 수 있게 한다 */}
+      <JsonLd data={faqSchema([...SHORTFORM_FAQ])} />
       <SiteHeader cta={{ href: "#apply", label: "소개서 받기" }} />
       <main>
         <Hero />

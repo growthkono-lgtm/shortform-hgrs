@@ -1,10 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { COMPANY, SERVICE } from "@/lib/constants";
+import { COMPANY, ORG, SERVICE } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "이용약관",
-  description: `${SERVICE.name} 서비스 이용약관`,
+  description: `${SERVICE.name} 서비스 이용약관 — 계약 성립, 결제와 환불, 저작권과 컨텐츠 이용 범위, 책임 한계를 정합니다.`,
+  // 루트 레이아웃의 canonical("/")이 그대로 내려오면 이 페이지가 홈으로
+  // 자기표준화돼 색인에서 빠진다. 페이지마다 제 주소를 직접 적는다.
+  alternates: { canonical: "/terms" },
+  openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    siteName: ORG.name,
+    title: "이용약관 | 해그로시",
+    description: `${SERVICE.name} 서비스 이용약관`,
+    url: "/terms",
+  },
 };
 
 export default function TermsPage() {

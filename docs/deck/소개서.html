@@ -141,6 +141,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .venn-mid{position:absolute;left:50%;top:58mm;transform:translate(-50%,-50%);text-align:center;z-index:2}
 /* 원마다 플랜명을 한 줄 더 — 명칭만으로는 뭘 사는 건지 안 잡힌다
    (2026-08-20 사장님 지시) */
+.lines3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.lines3 .line-t{font-size:15pt;line-height:1.4}
+.lines3 .line-plans li{font-size:8.4pt}
 .line-plans{list-style:none;margin-top:4mm;display:flex;flex-direction:column;gap:2mm}
 .line-plans li{background:var(--alt);border-radius:2mm;padding:2.6mm 3.4mm;font-size:9pt;font-weight:600;line-height:1.5}
 .venn-c em{display:block;margin-top:1.6mm;font-size:7.2pt;font-weight:600;font-style:normal;opacity:.75;letter-spacing:-.01em}
@@ -512,7 +515,8 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .plan-list span{display:block;margin-top:1.2mm;font-size:8.4pt;line-height:1.6;color:var(--muted)}
 
 /* ── Appendix · AI 분업 */
-.ai-lead{margin-bottom:6mm;border-left:.5mm solid var(--indigo);padding-left:5mm;font-size:10.5pt;line-height:1.85;color:#2a2a2a;flex-shrink:0}
+/* 사장님 지시로 두 줄에 맞춘다 — 세 줄로 흐르면 리드가 본문처럼 읽힌다 */
+.ai-lead{margin-bottom:6mm;border-left:.5mm solid var(--indigo);padding-left:5mm;font-size:9.6pt;line-height:1.8;color:#2a2a2a;flex-shrink:0;max-width:250mm;text-wrap:pretty}
 .ai2{flex:1;min-height:0}
 .ai-col{background:#fff;border:1px solid var(--line);border-radius:4mm;padding:6mm 6.5mm;display:flex;flex-direction:column;min-height:0}
 .ai-col-h{background:var(--night);border-color:var(--night);color:#fff}
@@ -539,6 +543,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .story{display:flex;flex-direction:column;text-decoration:none;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);border-radius:3.5mm;padding:2.6mm;min-height:0}
 .story img{width:100%;flex:1 1 0;min-height:0;object-fit:cover;border-radius:2.5mm;border:1px solid rgba(255,255,255,.1);background:#171717;display:block}
 .story-t{margin-top:2.6mm;font-size:8.6pt;font-weight:600;line-height:1.5;color:#fff;letter-spacing:-.02em;flex:0 0 auto}
+/* 고객 이야기가 없는 건은 프레이머 요약 두 줄이 들어간다 — 색을 안 주면
+   다크 배경에서 통째로 묻힌다 (2026-08-20 캡처에서 발견) */
+.story-s{margin-top:1.4mm;font-size:7.4pt;line-height:1.55;color:rgba(255,255,255,.6);flex:0 0 auto}
 
 /* IMC 카드가 <a> 가 됐다 — 링크 표시 */
 .imc-card{text-decoration:none}
@@ -696,7 +703,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   <div class="cover-l">
     <p class="cover-en">HGRS STUDIO</p>
     <h1>해그로시<br>스튜디오<br><span class="chip-title">종합 소개서</span></h1>
-    <p class="cover-sub">인플루언서 시딩과 구매 전환 숏폼부터 브랜드 채널 마케팅까지<br>브랜드 퍼널을 완성하는 두 갈래를 함께 소개합니다.</p>
+    <p class="cover-sub">인플루언서-전환 숏폼부터 브랜드 채널 그로스까지<br>브랜드 퍼널을 완성하는 세 갈래를 함께 소개합니다.</p>
     <div class="cover-stats">
       <div><strong>30+</strong><span>브랜드 프로젝트</span></div>
       <div><strong>3억대</strong><span>연 거래액</span></div>
@@ -705,7 +712,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     <p class="cover-org">주식회사 해그로시 · hgrs.io</p>
   </div>
   <div class="cover-r">
-<img src="http://localhost:8909/public/portfolio/clips/riiid-momcafe.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/moen-shampoo-ppl.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/zeroblock-interview.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/bone-w40s.jpg" alt="">
+<img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-momcafe.jpg" alt=""><img src="http://localhost:8909/public/deck/img/portfolio/clips/moen-shampoo-ppl.jpg" alt=""><img src="http://localhost:8909/public/deck/img/portfolio/clips/zeroblock-interview.jpg" alt=""><img src="http://localhost:8909/public/deck/img/portfolio/clips/bone-w40s.jpg" alt="">
   </div>
 </div></div>
   
@@ -736,7 +743,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   </div>
   <div class="pos-col">
 <div class="pos"><p class="pos-t">소스부터 확보</p><p class="pos-d">인플루언서 시딩으로 찍을 것을 만듭니다</p></div><div class="pos"><p class="pos-t">전환까지 연결</p><p class="pos-d">그 소스로 구매 전환 소재를 제작합니다</p></div><div class="pos"><p class="pos-t">채널에 쌓습니다</p><p class="pos-d">인스타그램 · 유튜브 · 블로그를 함께 굴립니다</p></div>
-    <div class="pos-note">여기에 퍼포먼스 · CRM · 데이터를 더하면 <b>린 IMC 마케팅 구독제</b>입니다</div>
+    <div class="pos-note">브랜드의 포지셔닝부터 스케일업을 함께 만듭니다.</div>
   </div>
 </div></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>06</span></footer>
@@ -746,21 +753,27 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 
 <div class="shead">
   <h2>무엇이 필요하신가요</h2>
-  <p class="subline">두 갈래 중 어디서 시작하셔도 같은 팀이 붙습니다</p>
+  <p class="subline">세 가지 중 어디서 시작하셔도 같은 팀이 붙습니다</p>
 </div>
-<div class="lines">
+<div class="lines lines3">
 <div class="line-card">
   <p class="line-k">구매 전환 소재</p>
-  <p class="line-t">숏폼 스튜디오</p>
+  <p class="line-t">인플루언서-전환 숏폼 스튜디오</p>
   <p class="line-d">인플루언서 시딩과 2차 활용 소스로<br>광고 소재를 편수 단위로 제작합니다.</p>
-  <ul class="line-plans"><li>싱글 플랜 — 보유 소스로 숏폼만</li><li>멀티 플랜 — 시딩으로 소스부터 확보</li></ul>
+  <ul class="line-plans"><li>싱글 플랜 — 기존 소스 및 AI컷을 활용한 구매전환 숏폼</li><li>멀티 플랜 — 인플 시딩 및 2차활용과 전환 숏폼</li></ul>
   <p class="line-tag">편수 단위 · 즉시 시작</p>
 </div><div class="line-card">
-  <p class="line-k">브랜드 전담팀</p>
-  <p class="line-t">브랜드 종합 그로스팀</p>
-  <p class="line-d">채널·컨텐츠·광고를 하나의 전략으로 묶어<br>기간 단위로 함께 굴립니다.</p>
-  <ul class="line-plans"><li>SNS 채널 활성화 플랜</li><li>린 IMC 마케팅 구독제</li></ul>
+  <p class="line-k">브랜드 채널 그로스</p>
+  <p class="line-t">SNS 채널 활성화 플랜</p>
+  <p class="line-d">브랜드가 가진 채널을<br>실제로 도는 채널로 만듭니다.</p>
+  <ul class="line-plans"><li>유튜브 채널 운영 · 쇼츠 · 릴스 미러링</li><li>SEO / AEO · 브랜드 블로그 최적화</li></ul>
   <p class="line-tag">6개월 또는 1년 · 협의</p>
+</div><div class="line-card">
+  <p class="line-k">브랜드 채널 그로스</p>
+  <p class="line-t">린 IMC 마케팅 구독제</p>
+  <p class="line-d">꼭 필요한 우선순위 전략만<br>조합해 팀 단위로 투입합니다.</p>
+  <ul class="line-plans"><li>퍼포먼스 마케팅 · CRM 캠페인 최적화</li><li>데이터 · 그로스 파이프라인 구축</li></ul>
+  <p class="line-tag">월 3곳 한정 · 협의</p>
 </div>
 </div>
 </div>
@@ -777,11 +790,11 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 <span class="cred">블랭크 코퍼레이션 출신</span><span class="cred">라이브커머스 10종 이상 브랜드 밴더사</span><span class="cred">구글·메타 코리아 우수 크리에이티브</span><span class="cred">대형 종합몰 컨텐츠 담당 출신</span>
 </div>
 <div class="crew">
-<img src="http://localhost:8909/public/portfolio/crew/crew-01.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-02.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-03.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-04.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-05.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-06.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-07.webp" alt=""><img src="http://localhost:8909/public/portfolio/crew/crew-08.webp" alt="">
+<img src="http://localhost:8909/public/deck/img/portfolio/crew/crew-01.jpg" alt=""><img src="http://localhost:8909/public/deck/img/portfolio/crew/crew-02.jpg" alt=""><img src="http://localhost:8909/public/deck/img/portfolio/crew/crew-03.jpg" alt=""><img src="http://localhost:8909/public/deck/img/portfolio/crew/crew-04.jpg" alt=""><img src="http://localhost:8909/public/deck/img/portfolio/crew/crew-05.jpg" alt=""><img src="http://localhost:8909/public/deck/img/portfolio/crew/crew-06.jpg" alt=""><img src="http://localhost:8909/public/deck/img/portfolio/crew/crew-07.jpg" alt=""><img src="http://localhost:8909/public/deck/img/portfolio/crew/crew-08.jpg" alt="">
 </div></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>18</span></footer>
 </section>
-<section id="pg35" class="page" data-layout="cards">
+<section id="pg36" class="page" data-layout="cards">
   <div class="page-body">
 
 <div class="shead">
@@ -790,25 +803,25 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 </div>
 <div class="teams">
 <div class="team">
-  <img class="team-img" src="http://localhost:8909/public/sns/team-pm.jpg" alt="">
+  <img class="team-img" src="http://localhost:8909/public/deck/img/sns/team-pm.jpg" alt="">
   <p class="team-name">PM/CP(기획총괄)팀</p>
   <ul class="team-list"><li>프로젝트 마일스톤 관리</li><li>전략 기획 및 세부 지표 싱크</li><li>브랜드 종합 목표 달성 체크</li><li>클라이언트 협업 경험 최적화</li></ul>
 </div><div class="team">
-  <img class="team-img" src="http://localhost:8909/public/sns/team-ct.jpg" alt="">
+  <img class="team-img" src="http://localhost:8909/public/deck/img/sns/team-ct.jpg" alt="">
   <p class="team-name">컨텐츠팀</p>
   <ul class="team-list"><li>브랜딩 크리에이티브</li><li>시니어 출신 고감도 촬영 감독진</li><li>방송/예능/유튜브/마케팅 PD</li><li>멀티 유즈 및 그로스 성과 연결</li></ul>
 </div><div class="team">
-  <img class="team-img" src="http://localhost:8909/public/sns/team-fn.jpg" alt="">
+  <img class="team-img" src="http://localhost:8909/public/deck/img/sns/team-fn.jpg" alt="">
   <p class="team-name">퍼널팀</p>
   <ul class="team-list"><li>AARRR 전환율 고도화</li><li>AEO/SEO/리드 제너레이션</li><li>GA4 및 CRM 그로스툴 최적화</li><li>홈페이지 및 자사몰 구축</li></ul>
 </div><div class="team">
-  <img class="team-img" src="http://localhost:8909/public/sns/team-pf.jpg" alt="">
+  <img class="team-img" src="http://localhost:8909/public/deck/img/sns/team-pf.jpg" alt="">
   <p class="team-name">퍼포먼스팀</p>
   <ul class="team-list"><li>매출 지표 스케일업</li><li>구매 전환형 숏폼 기획제작</li><li>브랜드 마케팅, 프로모션 운영</li><li>인플루언서 리뷰 시딩 바이럴</li></ul>
 </div>
 </div>
 <p class="foot-note">인하우스 안에는 또 다른 인하우스 팀이 필요합니다. 이제 단순 구독이 아닌 진짜 시스템을 경험하세요.</p></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>35</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>36</span></footer>
 </section>
 <section id="pg3" class="page" data-layout="logos">
   <div class="page-body">
@@ -818,7 +831,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   <p class="subline">커머스부터 서비스, 플랫폼까지 30여 브랜드와 함께했습니다</p>
 </div>
 <div class="logos">
-<div><img src="http://localhost:8909/public/logos/krafton.png" alt=""></div><div><img src="http://localhost:8909/public/logos/riiid.png" alt=""></div><div><img src="http://localhost:8909/public/logos/lotte-rental.png" alt=""></div><div><img src="http://localhost:8909/public/logos/parklon.png" alt=""></div><div><img src="http://localhost:8909/public/logos/moev.png" alt=""></div><div><img src="http://localhost:8909/public/logos/greencar.png" alt=""></div><div><img src="http://localhost:8909/public/logos/purum-wellness.png" alt=""></div><div><img src="http://localhost:8909/public/logos/modu-training.png" alt=""></div><div><img src="http://localhost:8909/public/logos/sambunui-il.png" alt=""></div><div><img src="http://localhost:8909/public/logos/yeonae-jagyeok.png" alt=""></div><div><img src="http://localhost:8909/public/logos/gochodaejol.png" alt=""></div><div><img src="http://localhost:8909/public/logos/juwangsan.png" alt=""></div><div><img src="http://localhost:8909/public/logos/zeroblock.png" alt=""></div><div><img src="http://localhost:8909/public/logos/naechinso.png" alt=""></div><div><img src="http://localhost:8909/public/logos/real-class.png" alt=""></div><div><img src="http://localhost:8909/public/logos/curas.png" alt=""></div><div><img src="http://localhost:8909/public/logos/dmand.png" alt=""></div><div><img src="http://localhost:8909/public/logos/walla.png" alt=""></div><div><img src="http://localhost:8909/public/logos/posh.png" alt=""></div><div><img src="http://localhost:8909/public/logos/resq.png" alt=""></div><div><img src="http://localhost:8909/public/logos/natura-health.png" alt=""></div><div><img src="http://localhost:8909/public/logos/feliway.png" alt=""></div><div><img src="http://localhost:8909/public/logos/banaco.png" alt=""></div><div><img src="http://localhost:8909/public/logos/irvinelab.png" alt=""></div><div><img src="http://localhost:8909/public/logos/cyberdigm.png" alt=""></div><div><img src="http://localhost:8909/public/logos/code-i.png" alt=""></div><div><img src="http://localhost:8909/public/logos/fitflex.png" alt=""></div><div><img src="http://localhost:8909/public/logos/luvd.png" alt=""></div><div><img src="http://localhost:8909/public/logos/mudit.png" alt=""></div><div><img src="http://localhost:8909/public/logos/yeolda.png" alt=""></div><div><img src="http://localhost:8909/public/logos/bluehouse-seoul.png" alt=""></div>
+<div><img src="http://localhost:8909/public/logos/krafton.png" alt=""></div><div><img src="http://localhost:8909/public/logos/riiid.png" alt=""></div><div><img src="http://localhost:8909/public/logos/lotte-rental.png" alt=""></div><div><img src="http://localhost:8909/public/logos/parklon.png" alt=""></div><div><img src="http://localhost:8909/public/logos/moev.png" alt=""></div><div><img src="http://localhost:8909/public/logos/greencar.png" alt=""></div><div><img src="http://localhost:8909/public/logos/purum-wellness.png" alt=""></div><div><img src="http://localhost:8909/public/logos/modu-training.png" alt=""></div><div><img src="http://localhost:8909/public/logos/sambunui-il.png" alt=""></div><div><img src="http://localhost:8909/public/logos/yeonae-jagyeok.png" alt=""></div><div><img src="http://localhost:8909/public/logos/gochodaejol.png" alt=""></div><div><img src="http://localhost:8909/public/logos/juwangsan.png" alt=""></div><div><img src="http://localhost:8909/public/logos/zeroblock.png" alt=""></div><div><img src="http://localhost:8909/public/logos/naechinso.png" alt=""></div><div><img src="http://localhost:8909/public/logos/real-class.png" alt=""></div><div><img src="http://localhost:8909/public/logos/curas.png" alt=""></div><div><img src="http://localhost:8909/public/logos/dmand.png" alt=""></div><div><img src="http://localhost:8909/public/logos/walla.png" alt=""></div><div><img src="http://localhost:8909/public/logos/posh.png" alt=""></div><div><img src="http://localhost:8909/public/logos/resq.png" alt=""></div><div><img src="http://localhost:8909/public/logos/natura-health.png" alt=""></div><div><img src="http://localhost:8909/public/logos/feliway.png" alt=""></div><div><img src="http://localhost:8909/public/logos/cucinito.png" alt=""></div><div><img src="http://localhost:8909/public/logos/banaco.png" alt=""></div><div><img src="http://localhost:8909/public/logos/irvinelab.png" alt=""></div><div><img src="http://localhost:8909/public/logos/cyberdigm.png" alt=""></div><div><img src="http://localhost:8909/public/logos/code-i.png" alt=""></div><div><img src="http://localhost:8909/public/logos/fitflex.png" alt=""></div><div><img src="http://localhost:8909/public/logos/luvd.png" alt=""></div><div><img src="http://localhost:8909/public/logos/mudit.png" alt=""></div><div><img src="http://localhost:8909/public/logos/yeolda.png" alt=""></div><div><img src="http://localhost:8909/public/logos/bluehouse-seoul.png" alt=""></div>
 </div></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>03</span></footer>
 </section>
@@ -827,7 +840,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 <div class="phero">
   <div class="phero-l">
     <p class="phero-k">HGRS Studio</p>
-    <h1 class="phero-t">인플루언서 시딩부터 매출형 숏폼까지<br>숏폼 부스팅 프로젝트</h1>
+    <h1 class="phero-t">인플루언서-전환<br>숏폼 스튜디오</h1>
     <p class="phero-s">인플루언서 시딩과 채널 바이럴<br>그리고 구매 전환형 광고 소재를 한번에!</p>
     <div class="phero-stats">
       <div><strong>30+</strong><span>브랜드 프로젝트 수행</span></div>
@@ -836,9 +849,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     </div>
   </div>
   <div class="phero-r">
-    <div class="phero-col"><img src="http://localhost:8909/public/portfolio/clips/riiid-parent-itv.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/zeroblock-interview.jpg" alt=""></div>
-    <div class="phero-col"><img src="http://localhost:8909/public/portfolio/clips/seeding-patty.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/bone-w40s.jpg" alt=""></div>
-    <div class="phero-col"><img src="http://localhost:8909/public/portfolio/clips/moen-shampoo-ppl.jpg" alt=""><img src="http://localhost:8909/public/portfolio/clips/krafton-pnc-salute.jpg" alt=""></div>
+    <div class="phero-col"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-parent-itv.jpg" alt=""><img src="http://localhost:8909/public/deck/img/portfolio/clips/zeroblock-interview.jpg" alt=""></div>
+    <div class="phero-col"><img src="http://localhost:8909/public/deck/img/portfolio/clips/seeding-patty.jpg" alt=""><img src="http://localhost:8909/public/deck/img/portfolio/clips/bone-w40s.jpg" alt=""></div>
+    <div class="phero-col"><img src="http://localhost:8909/public/deck/img/portfolio/clips/moen-shampoo-ppl.jpg" alt=""><img src="http://localhost:8909/public/deck/img/portfolio/clips/krafton-pnc-salute.jpg" alt=""></div>
   </div>
 </div></div>
   
@@ -852,21 +865,21 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 </div>
 <div class="flow3">
 <div class="f3 f3-light">
-  <img src="http://localhost:8909/public/portfolio/clips/riiid-parent-empathy.jpg" alt="">
+  <img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-parent-empathy.jpg" alt="">
   <div class="f3-b">
     <p class="f3-k">인플루언서 시딩&바이럴</p>
     <p class="f3-t">요즘 브랜드의 필수 요소,<br>인플루언서 리뷰 배포,<br>그것만으로 매출이 올랐나요?</p>
     <p class="f3-d">브랜드에 맞는 크리에이터를 골라 붙이고 리뷰를 실제 채널에 배포합니다.</p>
   </div>
 </div><div class="f3 f3-indigo">
-  <img src="http://localhost:8909/public/portfolio/clips/seeding-patty.jpg" alt="">
+  <img src="http://localhost:8909/public/deck/img/portfolio/clips/seeding-patty.jpg" alt="">
   <div class="f3-b">
     <p class="f3-k">2차 활용 소스 컷 확보</p>
     <p class="f3-t">“채널 바이럴했으면<br>광고 매출도<br>키우셔야죠!”</p>
     <p class="f3-d">배포로 끝내지 않고 원본에서 광고용 컷을 다시 뽑아 자산으로 남깁니다.</p>
   </div>
 </div><div class="f3 f3-night">
-  <img src="http://localhost:8909/public/portfolio/clips/moen-shampoo-ppl.jpg" alt="">
+  <img src="http://localhost:8909/public/deck/img/portfolio/clips/moen-shampoo-ppl.jpg" alt="">
   <div class="f3-b">
     <p class="f3-k">매출형 숏폼 기획제작</p>
     <p class="f3-t">오가닉 채널 트래픽부터<br>구매·CPA 특화형 소재까지<br>한번에 해결해 드립니다.</p>
@@ -899,10 +912,10 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     
   </div>
   <div class="gc-media">
-    <img src="http://localhost:8909/public/portfolio/clips/riiid-report.jpg" alt="">
+    <img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-report.jpg" alt="">
   </div>
 </div>
-<div class="bc-ev-wide"><figure><img src="http://localhost:8909/public/evidence/real-academy-performance.png" alt=""><figcaption>리얼아카데미 월별 퍼포먼스 마케팅 실적(지출·노출·클릭·Lead Complete·CPM·CTR·CPC·CPA). 2월·3월의 지출·노출·클릭 값은 비공개 처리. <span class="ev-mask">일부 가림</span></figcaption></figure></div>
+<div class="bc-ev-wide"><figure><img src="http://localhost:8909/public/deck/img/evidence/real-academy-performance.jpg" alt=""><figcaption>리얼아카데미 월별 퍼포먼스 마케팅 실적(지출·노출·클릭·Lead Complete·CPM·CTR·CPC·CPA). 2월·3월의 지출·노출·클릭 값은 비공개 처리. <span class="ev-mask">일부 가림</span></figcaption></figure></div>
 <p class="foot-note">위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>09</span></footer>
 </section>
@@ -928,10 +941,10 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     
   </div>
   <div class="gc-media">
-    <img src="http://localhost:8909/public/portfolio/clips/parkron-tpu.jpg" alt="">
+    <img src="http://localhost:8909/public/deck/img/portfolio/clips/parkron-tpu.jpg" alt="">
   </div>
 </div>
-<div class="bc-ev-wide"><figure><img src="http://localhost:8909/public/evidence/zeroblock-performance.png" alt=""><figcaption>제로블럭 3~6월 월별 지출·노출·도달·클릭·CPC·CTR·상담문의시도·견적문의시도·문의 시도당 최종 단가 실적표.</figcaption></figure></div>
+<div class="bc-ev-wide"><figure><img src="http://localhost:8909/public/deck/img/evidence/zeroblock-performance.jpg" alt=""><figcaption>제로블럭 3~6월 월별 지출·노출·도달·클릭·CPC·CTR·상담문의시도·견적문의시도·문의 시도당 최종 단가 실적표.</figcaption></figure></div>
 <p class="foot-note">위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>10</span></footer>
 </section>
@@ -941,7 +954,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   <div class="gc-body">
     <p class="gc-eyebrow">Growth Case 03</p>
     <h2 class="gc-title">이노바인코리아 모에브<span>매출 300억대</span></h2>
-    <p class="gc-result">제품 출시 고투마켓 단계 소재 부스팅, 3개월 내 매출 4천만원 · ROAS 3배</p>
+    <p class="gc-result">제품 출시 고투마켓 단계 소재 부스팅, 3개월 내 매출 6천만원 · ROAS 3배</p>
     <p class="gc-scope">풀 프로젝트 수행 성과</p>
     <div class="gm">
   <svg class="gm-line" viewBox="0 0 320 56" fill="none" aria-hidden="true">
@@ -950,7 +963,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     <circle cx="318" cy="2" r="4" fill="var(--gold)"/>
   </svg>
   <dl class="gm-stats">
-    <div><dd>₩4,000만</dd><dt>3개월 매출</dt></div>
+    <div><dd>₩6,000만</dd><dt>3개월 매출</dt></div>
     <div><dd>3배</dd><dt>ROAS</dt></div>
   </dl>
 </div>
@@ -985,7 +998,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     <p class="gc-result">대표이사 컨텐츠부터 협찬 연예인까지 다양한 바이럴 쇼츠 촬영 기획 제작</p>
     <p class="gc-scope">연간 공식 프로젝트 수행 (바이럴 컨텐츠 기획·제작)</p>
     
-    <div class="bc-ev"><figure><img src="http://localhost:8909/public/evidence/krafton-battlegrounds-schedule.png" alt=""><figcaption>크래프톤 배틀그라운드(PNC 2024) 채널 콘텐츠 편성표. 일자별 Long/Shorts 업로드 스케줄과 촬영·인터뷰 일정(스태프 성함은 비공개 처리). <span class="ev-mask">일부 가림</span></figcaption></figure></div>
+    <div class="bc-ev"><figure><img src="http://localhost:8909/public/deck/img/evidence/krafton-battlegrounds-schedule.jpg" alt=""><figcaption>크래프톤 배틀그라운드(PNC 2024) 채널 콘텐츠 편성표. 일자별 Long/Shorts 업로드 스케줄과 촬영·인터뷰 일정(스태프 성함은 비공개 처리). <span class="ev-mask">일부 가림</span></figcaption></figure></div>
   </div>
   <div class="gc-media">
     <img src="http://localhost:8909/public/portfolio/cases/krafton-jonathan.jpg" alt="">
@@ -1003,7 +1016,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   <p class="subline">브랜드가 아니라 소재의 목적으로 묶었습니다 — 누르면 영상이 재생됩니다</p>
 </div>
 <div class="shorts">
-<a class="short" href="https://hgrs.io/portfolio/clips/pet-dangterview-3.mp4"><img src="http://localhost:8909/public/portfolio/clips/pet-dangterview-3.jpg" alt=""><span class="play">▶</span><span class="short-b">인터뷰형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-parent-itv.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-parent-itv.jpg" alt=""><span class="play">▶</span><span class="short-b">인터뷰형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-릴스-모비코사-스토리형-260310-c164.mp4"><img src="http://localhost:8909/public/portfolio/clips/bone-d-릴스-모비코사-스토리형-260310-c164.jpg" alt=""><span class="play">▶</span><span class="short-b">후기형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/zeroblock-interview.mp4"><img src="http://localhost:8909/public/portfolio/clips/zeroblock-interview.jpg" alt=""><span class="play">▶</span><span class="short-b">인터뷰형</span><span class="short-brand">제로블럭</span></a><a class="short" href="https://hgrs.io/portfolio/clips/krafton-pnc-inonix.mp4"><img src="http://localhost:8909/public/portfolio/clips/krafton-pnc-inonix.jpg" alt=""><span class="play">▶</span><span class="short-b">브랜디드 바이럴</span><span class="short-brand">크래프톤</span></a><a class="short" href="https://hgrs.io/portfolio/clips/pero-d-8월-4차-스파이더맨-06d0.mp4"><img src="http://localhost:8909/public/portfolio/clips/pero-d-8월-4차-스파이더맨-06d0.jpg" alt=""><span class="play">▶</span><span class="short-b">브랜디드 바이럴</span><span class="short-brand">페로와모이</span></a><a class="short" href="https://hgrs.io/portfolio/clips/moen-shampoo-ppl.mp4"><img src="http://localhost:8909/public/portfolio/clips/moen-shampoo-ppl.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">모에브</span></a><a class="short" href="https://hgrs.io/portfolio/clips/pet-portion.mp4"><img src="http://localhost:8909/public/portfolio/clips/pet-portion.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-report.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-report.jpg" alt=""><span class="play">▶</span><span class="short-b">인터뷰형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-m50s.mp4"><img src="http://localhost:8909/public/portfolio/clips/bone-m50s.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/parkron-tpu.mp4"><img src="http://localhost:8909/public/portfolio/clips/parkron-tpu.jpg" alt=""><span class="play">▶</span><span class="short-b">비교·실증형</span><span class="short-brand">제로블럭</span></a><a class="short" href="https://hgrs.io/portfolio/clips/krafton-pnc-salute.mp4"><img src="http://localhost:8909/public/portfolio/clips/krafton-pnc-salute.jpg" alt=""><span class="play">▶</span><span class="short-b">브랜디드 바이럴</span><span class="short-brand">크래프톤</span></a>
+<a class="short" href="https://hgrs.io/portfolio/clips/pet-dangterview-3.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/pet-dangterview-3.jpg" alt=""><span class="play">▶</span><span class="short-b">인터뷰형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-parent-itv.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-parent-itv.jpg" alt=""><span class="play">▶</span><span class="short-b">인터뷰형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-릴스-모비코사-스토리형-260310-c164.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/bone-d-릴스-모비코사-스토리형-260310-c164.jpg" alt=""><span class="play">▶</span><span class="short-b">후기형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/zeroblock-interview.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/zeroblock-interview.jpg" alt=""><span class="play">▶</span><span class="short-b">인터뷰형</span><span class="short-brand">제로블럭</span></a><a class="short" href="https://hgrs.io/portfolio/clips/krafton-pnc-inonix.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/krafton-pnc-inonix.jpg" alt=""><span class="play">▶</span><span class="short-b">브랜디드 바이럴</span><span class="short-brand">크래프톤</span></a><a class="short" href="https://hgrs.io/portfolio/clips/pero-d-8월-4차-스파이더맨-06d0.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/pero-d-8월-4차-스파이더맨-06d0.jpg" alt=""><span class="play">▶</span><span class="short-b">브랜디드 바이럴</span><span class="short-brand">페로와모이</span></a><a class="short" href="https://hgrs.io/portfolio/clips/moen-shampoo-ppl.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/moen-shampoo-ppl.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">모에브</span></a><a class="short" href="https://hgrs.io/portfolio/clips/pet-portion.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/pet-portion.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-report.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-report.jpg" alt=""><span class="play">▶</span><span class="short-b">인터뷰형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-m50s.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/bone-m50s.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/parkron-tpu.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/parkron-tpu.jpg" alt=""><span class="play">▶</span><span class="short-b">비교·실증형</span><span class="short-brand">제로블럭</span></a><a class="short" href="https://hgrs.io/portfolio/clips/krafton-pnc-salute.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/krafton-pnc-salute.jpg" alt=""><span class="play">▶</span><span class="short-b">브랜디드 바이럴</span><span class="short-brand">크래프톤</span></a>
 </div></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>13</span></footer>
 </section>
@@ -1015,7 +1028,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   <p class="subline">브랜드가 아니라 소재의 목적으로 묶었습니다 — 누르면 영상이 재생됩니다</p>
 </div>
 <div class="shorts">
-<a class="short" href="https://hgrs.io/portfolio/clips/pero-d-8월5차-아침이-왔다잖아-18ca.mp4"><img src="http://localhost:8909/public/portfolio/clips/pero-d-8월5차-아침이-왔다잖아-18ca.jpg" alt=""><span class="play">▶</span><span class="short-b">브랜디드 바이럴</span><span class="short-brand">페로와모이</span></a><a class="short" href="https://hgrs.io/portfolio/clips/pet-vet-pancreas.mp4"><img src="http://localhost:8909/public/portfolio/clips/pet-vet-pancreas.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-momcafe.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-momcafe.jpg" alt=""><span class="play">▶</span><span class="short-b">후기형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-3가지-40초-9-16비율-a57b.mp4"><img src="http://localhost:8909/public/portfolio/clips/bone-d-3가지-40초-9-16비율-a57b.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-강아지-사료-기초대사량-계산이-틀릴-수-있습니다-bf06.mp4"><img src="http://localhost:8909/public/portfolio/clips/trusty-d-강아지-사료-기초대사량-계산이-틀릴-수-있습니다-bf06.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-parent-empathy.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-parent-empathy.jpg" alt=""><span class="play">▶</span><span class="short-b">후기형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-40대00칼슘-1분-9132.mp4"><img src="http://localhost:8909/public/portfolio/clips/bone-d-40대00칼슘-1분-9132.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-강아지-사료-저지방만-고집하면-영양-불균형-4e14.mp4"><img src="http://localhost:8909/public/portfolio/clips/trusty-d-강아지-사료-저지방만-고집하면-영양-불균형-4e14.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-trial-reviews.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-trial-reviews.jpg" alt=""><span class="play">▶</span><span class="short-b">후기형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-50대-f4c1.mp4"><img src="http://localhost:8909/public/portfolio/clips/bone-d-50대-f4c1.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-늑대의-후손-강아지-사료-이렇게-줘야-합니다-e123.mp4"><img src="http://localhost:8909/public/portfolio/clips/trusty-d-늑대의-후손-강아지-사료-이렇게-줘야-합니다-e123.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-0205-맘카페-세로형-1160.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-d-0205-맘카페-세로형-1160.jpg" alt=""><span class="play">▶</span><span class="short-b">후기형</span><span class="short-brand">리얼아카데미</span></a>
+<a class="short" href="https://hgrs.io/portfolio/clips/pero-d-8월5차-아침이-왔다잖아-18ca.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/pero-d-8월5차-아침이-왔다잖아-18ca.jpg" alt=""><span class="play">▶</span><span class="short-b">브랜디드 바이럴</span><span class="short-brand">페로와모이</span></a><a class="short" href="https://hgrs.io/portfolio/clips/pet-vet-pancreas.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/pet-vet-pancreas.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-momcafe.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-momcafe.jpg" alt=""><span class="play">▶</span><span class="short-b">후기형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-3가지-40초-9-16비율-a57b.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/bone-d-3가지-40초-9-16비율-a57b.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-강아지-사료-기초대사량-계산이-틀릴-수-있습니다-bf06.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/trusty-d-강아지-사료-기초대사량-계산이-틀릴-수-있습니다-bf06.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-parent-empathy.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-parent-empathy.jpg" alt=""><span class="play">▶</span><span class="short-b">후기형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-40대00칼슘-1분-9132.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/bone-d-40대00칼슘-1분-9132.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-강아지-사료-저지방만-고집하면-영양-불균형-4e14.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/trusty-d-강아지-사료-저지방만-고집하면-영양-불균형-4e14.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-trial-reviews.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-trial-reviews.jpg" alt=""><span class="play">▶</span><span class="short-b">후기형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-50대-f4c1.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/bone-d-50대-f4c1.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-늑대의-후손-강아지-사료-이렇게-줘야-합니다-e123.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/trusty-d-늑대의-후손-강아지-사료-이렇게-줘야-합니다-e123.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-0205-맘카페-세로형-1160.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-d-0205-맘카페-세로형-1160.jpg" alt=""><span class="play">▶</span><span class="short-b">후기형</span><span class="short-brand">리얼아카데미</span></a>
 </div></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>14</span></footer>
 </section>
@@ -1027,7 +1040,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   <p class="subline">브랜드가 아니라 소재의 목적으로 묶었습니다 — 누르면 영상이 재생됩니다</p>
 </div>
 <div class="shorts">
-<a class="short" href="https://hgrs.io/portfolio/clips/bone-d-릴스-모비코사-원료-100세즐기기-260309-85d8.mp4"><img src="http://localhost:8909/public/portfolio/clips/bone-d-릴스-모비코사-원료-100세즐기기-260309-85d8.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-쇼츠-건사료-보관-24c2.mp4"><img src="http://localhost:8909/public/portfolio/clips/trusty-d-쇼츠-건사료-보관-24c2.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-self-study.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-self-study.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-릴스-모비코사-원료-이점설명-260309-aa9d.mp4"><img src="http://localhost:8909/public/portfolio/clips/bone-d-릴스-모비코사-원료-이점설명-260309-aa9d.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-쇼츠-짧은-버전-반려견-영양처방식-배분-f610.mp4"><img src="http://localhost:8909/public/portfolio/clips/trusty-d-쇼츠-짧은-버전-반려견-영양처방식-배분-f610.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-7일키트-언박싱-2-e74d.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-d-7일키트-언박싱-2-e74d.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-모비코사-관절통증-a00a.mp4"><img src="http://localhost:8909/public/portfolio/clips/bone-d-모비코사-관절통증-a00a.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-1-쇼츠-1-v-2-cc59.mp4"><img src="http://localhost:8909/public/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-1-쇼츠-1-v-2-cc59.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-ai학부모-대치동-c621.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-d-ai학부모-대치동-c621.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-모비코사-아프다면-e089.mp4"><img src="http://localhost:8909/public/portfolio/clips/bone-d-모비코사-아프다면-e089.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-1-쇼츠-2-v-1-53fc.mp4"><img src="http://localhost:8909/public/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-1-쇼츠-2-v-1-53fc.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-kakaotalk-20251118-202339219-d72e.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-d-kakaotalk-20251118-202339219-d72e.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">리얼아카데미</span></a>
+<a class="short" href="https://hgrs.io/portfolio/clips/bone-d-릴스-모비코사-원료-100세즐기기-260309-85d8.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/bone-d-릴스-모비코사-원료-100세즐기기-260309-85d8.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-쇼츠-건사료-보관-24c2.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/trusty-d-쇼츠-건사료-보관-24c2.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-self-study.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-self-study.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-릴스-모비코사-원료-이점설명-260309-aa9d.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/bone-d-릴스-모비코사-원료-이점설명-260309-aa9d.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-쇼츠-짧은-버전-반려견-영양처방식-배분-f610.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/trusty-d-쇼츠-짧은-버전-반려견-영양처방식-배분-f610.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-7일키트-언박싱-2-e74d.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-d-7일키트-언박싱-2-e74d.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-모비코사-관절통증-a00a.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/bone-d-모비코사-관절통증-a00a.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-1-쇼츠-1-v-2-cc59.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-1-쇼츠-1-v-2-cc59.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-ai학부모-대치동-c621.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-d-ai학부모-대치동-c621.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-모비코사-아프다면-e089.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/bone-d-모비코사-아프다면-e089.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-1-쇼츠-2-v-1-53fc.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-1-쇼츠-2-v-1-53fc.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-kakaotalk-20251118-202339219-d72e.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-d-kakaotalk-20251118-202339219-d72e.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">리얼아카데미</span></a>
 </div></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>15</span></footer>
 </section>
@@ -1039,7 +1052,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   <p class="subline">브랜드가 아니라 소재의 목적으로 묶었습니다 — 누르면 영상이 재생됩니다</p>
 </div>
 <div class="shorts">
-<a class="short" href="https://hgrs.io/portfolio/clips/bone-w40s.mp4"><img src="http://localhost:8909/public/portfolio/clips/bone-w40s.jpg" alt=""><span class="play">▶</span><span class="short-b">스토리형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-2-쇼츠-1-v-2-dd56.mp4"><img src="http://localhost:8909/public/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-2-쇼츠-1-v-2-dd56.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-겨울방학-무제한스피킹-3f83.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-d-겨울방학-무제한스피킹-3f83.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-40대여성-9b9a.mp4"><img src="http://localhost:8909/public/portfolio/clips/bone-d-40대여성-9b9a.jpg" alt=""><span class="play">▶</span><span class="short-b">스토리형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-2-쇼츠-2-v-1-4da4.mp4"><img src="http://localhost:8909/public/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-2-쇼츠-2-v-1-4da4.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-자기주도2-1-ccac.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-d-자기주도2-1-ccac.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-50대골다공증남편-dcb5.mp4"><img src="http://localhost:8909/public/portfolio/clips/bone-d-50대골다공증남편-dcb5.jpg" alt=""><span class="play">▶</span><span class="short-b">스토리형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-2-쇼츠-3-v-1-0a20.mp4"><img src="http://localhost:8909/public/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-2-쇼츠-3-v-1-0a20.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-toefl-junior.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-toefl-junior.jpg" alt=""><span class="play">▶</span><span class="short-b">비교·실증형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-2-쇼츠-4-v-1-2d9b.mp4"><img src="http://localhost:8909/public/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-2-쇼츠-4-v-1-2d9b.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-내향적인아이공부법-9c09.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-d-내향적인아이공부법-9c09.jpg" alt=""><span class="play">▶</span><span class="short-b">스토리형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/pet-custom-meal.mp4"><img src="http://localhost:8909/public/portfolio/clips/pet-custom-meal.jpg" alt=""><span class="play">▶</span><span class="short-b">스토리형</span><span class="short-brand">트러스티푸드</span></a>
+<a class="short" href="https://hgrs.io/portfolio/clips/bone-w40s.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/bone-w40s.jpg" alt=""><span class="play">▶</span><span class="short-b">스토리형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-2-쇼츠-1-v-2-dd56.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-2-쇼츠-1-v-2-dd56.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-겨울방학-무제한스피킹-3f83.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-d-겨울방학-무제한스피킹-3f83.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-40대여성-9b9a.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/bone-d-40대여성-9b9a.jpg" alt=""><span class="play">▶</span><span class="short-b">스토리형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-2-쇼츠-2-v-1-4da4.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-2-쇼츠-2-v-1-4da4.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-자기주도2-1-ccac.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-d-자기주도2-1-ccac.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/bone-d-50대골다공증남편-dcb5.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/bone-d-50대골다공증남편-dcb5.jpg" alt=""><span class="play">▶</span><span class="short-b">스토리형</span><span class="short-brand">내추럴헬스</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-2-쇼츠-3-v-1-0a20.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-2-쇼츠-3-v-1-0a20.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-toefl-junior.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-toefl-junior.jpg" alt=""><span class="play">▶</span><span class="short-b">비교·실증형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-2-쇼츠-4-v-1-2d9b.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/trusty-d-트러스티랩-반려동물-필독사전-사료-종류-ep-2-쇼츠-4-v-1-2d9b.jpg" alt=""><span class="play">▶</span><span class="short-b">정보·근거형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-내향적인아이공부법-9c09.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-d-내향적인아이공부법-9c09.jpg" alt=""><span class="play">▶</span><span class="short-b">스토리형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/pet-custom-meal.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/pet-custom-meal.jpg" alt=""><span class="play">▶</span><span class="short-b">스토리형</span><span class="short-brand">트러스티푸드</span></a>
 </div></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>16</span></footer>
 </section>
@@ -1051,7 +1064,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   <p class="subline">브랜드가 아니라 소재의 목적으로 묶었습니다 — 누르면 영상이 재생됩니다</p>
 </div>
 <div class="shorts">
-<a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-겨울방학중등대비-63b7.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-d-겨울방학중등대비-63b7.jpg" alt=""><span class="play">▶</span><span class="short-b">프로모션형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-부부싸움-6c45.mp4"><img src="http://localhost:8909/public/portfolio/clips/trusty-d-부부싸움-6c45.jpg" alt=""><span class="play">▶</span><span class="short-b">스토리형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-리얼아카데미게임-4a03.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-d-리얼아카데미게임-4a03.jpg" alt=""><span class="play">▶</span><span class="short-b">프로모션형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/seeding-patty.mp4"><img src="http://localhost:8909/public/portfolio/clips/seeding-patty.jpg" alt=""><span class="play">▶</span><span class="short-b">시딩·UGC형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-모두0원-2dcb.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-d-모두0원-2dcb.jpg" alt=""><span class="play">▶</span><span class="short-b">프로모션형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/seeding-garnish.mp4"><img src="http://localhost:8909/public/portfolio/clips/seeding-garnish.jpg" alt=""><span class="play">▶</span><span class="short-b">시딩·UGC형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-이걸다0원-109c.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-d-이걸다0원-109c.jpg" alt=""><span class="play">▶</span><span class="short-b">프로모션형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/pet-treats-plea.mp4"><img src="http://localhost:8909/public/portfolio/clips/pet-treats-plea.jpg" alt=""><span class="play">▶</span><span class="short-b">프로모션형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-찾습니다-314a.mp4"><img src="http://localhost:8909/public/portfolio/clips/riiid-d-찾습니다-314a.jpg" alt=""><span class="play">▶</span><span class="short-b">프로모션형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/gaehogang-square.mp4"><img src="http://localhost:8909/public/portfolio/clips/gaehogang-square.jpg" alt=""><span class="play">▶</span><span class="short-b">프로모션형</span><span class="short-brand">트러스티푸드</span></a><div class="short-more"><span>(이하 생략)</span></div>
+<a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-겨울방학중등대비-63b7.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-d-겨울방학중등대비-63b7.jpg" alt=""><span class="play">▶</span><span class="short-b">프로모션형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/trusty-d-부부싸움-6c45.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/trusty-d-부부싸움-6c45.jpg" alt=""><span class="play">▶</span><span class="short-b">스토리형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-리얼아카데미게임-4a03.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-d-리얼아카데미게임-4a03.jpg" alt=""><span class="play">▶</span><span class="short-b">프로모션형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/seeding-patty.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/seeding-patty.jpg" alt=""><span class="play">▶</span><span class="short-b">시딩·UGC형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-모두0원-2dcb.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-d-모두0원-2dcb.jpg" alt=""><span class="play">▶</span><span class="short-b">프로모션형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/seeding-garnish.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/seeding-garnish.jpg" alt=""><span class="play">▶</span><span class="short-b">시딩·UGC형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-이걸다0원-109c.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-d-이걸다0원-109c.jpg" alt=""><span class="play">▶</span><span class="short-b">프로모션형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/pet-treats-plea.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/pet-treats-plea.jpg" alt=""><span class="play">▶</span><span class="short-b">프로모션형</span><span class="short-brand">트러스티푸드</span></a><a class="short" href="https://hgrs.io/portfolio/clips/riiid-d-찾습니다-314a.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/riiid-d-찾습니다-314a.jpg" alt=""><span class="play">▶</span><span class="short-b">프로모션형</span><span class="short-brand">리얼아카데미</span></a><a class="short" href="https://hgrs.io/portfolio/clips/gaehogang-square.mp4"><img src="http://localhost:8909/public/deck/img/portfolio/clips/gaehogang-square.jpg" alt=""><span class="play">▶</span><span class="short-b">프로모션형</span><span class="short-brand">트러스티푸드</span></a><div class="short-more"><span>(이하 생략)</span></div>
 </div></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>17</span></footer>
 </section>
@@ -1083,7 +1096,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   <div><p class="flow-t">검수 · 납품</p><p class="flow-d">미리보기 확인 · 1회 무상 수정 · 전체 다운로드</p></div>
 </div>
 </div>
-<div class="oneline">프로젝트 시작 시 전용 대시보드를 통해 진행 단계와 소통을 한번에 해결합니다.</div></div>
+<div class="oneline">프로젝트 어드민(전용 대시보드)을 제공해 각 단계 확인부터 피드백까지 간편함을 제공합니다.</div></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>08</span></footer>
 </section>
 <section id="pg19" class="page" data-layout="shots">
@@ -1096,16 +1109,16 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 <div class="board">
   <div class="board-side">
     <div class="board-item">
-      <img src="http://localhost:8909/public/deck/ui-cpv.png" alt="">
+      <img src="http://localhost:8909/public/deck/img/deck/ui-cpv.jpg" alt="">
       <p class="cap">1차 선정 심사 — 팔로워 · 평균 조회 · CPV를 보고 직접 선택</p>
     </div>
     <div class="board-item">
-      <img src="http://localhost:8909/public/deck/ui-brandai.png" alt="">
+      <img src="http://localhost:8909/public/deck/img/deck/ui-brandai.jpg" alt="">
       <p class="cap">브랜드 AI 기본 분석 — 타겟 · USP · 객단가 · 금지 표현 구조화</p>
     </div>
   </div>
   <div class="board-main">
-    <img src="http://localhost:8909/public/deck/ui-dashboard.png" alt="">
+    <img src="http://localhost:8909/public/deck/img/deck/ui-dashboard.jpg" alt="">
     <p class="cap">진행중인 캠페인 — 진행 단계 · 플랜 · 기한을 한 화면에서</p>
   </div>
 </div></div>
@@ -1198,7 +1211,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 <div class="phero">
   <div class="phero-l">
     <p class="phero-k">Brand Channel Marketing</p>
-    <h1 class="phero-t">브랜드 퍼널을 완성하는<br>채널 · 컨텐츠 · 광고 통합 운영</h1>
+    <h1 class="phero-t">브랜드 퍼널을 완성하는<br>브랜드 채널 그로스</h1>
     <p class="phero-s">단순 바이럴이 아닌,<br>팬덤과 고객 연결의 커뮤니케이션을 완성합니다.</p>
     <div class="phero-stats">
       <div><strong>2억~4천대</strong><span>프로젝트 경험</span></div>
@@ -1207,14 +1220,14 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     </div>
   </div>
   <div class="phero-r">
-    <div class="phero-col"><img src="http://localhost:8909/public/sns/krafton-contents.jpg" alt=""><img src="http://localhost:8909/public/sns/trusty-vet.jpg" alt=""></div>
-    <div class="phero-col"><img src="http://localhost:8909/public/sns/lovedy-funnel.png" alt=""><img src="http://localhost:8909/public/sns/krafton-3c.png" alt=""></div>
-    <div class="phero-col"><img src="http://localhost:8909/public/sns/yeolda-shoot.jpg" alt=""><img src="http://localhost:8909/public/sns/lovedy-result.png" alt=""></div>
+    <div class="phero-col"><img src="http://localhost:8909/public/deck/img/sns/krafton-contents.jpg" alt=""><img src="http://localhost:8909/public/deck/img/sns/trusty-vet.jpg" alt=""></div>
+    <div class="phero-col"><img src="http://localhost:8909/public/deck/img/sns/lovedy-funnel.jpg" alt=""><img src="http://localhost:8909/public/deck/img/sns/krafton-3c.jpg" alt=""></div>
+    <div class="phero-col"><img src="http://localhost:8909/public/deck/img/sns/yeolda-shoot.jpg" alt=""><img src="http://localhost:8909/public/deck/img/sns/lovedy-result.jpg" alt=""></div>
   </div>
 </div></div>
   
 </section>
-<section id="pg43" class="page" data-layout="cards">
+<section id="pg40" class="page" data-layout="cards">
   <div class="page-body">
 
 <div class="shead">
@@ -1261,9 +1274,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 </div>
 </div>
 </div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>43</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>40</span></footer>
 </section>
-<section id="pg44" class="page" data-layout="cards">
+<section id="pg41" class="page" data-layout="cards">
   <div class="page-body">
 
 <div class="shead">
@@ -1310,51 +1323,165 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 </div>
 </div>
 <p class="foot-note">위 성과는 실제 운영 데이터이며, 브랜드·상품·예산에 따라 달라질 수 있습니다.</p></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>44</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>41</span></footer>
 </section>
 <section id="pg24" class="page dark" data-layout="cards">
   <div class="page-body">
 <div class="shead">
   <p class="eyebrow-lime">Growth Stories</p>
-  <h2>주요 성장 사례 10건</h2>
+  <h2>주요 성장 사례 30건 (1/3)</h2>
   <p class="subline">브랜드마다 무엇이 문제였고 무엇이 달라졌는지 — 누르면 전문이 열립니다</p>
 </div>
 <div class="stories">
-<a class="story" href="https://hgrs.io/blog/story-krafton-pubg-esports">
-  <img src="http://localhost:8909/public/portfolio/framer/kQaFSNI3UlgYIcAlkQI8Irx3zwI.png" alt="">
-  <p class="story-t">죽어 있던 공식 유튜브를 다시 켜는 일 — 크래프톤 배틀그라운드 이스포츠 12개월</p>
-</a><a class="story" href="https://hgrs.io/blog/story-lotte-greencar">
-  <img src="http://localhost:8909/public/portfolio/framer/sF1JXZYxlAYMuxdDcD4BngYk9o.png" alt="">
-  <p class="story-t">가입 CPA를 45% 낮추고 광고 매출을 5배로 — 롯데렌탈 그린카</p>
-</a><a class="story" href="https://hgrs.io/blog/story-realclass-scaleup">
-  <img src="http://localhost:8909/public/portfolio/framer/RLr4frrBOMmwBA5hty866e5KlxI.png" alt="">
-  <p class="story-t">월 5천만 원에서 4억까지 — 리얼클래스 광고 스케일업 13개월</p>
-</a><a class="story" href="https://hgrs.io/blog/story-lovedy-growth-funnel">
-  <img src="http://localhost:8909/public/portfolio/framer/Km9TPG3aOeMIbWbDYqSbBwcrHsM.png" alt="">
-  <p class="story-t">광고를 늘리지 않고 상담 DB를 6배로 — 럽디 콘텐츠 그로스 12개월</p>
+<a class="story" href="https://hgrs.io/portfolio/%EC%BF%A0%EC%B9%98%EB%8B%88%ED%86%A0">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/cucinito-cover.jpg" alt="">
+  <p class="story-t">쿠치니토</p>
+  <p class="story-s">인플루언서 수익쉐어 시딩 및 · 구매전환 숏폼 마케팅</p>
+</a><a class="story" href="https://hgrs.io/portfolio/%ED%8E%A0%EB%A6%AC%EC%9B%A8%EC%9D%B4">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/feliway-cover.jpg" alt="">
+  <p class="story-t">펠리웨이 (반려동물 페로몬 브랜드)</p>
+  <p class="story-s">국내 총판 브랜드 종합 마케팅 설계 · 인스타그램 / 인플루언서 공동구매 활성화</p>
+</a><a class="story" href="https://hgrs.io/portfolio/phs">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/arRJQlM3L86HIWFUAe1hwjIEiI.jpg" alt="">
+  <p class="story-t">PHS (B2B 전자기기)</p>
+  <p class="story-s">B2B 디지털 세일즈 여정 설계와 DB 확보 마케팅 · 단기간 내 SEO 다수 성공 및 PMF 바이럴 동시 진행</p>
+</a><a class="story" href="https://hgrs.io/blog/story-naechinso">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/OGlWRMz0j8AKBElBnr0tgEgI7Ao.jpg" alt="">
+  <p class="story-t">CPI를 17% 낮추면서 브랜드 각인을 지키는 법 — 내친소</p>
+  
+</a><a class="story" href="https://hgrs.io/portfolio/%EB%8B%A5%ED%84%B0%EB%8B%A4%EC%9D%B4%EC%96%B4%EB%A6%AC">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/oIGDK16ybqzxeEYMFQEgMKc8ws.jpg" alt="">
+  <p class="story-t">닥터다이어리 (헬스케어 커머스)</p>
+  <p class="story-s">커머스 퍼포먼스와 앱 CPI 초기 스케일업 · 시리즈B 유치 직후 마케팅팀 고도화 총괄</p>
 </a><a class="story" href="https://hgrs.io/blog/story-dmand-gochodaejol">
-  <img src="http://localhost:8909/public/portfolio/framer/JONKmHtwh13S7uNjVmWqSigj0P4.png" alt="">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/JONKmHtwh13S7uNjVmWqSigj0P4.jpg" alt="">
   <p class="story-t">광고 예산을 10배 늘리면서 CPA를 30원대로 — 고초대졸닷컴 12개월</p>
-</a><a class="story" href="https://hgrs.io/blog/story-trusty-food-imc">
-  <img src="http://localhost:8909/public/portfolio/framer/tk3xcMycF5V6TZdU6zREEB08fbo.png" alt="">
-  <p class="story-t">블라인드 시식대회와 댕터뷰 — 트러스티푸드 SNS 브랜딩과 퍼포먼스 12개월</p>
-</a><a class="story" href="https://hgrs.io/blog/story-moev-launch-roas">
-  <img src="http://localhost:8909/public/portfolio/framer/Ce1M6hT6rmCmavxGJp0OP7JiiE.png" alt="">
-  <p class="story-t">런칭 4개월에 ROAS 3배·예산 4배 — 모에브 뷰티 커머스</p>
-</a><a class="story" href="https://hgrs.io/blog/story-parkron-zeroblock">
-  <img src="http://localhost:8909/public/portfolio/framer/t4GRjeyygl2RFdQvfjo2d6ge9zk.png" alt="">
-  <p class="story-t">매트리스 구독 CPA를 9만 원 낮춘 3개월 — 파크론 제로블럭</p>
-</a><a class="story" href="https://hgrs.io/blog/story-yeolda-o2o-youtube">
-  <img src="http://localhost:8909/public/portfolio/framer/UO72bw5VBHxowlvS7SnONpkSvCc.png" alt="">
-  <p class="story-t">예산이 없는 스타트업이 유튜브로 CPA를 17% 낮춘 방법 — 열다 4개월</p>
-</a><a class="story" href="https://hgrs.io/blog/story-walla-b2b-seo">
-  <img src="http://localhost:8909/public/portfolio/framer/WoDzeSZVBcHWclzEM5kEawgqiA.png" alt="">
-  <p class="story-t">B2B SaaS가 SEO로 KT까지 닿는 과정 — 왈라 6개월</p>
+  
+</a><a class="story" href="https://hgrs.io/portfolio/%EB%9E%98%EC%8A%A4%ED%81%90">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/AKVRW6HdL8esyzeYmh7xwhgmbo.jpg" alt="">
+  <p class="story-t">래스큐 (스포츠 보조제)</p>
+  <p class="story-s">스마트스토어 제품 런칭 컨셉/룩북/페이지 배포 · USP 개발 및 디자인, 저예산 마케팅 플랜 제공</p>
+</a><a class="story" href="https://hgrs.io/blog/story-lovedy-growth-funnel">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/Km9TPG3aOeMIbWbDYqSbBwcrHsM.jpg" alt="">
+  <p class="story-t">광고를 늘리지 않고 상담 DB를 6배로 — 럽디 콘텐츠 그로스 12개월</p>
+  
+</a><a class="story" href="https://hgrs.io/blog/story-lotte-greencar">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/sF1JXZYxlAYMuxdDcD4BngYk9o.jpg" alt="">
+  <p class="story-t">가입 CPA를 45% 낮추고 광고 매출을 5배로 — 롯데렌탈 그린카</p>
+  
+</a><a class="story" href="https://hgrs.io/blog/story-realclass-scaleup">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/RLr4frrBOMmwBA5hty866e5KlxI.jpg" alt="">
+  <p class="story-t">월 5천만 원에서 4억까지 — 리얼클래스 광고 스케일업 13개월</p>
+  
 </a>
 </div></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>24</span></footer>
 </section>
-<section id="pg26" class="page dark" data-layout="case">
+<section id="pg25" class="page dark" data-layout="cards">
+  <div class="page-body">
+<div class="shead">
+  <p class="eyebrow-lime">Growth Stories</p>
+  <h2>주요 성장 사례 30건 (2/3)</h2>
+  <p class="subline">이어서 보여드립니다</p>
+</div>
+<div class="stories">
+<a class="story" href="https://hgrs.io/portfolio/%EB%AA%A8%EB%91%90%EC%9D%98%ED%8A%B8%EB%A0%88%EC%9D%B4%EB%8B%9D">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/Cc2oMu7uFMeQHi5ZICnphniRoLI.jpg" alt="">
+  <p class="story-t">모두의트레이닝 (헬스 O2O)</p>
+  <p class="story-s">헬스/식단 코치 어플 스타트업의 지표 스케일업 · 월 광고비 1억씩 스케일업 및 리텐션 그로스해킹</p>
+</a><a class="story" href="https://hgrs.io/blog/story-moev-launch-roas">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/Ce1M6hT6rmCmavxGJp0OP7JiiE.jpg" alt="">
+  <p class="story-t">런칭 4개월에 ROAS 3배·예산 4배 — 모에브 뷰티 커머스</p>
+  
+</a><a class="story" href="https://hgrs.io/blog/story-mudit-crm">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/e8skc0Wx3KfvLh4fSjjdgX38xw.jpg" alt="">
+  <p class="story-t">단일 상품 쇼핑몰의 구매전환율을 2%p 올린 CRM — 뮤디트</p>
+  
+</a><a class="story" href="https://hgrs.io/blog/story-banaco">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/SZWkXD1WToJaC1bo8ftWNLbniI.jpg" alt="">
+  <p class="story-t">이미 잘하는 브랜드에 무엇을 더할 것인가 — 바나코 코칭</p>
+  
+</a><a class="story" href="https://hgrs.io/blog/story-cyberdigm-seo">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/3z5Z6sEcyKMzi8CPT8yAkuiDEZs.jpg" alt="">
+  <p class="story-t">B2B SaaS의 블로그를 세일즈 퍼널로 — 사이버다임 SEO 컨설팅</p>
+  
+</a><a class="story" href="https://hgrs.io/blog/story-sambunui-il">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/4T0gKaWIIAxMA2wPubaPRRlpQ.jpg" alt="">
+  <p class="story-t">100만 원대 브랜드가 500만 원대 제품을 내놓을 때 — 삼분의일 GTM</p>
+  
+</a><a class="story" href="https://hgrs.io/portfolio/%EC%95%84%EB%A5%B4%EB%96%BC(%EB%B3%84%EB%8F%84)">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/hB8iqqH2ykqwq1I74BNK8bmTFs.jpg" alt="">
+  <p class="story-t">아르떼 (문화예술프로그램)</p>
+  <p class="story-s">윤일상 작곡가 등 유명 아티스트 강의 기획 · 아르떼 자연놀이터 선생님 활동, 컨텐츠 기획</p>
+</a><a class="story" href="https://hgrs.io/blog/story-yeolda-o2o-youtube">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/UO72bw5VBHxowlvS7SnONpkSvCc.jpg" alt="">
+  <p class="story-t">예산이 없는 스타트업이 유튜브로 CPA를 17% 낮춘 방법 — 열다 4개월</p>
+  
+</a><a class="story" href="https://hgrs.io/blog/story-walla-b2b-seo">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/WoDzeSZVBcHWclzEM5kEawgqiA.jpg" alt="">
+  <p class="story-t">B2B SaaS가 SEO로 KT까지 닿는 과정 — 왈라 6개월</p>
+  
+</a><a class="story" href="https://hgrs.io/blog/story-juwangsan-garden">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/LdmcXcH5tyATJUSlI2znCKmCQ.jpg" alt="">
+  <p class="story-t">고객 1,000명이 마케터가 되는 구조 — 주왕산가든 커뮤니티 커머스</p>
+  
+</a>
+</div></div>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>25</span></footer>
+</section>
+<section id="pg26" class="page dark" data-layout="cards">
+  <div class="page-body">
+<div class="shead">
+  <p class="eyebrow-lime">Growth Stories</p>
+  <h2>주요 성장 사례 30건 (3/3)</h2>
+  <p class="subline">이어서 보여드립니다</p>
+</div>
+<div class="stories">
+<a class="story" href="https://hgrs.io/portfolio/%EC%BD%94%EB%93%9C%EC%95%84%EC%9D%B4">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/tnnUSIHe0YS8JEEwnpURLMxecs.jpg" alt="">
+  <p class="story-t">코드아이 (투자 교육)</p>
+  <p class="story-s">월 스트리트 뱅커들의 투자 교육 브랜드 런칭 · 강의 컨텐츠 개발 및 베타 버전 마케팅 총괄</p>
+</a><a class="story" href="https://hgrs.io/portfolio/%ED%81%90%EB%9D%BC%EC%97%90%EC%8A%A4">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/B2ktGi53j1DOzrCFRsFmpyPLPWY.jpg" alt="">
+  <p class="story-t">큐라에스 (건기식 커머스)</p>
+  <p class="story-s">브랜드 제품 런칭 전략과 CRM 통합 프로젝트 · 그로스해킹 방식의 영업이익 개선 목표 운영</p>
+</a><a class="story" href="https://hgrs.io/blog/story-krafton-pubg-esports">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/kQaFSNI3UlgYIcAlkQI8Irx3zwI.jpg" alt="">
+  <p class="story-t">죽어 있던 공식 유튜브를 다시 켜는 일 — 크래프톤 배틀그라운드 이스포츠 12개월</p>
+  
+</a><a class="story" href="https://hgrs.io/blog/story-trusty-food-imc">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/tk3xcMycF5V6TZdU6zREEB08fbo.jpg" alt="">
+  <p class="story-t">블라인드 시식대회와 댕터뷰 — 트러스티푸드 SNS 브랜딩과 퍼포먼스 12개월</p>
+  
+</a><a class="story" href="https://hgrs.io/blog/story-parkron-zeroblock">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/t4GRjeyygl2RFdQvfjo2d6ge9zk.jpg" alt="">
+  <p class="story-t">매트리스 구독 CPA를 9만 원 낮춘 3개월 — 파크론 제로블럭</p>
+  
+</a><a class="story" href="https://hgrs.io/blog/story-fitflex">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/8pDTr7juPAY0SMYnWZLd1hpARVE.jpg" alt="">
+  <p class="story-t">7만 원짜리 그립을 비싸게 팔 준비 — 핏플렉스 6개월</p>
+  
+</a><a class="story" href="https://hgrs.io/blog/story-herwell-irvinelab">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/RjfI0UtzRbH1wlW5ivQiYhZ61c.jpg" alt="">
+  <p class="story-t">광고비 경쟁에서 빠져나오는 리브랜딩 — 어바인랩 3개월</p>
+  
+</a><a class="story" href="https://hgrs.io/portfolio/%ED%8F%AC%EC%89%AC-%EC%9D%B8-%EC%84%9C%EC%9A%B8">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/SPMk9Pz2iHMRdchAD0nVcIh6Q.jpg" alt="">
+  <p class="story-t">포쉬 인 서울</p>
+  <p class="story-s">20여 년 B2B 의류 브랜드 및 신생 B2C 브랜드 코칭 · 자사몰 퍼널 구조와 브랜딩, SNS 채널 전략까지</p>
+</a><a class="story" href="https://hgrs.io/portfolio/%EB%82%B4%EC%B6%94%EB%9F%B4%ED%97%AC%EC%8A%A4">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/XITMDh7sJJtcqtesbxGTvPyAXS0.jpg" alt="">
+  <p class="story-t">내추럴헬스 (건기식 커머스)</p>
+  <p class="story-s">브랜드 전략부터 피봇팅 설계까지 · 장기간 사업/마케팅 실무 교육 병행</p>
+</a><a class="story" href="https://hgrs.io/portfolio/%EB%A6%AC%EC%96%BC%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8">
+  <img src="http://localhost:8909/public/deck/img/portfolio/framer/jxhAmRwkza395CRnECXP2rOLEQ.jpg" alt="">
+  <p class="story-t">리얼아카데미 (주니어영어)</p>
+  <p class="story-s">월 예산 5천 이상 (메타, 구글, GFA) CPA 최적화 성공 · 우수 성과 숏폼 소재 다수 기획제작 및 브랜드 수급</p>
+</a>
+</div></div>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>26</span></footer>
+</section>
+<section id="pg27" class="page dark" data-layout="case">
   <div class="page-body">
 <div class="fcard">
   <div class="fcard-h">
@@ -1370,13 +1497,13 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
       </ul>
     </div>
     <div class="fcard-m">
-      <figure><img src="http://localhost:8909/public/sns/krafton-contents.jpg" alt=""><figcaption>배틀그라운드 이스포츠 공식 채널에 편성한 컨텐츠들</figcaption></figure>
+      <figure><img src="http://localhost:8909/public/deck/img/sns/krafton-contents.jpg" alt=""><figcaption>배틀그라운드 이스포츠 공식 채널에 편성한 컨텐츠들</figcaption></figure>
     </div>
   </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>26</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>27</span></footer>
 </section>
-<section id="pg27" class="page dark" data-layout="case">
+<section id="pg28" class="page dark" data-layout="case">
   <div class="page-body">
 <div class="fcard">
   <div class="fcard-h">
@@ -1384,24 +1511,24 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     <p class="fcard-meta">크래프톤 (배틀그라운드 / 12개월) — 산출물</p>
   </div>
   <div class="fout">
-    <div class="fout-l"><figure><img src="http://localhost:8909/public/sns/krafton-plan.png" alt=""><figcaption>컨텐츠 기획안 — 포맷·출연·구성·레퍼런스까지 한 장에</figcaption></figure><figure><img src="http://localhost:8909/public/sns/krafton-funnel.png" alt=""><figcaption>페르소나별 유입 경로와 CRM 연결까지 그린 퍼널 설계</figcaption></figure><figure><img src="http://localhost:8909/public/evidence/krafton-battlegrounds-schedule.png" alt=""><figcaption>크래프톤 배틀그라운드(PNC 2024) 채널 콘텐츠 편성표. 일자별 Long/Shorts 업로드 스케줄과 촬영·인터뷰 일정(스태프 성함은 비공개 처리). <span class="ev-mask">일부 가림</span></figcaption></figure></div>
+    <div class="fout-l"><figure><img src="http://localhost:8909/public/deck/img/sns/krafton-plan.jpg" alt=""><figcaption>컨텐츠 기획안 — 포맷·출연·구성·레퍼런스까지 한 장에</figcaption></figure><figure><img src="http://localhost:8909/public/deck/img/sns/krafton-funnel.jpg" alt=""><figcaption>페르소나별 유입 경로와 CRM 연결까지 그린 퍼널 설계</figcaption></figure><figure><img src="http://localhost:8909/public/deck/img/evidence/krafton-battlegrounds-schedule.jpg" alt=""><figcaption>크래프톤 배틀그라운드(PNC 2024) 채널 콘텐츠 편성표. 일자별 Long/Shorts 업로드 스케줄과 촬영·인터뷰 일정(스태프 성함은 비공개 처리). <span class="ev-mask">일부 가림</span></figcaption></figure></div>
     <div class="fout-r"><div class="fvids"><a class="thumb" href="https://www.youtube.com/watch?v=63_0QN5MUXY"><img src="https://i.ytimg.com/vi/63_0QN5MUXY/mqdefault.jpg" alt=""><span class="play">▶</span><span>배틀그라운드 이스포츠 공식 컨텐츠</span></a><a class="thumb" href="https://www.youtube.com/watch?v=Bsp_HBS8ckM"><img src="https://i.ytimg.com/vi/Bsp_HBS8ckM/mqdefault.jpg" alt=""><span class="play">▶</span><span>배틀그라운드 이스포츠 공식 컨텐츠</span></a></div><p class="fchan-k">굴린 채널</p><p class="fchan-n">모든 공식채널 연간 대행</p>
       <div class="fchan"><div class="chan">
-        <img src="http://localhost:8909/public/sns/channels/pubg-youtube.jpg" alt="">
+        <img src="http://localhost:8909/public/deck/img/sns/channels/pubg-youtube.jpg" alt="">
         <p class="chan-n">배틀그라운드 이스포츠</p>
         <p class="chan-h">YouTube · @pubgesportskr</p>
         <p class="chan-m">구독자 11.7만</p>
       </div><div class="chan">
-        <img src="http://localhost:8909/public/sns/channels/pubg-instagram.jpg" alt="">
+        <img src="http://localhost:8909/public/deck/img/sns/channels/pubg-instagram.jpg" alt="">
         <p class="chan-n">배틀그라운드 이스포츠</p>
         <p class="chan-h">Instagram · @pubgesports_kr</p>
         <p class="chan-m">팔로워 2.6만</p>
       </div></div></div>
   </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>27</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>28</span></footer>
 </section>
-<section id="pg28" class="page dark" data-layout="case">
+<section id="pg29" class="page dark" data-layout="case">
   <div class="page-body">
 <div class="fcard">
   <div class="fcard-h">
@@ -1417,24 +1544,24 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
       </ul>
     </div>
     <div class="fcard-m">
-      <figure><img src="http://localhost:8909/public/sns/lovedy-funnel.png" alt=""><figcaption>SEO 채널·컨텐츠 미디어 믹스에서 CRM 최적화까지 이어지는 퍼널 지도</figcaption></figure>
+      <figure><img src="http://localhost:8909/public/deck/img/sns/lovedy-funnel.jpg" alt=""><figcaption>SEO 채널·컨텐츠 미디어 믹스에서 CRM 최적화까지 이어지는 퍼널 지도</figcaption></figure>
     </div>
   </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>28</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>29</span></footer>
 </section>
-<section id="pg29" class="page dark" data-layout="case">
+<section id="pg30" class="page dark" data-layout="case">
   <div class="page-body">
 <div class="fcard">
   <div class="fcard-h">
     <p class="fcard-cat">Feature 02</p>
     <p class="fcard-meta">럽디 (연애 상담 서비스 / 12개월) — 산출물</p>
   </div>
-  <div class="fout-grid"><figure><img src="http://localhost:8909/public/sns/lovedy-youtube.jpg" alt=""><figcaption>상담사를 각 주제의 대표 전문가로 세운 온드 유튜브</figcaption></figure><figure><img src="http://localhost:8909/public/evidence/lubdi-redate-response-rate.png" alt=""><figcaption>럽디 리데이트 R진단지(고객 미응답률) 개선 추이. 9월 56%에서 6월4주 10%까지 미응답률이 낮아졌습니다.</figcaption></figure></div>
+  <div class="fout-grid"><figure><img src="http://localhost:8909/public/deck/img/sns/lovedy-youtube.jpg" alt=""><figcaption>상담사를 각 주제의 대표 전문가로 세운 온드 유튜브</figcaption></figure><figure><img src="http://localhost:8909/public/deck/img/evidence/lubdi-redate-response-rate.jpg" alt=""><figcaption>럽디 리데이트 R진단지(고객 미응답률) 개선 추이. 9월 56%에서 6월4주 10%까지 미응답률이 낮아졌습니다.</figcaption></figure></div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>29</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>30</span></footer>
 </section>
-<section id="pg30" class="page dark" data-layout="case">
+<section id="pg31" class="page dark" data-layout="case">
   <div class="page-body">
 <div class="fcard">
   <div class="fcard-h">
@@ -1450,13 +1577,13 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
       </ul>
     </div>
     <div class="fcard-m">
-      <figure><img src="http://localhost:8909/public/sns/yeolda-shoot.jpg" alt=""><figcaption>'열다 정리 전문가' 촬영 현장 — 인물 섭외부터 촬영까지 직접</figcaption></figure>
+      <figure><img src="http://localhost:8909/public/deck/img/sns/yeolda-shoot.jpg" alt=""><figcaption>'열다 정리 전문가' 촬영 현장 — 인물 섭외부터 촬영까지 직접</figcaption></figure>
     </div>
   </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>30</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>31</span></footer>
 </section>
-<section id="pg31" class="page dark" data-layout="case">
+<section id="pg32" class="page dark" data-layout="case">
   <div class="page-body">
 <div class="fcard">
   <div class="fcard-h">
@@ -1464,19 +1591,19 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     <p class="fcard-meta">열다 (옷장정리 O2O 플랫폼 / 4개월) — 산출물</p>
   </div>
   <div class="fout">
-    <div class="fout-l"><figure><img src="http://localhost:8909/public/sns/yeolda-plan.png" alt=""><figcaption>채널 컨텐츠와 퍼포먼스마케팅을 한 장에 묶은 통합 플랜</figcaption></figure><figure><img src="http://localhost:8909/public/sns/yeolda-app.jpg" alt=""><figcaption>예약 전환까지 이어지는 O2O 서비스</figcaption></figure></div>
+    <div class="fout-l"><figure><img src="http://localhost:8909/public/deck/img/sns/yeolda-plan.jpg" alt=""><figcaption>채널 컨텐츠와 퍼포먼스마케팅을 한 장에 묶은 통합 플랜</figcaption></figure><figure><img src="http://localhost:8909/public/deck/img/sns/yeolda-app.jpg" alt=""><figcaption>예약 전환까지 이어지는 O2O 서비스</figcaption></figure></div>
     <div class="fout-r"><div class="fvids"><a class="thumb" href="https://www.youtube.com/watch?v=XmX0iYOTUGE"><img src="https://i.ytimg.com/vi/XmX0iYOTUGE/mqdefault.jpg" alt=""><span class="play">▶</span><span>정리수납전문가 1급 워킹맘의 주방 정리 노하우는?</span></a><a class="thumb" href="https://www.youtube.com/watch?v=AjeXTq75hiw"><img src="https://i.ytimg.com/vi/AjeXTq75hiw/mqdefault.jpg" alt=""><span class="play">▶</span><span>옷장정리 전문가가 알려주는, 드레스룸 한 방에 정리하는 법!</span></a></div><p class="fchan-k">굴린 채널</p><p class="fchan-n">옷장정리 O2O 서비스의 온드 채널을 처음부터 세웠습니다</p>
       <div class="fchan"><div class="chan">
-        <img src="http://localhost:8909/public/portfolio/shorts-yt/BgAU2oW5ckY.jpg" alt="">
+        <img src="http://localhost:8909/public/deck/img/portfolio/shorts-yt/BgAU2oW5ckY.jpg" alt="">
         <p class="chan-n">집 정리의 모든 것</p>
         <p class="chan-h">YouTube · @jipjeongmo</p>
         <p class="chan-m">구독자 223</p>
       </div></div></div>
   </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>31</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>32</span></footer>
 </section>
-<section id="pg32" class="page dark" data-layout="case">
+<section id="pg33" class="page dark" data-layout="case">
   <div class="page-body">
 <div class="fcard">
   <div class="fcard-h">
@@ -1492,13 +1619,13 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
       </ul>
     </div>
     <div class="fcard-m">
-      <figure><img src="http://localhost:8909/public/sns/trusty-vet.jpg" alt=""><figcaption>생식·동결건조 라인 — 컨텐츠가 곧 상세페이지가 되는 제품 컷</figcaption></figure>
+      <figure><img src="http://localhost:8909/public/deck/img/sns/trusty-vet.jpg" alt=""><figcaption>생식·동결건조 라인 — 컨텐츠가 곧 상세페이지가 되는 제품 컷</figcaption></figure>
     </div>
   </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>32</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>33</span></footer>
 </section>
-<section id="pg33" class="page dark" data-layout="case">
+<section id="pg34" class="page dark" data-layout="case">
   <div class="page-body">
 <div class="fcard">
   <div class="fcard-h">
@@ -1506,24 +1633,24 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     <p class="fcard-meta">트러스티푸드 (펫푸드 커머스) — 산출물</p>
   </div>
   <div class="fout">
-    <div class="fout-l"><div class="fout-reels"><figure><img src="http://localhost:8909/public/sns/reels/trusty-reel-1.jpg" alt=""><figcaption>코엑스 펫페어 현장 릴스 — 브랜드 공식 인스타그램</figcaption></figure><figure><img src="http://localhost:8909/public/sns/reels/trusty-reel-2.jpg" alt=""><figcaption>트푸터뷰 Ep.01 — 보호자 인터뷰 시리즈</figcaption></figure></div><figure><img src="http://localhost:8909/public/evidence/trusty-performance.png" alt=""><figcaption>트러스티푸드 4~7월 월별 지출금액·노출·클릭·CTR·CPC·구매 수·구매당 비용·전환 매출·ROAS 실적표.</figcaption></figure><figure><img src="http://localhost:8909/public/evidence/trusty-creative-1.png" alt=""><figcaption>트러스티푸드 광고 소재(이미지·영상)별 지출·CTR·구매·결과당 비용·구매 전환값·ROAS 실적표.</figcaption></figure></div>
+    <div class="fout-l"><div class="fout-reels"><figure><img src="http://localhost:8909/public/deck/img/sns/reels/trusty-reel-1.jpg" alt=""><figcaption>코엑스 펫페어 현장 릴스 — 브랜드 공식 인스타그램</figcaption></figure><figure><img src="http://localhost:8909/public/deck/img/sns/reels/trusty-reel-2.jpg" alt=""><figcaption>트푸터뷰 Ep.01 — 보호자 인터뷰 시리즈</figcaption></figure></div><figure><img src="http://localhost:8909/public/deck/img/evidence/trusty-performance.jpg" alt=""><figcaption>트러스티푸드 4~7월 월별 지출금액·노출·클릭·CTR·CPC·구매 수·구매당 비용·전환 매출·ROAS 실적표.</figcaption></figure><figure><img src="http://localhost:8909/public/deck/img/evidence/trusty-creative-1.jpg" alt=""><figcaption>트러스티푸드 광고 소재(이미지·영상)별 지출·CTR·구매·결과당 비용·구매 전환값·ROAS 실적표.</figcaption></figure></div>
     <div class="fout-r"><div class="fvids"><a class="thumb" href="https://www.youtube.com/watch?v=LCQywT3a2pQ"><img src="https://i.ytimg.com/vi/LCQywT3a2pQ/mqdefault.jpg" alt=""><span class="play">▶</span><span>강아지 사료 솔루션 — 짱구 이야기 (전편)</span></a></div><p class="fchan-k">굴린 채널</p>
       <div class="fchan"><div class="chan">
-        <img src="http://localhost:8909/public/sns/channels/trustylabs-youtube.jpg" alt="">
+        <img src="http://localhost:8909/public/deck/img/sns/channels/trustylabs-youtube.jpg" alt="">
         <p class="chan-n">트러스티랩스</p>
         <p class="chan-h">YouTube · @TrustyLabs</p>
         <p class="chan-m">구독자 1,770</p>
       </div><div class="chan">
-        <img src="http://localhost:8909/public/sns/channels/trustyfood-instagram.jpg" alt="">
+        <img src="http://localhost:8909/public/deck/img/sns/channels/trustyfood-instagram.jpg" alt="">
         <p class="chan-n">트러스티푸드</p>
         <p class="chan-h">Instagram · @trustyfood_official</p>
         <p class="chan-m">팔로워 1.3만</p>
       </div></div></div>
   </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>33</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>34</span></footer>
 </section>
-<section id="pg34" class="page dark" data-layout="cards">
+<section id="pg35" class="page dark" data-layout="cards">
   <div class="page-body">
 
 <div class="shead">
@@ -1532,56 +1659,56 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 </div>
 <div class="chan-wall">
 <div class="chan">
-  <img src="http://localhost:8909/public/sns/channels/pubg-youtube.jpg" alt="">
+  <img src="http://localhost:8909/public/deck/img/sns/channels/pubg-youtube.jpg" alt="">
   <p class="chan-p">YouTube</p>
   <p class="chan-n">배틀그라운드 이스포츠</p>
   <p class="chan-h">@pubgesportskr</p>
   <p class="chan-m">구독자 11.7만</p>
   
 </div><div class="chan">
-  <img src="http://localhost:8909/public/sns/channels/pubg-instagram.jpg" alt="">
+  <img src="http://localhost:8909/public/deck/img/sns/channels/pubg-instagram.jpg" alt="">
   <p class="chan-p">Instagram</p>
   <p class="chan-n">배틀그라운드 이스포츠</p>
   <p class="chan-h">@pubgesports_kr</p>
   <p class="chan-m">팔로워 2.6만</p>
   
 </div><div class="chan">
-  <img src="http://localhost:8909/public/portfolio/shorts-yt/BgAU2oW5ckY.jpg" alt="">
+  <img src="http://localhost:8909/public/deck/img/portfolio/shorts-yt/BgAU2oW5ckY.jpg" alt="">
   <p class="chan-p">YouTube</p>
   <p class="chan-n">집 정리의 모든 것</p>
   <p class="chan-h">@jipjeongmo</p>
   <p class="chan-m">구독자 223</p>
   <p class="chan-note">롱폼 10편 · 숏폼 19편 편성</p>
 </div><div class="chan">
-  <img src="http://localhost:8909/public/sns/channels/trustylabs-youtube.jpg" alt="">
+  <img src="http://localhost:8909/public/deck/img/sns/channels/trustylabs-youtube.jpg" alt="">
   <p class="chan-p">YouTube</p>
   <p class="chan-n">트러스티랩스</p>
   <p class="chan-h">@TrustyLabs</p>
   <p class="chan-m">구독자 1,770</p>
   <p class="chan-note">처방 브랜드 진단 퍼널 연결</p>
 </div><div class="chan">
-  <img src="http://localhost:8909/public/sns/channels/trustyfood-instagram.jpg" alt="">
+  <img src="http://localhost:8909/public/deck/img/sns/channels/trustyfood-instagram.jpg" alt="">
   <p class="chan-p">Instagram</p>
   <p class="chan-n">트러스티푸드</p>
   <p class="chan-h">@trustyfood_official</p>
   <p class="chan-m">팔로워 1.3만</p>
   <p class="chan-note">브랜드 공식 인스타그램 운영</p>
 </div><div class="chan">
-  <img src="http://localhost:8909/public/sns/channels/zeroblock-blog.jpg" alt="">
+  <img src="http://localhost:8909/public/deck/img/sns/channels/zeroblock-blog.jpg" alt="">
   <p class="chan-p">네이버 블로그</p>
   <p class="chan-n">파크론 제로블럭</p>
   <p class="chan-h">blog.naver.com/zeroblock</p>
   <p class="chan-m">이웃 497</p>
   <p class="chan-note">시공 사례를 쌓아 지역 검색 유입</p>
 </div><div class="chan">
-  <img src="http://localhost:8909/public/sns/channels/walla-blog.jpg" alt="">
+  <img src="http://localhost:8909/public/deck/img/sns/channels/walla-blog.jpg" alt="">
   <p class="chan-p">블로그</p>
   <p class="chan-n">왈라 블로그</p>
   <p class="chan-h">home.walla.my</p>
   
   <p class="chan-note">KT 억대 수주 연결</p>
 </div><div class="chan">
-  <img src="http://localhost:8909/public/sns/channels/cyberdigm-blog.jpg" alt="">
+  <img src="http://localhost:8909/public/deck/img/sns/channels/cyberdigm-blog.jpg" alt="">
   <p class="chan-p">블로그</p>
   <p class="chan-n">사이버다임 블로그</p>
   <p class="chan-h">cyberdigm.co.kr</p>
@@ -1590,9 +1717,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 </div>
 </div>
 <p class="foot-note">계약 범위에 따라 메인 채널을 정하고 나머지 채널에는 컨텐츠 미러링을 병행합니다.</p></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>34</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>35</span></footer>
 </section>
-<section id="pg36" class="page alt" data-layout="wall">
+<section id="pg37" class="page alt" data-layout="wall">
   <div class="page-body">
 
 <div class="shead">
@@ -1603,9 +1730,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 <a class="thumb" href="https://www.youtube.com/watch?v=aEbmZ3H5EWo"><img src="https://i.ytimg.com/vi/aEbmZ3H5EWo/mqdefault.jpg" alt=""><span class="play">▶</span><span>배그극장</span></a><a class="thumb" href="https://www.youtube.com/watch?v=f5QK9Hik2C8"><img src="https://i.ytimg.com/vi/f5QK9Hik2C8/mqdefault.jpg" alt=""><span class="play">▶</span><span>PNC</span></a><a class="thumb" href="https://www.youtube.com/watch?v=_h3PLQlhs1s"><img src="https://i.ytimg.com/vi/_h3PLQlhs1s/mqdefault.jpg" alt=""><span class="play">▶</span><span>PNC</span></a><a class="thumb" href="https://www.youtube.com/watch?v=yNsu5XfTN1E"><img src="https://i.ytimg.com/vi/yNsu5XfTN1E/mqdefault.jpg" alt=""><span class="play">▶</span><span>이스포츠 스케치</span></a><a class="thumb" href="https://www.youtube.com/watch?v=kN57OTVMSD0"><img src="https://i.ytimg.com/vi/kN57OTVMSD0/mqdefault.jpg" alt=""><span class="play">▶</span><span>이스포츠 하이라이트</span></a><a class="thumb" href="https://www.youtube.com/watch?v=Yy9K61hUC3Y"><img src="https://i.ytimg.com/vi/Yy9K61hUC3Y/mqdefault.jpg" alt=""><span class="play">▶</span><span>핏플렉스 브랜드 캠페인</span></a><a class="thumb" href="https://www.youtube.com/watch?v=EU26OQv6ATE"><img src="https://i.ytimg.com/vi/EU26OQv6ATE/mqdefault.jpg" alt=""><span class="play">▶</span><span>열다 — 이사 전 동선에 맞는 정리정돈</span></a>
 </div>
 </div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>36</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>37</span></footer>
 </section>
-<section id="pg37" class="page alt" data-layout="wall">
+<section id="pg38" class="page alt" data-layout="wall">
   <div class="page-body">
 
 <div class="shead">
@@ -1616,9 +1743,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 <a class="thumb" href="https://www.youtube.com/watch?v=6gfORrmxY2Q"><img src="https://i.ytimg.com/vi/6gfORrmxY2Q/mqdefault.jpg" alt=""><span class="play">▶</span><span>열다 — 신발장을 펜트리로</span></a><a class="thumb" href="https://www.youtube.com/watch?v=AjeXTq75hiw"><img src="https://i.ytimg.com/vi/AjeXTq75hiw/mqdefault.jpg" alt=""><span class="play">▶</span><span>열다 — 드레스룸 한 방에 정리하는 법</span></a><a class="thumb" href="https://www.youtube.com/watch?v=XmX0iYOTUGE"><img src="https://i.ytimg.com/vi/XmX0iYOTUGE/mqdefault.jpg" alt=""><span class="play">▶</span><span>열다 — 정리수납전문가 1급의 주방 정리</span></a><a class="thumb" href="https://www.youtube.com/watch?v=LTyFU4KVtb8"><img src="https://i.ytimg.com/vi/LTyFU4KVtb8/mqdefault.jpg" alt=""><span class="play">▶</span><span>열다 — 정리수납의 시작은 분리배출</span></a><a class="thumb" href="https://www.youtube.com/watch?v=AFaI-wjsb5o"><img src="https://i.ytimg.com/vi/AFaI-wjsb5o/mqdefault.jpg" alt=""><span class="play">▶</span><span>열다 — 베란다를 홈카페로</span></a><a class="thumb" href="https://www.youtube.com/watch?v=rN8u7D8R9ds"><img src="https://i.ytimg.com/vi/rN8u7D8R9ds/mqdefault.jpg" alt=""><span class="play">▶</span><span>열다 — 장난감 가득한 거실 청소법</span></a><a class="thumb" href="https://www.youtube.com/watch?v=3o8fmjM71m8"><img src="https://i.ytimg.com/vi/3o8fmjM71m8/mqdefault.jpg" alt=""><span class="play">▶</span><span>열다 — 정리 업체 실사용 후기</span></a>
 </div>
 </div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>37</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>38</span></footer>
 </section>
-<section id="pg38" class="page alt" data-layout="wall">
+<section id="pg39" class="page alt" data-layout="wall">
   <div class="page-body">
 
 <div class="shead">
@@ -1629,234 +1756,13 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 <a class="thumb" href="https://www.youtube.com/watch?v=Th4pjIRJUz8"><img src="https://i.ytimg.com/vi/Th4pjIRJUz8/mqdefault.jpg" alt=""><span class="play">▶</span><span>우리 강아지 비만·피부염 해결 (후편)</span></a><a class="thumb" href="https://www.youtube.com/watch?v=IzXDfxBQw5A"><img src="https://i.ytimg.com/vi/IzXDfxBQw5A/mqdefault.jpg" alt=""><span class="play">▶</span><span>노아만을 위한 식단 (전편)</span></a><a class="thumb" href="https://www.youtube.com/watch?v=ta2ILzOdiOQ"><img src="https://i.ytimg.com/vi/ta2ILzOdiOQ/mqdefault.jpg" alt=""><span class="play">▶</span><span>영양수의사가 답합니다 (후편)</span></a><a class="thumb" href="https://www.youtube.com/watch?v=L3W_Uif3sjo"><img src="https://i.ytimg.com/vi/L3W_Uif3sjo/mqdefault.jpg" alt=""><span class="play">▶</span><span>수의사가 경고하는 강아지 간식의 숨겨진 위험</span></a><a class="thumb" href="https://www.youtube.com/watch?v=my3vzEv5YkQ"><img src="https://i.ytimg.com/vi/my3vzEv5YkQ/mqdefault.jpg" alt=""><span class="play">▶</span><span>사료 하나로 달라지는 건강</span></a><a class="thumb" href="https://www.youtube.com/watch?v=JTO0-Cedrs8"><img src="https://i.ytimg.com/vi/JTO0-Cedrs8/mqdefault.jpg" alt=""><span class="play">▶</span><span>강아지 사료 언제 바꿔야 할까?</span></a>
 </div>
 <p class="foot-note">(다수 숏폼 생략)</p></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>38</span></footer>
-</section>
-<section id="pg25" class="page" data-layout="cards">
-  <div class="page-body">
-
-<div class="shead">
-  <h2>SNS 종합 브랜드 마케팅 시스템</h2>
-  <p class="subline">SNS 채널 연간 기획운영이 기본이며, 아래 범위는 필요 시 협의해 더합니다</p>
-</div>
-<div class="cards4">
-<div class="card4">
-  <img class="card4-img" src="http://localhost:8909/public/sns/krafton-3c.png" alt="">
-  <div class="card4-body">
-    <span class="card4-no">01</span>
-    <p class="card4-t">인스타그램 · 유튜브</p>
-    <p class="card4-d">메인 채널을 둘 중 선정 후 그 외 채널에는 컨텐츠 미러링을 병행해 드립니다.</p>
-  </div>
-</div><div class="card4">
-  <img class="card4-img" src="http://localhost:8909/public/sns/lovedy-contents.jpg" alt="">
-  <div class="card4-body">
-    <span class="card4-no">02</span>
-    <p class="card4-t">광고 부스팅</p>
-    <p class="card4-d">챔피언성 인기 피드는 퍼포먼스마케팅 및 채널 자체 트래픽을 붓습니다.</p>
-  </div>
-</div><div class="card4">
-  <img class="card4-img" src="http://localhost:8909/public/sns/trusty-vet.jpg" alt="">
-  <div class="card4-body">
-    <span class="card4-no">03</span>
-    <p class="card4-t">인플루언서 게스트 콜라보</p>
-    <p class="card4-d">유튜버, 연예인, 인플루언서, 스트리머 등과 콜라보 시 협업을 매니징합니다.</p>
-  </div>
-</div><div class="card4">
-  <img class="card4-img" src="http://localhost:8909/public/sns/lovedy-result.png" alt="">
-  <div class="card4-body">
-    <span class="card4-no">04</span>
-    <p class="card4-t">CRM 퍼널링</p>
-    <p class="card4-d">고객 DB로의 연결이 필요할 때 그 시스템을 함께 구축 관리합니다.</p>
-  </div>
-</div>
-</div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>25</span></footer>
-</section>
-<section id="pg39" class="page dark" data-layout="cards">
-  <div class="page-body">
-<div class="shead">
-  <p class="eyebrow-lime">IMC PROJECTS</p>
-  <h2>그 밖의 프로젝트 19건 (1/4)</h2>
-  <p class="subline">앞의 10건을 포함해 브랜드를 통으로 맡았던 프로젝트는 모두 29건입니다 — 누르면 상세로 넘어갑니다</p>
-</div>
-<div class="imc">
-<a class="imc-card" href="https://hgrs.io/portfolio/%ED%8E%A0%EB%A6%AC%EC%9B%A8%EC%9D%B4">
-  <div class="imc-nopic"></div>
-  <div class="imc-body">
-    <strong>펠리웨이 (반려동물 페로몬 브랜드)</strong>
-    <span>국내 총판 브랜드 종합 마케팅 설계</span><span>인스타그램 / 인플루언서 공동구매 활성화</span>
-    <em class="imc-go">자세히 보기 →</em>
-  </div>
-</a><a class="imc-card" href="https://hgrs.io/portfolio/phs">
-  <img src="http://localhost:8909/public/portfolio/framer/arRJQlM3L86HIWFUAe1hwjIEiI.png" alt="">
-  <div class="imc-body">
-    <strong>PHS (B2B 전자기기)</strong>
-    <span>B2B 디지털 세일즈 여정 설계와 DB 확보 마케팅</span><span>단기간 내 SEO 다수 성공 및 PMF 바이럴 동시 진행</span>
-    <em class="imc-go">자세히 보기 →</em>
-  </div>
-</a><a class="imc-card" href="https://hgrs.io/blog/story-naechinso">
-  <img src="http://localhost:8909/public/portfolio/framer/OGlWRMz0j8AKBElBnr0tgEgI7Ao.png" alt="">
-  <div class="imc-body">
-    <strong>내친소 (소개팅 앱)</strong>
-    <span>소개팅 앱 포지셔닝 전략과 광고 컨텐츠 마케팅</span><span>ASA 셋팅 및 메타 최적화, CPI 개선 17% 검증</span>
-    <em class="imc-go">프로젝트 기록 읽기 →</em>
-  </div>
-</a><a class="imc-card" href="https://hgrs.io/portfolio/%EB%8B%A5%ED%84%B0%EB%8B%A4%EC%9D%B4%EC%96%B4%EB%A6%AC">
-  <img src="http://localhost:8909/public/portfolio/framer/oIGDK16ybqzxeEYMFQEgMKc8ws.png" alt="">
-  <div class="imc-body">
-    <strong>닥터다이어리 (헬스케어 커머스)</strong>
-    <span>커머스 퍼포먼스와 앱 CPI 초기 스케일업</span><span>시리즈B 유치 직후 마케팅팀 고도화 총괄</span>
-    <em class="imc-go">자세히 보기 →</em>
-  </div>
-</a><a class="imc-card" href="https://hgrs.io/portfolio/%EB%9E%98%EC%8A%A4%ED%81%90">
-  <img src="http://localhost:8909/public/portfolio/framer/AKVRW6HdL8esyzeYmh7xwhgmbo.png" alt="">
-  <div class="imc-body">
-    <strong>래스큐 (스포츠 보조제)</strong>
-    <span>스마트스토어 제품 런칭 컨셉/룩북/페이지 배포</span><span>USP 개발 및 디자인, 저예산 마케팅 플랜 제공</span>
-    <em class="imc-go">자세히 보기 →</em>
-  </div>
-</a>
-</div></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>39</span></footer>
-</section>
-<section id="pg40" class="page dark" data-layout="cards">
-  <div class="page-body">
-<div class="shead">
-  <p class="eyebrow-lime">IMC PROJECTS</p>
-  <h2>그 밖의 프로젝트 19건 (2/4)</h2>
-  <p class="subline">이어서 보여드립니다</p>
-</div>
-<div class="imc">
-<a class="imc-card" href="https://hgrs.io/portfolio/%EB%AA%A8%EB%91%90%EC%9D%98%ED%8A%B8%EB%A0%88%EC%9D%B4%EB%8B%9D">
-  <img src="http://localhost:8909/public/portfolio/framer/Cc2oMu7uFMeQHi5ZICnphniRoLI.png" alt="">
-  <div class="imc-body">
-    <strong>모두의트레이닝 (헬스 O2O)</strong>
-    <span>헬스/식단 코치 어플 스타트업의 지표 스케일업</span><span>월 광고비 1억씩 스케일업 및 리텐션 그로스해킹</span>
-    <em class="imc-go">자세히 보기 →</em>
-  </div>
-</a><a class="imc-card" href="https://hgrs.io/blog/story-mudit-crm">
-  <img src="http://localhost:8909/public/portfolio/framer/e8skc0Wx3KfvLh4fSjjdgX38xw.png" alt="">
-  <div class="imc-body">
-    <strong>뮤디트 (다이어트 보조제)</strong>
-    <span>커머스 자사몰 CRM 정책 및 캠페인 수익화</span><span>구매전환율 2% 이상 개선으로 광고비 절감</span>
-    <em class="imc-go">프로젝트 기록 읽기 →</em>
-  </div>
-</a><a class="imc-card" href="https://hgrs.io/blog/story-banaco">
-  <img src="http://localhost:8909/public/portfolio/framer/SZWkXD1WToJaC1bo8ftWNLbniI.png" alt="">
-  <div class="imc-body">
-    <strong>바나코 (라이프스타일 커머스/1개월)</strong>
-    <span>인하우스 SNS 브랜드 마케팅 기획 코칭</span><span>지인 추천 시스템, CRM, 오가닉 고객 활성화</span>
-    <em class="imc-go">프로젝트 기록 읽기 →</em>
-  </div>
-</a><a class="imc-card" href="https://hgrs.io/blog/story-cyberdigm-seo">
-  <img src="http://localhost:8909/public/portfolio/framer/3z5Z6sEcyKMzi8CPT8yAkuiDEZs.png" alt="">
-  <div class="imc-body">
-    <strong>사이버다임 (B2B SaaS/단기)</strong>
-    <span>B2B 프로덕트 브랜딩 및 세일즈 퍼널 개발</span><span>네이밍, 상위노출 SEO, 컨텐츠 여정 전략 설계</span>
-    <em class="imc-go">프로젝트 기록 읽기 →</em>
-  </div>
-</a><a class="imc-card" href="https://hgrs.io/blog/story-sambunui-il">
-  <img src="http://localhost:8909/public/portfolio/framer/4T0gKaWIIAxMA2wPubaPRRlpQ.png" alt="">
-  <div class="imc-body">
-    <strong>삼분의일 (매트리스 커머스)</strong>
-    <span>100만원대&gt;500만원대 제품 런칭 마케팅 (시리즈B)</span><span>프라이싱 및 전략 설계와 CPA 구조 개선</span>
-    <em class="imc-go">프로젝트 기록 읽기 →</em>
-  </div>
-</a>
-</div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>40</span></footer>
-</section>
-<section id="pg41" class="page dark" data-layout="cards">
-  <div class="page-body">
-<div class="shead">
-  <p class="eyebrow-lime">IMC PROJECTS</p>
-  <h2>그 밖의 프로젝트 19건 (3/4)</h2>
-  <p class="subline">이어서 보여드립니다</p>
-</div>
-<div class="imc">
-<a class="imc-card" href="https://hgrs.io/portfolio/%EC%95%84%EB%A5%B4%EB%96%BC(%EB%B3%84%EB%8F%84)">
-  <img src="http://localhost:8909/public/portfolio/framer/hB8iqqH2ykqwq1I74BNK8bmTFs.png" alt="">
-  <div class="imc-body">
-    <strong>아르떼 (문화예술프로그램)</strong>
-    <span>윤일상 작곡가 등 유명 아티스트 강의 기획</span><span>아르떼 자연놀이터 선생님 활동, 컨텐츠 기획</span>
-    <em class="imc-go">자세히 보기 →</em>
-  </div>
-</a><a class="imc-card" href="https://hgrs.io/blog/story-juwangsan-garden">
-  <img src="http://localhost:8909/public/portfolio/framer/LdmcXcH5tyATJUSlI2znCKmCQ.png" alt="">
-  <div class="imc-body">
-    <strong>주왕산가든 (식품 커머스/6개월)</strong>
-    <span>팬덤 커뮤니티 극대화와 앰배서더 시스템 구축</span><span>자사몰 마케팅의 브랜딩-컨텐츠-채널-CRM 설계</span>
-    <em class="imc-go">프로젝트 기록 읽기 →</em>
-  </div>
-</a><a class="imc-card" href="https://hgrs.io/portfolio/%EC%BD%94%EB%93%9C%EC%95%84%EC%9D%B4">
-  <img src="http://localhost:8909/public/portfolio/framer/tnnUSIHe0YS8JEEwnpURLMxecs.png" alt="">
-  <div class="imc-body">
-    <strong>코드아이 (투자 교육)</strong>
-    <span>월 스트리트 뱅커들의 투자 교육 브랜드 런칭</span><span>강의 컨텐츠 개발 및 베타 버전 마케팅 총괄</span>
-    <em class="imc-go">자세히 보기 →</em>
-  </div>
-</a><a class="imc-card" href="https://hgrs.io/portfolio/%ED%81%90%EB%9D%BC%EC%97%90%EC%8A%A4">
-  <img src="http://localhost:8909/public/portfolio/framer/B2ktGi53j1DOzrCFRsFmpyPLPWY.png" alt="">
-  <div class="imc-body">
-    <strong>큐라에스 (건기식 커머스)</strong>
-    <span>브랜드 제품 런칭 전략과 CRM 통합 프로젝트</span><span>그로스해킹 방식의 영업이익 개선 목표 운영</span>
-    <em class="imc-go">자세히 보기 →</em>
-  </div>
-</a><a class="imc-card" href="https://hgrs.io/blog/story-fitflex">
-  <img src="http://localhost:8909/public/portfolio/framer/8pDTr7juPAY0SMYnWZLd1hpARVE.png" alt="">
-  <div class="imc-body">
-    <strong>핏플렉스 (헬스 용품 커머스/6개월)</strong>
-    <span>하이엔드 리포지셔닝을 위한 브랜드 마케팅 전개</span><span>제품 컨셉 개편과 세일즈 퍼널 구축으로 ROI 개선</span>
-    <em class="imc-go">프로젝트 기록 읽기 →</em>
-  </div>
-</a>
-</div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>41</span></footer>
-</section>
-<section id="pg42" class="page dark" data-layout="cards">
-  <div class="page-body">
-<div class="shead">
-  <p class="eyebrow-lime">IMC PROJECTS</p>
-  <h2>그 밖의 프로젝트 19건 (4/4)</h2>
-  <p class="subline">이어서 보여드립니다</p>
-</div>
-<div class="imc">
-<a class="imc-card" href="https://hgrs.io/blog/story-herwell-irvinelab">
-  <img src="http://localhost:8909/public/portfolio/framer/RjfI0UtzRbH1wlW5ivQiYhZ61c.png" alt="">
-  <div class="imc-body">
-    <strong>어바인랩 (건기식 커머스/3개월)</strong>
-    <span>건기식 업종의 광고비 경쟁 탈피를 위한 리브랜딩</span><span>SNS 브랜드 내러티브 구축과 상세페이지 설계</span>
-    <em class="imc-go">프로젝트 기록 읽기 →</em>
-  </div>
-</a><a class="imc-card" href="https://hgrs.io/portfolio/%ED%8F%AC%EC%89%AC-%EC%9D%B8-%EC%84%9C%EC%9A%B8">
-  <img src="http://localhost:8909/public/portfolio/framer/SPMk9Pz2iHMRdchAD0nVcIh6Q.png" alt="">
-  <div class="imc-body">
-    <strong>포쉬 인 서울</strong>
-    <span>20여 년 B2B 의류 브랜드 및 신생 B2C 브랜드 코칭</span><span>자사몰 퍼널 구조와 브랜딩, SNS 채널 전략까지</span>
-    <em class="imc-go">자세히 보기 →</em>
-  </div>
-</a><a class="imc-card" href="https://hgrs.io/portfolio/%EB%82%B4%EC%B6%94%EB%9F%B4%ED%97%AC%EC%8A%A4">
-  <img src="http://localhost:8909/public/portfolio/framer/XITMDh7sJJtcqtesbxGTvPyAXS0.png" alt="">
-  <div class="imc-body">
-    <strong>내추럴헬스 (건기식 커머스)</strong>
-    <span>브랜드 전략부터 피봇팅 설계까지</span><span>장기간 사업/마케팅 실무 교육 병행</span>
-    <em class="imc-go">자세히 보기 →</em>
-  </div>
-</a><a class="imc-card" href="https://hgrs.io/portfolio/%EB%A6%AC%EC%96%BC%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8">
-  <img src="http://localhost:8909/public/portfolio/framer/jxhAmRwkza395CRnECXP2rOLEQ.png" alt="">
-  <div class="imc-body">
-    <strong>리얼아카데미 (주니어영어)</strong>
-    <span>월 예산 5천 이상 (메타, 구글, GFA) CPA 최적화 성공</span><span>우수 성과 숏폼 소재 다수 기획제작 및 브랜드 수급</span>
-    <em class="imc-go">자세히 보기 →</em>
-  </div>
-</a>
-</div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>42</span></footer>
 </section>
 <section id="pg21" class="page" data-layout="cards">
   <div class="page-body">
 
 <div class="shead">
-  <h2>브랜드 채널 마케팅 프로젝트</h2>
+  <h2>브랜드 채널 그로스</h2>
   <p class="subline">두 갈래로 나눠 진행합니다 — 필요한 쪽만 골라도 됩니다</p>
 </div>
 <div class="two">
@@ -1891,7 +1797,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 <div class="oneline">편수 단위 정가 결제는 숏폼 스튜디오뿐입니다 · 부가세 별도</div></div>
   <footer class="page-foot"><span>해그로시 스튜디오</span><span>21</span></footer>
 </section>
-<section id="pg45" class="page alt" data-layout="cards">
+<section id="pg42" class="page alt" data-layout="cards">
   <div class="page-body">
 
 <div class="shead">
@@ -1918,9 +1824,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
     <p class="ai-note">중소기업청 모두의창업 AI 강연자로 선 총괄 디렉터가 제작 감도를 잡습니다.</p>
   </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>45</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>42</span></footer>
 </section>
-<section id="pg46" class="page alt" data-layout="cards">
+<section id="pg43" class="page alt" data-layout="cards">
   <div class="page-body">
 
 <div class="shead">
@@ -1942,9 +1848,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
   <div><p class="appx-t">채널 운영 · 종합 마케팅 소통</p><p class="appx-d">그 외 채널 운영 및 종합 마케팅의 경우 오프라인 정기 미팅을 제공합니다.</p></div>
 </div>
 </div></div>
-  <footer class="page-foot"><span>해그로시 스튜디오</span><span>46</span></footer>
+  <footer class="page-foot"><span>해그로시 스튜디오</span><span>43</span></footer>
 </section>
-<section id="pg47" class="page dark" data-layout="cover">
+<section id="pg44" class="page dark" data-layout="cover">
   <div class="page-body"><div class="cover end">
   <div class="cover-l">
     <p class="cover-en">CONTACT</p>

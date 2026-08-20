@@ -6,6 +6,7 @@ import {
 } from "@/components/seo/structured-data";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { ORG } from "@/lib/constants";
 import { Clients } from "@/components/landing/s-clients";
 import { Portfolio } from "@/components/sns/s-portfolio";
 import { Cases } from "@/components/sns/s-cases";
@@ -31,7 +32,12 @@ export const metadata: Metadata = {
   description:
     "크래프톤·럽디·열다·트러스티푸드 등 30여 브랜드의 SNS 채널·컨텐츠 프로젝트 기록. 실제 편성한 롱폼 영상과 브랜드별 통합 액션 조합을 함께 봅니다.",
   alternates: { canonical: "/portfolio" },
+  // openGraph 는 부모와 병합되지 않고 통째로 교체된다 —
+  // 루트에 적어 둔 type·locale·siteName 이 여기서 사라지므로 다시 적는다
   openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    siteName: ORG.name,
     title: "포트폴리오 · 성과 사례 | 해그로시",
     description:
       "30여 브랜드의 SNS 채널·컨텐츠 프로젝트 기록. 실제 편성한 영상과 브랜드별 통합 액션 조합.",
@@ -44,7 +50,7 @@ const SCHEMA = serviceSchema({
   path: "/portfolio",
   name: "해그로시 성과 사례",
   description:
-    "브랜드 채널 마케팅·컨텐츠 프로젝트의 실제 성과 기록과 편성한 컨텐츠 모음.",
+    "브랜드 종합 그로스·컨텐츠 프로젝트의 실제 성과 기록과 편성한 컨텐츠 모음.",
   serviceType: "브랜드 컨텐츠 · 채널 그로스",
 });
 

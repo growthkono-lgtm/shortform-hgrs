@@ -3,9 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { createAdminClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/supabase/auth";
 import { adfilmTable } from "@/lib/adfilm-db";
-import { createAdminClient } from "@/lib/supabase/server";
 import { adFormat, sourceSeconds } from "@/lib/adfilm-formats";
 import { analyzeProductUrl } from "@/lib/adfilm-detail";
 import {
@@ -94,14 +94,26 @@ export async function saveBrief(formData: FormData) {
   revalidatePath(`/admin/adfilm/${id}`);
 }
 
-/** 이번 달 이 표에서 쓴 총액 — 상한 판정에 쓴다. 추정하지 않는다 */
+/**
+ * 이번 달 영상 지출 총액 — 상한 판정에 쓴다.
+ *
+ * ⚠️ **`adfilm.cost_usd` 를 보면 안 된다.** (2026-08-20 과금 점검에서 발견)
+ * 실제 생성은 `scripts/adfilm-*.mjs` 가 하고 그것들은 `recordSpend()` 로
+ * **`spend_log` 에만** 적는다. `adfilm.cost_usd` 는 아무도 안 올려서 늘 0이었고,
+ * 그래서 `maxPerMonthUsd: 120` 차단기가 **한 번도 걸린 적이 없다.**
+ * 이번 달 fal 실지출이 $74.99 인데 장부상 $0.00 이었다.
+ *
+ * 돈이 실제로 적히는 곳(`spend_log`)을 보게 고친다.
+ */
 async function monthSpend(): Promise<number> {
   const from = new Date();
   from.setUTCDate(1);
-  const { data } = await adfilmTable()
-    .select("cost_usd")
+  const { data } = await createAdminClient()
+    .from("spend_log")
+    .select("usd")
+    .eq("service", "fal")
     .gte("created_at", from.toISOString().slice(0, 10));
-  return (data ?? []).reduce((s, r) => s + Number(r.cost_usd ?? 0), 0);
+  return (data ?? []).reduce((s, r) => s + Number((r as { usd?: number }).usd ?? 0), 0);
 }
 
 /**

@@ -298,7 +298,7 @@ const CANONICAL_URL = SERVICE.url.includes("localhost")
 /** 브랜드 사실 — 모델이 회사를 지어내지 않도록 확정된 것만 넘긴다 */
 const BRAND_CONTEXT = `발행 주체: ${ORG.name}(${ORG.nameEn}), 사이트명 "${SERVICE.name}", ${CANONICAL_URL}
 소개: ${ORG.description}
-서비스 라인: 구매 전환형 숏폼 기획제작(/shortform), 브랜드 SNS 채널 커뮤니케이션(/sns-brand), 성과 사례(/portfolio)
+서비스 라인: 인플루언서-전환 숏폼 스튜디오(/shortform), 브랜드 채널 그로스(/sns-brand), 성과 사례(/portfolio)
 
 [포지셔닝 — 이 문장들이 어필 문단의 원본이다. 여기서 벗어난 주장을 지어내지 않는다]
 ${POSITIONING.identity}

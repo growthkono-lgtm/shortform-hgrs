@@ -1,16 +1,18 @@
 import { createAdminClient } from "@/lib/supabase/server";
 import { SERVICE } from "@/lib/constants";
 import { BRAND_PLANS } from "@/lib/sns-brand";
+import { KAKAO_CHANNEL } from "@/lib/constants";
 
 /**
  * 소개서 메일의 선택 카드 ① — **숏폼 스튜디오**. (2026-08-20)
  *
- * 카드 ②(브랜드 채널 마케팅 프로젝트)는 문구를 여기에 적지 않는다. 홈페이지·
+ * 카드 ②(브랜드 채널 그로스)는 문구를 여기에 적지 않는다. 홈페이지·
  * 소개서와 같은 말을 쓰기 위해 `lib/sns-brand.ts` 의 `BRAND_PLANS` 를 그대로
  * 읽는다. 숏폼 쪽은 그런 카피 상수가 따로 없어 이 한 덩어리만 메일 전용으로 둔다.
  */
 const SHORTFORM_CHOICE = {
-  title: "숏폼 스튜디오",
+  // 소개서 카드와 같은 이름을 쓴다 — 메일이 그 소개서를 들고 가기 때문
+  title: "인플루언서-전환 숏폼 스튜디오",
   desc: "인플루언서 시딩 → 2차 활용 소스컷 → 매출형 숏폼",
   note: "편수 단위 정가 결제가 되는 유일한 라인입니다.",
 } as const;
@@ -22,7 +24,7 @@ export type BrochureInquiry = {
 };
 
 /** `npm run deck` 이 만들어 public/ 에 두는 소개서 파일명 */
-/** `npm run deck` 이 만들어 public/ 에 두는 소개서 파일명 (숏폼 + 브랜드 채널 마케팅 종합) */
+/** `npm run deck` 이 만들어 public/ 에 두는 소개서 파일명 (숏폼 + 브랜드 채널 그로스 종합) */
 const BROCHURE_FILE = "hgrs-studio-brochure.pdf";
 
 /**
@@ -239,7 +241,7 @@ export const BROCHURE = {
  * 그래서 여기서는 공개 도메인으로 고정한다.
  */
 const PUBLIC_ORIGIN = SERVICE.url.includes("localhost")
-  ? "https://shortform.hgrs.io"
+  ? "https://hgrs.io" // 2026-08-20: 루트 도메인 이전 후에도 옛 서브도메인이 남아 있었다
   : SERVICE.url;
 
 export const brochureUrl = `${PUBLIC_ORIGIN}/${BROCHURE.file}`;
@@ -258,7 +260,7 @@ export function brochureMail(inquiry: BrochureInquiry) {
    * 두 갈래 선택지 — 문의한 사람이 자기 상황을 고르게 만든다. (2026-08-20)
    *
    * 앞 판은 세 갈래(숏폼 / 브랜드 SNS 채널 컨텐츠 활성화 / 종합 브랜드 마케팅)였는데,
-   * 뒤의 둘이 **브랜드 채널 마케팅 프로젝트** 하나로 합쳐졌다. 그 아래 플랜이 둘이다.
+   * 뒤의 둘이 **브랜드 채널 그로스** 하나로 합쳐졌다. 그 아래 플랜이 둘이다.
    *
    * 메일이라 flex·grid 를 쓰지 않는다 — 전부 table + 인라인 스타일이고, 폭을
    * 고정하지 않아 모바일에서는 그대로 한 줄씩 떨어진다.
@@ -388,6 +390,21 @@ ${brandChoice(`${PUBLIC_ORIGIN}/sns-brand#plans`)}
   브랜드 상황에 맞는 구성이 궁금하시면 <strong style="color:#030303">이 메일에 그대로 답장</strong>해 주세요.<br>
   채널 현황과 목표를 보내주시면 필요한 작업 범위를 정리해 회신드립니다.
 </p>
+
+<!-- 실시간 소통 배너 — 채팅 바로 열기(chatUrl)로 건다. 채널 홈을 거치면
+     한 번 더 눌러야 하고 거기서 이탈한다. 주소는 lib/constants.ts 한 곳에서 읽는다.
+     메일 호환: 테이블 + 인라인 스타일만. -->
+<table role="presentation" width="100%" style="width:100%;border-collapse:collapse;background:#fee500;border-radius:12px;margin:20px 0 0">
+  <tr><td style="padding:18px 22px">
+    <p style="font-size:14px;font-weight:700;color:#191600;margin:0 0 4px">지금 바로 물어보고 싶으시다면</p>
+    <p style="font-size:13px;color:#3b3600;line-height:1.7;margin:0 0 12px">
+      카카오톡으로 실시간 소통하실 수 있습니다. 담당자가 바로 확인합니다.
+    </p>
+    <a href="${KAKAO_CHANNEL.chatUrl}" style="display:inline-block;background:#191600;color:#fee500;text-decoration:none;padding:11px 22px;border-radius:999px;font-size:14px;font-weight:700">
+      카카오톡으로 실시간 소통하기
+    </a>
+  </td></tr>
+</table>
 <p style="font-size:15px;font-weight:700;margin:14px 0 0">
   <a href="${PUBLIC_ORIGIN}" style="color:#030303">${PUBLIC_ORIGIN.replace("https://", "")}</a>
 </p>`),

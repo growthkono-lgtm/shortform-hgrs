@@ -112,7 +112,7 @@ function Visual({ card }: { card: Card }) {
   // 그대로 들어가야 모바일에서 트랙을 세로로 풀었을 때 잘리지 않는다.
   if (card.kind === "youtube") {
     return (
-      <div className="relative flex w-[19rem] items-stretch overflow-hidden rounded-2xl bg-night pb-14 sm:w-[27rem]">
+      <div className="relative flex w-full max-w-[19rem] items-stretch overflow-hidden rounded-2xl bg-night pb-14 sm:w-[27rem] sm:max-w-none">
         <a
           href="https://www.youtube.com/watch?v=63_0QN5MUXY"
           target="_blank"

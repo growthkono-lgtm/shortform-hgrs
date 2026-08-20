@@ -15,7 +15,7 @@ export const HOME_HERO = {
     { href: "/shortform", label: "숏폼 스튜디오", primary: true },
     {
       href: "/sns-brand",
-      label: "브랜드 채널 마케팅",
+      label: "브랜드 채널 그로스",
       primary: false,
     },
   ],
@@ -110,7 +110,7 @@ export const HOME_CHOICE = {
     },
     {
       kicker: "채널 · 컨텐츠 · 광고를 함께 굴릴 팀이 필요하다면",
-      title: "브랜드 채널 마케팅",
+      title: "브랜드 채널 그로스",
       cta: "상세보기",
       href: "/sns-brand",
       shot: "/sns/yeolda-shoot.jpg",

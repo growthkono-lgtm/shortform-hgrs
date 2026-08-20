@@ -130,7 +130,7 @@ export default async function BlogPostPage(props: PageProps<"/blog/[slug]">) {
       {faqSchema ? <JsonLd data={faqSchema} /> : null}
       <JsonLd
         data={breadcrumb([
-          { name: "홈", path: "" },
+          { name: "해그로시", path: "/" },
           {
             name: post.kind === "story" ? "고객 이야기" : "인사이트",
             path: "/blog",

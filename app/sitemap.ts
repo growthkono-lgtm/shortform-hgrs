@@ -47,7 +47,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     ...posts.map((post) => ({
       url: `${SERVICE.url}/blog/${post.slug}`,
-      lastModified: now,
+      // 글마다 실제 발행일이 있다. 전부 now 로 내보내면 "40개 URL 이 매일
+      // 바뀐다"고 알리는 셈이라 크롤러가 lastModified 를 믿지 않게 된다.
+      lastModified: post.publishedAt ? new Date(post.publishedAt) : now,
       changeFrequency: "monthly" as const,
       priority: 0.7,
     })),

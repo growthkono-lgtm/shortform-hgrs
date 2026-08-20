@@ -2,7 +2,7 @@ import { Section, SectionHeading } from "@/components/ui/section";
 import { BRAND_PLANS } from "@/lib/sns-brand";
 
 /**
- * 브랜드 채널 마케팅 프로젝트 — 두 플랜. (2026-08-20)
+ * 브랜드 채널 그로스 — 두 플랜. (2026-08-20)
  *
  * 소개서(`scripts/build-deck.ts` `brand-plan` 장)의 두 칸 레이아웃을 그대로
  * 웹으로 옮겼다. 소개서에서는 PLAN B 칸만 인디고 테두리·엷은 인디고 면으로

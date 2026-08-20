@@ -25,7 +25,7 @@ export function Crew() {
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
         <p className="eyebrow">Crew</p>
         <h2 className="mt-5 max-w-3xl text-[1.5rem] leading-[1.35] font-bold sm:text-[2.125rem] sm:leading-[1.3] lg:text-[2.75rem]">
-          30여 브랜드의 그로스·컨텐츠 프로젝트로
+          30여 브랜드의 <span className="whitespace-nowrap">그로스·컨텐츠</span> 프로젝트로
           <br />
           <strong className="font-bold">
             마케팅 성과 사이클을 이해하는 팀

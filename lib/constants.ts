@@ -30,7 +30,7 @@ export const ORG = {
   name: "주식회사 해그로시",
   nameEn: "HGRS",
   description:
-    "브랜드 채널 마케팅과 구매 전환형 숏폼 소재를 만드는 컨텐츠 그로스 집단. 전략·기획·제작·운영을 한 팀으로 붙입니다.",
+    "브랜드 채널 그로스와 구매 전환형 숏폼을 함께 굴리는 컨텐츠 그로스 집단. 전략·기획·제작·운영을 한 팀으로 붙입니다.",
   /** 대외 연락처는 이 하나로 통일한다 — @hgrs.io 메일함은 존재하지 않는다 */
   email: "contact@h-grs.com",
   sameAs: ["https://brunch.co.kr/brunchbook/bmaha2"],

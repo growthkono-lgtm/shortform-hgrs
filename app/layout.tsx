@@ -38,7 +38,7 @@ const pyeojin = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(SERVICE.url),
   title: {
-    default: `${ORG.name} — 브랜드 채널 마케팅과 구매 전환 숏폼`,
+    default: `${ORG.name} — 브랜드 채널 그로스 · 구매 전환 숏폼`,
     template: `%s | 해그로시`,
   },
   alternates: { canonical: "/" },

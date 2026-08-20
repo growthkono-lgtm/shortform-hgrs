@@ -105,7 +105,7 @@ export const INQUIRY_PLANS = [
  * 지우면 옛 문의가 "알 수 없음" 으로 보인다.
  */
 export const LEGACY_INQUIRY_LABELS: Record<string, string> = {
-  sns_turnkey: "브랜드 채널 마케팅 (구 채널 턴키)",
+  sns_turnkey: "브랜드 채널 그로스 (구 채널 턴키)",
   ai_team: "AI팀 구축",
   shorts_only: "숏폼 — 싱글 플랜 (구)",
   full: "숏폼 — 멀티 플랜 (구)",
@@ -167,7 +167,7 @@ export const VOLUME_LABEL: Record<string, string> = Object.fromEntries(
  * 키가 없으면 숏폼 랜딩이다(그쪽 폼은 source 를 안 넣는다).
  */
 export const INQUIRY_SOURCE_LABEL: Record<string, string> = {
-  "sns-brand": "브랜드 채널 마케팅 랜딩 (/sns-brand)",
+  "sns-brand": "브랜드 채널 그로스 랜딩 (/sns-brand)",
   shortform: "숏폼 랜딩 (/shortform)",
 };
 

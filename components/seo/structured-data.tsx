@@ -1,4 +1,4 @@
-import { ORG, SERVICE } from "@/lib/constants";
+import { COMPANY, ORG, SERVICE } from "@/lib/constants";
 
 /**
  * 구조화 데이터(JSON-LD).
@@ -25,6 +25,23 @@ export const organization = {
   url: SERVICE.url,
   email: ORG.email,
   description: ORG.description,
+  /** 구글 조직 로고 리치리절트가 요구하는 값 */
+  logo: {
+    "@type": "ImageObject",
+    url: `${SERVICE.url}/logo/navi-symbol.png`,
+  },
+  /**
+   * 사업자등록상 소재지. 상주 오피스로 홍보하지 않는다는 원칙은 화면 문구에
+   * 대한 것이고, 사업자 정보 자체는 푸터에 이미 공개돼 있는 값이다.
+   * 대표자명·전화번호는 `lib/constants.ts` 에서 아직 null 이라 넣지 않는다 —
+   * 없는 값을 지어내지 않는다.
+   */
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: COMPANY.address,
+    addressCountry: "KR",
+  },
+  vatID: COMPANY.bizRegNumber,
   sameAs: [...ORG.sameAs],
 };
 

@@ -48,7 +48,7 @@ export function Team() {
                   aria-hidden
                   className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/75 to-transparent"
                 />
-                <span className="absolute bottom-3 left-3 text-sm font-bold text-white sm:text-base">
+                <span className="absolute inset-x-3 bottom-3 text-[0.8125rem] leading-[1.3] font-bold text-white sm:text-base">
                   {team.name}
                 </span>
               </div>

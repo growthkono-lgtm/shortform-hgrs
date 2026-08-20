@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { listPosts, type PostMeta } from "@/lib/blog-posts";
 import { pillar } from "@/lib/blog-spec";
+import { ORG } from "@/lib/constants";
 
 /**
  * /blog — 자체 인사이트 목록.
@@ -27,7 +28,12 @@ export const metadata: Metadata = {
   description:
     "브랜드 대표·이사급을 위한 숏폼·브랜드 SNS 인사이트. 플랫폼 공식 발표와 공개 통계, 실제 집행 사례를 출처와 함께 정리합니다.",
   alternates: { canonical: "/blog" },
+  // openGraph 는 부모와 병합되지 않고 통째로 교체된다 —
+  // 루트에 적어 둔 type·locale·siteName 이 여기서 사라지므로 다시 적는다
   openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    siteName: ORG.name,
     title: "인사이트 | 해그로시",
     description:
       "숏폼·브랜드 SNS 인사이트. 출처와 실물 사례를 붙여 정리합니다.",
@@ -98,7 +104,7 @@ export default async function BlogIndexPage() {
     <>
       <JsonLd
         data={breadcrumb([
-          { name: "홈", path: "" },
+          { name: "해그로시", path: "/" },
           { name: "인사이트", path: "/blog" },
         ])}
       />

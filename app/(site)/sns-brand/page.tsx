@@ -6,6 +6,7 @@ import {
   serviceSchema,
 } from "@/components/seo/structured-data";
 import { FAQ } from "@/lib/sns-brand";
+import { ORG } from "@/lib/constants";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Clients } from "@/components/landing/s-clients";
@@ -22,9 +23,9 @@ import { Plans } from "@/components/sns/s-plans";
 import { Contact } from "@/components/sns/s-contact";
 
 /**
- * /sns-brand — 브랜드 채널 마케팅. 리드 확보용 서비스 랜딩.
+ * /sns-brand — 브랜드 채널 그로스. 리드 확보용 서비스 랜딩.
  *
- * 2026-08-20: 소개서에서 두 서비스를 합치고 이름을 **브랜드 채널 마케팅**으로
+ * 2026-08-20: 소개서에서 두 서비스를 합치고 이름을 **브랜드 채널 그로스**으로
  * 정하면서 이 페이지의 호칭도 통일했다. 랜딩은 계속 이 하나이고, 플랜 두 장은
  * 하단 Plans 섹션으로 붙였다. URL 은 그대로 `/sns-brand` 다 — 외부 링크가 있다.
  *
@@ -49,12 +50,17 @@ import { Contact } from "@/components/sns/s-contact";
  */
 export const metadata: Metadata = {
   // 루트 템플릿("| 해그로시 숏폼 스튜디오")은 이 페이지에 맞지 않는다 — 다른 서비스 라인이다
-  title: { absolute: "브랜드 채널 마케팅 | 해그로시" },
+  title: { absolute: "브랜드 채널 그로스 | 해그로시" },
   alternates: { canonical: "/sns-brand" },
   description:
     "브랜드 퍼널을 완성하는 채널·컨텐츠·광고 통합 운영. SNS 채널 활성화 플랜과 린 IMC 마케팅 구독제 두 갈래 — 크래프톤·럽디·열다·트러스티푸드 성과 기록.",
+  // openGraph 는 부모와 병합되지 않고 통째로 교체된다 —
+  // 루트에 적어 둔 type·locale·siteName 이 여기서 사라지므로 다시 적는다
   openGraph: {
-    title: "브랜드 채널 마케팅 | 해그로시",
+    type: "website",
+    locale: "ko_KR",
+    siteName: ORG.name,
+    title: "브랜드 채널 그로스 | 해그로시",
     description:
       "브랜드 퍼널을 완성하는 채널·컨텐츠·광고 통합 운영. SNS 채널 활성화 플랜과 린 IMC 마케팅 구독제 두 갈래로 진행합니다.",
     images: ["/sns/krafton-contents.jpg"],
@@ -64,15 +70,15 @@ export const metadata: Metadata = {
 
 const SCHEMA = serviceSchema({
   path: "/sns-brand",
-  name: "브랜드 채널 마케팅 프로젝트",
+  name: "브랜드 채널 그로스",
   description:
     "브랜드 채널의 기획·전략·운영과 퍼포먼스·CRM·그로스까지. SNS 채널 활성화 플랜과 린 IMC 마케팅 구독제 두 갈래로 진행합니다.",
-  serviceType: "브랜드 채널 마케팅",
+  serviceType: "브랜드 채널 그로스",
 });
 
 const CRUMBS = breadcrumb([
   { name: "해그로시", path: "/" },
-  { name: "브랜드 채널 마케팅", path: "/sns-brand" },
+  { name: "브랜드 채널 그로스", path: "/sns-brand" },
 ]);
 
 export default function SnsBrandPage() {

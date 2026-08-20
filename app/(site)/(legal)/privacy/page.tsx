@@ -1,9 +1,18 @@
 import type { Metadata } from "next";
-import { COMPANY, SERVICE } from "@/lib/constants";
+import { COMPANY, ORG, SERVICE } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "개인정보처리방침",
-  description: `${SERVICE.name} 개인정보처리방침`,
+  description: `${SERVICE.name} 개인정보처리방침 — 수집하는 항목과 이용 목적, 보유 기간, 파기 절차, 정보주체의 권리를 안내합니다.`,
+  alternates: { canonical: "/privacy" },
+  openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    siteName: ORG.name,
+    title: "개인정보처리방침 | 해그로시",
+    description: `${SERVICE.name} 개인정보처리방침`,
+    url: "/privacy",
+  },
 };
 
 export default function PrivacyPage() {

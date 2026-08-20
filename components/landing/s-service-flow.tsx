@@ -53,7 +53,8 @@ const STEPS: Step[] = [
     kicker: "매출형 숏폼 기획제작",
     headline: (
       <>
-        오가닉 채널 트래픽부터 구매·CPA 특화형 소재까지
+        오가닉 채널 트래픽부터 <span className="whitespace-nowrap">구매·CPA</span> 특화형
+        소재까지
         <br className="hidden sm:block" /> 한번에 해결해 드립니다.
       </>
     ),

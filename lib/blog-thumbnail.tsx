@@ -117,6 +117,9 @@ export async function renderThumbnail(slug: string) {
             lineHeight: 1.28,
             letterSpacing: "-0.035em",
             maxWidth: 1000,
+            // satori 는 app/globals.css 를 읽지 않아 keep-all 을 인라인으로 줘야 한다.
+            // 없으면 제목 어절이 한가운데서 끊긴다
+            wordBreak: "keep-all",
           }}
         >
           {title}

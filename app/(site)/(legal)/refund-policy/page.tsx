@@ -1,9 +1,18 @@
 import type { Metadata } from "next";
-import { COMPANY, SERVICE } from "@/lib/constants";
+import { COMPANY, ORG, SERVICE } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "환불규정",
-  description: `${SERVICE.name} 환불 및 청약철회 규정`,
+  description: `${SERVICE.name} 환불 및 청약철회 규정 — 제작 착수 전후의 환불 기준과 정산 방식, 신청 절차를 단계별로 정리했습니다.`,
+  alternates: { canonical: "/refund-policy" },
+  openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    siteName: ORG.name,
+    title: "환불규정 | 해그로시",
+    description: `${SERVICE.name} 환불 및 청약철회 규정`,
+    url: "/refund-policy",
+  },
 };
 
 export const TERMS_VERSION = "2026-08-05";
