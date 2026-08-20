@@ -104,6 +104,27 @@ export const YOUTUBE_SHORTS: { id: string; poster: string; label: string }[] = [
     poster: "/portfolio/shorts-yt/TJGx4iZBgTI.jpg",
     label: "핏플렉스 쇼츠 캠페인",
   },
+  /* 2026-08-20 — 열다(@jipjeongmo) 숏폼 19편 중 대표 4편. 세로 썸네일(oardefault) */
+  {
+    id: "BgAU2oW5ckY",
+    poster: "/portfolio/shorts-yt/BgAU2oW5ckY.jpg",
+    label: "열다 · 집안일에 치일 땐",
+  },
+  {
+    id: "W_M6MQyUogo",
+    poster: "/portfolio/shorts-yt/W_M6MQyUogo.jpg",
+    label: "열다 · 안 무너지는 티셔츠 개는 법",
+  },
+  {
+    id: "D0PC_mlKanY",
+    poster: "/portfolio/shorts-yt/D0PC_mlKanY.jpg",
+    label: "열다 · 전문가가 옷 개는 방법",
+  },
+  {
+    id: "f_8pVjfuRwU",
+    poster: "/portfolio/shorts-yt/f_8pVjfuRwU.jpg",
+    label: "열다 · 유지되는 이불 정리법",
+  },
 ];
 
 // 위 두 편은 그리드로 올라갔으므로 아래 롱폼 목록에서는 뺀다 (같은 화면에 두 번 나오지 않게)
@@ -117,11 +138,17 @@ export const YOUTUBE_LINKS: VideoLink[] = [
   { id: "XmX0iYOTUGE", label: "열다 · 주방 정리 노하우", kind: "long" },
   { id: "EU26OQv6ATE", label: "열다 · 이사 전 정리정돈", kind: "long" },
   { id: "6gfORrmxY2Q", label: "열다 · 신발장 정리", kind: "long" },
+  { id: "AjeXTq75hiw", label: "열다 · 드레스룸 한 방에", kind: "long" },
+  { id: "LTyFU4KVtb8", label: "열다 · 정리의 시작은 분리배출", kind: "long" },
+  { id: "AFaI-wjsb5o", label: "열다 · 베란다를 홈카페로", kind: "long" },
+  { id: "rN8u7D8R9ds", label: "열다 · 장난감 가득한 거실", kind: "long" },
 ];
 
 export const INSTAGRAM_LINKS = [
   { code: "DJDs43Tv0sD", label: "우비 댕터뷰" },
   { code: "DJ_KuU5vGyD", label: "강아지 MBTI" },
+  // 2026-08-20 사장님이 지목한 릴스
+  { code: "DNZxJ7cv1-N", label: "코엑스 펫페어 현장" },
 ];
 
 export const ytThumbMax = (id: string) =>

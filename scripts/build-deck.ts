@@ -85,7 +85,8 @@ const CLIENTS = [
   "krafton", "riiid", "lotte-rental", "parklon", "moev", "greencar",
   "purum-wellness", "modu-training", "sambunui-il", "yeonae-jagyeok",
   "gochodaejol", "juwangsan", "zeroblock", "naechinso", "real-class",
-  "curas", "dmand", "walla", "posh", "resq", "natura-health", "banaco",
+  "curas", "dmand", "walla", "posh", "resq", "natura-health",
+  "feliway", "banaco",
   "irvinelab", "cyberdigm", "code-i", "fitflex", "luvd", "mudit",
   "yeolda", "bluehouse-seoul",
 ];
@@ -482,15 +483,18 @@ ${/* 2026-08-20 — 세 갈래 → **두 갈래.** SNS 채널과 종합 마케�
      "무엇을 사는 건지" 가 한 번에 잡힌다. */
 [
   {
-    k: "LINE 01",
+    k: "구매 전환 소재",
     t: "숏폼 스튜디오",
     d: "인플루언서 시딩과 2차 활용 소스로<br>광고 소재를 편수 단위로 제작합니다.",
     plans: ["싱글 플랜 — 보유 소스로 숏폼만", "멀티 플랜 — 시딩으로 소스부터 확보"],
     tag: "편수 단위 · 즉시 시작",
   },
   {
-    k: "LINE 02",
-    t: "브랜드 채널 마케팅 프로젝트",
+    /* 2026-08-20 — LINE 01/02 라벨을 뺐다. 번호가 순서처럼 읽혀서
+       "1번 먼저 사고 2번" 으로 오해된다. 무엇을 사는지로 바꾼다.
+       이 카드 제목은 사장님 지시로 **브랜드 종합 그로스팀**. */
+    k: "브랜드 전담팀",
+    t: "브랜드 종합 그로스팀",
     d: "채널·컨텐츠·광고를 하나의 전략으로 묶어<br>기간 단위로 함께 굴립니다.",
     plans: ["SNS 채널 활성화 플랜", "린 IMC 마케팅 구독제"],
     tag: "6개월 또는 1년 · 협의",
@@ -642,7 +646,7 @@ ${FLOW.map(
 </div>`,
 ).join("")}
 </div>
-<div class="oneline">한 번의 발주 · 하나의 담당 · 하나의 대시보드</div>`),
+<div class="oneline">프로젝트 시작 시 전용 대시보드를 통해 진행 단계와 소통을 한번에 해결합니다.</div>`),
 );
 
 // 07 숏폼 성과 — 브랜드당 한 장
@@ -874,12 +878,17 @@ ${head(
   "브랜드가 아니라 소재의 목적으로 묶었습니다 — 누르면 영상이 재생됩니다",
 )}
 <div class="shorts">
-${chunk
+${/* 마지막 장에 빈 칸이 남으면 "더 없는 줄" 알기 쉬워 한 칸을 (이하 생략)으로 채운다 */
+  ""}${chunk
   .map(
     (slug) =>
       `<a class="short" href="${playUrl(slug)}"><img src="${asset(clipPoster(slug))}" alt=""><span class="play">▶</span><span class="short-b">${esc(CLIP_PURPOSE[slug] ?? "")}</span><span class="short-brand">${esc(brandOf(slug))}</span></a>`,
   )
-  .join("")}
+  .join("")}${
+  page === total && chunk.length < per
+    ? `<div class="short-more"><span>(이하 생략)</span></div>`
+    : ""
+}
 </div>`,
         { alt: true, layout: "wall" },
       ),
@@ -1236,18 +1245,36 @@ FEATURES.forEach((f) => {
   const figs = f.figures ?? [];
   const vids = f.videos ?? [];
   const chans = f.channels ?? [];
+  /**
+   * 세로 도판(인스타 릴스 9:16)은 **가로 칸에 넣으면 손톱만 해진다.**
+   * 가로로 긴 것과 갈라서, 세로는 세로 칸 두 개를 나란히 세운다.
+   * (2026-08-20 — 트러스티 릴스 두 편이 실제로 그렇게 눌렸다)
+   */
+  const isPortrait = (w: number, h: number) => h > w * 1.2;
+  const portraits = figs.filter((g) => isPortrait(g.width, g.height));
   const plates = [
-    ...figs.map((g) => ({ src: g.src, cap: g.caption, mask: false })),
+    ...figs
+      .filter((g) => !isPortrait(g.width, g.height))
+      .map((g) => ({ src: g.src, cap: g.caption, mask: false })),
     ...matched.slice(0, 2).map((e) => ({ src: `/evidence/${e.file}`, cap: e.caption, mask: e.masked })),
   ];
-  const plateHtml = plates
-    .map(
-      (g) =>
-        `<figure><img src="${asset(g.src)}" alt=""><figcaption>${esc(g.cap)}${g.mask ? ' <span class="ev-mask">일부 가림</span>' : ""}</figcaption></figure>`,
-    )
-    .join("");
+  const plateHtml =
+    (portraits.length
+      ? `<div class="fout-reels">${portraits
+          .map(
+            (g) =>
+              `<figure><img src="${asset(g.src)}" alt=""><figcaption>${esc(g.caption)}</figcaption></figure>`,
+          )
+          .join("")}</div>`
+      : "") +
+    plates
+      .map(
+        (g) =>
+          `<figure><img src="${asset(g.src)}" alt=""><figcaption>${esc(g.cap)}${g.mask ? ' <span class="ev-mask">일부 가림</span>' : ""}</figcaption></figure>`,
+      )
+      .join("");
   const vidHtml = vids.length
-    ? `<div class="fvids">${vids.map((v) => `<a class="thumb" href="${ytWatch(v.id)}"><img src="https://i.ytimg.com/vi/${v.id}/mqdefault.jpg" alt=""><span class="play">▶</span><span>${esc(v.title)}</span></a>`).join("")}</div>`
+    ? `<div class="fvids">${vids.slice(0, chans.length ? 2 : 4).map((v) => `<a class="thumb" href="${ytWatch(v.id)}"><img src="https://i.ytimg.com/vi/${v.id}/mqdefault.jpg" alt=""><span class="play">▶</span><span>${esc(v.title)}</span></a>`).join("")}</div>`
     : "";
   const chanHtml = chans.length
     ? `<p class="fchan-k">굴린 채널</p>${f.channelsNote ? `<p class="fchan-n">${esc(f.channelsNote)}</p>` : ""}
@@ -1353,15 +1380,17 @@ sec("made-longform");
 
 
 
-/* 8+6 으로 끊으니 둘째 장에 빈 칸이 2개 남았다 — 반씩 나눈다 */
-const LONG_PER = Math.ceil(PORTFOLIO.videos.length / 2);
-[0, LONG_PER].forEach((from, page) => {
+/* 4열×2행 = **한 장 정원 8칸**. 반씩 나누면 10칸이 되어 3행이 되고 넘친다
+   (2026-08-20 검사기가 잡음). 정원 안에서 장 수를 정하고 균등 배분한다. */
+const LONG_PAGES = Math.ceil(PORTFOLIO.videos.length / 8);
+const LONG_PER = Math.ceil(PORTFOLIO.videos.length / LONG_PAGES);
+Array.from({ length: LONG_PAGES }, (_, i) => i * LONG_PER).forEach((from, page) => {
   const rows = PORTFOLIO.videos.slice(from, from + LONG_PER);
   if (!rows.length) return;
   addPage(
     slide(
       `
-${head(page === 0 ? "팬덤 시리즈 롱폼 포트폴리오" : "팬덤 시리즈 롱폼 포트폴리오 (2)", page === 0 ? "앞의 네 브랜드 채널에 실제로 올린 컨텐츠입니다 — 누르면 유튜브에서 재생됩니다" : "이어서 보여드립니다")}
+${head(page === 0 ? "팬덤 시리즈 롱폼 포트폴리오" : `팬덤 시리즈 롱폼 포트폴리오 (${page + 1})`, page === 0 ? "앞의 네 브랜드 채널에 실제로 올린 컨텐츠입니다 — 누르면 유튜브에서 재생됩니다" : "이어서 보여드립니다")}
 <div class="thumbs">
 ${rows
   .map(
@@ -1372,7 +1401,7 @@ ${rows
   )
   .join("")}
 </div>
-${page === 1 ? `<p class="foot-note">${esc(PORTFOLIO.note)}</p>` : ""}`,
+${page === LONG_PAGES - 1 ? `<p class="foot-note">${esc(PORTFOLIO.note)}</p>` : ""}`,
       { alt: true, layout: "wall" },
     ),
   );
@@ -1396,10 +1425,14 @@ sec("imc");
 /* 앞의 "주요 성장 사례 10건"과 겹치지 않게 **나머지만** 싣는다.
    사장님: *"35-39번이 위에 주요 10개 포폴이랑 겹치지않아?"* */
 const REST = FRAMER_CASES.filter((c) => !FEATURED_STORIES.some((st) => st.framer === c.slug));
-for (let from = 0; from < REST.length; from += 6) {
-  const rows = REST.slice(from, from + 6);
-  const page = from / 6;
-  const total = Math.ceil(REST.length / 6);
+/* 6칸씩 자르면 19건이 6·6·6·1 이 되어 마지막 장이 거의 빈다.
+   장 수를 먼저 정하고 균등 배분한다 (5·5·5·4). */
+const IMC_PAGES = Math.ceil(REST.length / 6);
+const IMC_PER = Math.ceil(REST.length / IMC_PAGES);
+for (let from = 0; from < REST.length; from += IMC_PER) {
+  const rows = REST.slice(from, from + IMC_PER);
+  const page = from / IMC_PER;
+  const total = IMC_PAGES;
   addPage(
     slide(
       `
@@ -2099,6 +2132,10 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .fout-grid img{width:100%;flex:1 1 0;min-height:0;object-fit:contain;object-position:center;border:1px solid rgba(255,255,255,.12);border-radius:2.5mm;background:#171717;padding:2mm}
 .fout-grid figcaption{margin-top:2mm;font-size:7.8pt;line-height:1.6;color:rgba(255,255,255,.5)}
 .fout-l figure{flex:1 1 0}
+/* 세로 릴스는 나란히 두 칸 — 가로 칸에 넣으면 손톱만 해진다 */
+.fout-reels{display:flex;gap:4mm;flex:1.4 1 0;min-height:0}
+.fout-reels figure{flex:0 1 auto;display:flex;flex-direction:column;min-height:0;max-width:34mm}
+.fout-reels img{width:100%;flex:1 1 0;min-height:0;object-fit:cover;border-radius:2.5mm;border:1px solid rgba(255,255,255,.12);background:#171717;padding:0}
 
 /* ── 시딩 3단 밴드 (홈 ServiceFlow 의 light→indigo→night 교차를 면 색으로) */
 .flow3{display:grid;grid-template-columns:repeat(3,1fr);gap:6mm;flex:1;min-height:0}
@@ -2239,6 +2276,7 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .shorts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:3.5mm;flex:1 1 0;min-height:0;overflow:hidden}
 .short{border-radius:2.5mm;overflow:hidden;background:var(--alt);min-height:0}
 /* 배지 둘 — 위는 소재의 목적(주), 아래는 브랜드(부) */
+.short-more{display:flex;align-items:center;justify-content:center;border:1px dashed var(--line);border-radius:2.5mm;color:var(--muted);font-size:9pt;font-weight:600;min-height:0}
 .short-brand{position:absolute;left:2mm;top:2mm;font-size:5.6pt;font-weight:500;color:rgba(255,255,255,.82);background:rgba(0,0,0,.42);border-radius:1mm;padding:.5mm 1.4mm;letter-spacing:-.01em}
 .short img{width:100%;height:100%;object-fit:cover;display:block}
 

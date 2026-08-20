@@ -40,6 +40,8 @@ export type Figure = {
   width: number;
   height: number;
   caption: string;
+  /** 원본으로 넘어가는 링크 (인스타 릴스 등). 없으면 이미지만 */
+  href?: string;
 };
 
 export type Feature = {
@@ -196,8 +198,27 @@ export const FEATURES: Feature[] = [
         caption: "예약 전환까지 이어지는 O2O 서비스",
       },
     ],
+    /**
+     * 2026-08-20 — 산출물 장에 롱폼이 한 편뿐이라 비어 보였다. 실제로 굴린
+     * 채널(@jipjeongmo)에 롱폼 10편이 있어 대표 4편을 싣는다. 제목은 채널 원문.
+     */
     videos: [
-      { id: "XmX0iYOTUGE", title: "집 정리의 모든 것 — 온드 채널 컨텐츠" },
+      { id: "XmX0iYOTUGE", title: "정리수납전문가 1급 워킹맘의 주방 정리 노하우는?" },
+      { id: "AjeXTq75hiw", title: "옷장정리 전문가가 알려주는, 드레스룸 한 방에 정리하는 법!" },
+      { id: "EU26OQv6ATE", title: "(이사 전 필수 시청!) 동선에 맞는 효율적인 정리정돈 하는 법" },
+      { id: "6gfORrmxY2Q", title: "지저분한 신발장, 깔끔한 펜트리로 바꾸는 방법?" },
+    ],
+    channelsNote: "옷장정리 O2O 서비스의 온드 채널을 처음부터 세웠습니다",
+    channels: [
+      {
+        name: "집 정리의 모든 것",
+        handle: "@jipjeongmo",
+        platform: "YouTube",
+        metric: "구독자 223",
+        note: "롱폼 10편 · 숏폼 19편 편성",
+        href: "https://www.youtube.com/@jipjeongmo",
+        thumb: "/portfolio/shorts-yt/BgAU2oW5ckY.jpg",
+      },
     ],
   },
   {
@@ -228,7 +249,27 @@ export const FEATURES: Feature[] = [
       height: 1066,
       caption: "생식·동결건조 라인 — 컨텐츠가 곧 상세페이지가 되는 제품 컷",
     },
-    figures: [],
+    /**
+     * 2026-08-20 — 산출물 장이 텅 비어 있었다(`figures: []`). 사장님이
+     * 실제 운영한 릴스 두 편을 지목해 채운다. 썸네일은 각 릴스의 `og:image`
+     * 를 받아 `public/sns/reels/` 에 저장했다.
+     */
+    figures: [
+      {
+        src: "/sns/reels/trusty-reel-1.jpg",
+        width: 361,
+        height: 640,
+        caption: "코엑스 펫페어 현장 릴스 — 브랜드 공식 인스타그램",
+        href: "https://www.instagram.com/reel/DNZxJ7cv1-N/",
+      },
+      {
+        src: "/sns/reels/trusty-reel-2.jpg",
+        width: 360,
+        height: 640,
+        caption: "트푸터뷰 Ep.01 — 보호자 인터뷰 시리즈",
+        href: "https://www.instagram.com/reel/DJDs43Tv0sD/",
+      },
+    ],
     videos: [
       {
         id: "LCQywT3a2pQ",
@@ -318,7 +359,8 @@ export const BLOG_CARD = {
       handle: "cyberdigm.co.kr",
       platform: "블로그",
       tag: "PT 및 컨설팅",
-      note: "문서중앙화·IT 트렌드 콘텐츠",
+      // 2026-08-20 사장님: *"여긴 컨설팅이야."*
+      note: "SEO 컨설팅 — 주제 설계와 상위노출 전략",
       href: "https://www.cyberdigm.co.kr/blog",
       thumb: "/sns/channels/cyberdigm-blog.jpg",
     },
@@ -345,8 +387,14 @@ export const PORTFOLIO = {
     { id: "yNsu5XfTN1E", title: "이스포츠 스케치" },
     { id: "kN57OTVMSD0", title: "이스포츠 하이라이트" },
     { id: "Yy9K61hUC3Y", title: "핏플렉스 브랜드 캠페인" },
-    { id: "EU26OQv6ATE", title: "열다 옷장정리" },
-    { id: "6gfORrmxY2Q", title: "열다 옷장정리" },
+    { id: "EU26OQv6ATE", title: "열다 — 이사 전 동선에 맞는 정리정돈" },
+    { id: "6gfORrmxY2Q", title: "열다 — 신발장을 펜트리로" },
+    { id: "AjeXTq75hiw", title: "열다 — 드레스룸 한 방에 정리하는 법" },
+    { id: "XmX0iYOTUGE", title: "열다 — 정리수납전문가 1급의 주방 정리" },
+    { id: "LTyFU4KVtb8", title: "열다 — 정리수납의 시작은 분리배출" },
+    { id: "AFaI-wjsb5o", title: "열다 — 베란다를 홈카페로" },
+    { id: "rN8u7D8R9ds", title: "열다 — 장난감 가득한 거실 청소법" },
+    { id: "3o8fmjM71m8", title: "열다 — 정리 업체 실사용 후기" },
     { id: "Th4pjIRJUz8", title: "우리 강아지 비만·피부염 해결 (후편)" },
     { id: "IzXDfxBQw5A", title: "노아만을 위한 식단 (전편)" },
     { id: "ta2ILzOdiOQ", title: "영양수의사가 답합니다 (후편)" },
