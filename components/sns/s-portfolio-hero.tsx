@@ -20,7 +20,7 @@ export function PortfolioHero() {
             프로젝트 상담 신청
           </Cta>
           <Cta href="/sns-brand" variant="outlineLight">
-            브랜드 SNS 채널 보기
+            브랜드 채널 마케팅 보기
           </Cta>
         </div>
       </div>

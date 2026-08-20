@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "deck": "bash scripts/deck.sh",
-    "qa": "node scripts/qa.mjs"
+    "qa": "node scripts/qa.mjs",
+    "deck:doctor": "bash scripts/deck-doctor.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.115.0",

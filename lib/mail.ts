@@ -1,5 +1,20 @@
 import { createAdminClient } from "@/lib/supabase/server";
 import { SERVICE } from "@/lib/constants";
+import { BRAND_PLANS } from "@/lib/sns-brand";
+
+/**
+ * 소개서 메일의 선택 카드 ① — **숏폼 스튜디오**. (2026-08-20)
+ *
+ * 카드 ②(브랜드 채널 마케팅 프로젝트)는 문구를 여기에 적지 않는다. 홈페이지·
+ * 소개서와 같은 말을 쓰기 위해 `lib/sns-brand.ts` 의 `BRAND_PLANS` 를 그대로
+ * 읽는다. 숏폼 쪽은 그런 카피 상수가 따로 없어 이 한 덩어리만 메일 전용으로 둔다.
+ */
+const SHORTFORM_CHOICE = {
+  title: "숏폼 스튜디오",
+  desc: "인플루언서 시딩 → 2차 활용 소스컷 → 매출형 숏폼",
+  note: "편수 단위 정가 결제가 되는 유일한 라인입니다.",
+} as const;
+
 /** 소개서를 보낼 신청 건 — 인사말에 쓰는 이름만 필요하다 */
 export type BrochureInquiry = {
   contact_name: string;
@@ -7,7 +22,7 @@ export type BrochureInquiry = {
 };
 
 /** `npm run deck` 이 만들어 public/ 에 두는 소개서 파일명 */
-/** `npm run deck` 이 만들어 public/ 에 두는 소개서 파일명 (숏폼+브랜드SNS 종합) */
+/** `npm run deck` 이 만들어 public/ 에 두는 소개서 파일명 (숏폼 + 브랜드 채널 마케팅 종합) */
 const BROCHURE_FILE = "hgrs-studio-brochure.pdf";
 
 /**
@@ -239,13 +254,87 @@ export function brochureMail(inquiry: BrochureInquiry) {
   const para = (t: string) =>
     `<p style="font-size:14px;line-height:1.9;margin:0 0 16px">${t}</p>`;
 
-  /** 세 갈래 선택지 — 문의한 사람이 자기 상황을 고르게 만든다 */
-  const choice = (title: string, desc: string, href: string) =>
+  /**
+   * 두 갈래 선택지 — 문의한 사람이 자기 상황을 고르게 만든다. (2026-08-20)
+   *
+   * 앞 판은 세 갈래(숏폼 / 브랜드 SNS 채널 컨텐츠 활성화 / 종합 브랜드 마케팅)였는데,
+   * 뒤의 둘이 **브랜드 채널 마케팅 프로젝트** 하나로 합쳐졌다. 그 아래 플랜이 둘이다.
+   *
+   * 메일이라 flex·grid 를 쓰지 않는다 — 전부 table + 인라인 스타일이고, 폭을
+   * 고정하지 않아 모바일에서는 그대로 한 줄씩 떨어진다.
+   */
+  const choice = (title: string, desc: string, href: string, note?: string) =>
     `<tr><td style="padding:0 0 10px">
   <a href="${href}" style="display:block;background:#f7f5f3;border-radius:12px;padding:16px 18px;text-decoration:none">
     <span style="display:block;font-size:14px;font-weight:700;color:#030303">${title}</span>
-    <span style="display:block;font-size:13px;color:#5c5c5c;line-height:1.7;margin-top:4px">${desc}</span>
+    <span style="display:block;font-size:13px;color:#5c5c5c;line-height:1.7;margin-top:4px">${desc}</span>${
+      note
+        ? `
+    <span style="display:block;font-size:12px;color:#8a8a8a;line-height:1.7;margin-top:6px">${note}</span>`
+        : ""
+    }
   </a>
+</td></tr>`;
+
+  /**
+   * 카드 ② 안에 들어가는 플랜 한 칸.
+   *
+   * 문구는 한 글자도 여기서 짓지 않는다 — `BRAND_PLANS` 가 원본이고 홈페이지
+   * `/sns-brand#plans` · 소개서 `brand-plan` 장이 같은 상수를 읽는다.
+   */
+  type MailPlan = {
+    key: string;
+    name: string;
+    desc: string;
+    items: readonly { title: string; note: string }[];
+    meta: readonly { k: string; v: string }[];
+  };
+  const brandPlans: readonly MailPlan[] = BRAND_PLANS.plans;
+
+  const planBox = (p: MailPlan) =>
+    `<table role="presentation" width="100%" style="width:100%;border-collapse:collapse;background:#ffffff;border-radius:10px;margin:0 0 8px">
+  <tr><td style="padding:14px 16px">
+    <span style="display:block;font-size:11px;font-weight:700;letter-spacing:0.08em;color:#8a8a8a">${p.key}</span>
+    <span style="display:block;font-size:14px;font-weight:700;color:#030303;line-height:1.5;margin-top:3px">${p.name}</span>
+    <span style="display:block;font-size:13px;color:#5c5c5c;line-height:1.7;margin-top:4px">${p.desc}</span>
+    <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;margin:8px 0 0">
+${p.items
+  .map(
+    (it) => `      <tr><td style="padding:6px 0 0">
+        <span style="display:block;font-size:13px;font-weight:700;color:#030303;line-height:1.6">· ${it.title}</span>${
+          it.note
+            ? `
+        <span style="display:block;font-size:12px;color:#8a8a8a;line-height:1.6;padding-left:11px">${it.note}</span>`
+            : ""
+        }
+      </td></tr>`,
+  )
+  .join("\n")}
+    </table>
+    <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;margin:12px 0 0">
+${p.meta
+  .map(
+    (m) => `      <tr>
+        <td style="padding:7px 12px 0 0;border-top:1px solid #eeeeee;font-size:12px;color:#8a8a8a;white-space:nowrap;vertical-align:top">${m.k}</td>
+        <td style="padding:7px 0 0;border-top:1px solid #eeeeee;font-size:12px;font-weight:700;color:#030303;line-height:1.6">${m.v}</td>
+      </tr>`,
+  )
+  .join("\n")}
+    </table>
+  </td></tr>
+</table>`;
+
+  /** 카드 ② — 플랜 두 칸이 들어가서 카드 통째로 링크를 걸지 않고 아래에 링크를 단다 */
+  const brandChoice = (href: string) =>
+    `<tr><td style="padding:0 0 10px">
+  <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;background:#f7f5f3;border-radius:12px">
+    <tr><td style="padding:16px 18px">
+      <span style="display:block;font-size:14px;font-weight:700;color:#030303">${BRAND_PLANS.title[0]}</span>
+      <span style="display:block;font-size:13px;color:#5c5c5c;line-height:1.7;margin:4px 0 12px">${BRAND_PLANS.lead}</span>
+${brandPlans.map(planBox).join("\n")}
+      <a href="${href}" style="display:inline-block;font-size:13px;font-weight:700;color:#030303;text-decoration:underline;margin-top:4px">플랜 자세히 보기</a>
+    </td></tr>
+  </table>
 </td></tr>`;
 
   return {
@@ -272,27 +361,19 @@ ${para(
 <p style="font-size:15px;font-weight:700;margin:24px 0 12px">지금 어느 쪽이 필요하신가요?</p>
 <table style="width:100%;border-collapse:collapse;margin:0 0 20px">
 ${choice(
-  "매출 스케일업 구매 전환형 숏폼",
-  "인플루언서 시딩과 2차 활용 소스로 광고 소재를 편수 단위로",
+  SHORTFORM_CHOICE.title,
+  SHORTFORM_CHOICE.desc,
   `${PUBLIC_ORIGIN}/shortform`,
+  SHORTFORM_CHOICE.note,
 )}
-${choice(
-  "브랜드 SNS 채널 컨텐츠 활성화",
-  "유튜브·인스타그램 채널의 기획·전략·운영을 연 단위로",
-  `${PUBLIC_ORIGIN}/sns-brand`,
-)}
-${choice(
-  "종합 브랜드 마케팅 전개",
-  "채널·컨텐츠·광고에 이벤트·프로모션·CRM 까지 하나의 전략으로",
-  `${PUBLIC_ORIGIN}/portfolio`,
-)}
+${brandChoice(`${PUBLIC_ORIGIN}/sns-brand#plans`)}
 </table>
 
 <table style="width:100%;border-collapse:collapse;background:#f7f5f3;border-radius:12px;margin:0 0 20px">
   <tr><td style="padding:20px 22px">
     <p style="font-size:15px;font-weight:700;margin:0 0 6px">해그로시 스튜디오 종합 소개서</p>
     <p style="font-size:13px;color:#5c5c5c;line-height:1.8;margin:0">
-      법인 소개 · 세 서비스 라인 · 성과 사례 · 진행 프로세스 · 플랜과 계약 절차까지 한 부에 담았습니다.<br>
+      서비스 두 갈래 · 성과 사례 · 진행 프로세스 · 플랜과 계약 절차까지 한 부에 담았습니다.<br>
       <strong style="color:#030303">이 메일에 PDF로 첨부</strong>해 두었고, 아래 버튼으로도 바로 보실 수 있습니다.
     </p>
   </td></tr>

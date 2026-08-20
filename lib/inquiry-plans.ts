@@ -58,17 +58,37 @@ export const INQUIRY_PLANS = [
     priceFrom: "full" as const,
   },
   {
-    value: "sns_turnkey",
-    label: "브랜드 SNS 채널 턴키 운영",
-    desc: "채널 전략부터 콘텐츠 제작·운영까지 통째로",
+    /**
+     * 2026-08-20 — "브랜드 SNS 채널 턴키 운영" 하나를 **플랜 둘로 갈랐다.**
+     *
+     * 사장님: *"문의폼에는 해당 플랜에 대한 카드박스와 설명도 있어야겠지."*
+     * 소개서·랜딩과 같은 플랜명을 쓴다. 값은 `20260820000001` 마이그레이션에서
+     * 체크 제약에 추가했다. 옛 `sns_turnkey` 접수건은 어드민에서 라벨로만 읽는다.
+     *
+     * ⚠️ 이 플랜 설명에 **투입 조직·광고·CRM 을 쓰지 않는다.** (사장님 명시)
+     * 그건 아래 린 IMC 쪽 이야기다.
+     */
+    value: "sns_channel",
+    label: "SNS 채널 활성화 플랜",
+    desc: "브랜드가 가진 채널을 실제로 도는 채널로 만듭니다",
     needsCount: false,
     includes: [
-      "채널 포지셔닝 · 전략",
-      "콘텐츠 기획 · 제작",
-      "편성 · 운영 대행",
-      "성과 리포트",
+      "유튜브 채널 운영 · 쇼츠 · 릴스 미러링",
+      "SEO / AEO · 브랜드 블로그 최적화",
     ],
-    priceNote: "채널 수·편성 주기에 따라 구성",
+    priceNote: "6개월 또는 1년 단위 · 브랜드 상황에 따라 협의",
+  },
+  {
+    value: "lean_imc",
+    label: "린 IMC 마케팅 구독제",
+    desc: "꼭 필요한 우선순위 전략만 조합해 팀 단위로 투입합니다",
+    needsCount: false,
+    includes: [
+      "퍼포먼스 마케팅 — 메타 · 구글 메인 + PMF 채널 · 버티컬 · 네트워크 조합",
+      "CRM 캠페인 최적화 · 멤버십 설계",
+      "데이터 · 그로스 파이프라인 구축",
+    ],
+    priceNote: "월 3곳 한정 · 브랜드 단위 협의",
   },
   {
     value: "consult",
@@ -79,6 +99,22 @@ export const INQUIRY_PLANS = [
     priceNote: "현황을 먼저 듣고 구성부터 같이 정합니다",
   },
 ] as const;
+
+/**
+ * 폼에서 사라졌지만 **과거 접수건이 쓰던 값**. 어드민이 라벨로 읽는다.
+ * 지우면 옛 문의가 "알 수 없음" 으로 보인다.
+ */
+export const LEGACY_INQUIRY_LABELS: Record<string, string> = {
+  sns_turnkey: "브랜드 채널 마케팅 (구 채널 턴키)",
+  ai_team: "AI팀 구축",
+  shorts_only: "숏폼 — 싱글 플랜 (구)",
+  full: "숏폼 — 멀티 플랜 (구)",
+  unsure: "상담 후 결정 (구)",
+};
+
+/** 값 → 사람이 읽는 이름. 옛 값도 읽는다 */
+export const inquiryPlanLabel = (v: string): string =>
+  INQUIRY_PLANS.find((p) => p.value === v)?.label ?? LEGACY_INQUIRY_LABELS[v] ?? v;
 
 export type InquiryPlanValue = (typeof INQUIRY_PLANS)[number]["value"];
 
@@ -131,7 +167,7 @@ export const VOLUME_LABEL: Record<string, string> = Object.fromEntries(
  * 키가 없으면 숏폼 랜딩이다(그쪽 폼은 source 를 안 넣는다).
  */
 export const INQUIRY_SOURCE_LABEL: Record<string, string> = {
-  "sns-brand": "채널 운영 랜딩 (/sns-brand)",
+  "sns-brand": "브랜드 채널 마케팅 랜딩 (/sns-brand)",
   shortform: "숏폼 랜딩 (/shortform)",
 };
 

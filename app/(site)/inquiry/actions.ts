@@ -11,6 +11,7 @@ import { createAdminClient } from "@/lib/supabase/server";
 import { CONSENT_VERSION } from "@/lib/consents";
 import { BROCHURE, brochureMail, brochureUrl, inquiryNoticeMail, sendMail } from "@/lib/mail";
 import {
+  INQUIRY_PLANS,
   INQUIRY_PLAN_VALUES,
   INQUIRY_SOURCE_LABEL,
   describeSelection,
@@ -114,25 +115,55 @@ export async function submitInquiry(
     return { ok: true, error: null };
   }
 
-  const { data: inserted, error } = await admin
-    .from("inquiries")
-    .insert({
+  /**
+   * 새 플랜 값이 아직 DB 제약에 없을 수 있다. (2026-08-20)
+   *
+   * `sns_channel`·`lean_imc` 는 `20260820000001` 마이그레이션에서 체크 제약에
+   * 넣는다. 그런데 **원격 마이그레이션 이력이 비어 있어**(`supabase migration
+   * list` 가 전부 remote:"") `db push` 로 밀 수 없고, SQL 은 사람이 콘솔에서
+   * 돌려야 한다. 그 사이에 배포가 나가면 **문의 접수가 통째로 실패한다.**
+   *
+   * 그래서 한 번 실패하면 옛 값(`sns_turnkey`)으로 다시 넣고, 고객이 실제로
+   * 고른 플랜은 메모 맨 앞에 남긴다. 마이그레이션이 들어가면 이 경로는 그냥
+   * 안 타게 된다. 접수는 무슨 일이 있어도 남아야 한다.
+   */
+  const NEW_PLAN_VALUES = ["sns_channel", "lean_imc"];
+  const insertRow = (interestValue: string, note: string | null) => ({
     company_name: companyName,
     contact_name: contactName,
     email,
     phone: phone || null,
     brand_url: brandUrl || null,
-    interest,
+    interest: interestValue,
     volume,
-    message: message || null,
+    message: note,
     diagnosis: diagnosis as never,
     consent_version: CONSENT_VERSION,
     marketing_agreed: marketing,
     ip_address: ip,
-      user_agent: head.get("user-agent"),
-    })
+    user_agent: head.get("user-agent"),
+  });
+
+  let { data: inserted, error } = await admin
+    .from("inquiries")
+    .insert(insertRow(interest, message || null))
     .select("id, email, contact_name, company_name")
     .single();
+
+  if (error && NEW_PLAN_VALUES.includes(interest)) {
+    const label = INQUIRY_PLANS.find((p) => p.value === interest)?.label ?? interest;
+    ({ data: inserted, error } = await admin
+      .from("inquiries")
+      .insert(
+        insertRow(
+          "sns_turnkey",
+          [`[선택 플랜] ${label}`, message || ""].filter(Boolean).join("\n\n"),
+        ),
+      )
+      .select("id, email, contact_name, company_name")
+      .single());
+  }
+
 
   if (error || !inserted) {
     return { ok: false, error: "접수 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요." };

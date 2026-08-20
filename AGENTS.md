@@ -32,3 +32,27 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 PART G([DATA] 교체 목록)와 PART I(오픈 이슈)는 아직 확정 전이다.
 해당 값은 하드코딩하지 말고 `lib/constants.ts` 상수 또는 DB(`plans` 등)에서 읽어 한 곳만 고치면 전 화면에 반영되게 한다.
+
+## 홈페이지를 "그대로" 옮길 때 (소개서·제안서 작업)
+
+소개서(`scripts/build-deck.ts`)는 **홈페이지가 원본이다.** 사장님이 *"그대로"·
+"동일하게"·"따라 해"* 라고 하시면 픽셀·문구 단위로 옮긴다는 뜻이다.
+단어의 세 단계 정의는 전역 규칙(`~/.claude/CLAUDE.md`)에 있다.
+
+**작업 전에 대조표를 드리고 승인을 받는다.** 순서:
+
+1. 원본 컴포넌트·데이터 파일을 연다 (`components/landing/*`, `components/sns/*`,
+   `lib/sns-brand.ts`, `lib/cases.ts`, `lib/home.ts`, `app/globals.css`)
+2. `항목 | 홈페이지 값 | 소개서 값 | 출처 파일:줄` 표를 만든다
+3. **매체 차이로 못 옮기는 것을 그 표에 적는다** — PDF에는 영상 재생·호버·마퀴·
+   카운트업이 없다. 애니메이션은 **완성 상태**로 고정해 옮긴다
+4. **원본 데이터에 있는데 안 쓸 필드는 이유를 적는다.**
+   실제로 놓친 적 있음: `FEATURES[].figures`(기획안·퍼널맵 도판),
+   `FEATURES[].channels`(채널 타일·구독자 수), `FEATURES[].videos`
+5. 승인 후 코드에 넣고, `npm run deck && npm run deck:doctor` 로 넘침 0건 확인
+6. 캡처로 나란히 보여 드린다
+
+환산 기준: 홈 본문 폭 1152px ↔ 소개서 안전영역 306.67mm →
+**웹 1px = 0.2662mm = 0.755pt.** (16px → 12.1pt, 14px → 10.6pt)
+
+조판 규격은 `docs/deck/LAYOUT.md`.

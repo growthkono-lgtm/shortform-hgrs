@@ -44,7 +44,7 @@ const SCHEMA = serviceSchema({
   path: "/portfolio",
   name: "해그로시 성과 사례",
   description:
-    "브랜드 SNS 채널·컨텐츠 프로젝트의 실제 성과 기록과 편성한 컨텐츠 모음.",
+    "브랜드 채널 마케팅·컨텐츠 프로젝트의 실제 성과 기록과 편성한 컨텐츠 모음.",
   serviceType: "브랜드 컨텐츠 · 채널 그로스",
 });
 

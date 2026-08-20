@@ -15,7 +15,7 @@ export const HOME_HERO = {
     { href: "/shortform", label: "숏폼 스튜디오", primary: true },
     {
       href: "/sns-brand",
-      label: "브랜드 SNS 채널 커뮤니케이션",
+      label: "브랜드 채널 마케팅",
       primary: false,
     },
   ],
@@ -109,8 +109,8 @@ export const HOME_CHOICE = {
       shot: "/sns/krafton-contents.jpg",
     },
     {
-      kicker: "브랜드 채널을 함께 굴릴 팀이 필요하다면",
-      title: "브랜드 SNS 채널 커뮤니케이션",
+      kicker: "채널 · 컨텐츠 · 광고를 함께 굴릴 팀이 필요하다면",
+      title: "브랜드 채널 마케팅",
       cta: "상세보기",
       href: "/sns-brand",
       shot: "/sns/yeolda-shoot.jpg",

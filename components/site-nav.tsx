@@ -17,7 +17,14 @@ import { HeaderAuth } from "@/components/auth/header-auth";
  */
 export const NAV = [
   { href: "/shortform", label: "숏폼 스튜디오" },
-  { href: "/sns-brand", label: "브랜드 SNS 채널" },
+  /**
+   * 2026-08-20: "브랜드 SNS 채널" → "브랜드 채널 마케팅".
+   *
+   * 소개서에서 SNS 채널 서비스와 종합 브랜드 마케팅을 하나로 합치고 이름을
+   * **브랜드 채널 마케팅 프로젝트**로 확정했다. 주소는 그대로 `/sns-brand` 다 —
+   * 외부에 이미 나간 링크가 있어 URL 은 건드리지 않는다.
+   */
+  { href: "/sns-brand", label: "브랜드 채널 마케팅" },
   /**
    * 2026-08-20: "성과 사례" → "포트폴리오".
    *

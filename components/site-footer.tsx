@@ -29,7 +29,7 @@ export function SiteFooter() {
             href="/sns-brand"
             className="font-bold text-ink-soft hover:text-ink"
           >
-            브랜드 SNS 채널
+            브랜드 채널 마케팅
           </Link>
         </div>
 

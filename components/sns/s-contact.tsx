@@ -6,7 +6,12 @@ import { Field, SubmitError } from "@/components/auth/field";
 import { CONTACT } from "@/lib/sns-brand";
 import { INQUIRY_CONSENTS, CONSENT_VERSION } from "@/lib/consents";
 import { submitInquiry, type InquiryState } from "@/app/(site)/inquiry/actions";
-import { INQUIRY_PLANS, VOLUMES, needsCount } from "@/lib/inquiry-plans";
+import {
+  INQUIRY_PLANS,
+  VOLUMES,
+  needsCount,
+  planUnitLine,
+} from "@/lib/inquiry-plans";
 
 const INITIAL: InquiryState = { ok: false, error: null };
 
@@ -142,6 +147,25 @@ export function Contact() {
                       <span className="mt-1 block text-xs leading-[1.7] opacity-70">
                         {p.desc}
                       </span>
+                      {/* 무엇이 포함되는지·어떤 조건인지까지 카드에서 보여 준다.
+                          (2026-08-20 사장님: "카드박스와 설명도 있어야겠지") */}
+                      {p.includes.length > 0 && (
+                        <span className="mt-2.5 flex flex-wrap gap-1.5">
+                          {p.includes.map((it) => (
+                            <span
+                              key={it}
+                              className="rounded-full bg-ink/[0.06] px-2.5 py-1 text-[0.6875rem] leading-[1.4] font-medium has-checked:bg-paper/15"
+                            >
+                              {it}
+                            </span>
+                          ))}
+                        </span>
+                      )}
+                      {planUnitLine(p) && (
+                        <span className="mt-2 block text-[0.6875rem] leading-[1.6] font-bold opacity-80">
+                          {planUnitLine(p)}
+                        </span>
+                      )}
                     </label>
                   ))}
                 </div>

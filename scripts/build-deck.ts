@@ -18,11 +18,21 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { FRAMER_CASES } from "../lib/framer-portfolio";
+import { FEATURED_STORIES, storyByFramer } from "@/lib/story-cards";
 import { PLANS, POLICY, COMPANY, SERVICE, formatKRW,
   MODEL_OPTION,
+  AI_EFFICIENCY_NOTE,
 } from "@/lib/constants";
 import { SEEDING_STAGES, SHORTS_STAGES } from "@/lib/stages";
-import { ALL_BRAND_CLIPS, CLIPS_BY_BRAND, clipPoster } from "@/lib/clips";
+import {
+  ALL_BRAND_CLIPS,
+  CLIPS_BY_BRAND,
+  CLIPS_BY_PURPOSE,
+  CLIP_PURPOSE,
+  DECK_EXCLUDE,
+  clipPoster,
+  ytWatch,
+} from "@/lib/clips";
 /**
  * 소개서의 SNS·종합 파트는 **랜딩(/sns-brand)과 같은 데이터를 읽는다.**
  * 예전엔 여기서 문안을 새로 지어 썼는데, 사이트와 내용이 갈라져 두 번 고쳐야 했다.
@@ -30,6 +40,8 @@ import { ALL_BRAND_CLIPS, CLIPS_BY_BRAND, clipPoster } from "@/lib/clips";
  */
 import {
   ACTIONS,
+  BLOG_CARD,
+  HERO,
   CASES as SNS_CASES,
   FEATURES,
   PORTFOLIO,
@@ -80,17 +92,25 @@ const CLIENTS = [
 
 const CASES = [
   { no: "01", key: "리얼아카데미", brand: "뤼이드 리얼 아카데미", scale: "투자 2,000억", role: "소재 제작 + 캠페인 운영",
+    result: "3주 연속 고지출 & CPA 단가 견인 소재",
+    scope: "풀 프로젝트 수행 성과 (소재 제작 + 캠페인 운영)",
     img: "/portfolio/clips/riiid-report.jpg",
-    stats: [["3주", "연속 고지출"], ["1위", "CPA 단가"]] },
+    stats: [["3주", "연속 고지출"], ["▼1위", "CPA 단가"]] },
   { no: "02", key: "제로블럭", brand: "파크론 제로블럭", scale: "매출 200억대", role: "소재 제작 + 캠페인 운영",
+    result: "메타 캠페인 예산 5배 증액 성공, CPA 9만원 절감 소재 중 일부",
+    scope: "풀 프로젝트 수행 성과 (소재 제작 + 캠페인 운영)",
     img: "/portfolio/clips/parkron-tpu.jpg",
-    stats: [["5배", "메타 예산 증액"], ["9만원", "CPA 절감"]] },
+    stats: [["5배", "메타 예산 증액"], ["▼9만원", "CPA 절감"]] },
   { no: "03", key: "모에브", brand: "이노바인코리아 모에브", scale: "매출 300억대", role: "출시 고투마켓 소재 부스팅",
+    result: "제품 출시 고투마켓 단계 소재 부스팅, 3개월 내 매출 4천만원 · ROAS 3배",
+    scope: "풀 프로젝트 수행 성과",
     img: "/portfolio/cases/inovine-moev.jpg",
     stats: [["₩4,000만", "3개월 매출"], ["3배", "ROAS"]] },
   { no: "04", key: "크래프톤", brand: "크래프톤 배틀그라운드", scale: "글로벌", role: "연간 공식 바이럴 쇼츠 기획·제작",
+    result: "대표이사 컨텐츠부터 협찬 연예인까지 다양한 바이럴 쇼츠 촬영 기획 제작",
+    scope: "연간 공식 프로젝트 수행 (바이럴 컨텐츠 기획·제작)",
     img: "/portfolio/cases/krafton-jonathan.jpg",
-    stats: [["연간", "공식 프로젝트"], ["팬덤", "바이럴"]] },
+    stats: [] as [string, string][] },
 ];
 
 /* ─────────────────────────────────────────────────────────────
@@ -201,14 +221,120 @@ const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 let pageNo = 0;
-const slide = (body: string, opts: { dark?: boolean; bare?: boolean } = {}) => {
+/**
+ * 장표 유형. `docs/deck/LAYOUT.md` 의 규격과 1:1로 붙는다.
+ *
+ * 유형을 `data-layout` 으로 심어 두면 **넘침 검사기**(`npm run deck:doctor`)가
+ * 유형별 규칙으로 본다. 새 장을 만들 때는 반드시 기존 유형 중 하나를 고른다 —
+ * 고를 게 없으면 유형을 먼저 LAYOUT.md 에 정의하고 나서 쓴다.
+ */
+export type Layout =
+  | "cover" //   표지 · 클로징 (다크, 풀블리드)
+  | "part" //    간지 (다크, 중앙 3줄)
+  | "statement" // 선언 (텍스트만)
+  | "diagram" // 도식 + 설명 카드 (6/6)
+  | "cards" //   카드 그리드 (3×2 · 4×1 · 6칸)
+  | "case" //    브랜드 케이스 (스탯+본문+미디어+증빙)
+  | "wall" //    미디어 월 (9:16 12칸 · 16:9 8칸)
+  | "table" //   표 (플랜)
+  | "logos" //   로고월
+  | "shots"; //  제품 화면 쇼케이스
+
+/**
+ * 장표 유형을 내용에서 알아낸다.
+ *
+ * 장마다 손으로 `layout:` 을 달게 하면 **새 장을 만들 때 빠뜨린다.** 뼈대
+ * 클래스는 어차피 유형마다 다르니 그걸로 판정한다. 예외가 필요하면
+ * `slide(body, { layout: "..." })` 로 덮어쓴다.
+ */
+const inferLayout = (body: string): Layout =>
+  /class="cover/.test(body)
+    ? "cover"
+    : /class="part"/.test(body)
+      ? "part"
+      : /class="stmt"/.test(body)
+        ? "statement"
+        : /class="venn"/.test(body)
+          ? "diagram"
+          : /class="logos"/.test(body)
+            ? "logos"
+            : /class="(shorts|thumbs)"/.test(body)
+              ? "wall"
+              : /class="brandcase"/.test(body)
+                ? "case"
+                : /class="(plans|tbl)/.test(body)
+                  ? "table"
+                  : /class="board"/.test(body)
+                    ? "shots"
+                    : "cards";
+
+const slide = (
+  body: string,
+  opts: {
+    dark?: boolean;
+    bare?: boolean;
+    layout?: Layout;
+    /** 홈페이지 `.hero-night` 그라디언트 (파트 간지 전용) */
+    hero?: boolean;
+    /** 웜그레이 교차 배경 #f7f5f3 — 소재가 주인공인 장 */
+    alt?: boolean;
+  } = {},
+) => {
   pageNo += 1;
   const n = pageNo;
-  return `<section id="pg${n}" class="page${opts.dark ? " dark" : ""}">
+  const lay = opts.layout ?? inferLayout(body);
+  const cls = [
+    "page",
+    opts.dark || opts.hero ? "dark" : "",
+    opts.hero ? "hero" : "",
+    opts.alt ? "alt" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+  return `<section id="pg${n}" class="${cls}" data-layout="${lay}">
   <div class="page-body">${body}</div>
   ${opts.bare ? "" : `<footer class="page-foot"><span>${SERVICE.name}</span><span>${String(n).padStart(2, "0")}</span></footer>`}
 </section>`;
 };
+
+/**
+ * 파트 간지 = 홈페이지 히어로를 **그대로** 옮긴 것. (2026-08-20)
+ *
+ * 앞 판은 텍스트 세 줄만 있었다. 사장님: *"8번 장표도 히어로섹션 반영하랬는데
+ * 디자인이랑 포함해서. 텍스트만 띡 작게 해놓고."*
+ *
+ * 옮긴 것 — `.hero-night` 그라디언트 · eyebrow · 헤드라인 · 서브 2줄 · 숫자칩 3개
+ * · 우측 소재 컬럼.
+ * 못 옮긴 것 — 세로 마퀴(정지 그리드로) · CTA 버튼(PDF에서 누를 대상이 없어 뺌).
+ */
+const partHero = (o: {
+  eyebrow: string;
+  title: string[];
+  sub: string[];
+  stats: { v: string; l: string }[];
+  media: string[];
+}) => `
+<div class="phero">
+  <div class="phero-l">
+    <p class="phero-k">${esc(o.eyebrow)}</p>
+    <h1 class="phero-t">${o.title.map(esc).join("<br>")}</h1>
+    <p class="phero-s">${o.sub.map(esc).join("<br>")}</p>
+    <div class="phero-stats">
+${o.stats.map((st) => `      <div><strong>${esc(st.v)}</strong><span>${esc(st.l)}</span></div>`).join("\n")}
+    </div>
+  </div>
+  <div class="phero-r">
+${[0, 1, 2]
+  .map(
+    (col) =>
+      `    <div class="phero-col">${o.media
+        .filter((_, i) => i % 3 === col)
+        .map((m) => `<img src="${asset(m)}" alt="">`)
+        .join("")}</div>`,
+  )
+  .join("\n")}
+  </div>
+</div>`;
 
 /**
  * 슬라이드 머리.
@@ -255,19 +381,41 @@ const planRows = (rows: typeof singles, kind: "single" | "package") =>
 
 const pages: string[] = [];
 
+/**
+ * 목차 구간 (2026-08-20 개편)
+ *
+ * 장표를 `addPage()` 한 순서대로 내지 않는다. **구간 키로 묶어 `ORDER` 대로
+ * 다시 세운다.** 코드 블록을 통째로 옮기지 않아도 목차를 바꿀 수 있고, 한
+ * 구간에 장을 더해도 위치가 흔들리지 않는다.
+ *
+ * 같은 구간 안에서는 코드에 적힌 순서 그대로 나간다.
+ */
+const secOf: string[] = [];
+let SEC = "cover";
+/** 이 아래로 만들어지는 장표가 속할 구간 */
+const sec = (k: string) => {
+  SEC = k;
+};
+/** `pages.push` 대신 — 어느 구간의 장표인지 함께 적어 둔다 */
+const addPage = (html: string) => {
+  pages[pages.length] = html;
+  secOf.push(SEC);
+};
+
 // 01 표지
+sec("cover");
 
 
 
 
 
-pages.push(
+addPage(
   slide(
     `<div class="cover">
   <div class="cover-l">
     <p class="cover-en">HGRS STUDIO</p>
     <h1>해그로시<br>스튜디오<br><span class="chip-title">종합 소개서</span></h1>
-    <p class="cover-sub">브랜드 SNS 채널 커뮤니케이션부터 구매 전환 숏폼까지<br>브랜드 퍼널을 완성하는 두 서비스 라인을 함께 소개합니다.</p>
+    <p class="cover-sub">인플루언서 시딩과 구매 전환 숏폼부터 브랜드 채널 마케팅까지<br>브랜드 퍼널을 완성하는 두 갈래를 함께 소개합니다.</p>
     <div class="cover-stats">
       <div><strong>30+</strong><span>브랜드 프로젝트</span></div>
       <div><strong>3억대</strong><span>연 거래액</span></div>
@@ -284,12 +432,13 @@ ${["riiid-momcafe", "moen-shampoo-ppl", "zeroblock-interview", "bone-w40s"].map(
 );
 
 // 02-1 관점 — 이 문서 전체의 전제
+sec("hook");
 
 
 
 
 
-pages.push(
+addPage(
   slide(
     `<div class="stmt">
   <p class="stmt-k">HGRS STUDIO</p>
@@ -302,40 +451,14 @@ pages.push(
   ),
 );
 
-// 03 법인 소개 — 메인 화면과 세 서비스
-
-
-
-
-
-pages.push(
-  slide(`
-${head("해그로시 스튜디오", "하나의 스튜디오에서 세 갈래로 붙습니다 — hgrs.io")}
-<div class="corp">
-  <img class="corp-shot" src="${asset("/deck/home-hero.jpg")}" alt="">
-  <div class="corp-side">
-    <div class="kv">
-      <div><dt>상호</dt><dd>${COMPANY.name}</dd></div>
-      <div><dt>사업자등록번호</dt><dd>${COMPANY.bizRegNumber}</dd></div>
-      <div><dt>${COMPANY.addressLabel}</dt><dd>${COMPANY.address}</dd></div>
-      <div><dt>문의</dt><dd>contact@h-grs.com</dd></div>
-    </div>
-    <ul class="corp-lines">
-      <li><strong>매출 스케일업</strong> 구매 전환형 숏폼</li>
-      <li><strong>브랜드 SNS 채널</strong> 컨텐츠 활성화</li>
-      <li><strong>종합 브랜드 마케팅</strong> 전개</li>
-    </ul>
-  </div>
-</div>`),
-);
-
 // 09 클라이언트
+sec("corp");
 
 
 
 
 
-pages.push(
+addPage(
   slide(`
 ${head("클라이언트 히스토리", "커머스부터 서비스, 플랫폼까지 30여 브랜드와 함께했습니다")}
 <div class="logos">
@@ -344,39 +467,40 @@ ${CLIENTS.map((c) => `<div><img src="${asset(`/logos/${c}.png`)}" alt=""></div>`
 );
 
 // 02-2 세 갈래
+sec("lines");
 
 
 
 
 
-pages.push(
+addPage(
   slide(`
-${head("무엇이 필요하신가요", "세 갈래 중 어디서 시작하셔도 같은 팀이 붙습니다")}
+${head("무엇이 필요하신가요", "두 갈래 중 어디서 시작하셔도 같은 팀이 붙습니다")}
 <div class="lines">
-${[
+${/* 2026-08-20 — 세 갈래 → **두 갈래.** SNS 채널과 종합 마케팅을 하나로 합치면서
+     LINE 02·03 이 한 서비스가 됐다. 플랜명을 카드 안에 같이 적어야
+     "무엇을 사는 건지" 가 한 번에 잡힌다. */
+[
   {
     k: "LINE 01",
-    t: "구매 전환형 숏폼",
+    t: "숏폼 스튜디오",
     d: "인플루언서 시딩과 2차 활용 소스로<br>광고 소재를 편수 단위로 제작합니다.",
+    plans: ["싱글 플랜 — 보유 소스로 숏폼만", "멀티 플랜 — 시딩으로 소스부터 확보"],
     tag: "편수 단위 · 즉시 시작",
   },
   {
     k: "LINE 02",
-    t: "SNS 채널 활성화",
-    d: "유튜브·인스타그램 채널의 기획·전략·운영을<br>연 단위 파트너십으로 진행합니다.",
-    tag: "최소 6개월 · 기본 1년",
-  },
-  {
-    k: "LINE 03",
-    t: "종합 브랜드 마케팅",
-    d: "채널·컨텐츠·광고에 이벤트·프로모션·CRM 까지<br>하나의 전략으로 묶습니다.",
-    tag: "브랜드 단위 · 협의",
+    t: "브랜드 채널 마케팅 프로젝트",
+    d: "채널·컨텐츠·광고를 하나의 전략으로 묶어<br>기간 단위로 함께 굴립니다.",
+    plans: ["SNS 채널 활성화 플랜", "린 IMC 마케팅 구독제"],
+    tag: "6개월 또는 1년 · 협의",
   },
 ].map(
   (l) => `<div class="line-card">
   <p class="line-k">${l.k}</p>
   <p class="line-t">${l.t}</p>
   <p class="line-d">${l.d}</p>
+  <ul class="line-plans">${l.plans.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
   <p class="line-tag">${l.tag}</p>
 </div>`,
 ).join("")}
@@ -385,56 +509,129 @@ ${[
 );
 
 // PART1
+sec("part-shortform");
 
 
 
 
 
-pages.push(
+addPage(
   slide(
-    `<div class="part">
-  <p class="part-k">LINE 01</p>
-  <p class="part-t">매출 스케일업 구매 전환형 숏폼</p>
-  <p class="part-d">인플루언서 시딩 바이럴 · 2차 활용 소스 · 광고 숏폼 기획제작</p>
-</div>`,
-    { dark: true, bare: true },
+    partHero({
+      eyebrow: "HGRS Studio",
+      title: ["인플루언서 시딩부터 매출형 숏폼까지", "숏폼 부스팅 프로젝트"],
+      sub: ["인플루언서 시딩과 채널 바이럴", "그리고 구매 전환형 광고 소재를 한번에!"],
+      stats: [
+        { v: "30+", l: "브랜드 프로젝트 수행" },
+        { v: "3억대", l: "연 거래액" },
+        { v: "₩2,000만", l: "평균 프로젝트 단가" },
+      ],
+      media: [
+        "/portfolio/clips/riiid-parent-itv.jpg",
+        "/portfolio/clips/seeding-patty.jpg",
+        "/portfolio/clips/moen-shampoo-ppl.jpg",
+        "/portfolio/clips/zeroblock-interview.jpg",
+        "/portfolio/clips/bone-w40s.jpg",
+        "/portfolio/clips/krafton-pnc-salute.jpg",
+      ],
+    }),
+    { hero: true, bare: true, layout: "part" },
   ),
 );
 
 // 04 포지션
+sec("identity");
 
 
 
 
 
-pages.push(
+addPage(
   slide(`
-${head("숏폼 스튜디오 서비스 영역", "시딩과 2차 활용 영상 확보부터 구매전환 숏폼 기획제작까지 하나로 해결해 드립니다")}
+${head("해그로시 서비스 영역", "소스 확보부터 구매전환 숏폼, 브랜드 채널 운영까지 한 팀 안에서 이어집니다")}
 <div class="two vcenter">
   <div class="venn">
-    <div class="venn-c venn-a"><span>인플루언서<br>시딩</span></div>
-    <div class="venn-c venn-b"><span>광고 숏폼<br>기획제작</span></div>
-    <div class="venn-mid"><strong>해그로시</strong><span>숏폼 스튜디오</span></div>
+    <div class="venn-c venn-a"><span>인플루언서<br>시딩<em>숏폼 멀티 플랜</em></span></div>
+    <div class="venn-c venn-b"><span>광고 숏폼<br>기획제작<em>숏폼 싱글 플랜</em></span></div>
+    <div class="venn-c venn-d"><span>컨텐츠<br>채널 구축<em>SNS 채널 활성화 플랜</em></span></div>
+    <div class="venn-mid"><strong>해그로시</strong><span>스튜디오</span></div>
   </div>
   <div class="pos-col">
 ${[
-  ["가이드라인부터", "무엇을 왜 찍을지 먼저 확정"],
-  ["필요한 컷만", "광고에 쓸 컷을 설계해 확보"],
-  ["전환까지 연결", "그 소스로 구매 전환 소재 제작"],
+  ["소스부터 확보", "인플루언서 시딩으로 찍을 것을 만듭니다"],
+  ["전환까지 연결", "그 소스로 구매 전환 소재를 제작합니다"],
+  ["채널에 쌓습니다", "인스타그램 · 유튜브 · 블로그를 함께 굴립니다"],
 ]
   .map(([t, d]) => `<div class="pos"><p class="pos-t">${t}</p><p class="pos-d">${d}</p></div>`)
   .join("")}
-    <div class="pos-note">인플 시딩부터 매출형 숏폼까지 해결합니다.</div>
+    <div class="pos-note">여기에 퍼포먼스 · CRM · 데이터를 더하면 <b>린 IMC 마케팅 구독제</b>입니다</div>
   </div>
 </div>`),
 );
 
+// 04-2 인플루언서 시딩 — 히어로 바로 밑 3단 밴드 (홈페이지 ServiceFlow 그대로)
+sec("shortform-seeding");
+
+/**
+ * 사장님: *"숏폼 스튜디오에 인플루언서 시딩을 제목에서부터 제대로 언급하고
+ * 전용 장표도 앞에 나와있어야돼. 히어로섹션 바로 밑에 3개 섹션들에서
+ * 바이럴했으면 매출도 올려라 이런거 있잖아. 그 내용을 적어줘."*
+ *
+ * 홈페이지 `components/landing/s-service-flow.tsx:26-64` 의 1·2·3 밴드를
+ * **문구 그대로** 옮긴다. 홈은 밴드 배경이 light → indigo → night 로 갈리는데,
+ * 소개서는 한 장이라 **카드 세 장의 면 색**으로 그 교차를 살린다.
+ */
+addPage(
+  slide(
+    `
+${head("인플루언서 시딩부터 시작합니다", "찍을 소스가 없는 브랜드는 여기서 출발합니다 — 시딩 → 소스컷 → 매출형 숏폼")}
+<div class="flow3">
+${[
+  {
+    k: "인플루언서 시딩&바이럴",
+    t: "요즘 브랜드의 필수 요소,<br>인플루언서 리뷰 배포,<br>그것만으로 매출이 올랐나요?",
+    d: "브랜드에 맞는 크리에이터를 골라 붙이고 리뷰를 실제 채널에 배포합니다.",
+    c: "f3-light",
+    img: "/portfolio/clips/riiid-parent-empathy.jpg",
+  },
+  {
+    k: "2차 활용 소스 컷 확보",
+    t: "“채널 바이럴했으면<br>광고 매출도<br>키우셔야죠!”",
+    d: "배포로 끝내지 않고 원본에서 광고용 컷을 다시 뽑아 자산으로 남깁니다.",
+    c: "f3-indigo",
+    img: "/portfolio/clips/seeding-patty.jpg",
+  },
+  {
+    k: "매출형 숏폼 기획제작",
+    t: "오가닉 채널 트래픽부터<br>구매·CPA 특화형 소재까지<br>한번에 해결해 드립니다.",
+    d: "확보한 소스로 구매 전환형 숏폼을 만들어 광고 계정에 바로 태웁니다.",
+    c: "f3-night",
+    img: "/portfolio/clips/moen-shampoo-ppl.jpg",
+  },
+]
+  .map(
+    (x) => `<div class="f3 ${x.c}">
+  <img src="${asset(x.img)}" alt="">
+  <div class="f3-b">
+    <p class="f3-k">${x.k}</p>
+    <p class="f3-t">${x.t}</p>
+    <p class="f3-d">${x.d}</p>
+  </div>
+</div>`,
+  )
+  .join("")}
+</div>
+<div class="oneline">${esc(POLICY.seedingBundleOnly)}</div>`,
+  ),
+);
+
 // 05 진행 라인
+sec("how-shortform");
 
 
 
 
-pages.push(
+addPage(
   slide(`
 ${head("진행 프로세스", "가이드라인부터 납품까지, 넘길 때마다 다시 설명하실 일이 없습니다")}
 <div class="flow">
@@ -449,6 +646,7 @@ ${FLOW.map(
 );
 
 // 07 숏폼 성과 — 브랜드당 한 장
+sec("numbers-shortform");
 
 
 
@@ -478,7 +676,7 @@ const MOEV_ROAS = {
     "모에브 구매금액·구매건수·ROAS 실적. 프레이머 포트폴리오 원문 표를 같은 값으로 다시 조판했습니다(중간 행 일부 생략, 마지막 줄은 합계).",
 };
 
-const moevTable = () => `<div class="bc-ev-wide">
+const moevTable = () => `<div class="bc-tbl"><div class="tbl-sheet">
   <figure>
     <table class="dtable">
       <thead><tr>${MOEV_ROAS.head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead>
@@ -487,6 +685,7 @@ const moevTable = () => `<div class="bc-ev-wide">
         <tr class="dtable-sum">${MOEV_ROAS.total.map((v) => `<td>${esc(v)}</td>`).join("")}</tr>
       </tbody>
     </table>
+    </div>
     <figcaption>${esc(MOEV_ROAS.caption)}</figcaption>
   </figure>
 </div>`;
@@ -520,47 +719,71 @@ const EV_ON_CASE = 1;
 /** 케이스 슬라이드에 못 실어 뒤로 넘긴 증빙 */
 const overflowEvidence: Evidence[] = [];
 
+/**
+ * 홈페이지 `GrowthCases` 섹션을 그대로 옮긴다. (2026-08-20 사장님 지시)
+ *
+ * *"12번부터 15번까지 장표 등은 홈페이지에 나와 있는 배경색이나 디자인 다
+ * 따라해서 그대로 넣되 지금처럼 숫자실적 표로 넣어준것들과 편성표 등은 유지."*
+ *
+ * 옮긴 것 — 다크 배경 #0a0a0c · 골드 세로선 성과 문구 · scope 칩 ·
+ * GrowthMeter(우상향 선 + 골드 숫자). 실적 증빙표·편성표는 그대로 둔다.
+ * 애니메이션은 **완성 상태**로 고정한다(선은 dashoffset 0, 끝점 원은 표시).
+ */
+const growthMeter = (stats: readonly (readonly string[])[]) =>
+  !stats.length
+    ? ""
+    : `<div class="gm">
+  <svg class="gm-line" viewBox="0 0 320 56" fill="none" aria-hidden="true">
+    <path d="M2 54 L54 46 L106 40 L158 28 L210 22 L262 12 L318 2"
+      stroke="var(--gold)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="318" cy="2" r="4" fill="var(--gold)"/>
+  </svg>
+  <dl class="gm-stats">
+${stats.map((st) => `    <div><dd>${esc(st[0])}</dd><dt>${esc(st[1])}</dt></div>`).join("\n")}
+  </dl>
+</div>`;
+
 CASES.forEach((c) => {
   const ev = evidenceOf(c.key).sort(PERF_FIRST);
   const onCase = ev.slice(0, EV_ON_CASE);
   overflowEvidence.push(...ev.slice(EV_ON_CASE));
 
-  pages.push(
-    slide(`
-<div class="bc-head">
-  <p class="bc-meta">${esc(c.scale)} · ${esc(c.role)}</p>
-  <h2 class="bc-title">${esc(c.brand)}</h2>
-</div>
-<div class="brandcase">
-  <div class="bc-body">
-    <ul class="bc-stats bc-stats-2">
-      ${c.stats.map(([v, l]) => `<li><strong class="big">${v}</strong><span>${esc(l)}</span></li>`).join("")}
-    </ul>
-    <p class="bc-p">${esc(c.role)} — 소재 기획부터 캠페인 운영까지 한 팀이 맡아 진행했습니다.</p>
-    ${/* 세로가 있는 표(편성표 등)는 왼쪽 열 아래 빈 자리가 더 크게 보인다 —
-         전체 폭에 두면 높이 제한에 걸려 오히려 쪼그라든다 */
+  addPage(
+    slide(
+      `
+<div class="gcase">
+  <div class="gc-body">
+    <p class="gc-eyebrow">Growth Case ${c.no}</p>
+    <h2 class="gc-title">${esc(c.brand)}<span>${esc(c.scale)}</span></h2>
+    <p class="gc-result">${esc(c.result)}</p>
+    <p class="gc-scope">${esc(c.scope)}</p>
+    ${growthMeter(c.stats)}
+    ${/* 세로가 있는 증빙(편성표 등)은 **왼쪽 열 빈 자리**에 넣는다.
+         전체 폭에 두면 object-fit:contain 이 세로 기준으로 줄여 좌우가 텅 빈다.
+         크래프톤은 지표 숫자가 없어 이 자리가 마침 비어 있다. (2026-08-20) */
       onCase.length && !isWide(onCase[0])
         ? `<div class="bc-ev">${onCase.map(evFigure).join("")}</div>`
-        : ""
-    }
+        : ""}
   </div>
-  <div class="bc-media">
+  <div class="gc-media">
     <img src="${asset(c.img)}" alt="">
   </div>
 </div>
-${/* 표는 **가로 전체 폭**이라야 숫자가 읽힌다. 왼쪽 열(절반 폭)에 두면
-     글자가 5pt 아래로 내려가 아무도 못 읽는다 — 두 번 그렇게 냈다. */
+${/* 가로로 아주 긴 표(5:1↑)만 전체 폭. 그 외는 위 왼쪽 열에 이미 들어갔다 */
   c.key === "모에브"
     ? moevTable()
     : onCase.length && isWide(onCase[0])
-      ? `<div class="bc-ev-wide ev-n${onCase.length}">${onCase.map(evFigure).join("")}</div>`
+      ? `<div class="bc-ev-wide">${onCase.map(evFigure).join("")}</div>`
       : ""
 }
-<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`),
+<p class="foot-note">${esc(POLICY.noGuarantee)}</p>`,
+      { dark: true, layout: "case" },
+    ),
   );
 });
 
 // 02-6-2 숏폼 포트폴리오
+sec("made-shortform");
 
 
 
@@ -577,40 +800,101 @@ ${/* 표는 **가로 전체 폭**이라야 숫자가 읽힌다. 왼쪽 열(절�
  */
 {
   const perPage = 12;
-  const all = ALL_BRAND_CLIPS;
-  const brandOf = (slug: string) =>
+
+  /**
+   * 목적별로 묶어 보여 준다. (2026-08-20 사장님 지시)
+   *
+   * *"브랜드로 나누기보다 너가 영상을 보고 영상의 목적(후기형, 인터뷰형,
+   * 스토리형 등등) 넣으면 되고."*
+   *
+   * 앞 판은 브랜드로 묶고 상한을 걸었는데, 그러면 한 장에 두세 브랜드밖에
+   * 안 보여 "그 업종 전문"으로 읽힌다. 목적으로 묶으면 **"우리는 이런 각을
+   * 만든다"** 가 보인다. 배지도 브랜드 대신 목적을 단다.
+   *
+   * 분류는 `lib/clips.ts` 의 `CLIP_PURPOSE` — 22편을 프레임으로 직접 보고 정한
+   * 값이고, 근거를 줄마다 적어 뒀다.
+   */
+  /* 드라이브 38편이 들어와 60편이 됐다 — 그대로 깔면 9장이라 소개서가 소재
+     카탈로그가 된다. **브랜드당 10편 상한**을 걸어 3장으로 맞춘다. 빠진 것은
+     버리는 게 아니라 홈페이지 /portfolio 에 전부 있다. */
+  const BRAND_CAP = Number(process.env.DECK_BRAND_CAP ?? 99); // 기본은 전부 — 줄이려면 DECK_BRAND_CAP=10
+
+  /**
+   * 같은 사람이 나란히 오지 않게 **브랜드를 번갈아** 깐다. (2026-08-20)
+   *
+   * 사장님: *"동일 인물들이 나란히 너무 자주나오는건 좀 섞어서 중복없어
+   * 보이게끔해."* 목적으로 묶는 건 유지하되, 목적 안에서 브랜드를 라운드로빈
+   * 한다. 트러스티 필독사전 6편·내추럴헬스 약사 편이 줄줄이 붙던 문제가
+   * 이걸로 풀린다.
+   */
+  const brandKey = (slug: string) =>
     CLIPS_BY_BRAND.find((b) => b.slugs.includes(slug))?.brand ?? "";
 
-  for (let i = 0; i < all.length; i += perPage) {
-    const chunk = all.slice(i, i + perPage);
-    const page = Math.floor(i / perPage) + 1;
-    const total = Math.ceil(all.length / perPage);
+  /**
+   * **브랜드를 전 구간에 걸쳐 번갈아** 깐다. (2026-08-20)
+   *
+   * 앞 판은 목적 그룹 *안에서만* 돌려서, 한 그룹에 한 브랜드만 남으면 같은
+   * 화자가 예닐곱 칸 줄줄이 붙었다(1장 인접중복 4, 3장 3).
+   * 전체를 브랜드 기준으로 돌리면 편수 많은 브랜드만 남는 꼬리에서만 붙는다.
+   * 각 브랜드 안의 순서는 목적 순서를 그대로 따라가므로 배지 흐름도 유지된다.
+   */
+  const order = new Map(CLIPS_BY_PURPOSE.flatMap((g) => g.slugs).map((s2, i2) => [s2, i2]));
+  const used: Record<string, number> = {};
+  const pools = new Map<string, string[]>();
+  for (const b of CLIPS_BY_BRAND) {
+    const arr = b.slugs
+      .filter((x) => !DECK_EXCLUDE.has(x))
+      .sort((x, y) => (order.get(x) ?? 0) - (order.get(y) ?? 0))
+      .filter(() => (used[b.brand] = (used[b.brand] ?? 0) + 1) <= BRAND_CAP);
+    if (arr.length) pools.set(b.brand, arr);
+  }
+  const all: string[] = [];
+  while (pools.size)
+    for (const [b, arr] of [...pools].sort((x, y) => y[1].length - x[1].length)) {
+      const x = arr.shift();
+      if (x) all.push(x);
+      if (!arr.length) pools.delete(b);
+    }
 
-    pages.push(
-      slide(`
+  /* 마지막 장에 한두 칸만 남지 않게 장 수로 나눠 균등 배분 */
+  const per = all.length > perPage ? Math.ceil(all.length / Math.ceil(all.length / perPage)) : perPage;
+
+  const brandOf = brandKey;
+
+  for (let i = 0; i < all.length; i += per) {
+    const chunk = all.slice(i, i + per);
+    const page = Math.floor(i / per) + 1;
+    const total = Math.ceil(all.length / per);
+
+    addPage(
+      slide(
+        `
 ${head(
-  total > 1 ? `숏폼 포트폴리오 (${page}/${total})` : "숏폼 포트폴리오",
-  "브랜드 광고 계정에 바로 태운 구매 전환형 소재입니다 — 누르면 영상이 재생됩니다",
+  total > 1 ? `최근 챔피언 숏폼 포트폴리오 (${page}/${total})` : "최근 챔피언 숏폼 포트폴리오",
+  "브랜드가 아니라 소재의 목적으로 묶었습니다 — 누르면 영상이 재생됩니다",
 )}
 <div class="shorts">
 ${chunk
   .map(
     (slug) =>
-      `<a class="short" href="${playUrl(slug)}"><img src="${asset(clipPoster(slug))}" alt=""><span class="play">▶</span><span class="short-b">${esc(brandOf(slug))}</span></a>`,
+      `<a class="short" href="${playUrl(slug)}"><img src="${asset(clipPoster(slug))}" alt=""><span class="play">▶</span><span class="short-b">${esc(CLIP_PURPOSE[slug] ?? "")}</span><span class="short-brand">${esc(brandOf(slug))}</span></a>`,
   )
   .join("")}
-</div>`),
+</div>`,
+        { alt: true, layout: "wall" },
+      ),
     );
   }
 }
 
 // 10 제작 조직 (현장)
+sec("team");
 
 
 
 
 
-pages.push(
+addPage(
   slide(`
 ${head("브랜드 마케팅과 덕션의 일체화 집단", "전략을 아는 사람이 만들고, 만드는 사람이 성과를 봅니다")}
 <div class="creds">
@@ -622,10 +906,11 @@ ${Array.from({ length: 8 }, (_, i) => `<img src="${asset(`/portfolio/crew/crew-0
 );
 
 // 14 이용 방법 (실제 화면)
+sec("how-shortform");
 
 
 
-pages.push(
+addPage(
   slide(`
 ${head("프로젝트 대시보드 확인", "인플루언서 시딩부터 2차 활용, 숏폼 기획·제작, 컨텐츠 배포까지 대시보드에서 바로 확인하세요")}
 <div class="board">
@@ -647,13 +932,14 @@ ${head("프로젝트 대시보드 확인", "인플루언서 시딩부터 2차 �
 );
 
 // 15 PLAN
+sec("shortform-plan");
 
 
 
 
-pages.push(
+addPage(
   slide(`
-${head("플랜 안내", "브랜드 상황에 맞는 구성을 고르시면 됩니다 — 싱글과 멀티는 택일입니다")}
+${head("숏폼 플랜 안내", "정가로 결제하는 유일한 라인입니다 — 싱글과 멀티는 택일입니다")}
 
 <div class="journey">
 ${[
@@ -698,13 +984,68 @@ ${[
 <p class="vat">※ 부가세 별도 · 싱글 플랜 편당 ₩250,000 → ₩220,000 (편수가 늘수록 낮아집니다) · ${esc(POLICY.seedingBundleOnly)}</p>`),
 );
 
+// 15-2 라인별 계약 구조 (2026-08-20 사장님 확인)
+//
+// 사장님: *"플랜 결제에서는 숏폼 뿐 아니라 나머지도 있는거지? 나머지는
+// sns채널 운영(인스타,블로그,유튜브). 참고로 종합마케팅은 마크업+팀
+// 구독료로 진행하는데 월 3곳 한정."*
+//
+// ⚠️ LINE 02·03 은 **정가가 없다.** 앞 장(숏폼)처럼 표로 금액을 적지 않는다.
+// 여기서 파는 건 금액이 아니라 **과금 방식과 계약 단위**다. 숫자를 지어내지
+// 않는다 — 확인된 것은 "마크업 + 팀 구독료", "월 3곳 한정", "최소 6개월 ·
+// 기본 1년" 뿐이다.
+sec("brand-plan");
+
+/**
+ * 브랜드 채널 마케팅 프로젝트 — 두 갈래. (2026-08-20 사장님 구술)
+ *
+ * ⚠️ **SNS 채널 활성화 플랜에는 투입 조직을 적지 않는다.** 광고·CRM 도 여기서
+ * 말하지 않는다. 사장님: *"거기에 투입조직은 넣지마, 광고 crm은 말안할거야
+ * 여기서."* — 그 둘은 린 IMC 쪽 이야기다.
+ */
+addPage(
+  slide(`
+${head("브랜드 채널 마케팅 프로젝트", "두 갈래로 나눠 진행합니다 — 필요한 쪽만 골라도 됩니다")}
+<div class="two">
+  <div class="plan-col">
+    <p class="plan-k">PLAN A</p>
+    <p class="plan-h">SNS 채널 활성화 플랜</p>
+    <p class="plan-d">브랜드가 가진 채널을 실제로 도는 채널로 만듭니다.</p>
+    <ul class="plan-list">
+      <li><strong>유튜브 채널 운영</strong><span>+ 쇼츠 · 릴스 미러링</span></li>
+      <li><strong>SEO / AEO</strong><span>+ 브랜드 블로그 최적화</span></li>
+    </ul>
+    <div class="kv">
+      <div><dt>계약 단위</dt><dd>6개월 또는 1년</dd></div>
+      <div><dt>금액</dt><dd>브랜드 상황에 따라 협의</dd></div>
+    </div>
+  </div>
+  <div class="plan-col plan-col-pkg">
+    <p class="plan-k">PLAN B</p>
+    <p class="plan-h">린 IMC 마케팅 구독제</p>
+    <p class="plan-d">꼭 필요한 우선순위 전략만 조합해 팀 단위로 투입합니다.</p>
+    <ul class="plan-list">
+      <li><strong>퍼포먼스 마케팅</strong><span>메타 · 구글 메인 + PMF 채널 · 버티컬 · 네트워크 조합</span></li>
+      <li><strong>CRM 캠페인 최적화</strong><span>멤버십 설계</span></li>
+      <li><strong>데이터 · 그로스 파이프라인 구축</strong><span></span></li>
+    </ul>
+    <div class="kv">
+      <div><dt>진행 한도</dt><dd><strong>월 3곳 한정</strong></dd></div>
+      <div><dt>금액</dt><dd>브랜드 단위 협의</dd></div>
+    </div>
+  </div>
+</div>
+<div class="oneline">편수 단위 정가 결제는 숏폼 스튜디오뿐입니다 · 부가세 별도</div>`),
+);
+
 // 16 계약 · 결제
+sec("shortform-plan");
 
 
 
 
 
-pages.push(
+addPage(
   slide(`
 ${head("숏폼 계약 · 결제", "숏폼 플랜은 구성 확정부터 납품까지 이 순서로 진행됩니다")}
 <div class="contract">
@@ -716,29 +1057,86 @@ ${CONTRACT.map(
 );
 
 // PART2
+sec("part-brand");
 
-
-
-
-
-pages.push(
+/**
+ * SNS 채널 서비스와 종합 마케팅 서비스를 **한 파트로 합쳤다.** (2026-08-20)
+ *
+ * 사장님: *"sns브랜드 서비스와 종합마케팅 서비스를 합치자. 합쳐서 브랜드 채널
+ * 마케팅 이라고해야하나 뭔가 너가 정해서."*
+ *
+ * 이름은 **브랜드 채널 마케팅** 으로 정했다. 둘을 갈라 두면 읽는 쪽에서
+ * "채널만 하는 팀 / 광고까지 하는 팀" 으로 나눠 읽는데, 실제로는 같은 팀이
+ * 채널을 중심에 두고 광고·CRM·이벤트까지 붙이는 하나의 계약이다.
+ * 히어로 카피는 /sns-brand 원문을 그대로 쓰되 마지막 줄에 종합 범위를 더했다.
+ */
+addPage(
   slide(
-    `<div class="part">
-  <p class="part-k">LINE 02</p>
-  <p class="part-t">브랜드 SNS 채널 컨텐츠 활성화</p>
-  <p class="part-d">브랜드 유튜브 · 인스타그램 채널의 기획 · 전략 · 운영</p>
-</div>`,
-    { dark: true, bare: true },
+    partHero({
+      eyebrow: "Brand Channel Marketing",
+      title: ["브랜드 퍼널을 완성하는", "채널 · 컨텐츠 · 광고 통합 운영"],
+      sub: [...HERO.sub],
+      stats: HERO.stats.map((x) => ({ v: x.figure, l: x.label })),
+      media: [
+        "/sns/krafton-contents.jpg",
+        "/sns/lovedy-funnel.png",
+        "/sns/yeolda-shoot.jpg",
+        "/sns/trusty-vet.jpg",
+        "/sns/krafton-3c.png",
+        "/sns/lovedy-result.png",
+      ],
+    }),
+    { hero: true, bare: true, layout: "part" },
   ),
 );
 
+// 15-6 주요 사례 10건 — 홈페이지 고객 이야기 제목·이미지 그대로
+sec("brand-stories");
+
+/**
+ * 사장님: *"주요 사례들을 10개 정도 보여주면서 … 홈페이지에 있는거 최대한
+ * 동일하게 따라해 카피와 이미지까지."* + *"썸네일 노출되는 곳 제목 문구
+ * 잘 했잖아 그거 그대로 동일하게 쓰고."*
+ *
+ * 제목은 `lib/story-cards.ts`(= /blog 고객 이야기 제목 원문), 이미지는 프레이머
+ * 대표 컷, 링크는 hgrs.io/blog/{slug}. 카드에서 눌러 글로 넘어간다.
+ */
+{
+  const rows = FEATURED_STORIES;
+  const page = 0;
+  addPage(
+    slide(
+      `
+<div class="shead">
+  <p class="eyebrow-lime">Growth Stories</p>
+  <h2>주요 성장 사례 ${rows.length}건</h2>
+  <p class="subline">브랜드마다 무엇이 문제였고 무엇이 달라졌는지 — 누르면 전문이 열립니다</p>
+</div>
+<div class="stories">
+${rows
+  .map((st) => {
+    const fc = FRAMER_CASES.find((c) => c.slug === st.framer);
+    const cover = fc?.blocks.find((b) => "img" in b) as { img: string } | undefined;
+    return `<a class="story" href="${PLAY_ORIGIN}/blog/${st.slug}">
+  ${cover ? `<img src="${asset(cover.img)}" alt="">` : `<div class="imc-nopic"></div>`}
+  <p class="story-t">${esc(st.title)}</p>
+</a>`;
+  })
+  .join("")}
+</div>`,
+      { dark: true, layout: "cards" },
+    ),
+  );
+}
+
 // 02-4 SNS 종합 브랜드 마케팅 시스템 (랜딩 Process 섹션 그대로)
+sec("how-sns");
 
 
 
 
 
-pages.push(
+addPage(
   slide(`
 ${head(PROCESS.title, "SNS 채널 연간 기획운영이 기본이며, 아래 범위는 필요 시 협의해 더합니다")}
 <div class="cards4">
@@ -758,6 +1156,7 @@ ${PROCESS.items
 );
 
 // 02-6 채널 성과 — 브랜드당 한 장
+sec("numbers-sns");
 
 
 
@@ -770,57 +1169,167 @@ ${PROCESS.items
  */
 const DECK_HERO: Record<string, string> = { trusty: "/sns/trusty-vet.jpg" };
 
+/**
+ * SNS 채널 케이스 — 홈페이지 `s-cases.tsx` 카드를 **그대로** 옮긴다. (2026-08-20)
+ *
+ * 사장님: *"포트폴리오 홈페이지 작업하면서 내용이랑 이미지랑 모든게 다 있는데
+ * 카피도 그렇고 왜 안따라하고 자꾸 단순 나열을 이해못하게하는거야."*
+ *
+ * 앞 판이 쓴 건 `hero` 한 장뿐이었다. 원본에 있는데 안 쓰던 것들 —
+ *   `label`(Feature 01) · `category` · `figures`(기획안·퍼널맵 도판) ·
+ *   `videos`(유튜브) · `channels`(채널 타일·구독자 수) · `channelsNote`
+ * 를 전부 싣는다. 한 장에 다 넣으면 넘치므로 **케이스당 두 장**으로 나눈다.
+ *
+ *   ① 이야기 — 카테고리/메타 · 타이틀 · 본문 · 성과 3칸 · 대표 도판
+ *   ② 산출물 — 기획안·퍼널맵 도판 · 유튜브 · 굴린 채널 · 실적 증빙
+ *
+ * 롱폼을 따로 나열하지 않고 여기 ②로 넣는다. 앞 판은 롱폼 장이 뒤에 뚝
+ * 떨어져 있어 *"어떻게 이어지는지 전혀 모를"* 상태였다.
+ */
 FEATURES.forEach((f) => {
-  pages.push(
-    slide(`
-<div class="bc-head">
-  <p class="bc-meta">${esc(f.meta)} · ${esc(f.category)}</p>
-  <h2 class="bc-title">${esc(f.title)}</h2>
-</div>
-<div class="brandcase">
-  <div class="bc-body">
-    <ul class="bc-stats">
-      ${f.stats
-        .map(
-          (st) =>
-            `<li><strong>${esc(st.v)}</strong>${st.note ? `<span>${esc(st.note)}</span>` : ""}</li>`,
-        )
+  const brandName = f.meta.split(/[\s(]/)[0];
+  const matched = EVIDENCE.filter((e) => e.brand.startsWith(brandName)).sort(PERF_FIRST);
+
+  // ① 이야기
+  addPage(
+    slide(
+      `
+<div class="fcard">
+  <div class="fcard-h">
+    <p class="fcard-cat">${esc(f.category)}</p>
+    <p class="fcard-meta">${esc(f.meta)}</p>
+  </div>
+  <div class="fcard-b">
+    <div>
+      <h2 class="fcard-t">${esc(f.title)}</h2>
+      ${f.body
+        .slice(0, 3)
+        .map((t) => `<p class="fcard-p">${esc(plain(t))}</p>`)
         .join("")}
-    </ul>
-    ${f.body.map((t) => `<p class="bc-p">${esc(plain(t))}</p>`).join("")}
-    ${(() => {
-      /**
-       * SNS 사례에도 실적 증빙을 붙인다. (2026-08-19)
-       *
-       * 사장님이 `럽디 리데이트.png` 를 넣으며 **이 장표**라고 지목하셨다.
-       * `meta` 첫 낱말이 브랜드명이라(예: "럽디 (연애 상담 서비스…") 그걸로
-       * 증빙을 찾는다.
-       */
-      const brandName = f.meta.split(/[\s(]/)[0];
-      const ev = EVIDENCE.filter((e) => e.brand.startsWith(brandName));
-      if (!ev.length) return "";
-      return `<div class="bc-ev">${ev
+      <ul class="fstats">
+        ${f.stats
+          .map(
+            (st) =>
+              `<li><strong>${esc(st.v)}</strong>${st.note ? `<span>${esc(st.note)}</span>` : ""}</li>`,
+          )
+          .join("")}
+      </ul>
+    </div>
+    <div class="fcard-m">
+      <figure><img src="${asset(DECK_HERO[f.id] ?? f.hero.src)}" alt=""><figcaption>${esc(f.hero.caption)}</figcaption></figure>
+    </div>
+  </div>
+</div>`,
+      { dark: true, layout: "case" },
+    ),
+  );
+
+  // ② 산출물 — 도판 · 유튜브 · 채널 · 증빙
+  /**
+   * ⚠️ **도판을 전부 싣는다.** 앞 판은 `figures` 를 2장으로 자르고 오른쪽 열은
+   * 채널이 없는 브랜드(럽디·열다)에서 통째로 비었다. 사장님: *"프레이머 옮길
+   * 때 거기 내용들 충분히 있었을텐데. 좀 채워넣던가."*
+   *
+   * 채널이 있으면 좌(도판)/우(유튜브·채널) 두 열, 없으면 도판을 **2열로 펴서**
+   * 장을 채운다.
+   */
+  const figs = f.figures ?? [];
+  const vids = f.videos ?? [];
+  const chans = f.channels ?? [];
+  const plates = [
+    ...figs.map((g) => ({ src: g.src, cap: g.caption, mask: false })),
+    ...matched.slice(0, 2).map((e) => ({ src: `/evidence/${e.file}`, cap: e.caption, mask: e.masked })),
+  ];
+  const plateHtml = plates
+    .map(
+      (g) =>
+        `<figure><img src="${asset(g.src)}" alt=""><figcaption>${esc(g.cap)}${g.mask ? ' <span class="ev-mask">일부 가림</span>' : ""}</figcaption></figure>`,
+    )
+    .join("");
+  const vidHtml = vids.length
+    ? `<div class="fvids">${vids.map((v) => `<a class="thumb" href="${ytWatch(v.id)}"><img src="https://i.ytimg.com/vi/${v.id}/mqdefault.jpg" alt=""><span class="play">▶</span><span>${esc(v.title)}</span></a>`).join("")}</div>`
+    : "";
+  const chanHtml = chans.length
+    ? `<p class="fchan-k">굴린 채널</p>${f.channelsNote ? `<p class="fchan-n">${esc(f.channelsNote)}</p>` : ""}
+      <div class="fchan">${chans
         .map(
-          (e) =>
-            `<figure><img src="${asset(`/evidence/${e.file}`)}" alt=""><figcaption>${esc(e.caption)}${e.masked ? ' <span class="ev-mask">일부 가림</span>' : ""}</figcaption></figure>`,
+          (c) => `<div class="chan">
+        <img src="${asset(c.thumb)}" alt="">
+        <p class="chan-n">${esc(c.name)}</p>
+        <p class="chan-h">${esc(c.platform)} · ${esc(c.handle)}</p>
+        <p class="chan-m">${esc(c.metric ?? "")}</p>
+      </div>`,
         )
-        .join("")}</div>`;
-    })()}
+        .join("")}</div>`
+    : "";
+  const split = !!(chanHtml || vidHtml);
+
+  addPage(
+    slide(
+      `
+<div class="fcard">
+  <div class="fcard-h">
+    <p class="fcard-cat">${esc(f.label)}</p>
+    <p class="fcard-meta">${esc(f.meta)} — 산출물</p>
   </div>
-  <div class="bc-media">
-    <img src="${asset(DECK_HERO[f.id] ?? f.hero.src)}" alt="">
-  </div>
-</div>`),
+  ${
+    split
+      ? `<div class="fout">
+    <div class="fout-l">${plateHtml}</div>
+    <div class="fout-r">${vidHtml}${chanHtml}</div>
+  </div>`
+      : `<div class="fout-grid">${plateHtml}</div>`
+  }
+</div>`,
+      { dark: true, layout: "case" },
+    ),
   );
 });
 
+// 15-7 운영한 채널 모음 — 유튜브 · 인스타그램 · 블로그
+sec("brand-channels");
+
+/**
+ * 사장님: *"운영했던 블로그도 넣고 운영했던 인스타그램 채널들도 있잖아 넣고."*
+ * `FEATURES[].channels` 를 전부 모아 한 장으로 편다 — 플랫폼이 섞여 있어야
+ * "채널 하나만 하는 팀이 아니다"가 보인다.
+ */
+{
+  /* ⚠️ 블로그는 FEATURES 가 아니라 `BLOG_CARD`(Feature 05 공식 블로그 운영)에
+     따로 들어 있다. 처음에 이걸 빠뜨려 유튜브·인스타 4개만 나왔다. */
+  const all = [...FEATURES.flatMap((f) => f.channels ?? []), ...BLOG_CARD.channels];
+  addPage(
+    slide(
+      `
+${head("직접 운영한 브랜드 채널", esc(BLOG_CARD.body[0]))}
+<div class="chan-wall">
+${all
+  .map(
+    (c) => `<div class="chan">
+  <img src="${asset(c.thumb)}" alt="">
+  <p class="chan-p">${esc(c.platform)}</p>
+  <p class="chan-n">${esc(c.name)}</p>
+  <p class="chan-h">${esc(c.handle)}</p>
+  ${c.metric ? `<p class="chan-m">${esc(c.metric)}</p>` : ""}
+  ${"note" in c && c.note ? `<p class="chan-note">${esc(String(c.note))}</p>` : ""}
+</div>`,
+  )
+  .join("")}
+</div>
+<p class="foot-note">계약 범위에 따라 메인 채널을 정하고 나머지 채널에는 컨텐츠 미러링을 병행합니다.</p>`,
+      { dark: true, layout: "cards" },
+    ),
+  );
+}
+
 // 02-5 투입 조직 (랜딩 Team 섹션 그대로)
+sec("team");
 
 
 
 
 
-pages.push(
+addPage(
   slide(`
 ${head("채널 프로젝트 투입 조직", plain(TEAM.lead))}
 <div class="teams">
@@ -838,46 +1347,42 @@ ${TEAM.teams
 );
 
 // 02-6-1 최근 주요 포트폴리오 — 8장씩 나눠 담는다 (한 장에 12개를 넣으니 잘렸다)
+sec("made-longform");
 
 
 
 
 
-[0, 8].forEach((from, page) => {
-  const rows = PORTFOLIO.videos.slice(from, from + 8);
+/* 8+6 으로 끊으니 둘째 장에 빈 칸이 2개 남았다 — 반씩 나눈다 */
+const LONG_PER = Math.ceil(PORTFOLIO.videos.length / 2);
+[0, LONG_PER].forEach((from, page) => {
+  const rows = PORTFOLIO.videos.slice(from, from + LONG_PER);
   if (!rows.length) return;
-  pages.push(
-    slide(`
-${head(page === 0 ? "롱폼 주요 포트폴리오" : "롱폼 주요 포트폴리오 (2)", page === 0 ? "실제로 편성·제작한 롱폼 컨텐츠입니다" : "이어서 보여드립니다")}
+  addPage(
+    slide(
+      `
+${head(page === 0 ? "팬덤 시리즈 롱폼 포트폴리오" : "팬덤 시리즈 롱폼 포트폴리오 (2)", page === 0 ? "앞의 네 브랜드 채널에 실제로 올린 컨텐츠입니다 — 누르면 유튜브에서 재생됩니다" : "이어서 보여드립니다")}
 <div class="thumbs">
 ${rows
   .map(
-    (v) => `<div class="thumb"><img src="https://i.ytimg.com/vi/${v.id}/mqdefault.jpg" alt=""><span>${esc(v.title)}</span></div>`,
+    /* 롱폼도 눌러서 보게 한다. 숏폼(.short)만 링크가 걸려 있고 롱폼은
+       이미지뿐이라 "누르면 재생됩니다"가 반만 참이었다. */
+    (v) =>
+      `<a class="thumb" href="${ytWatch(v.id)}"><img src="https://i.ytimg.com/vi/${v.id}/mqdefault.jpg" alt=""><span class="play">▶</span><span>${esc(v.title)}</span></a>`,
   )
   .join("")}
 </div>
-${page === 1 ? `<p class="foot-note">${esc(PORTFOLIO.note)}</p>` : ""}`),
+${page === 1 ? `<p class="foot-note">${esc(PORTFOLIO.note)}</p>` : ""}`,
+      { alt: true, layout: "wall" },
+    ),
   );
 });
 
-// PART3
-
-
-
-
-
-pages.push(
-  slide(
-    `<div class="part">
-  <p class="part-k">LINE 03</p>
-  <p class="part-t">종합 브랜드 마케팅 전개</p>
-  <p class="part-d">구독형 또는 SNS 채널 커뮤니케이션의 패키지 옵션으로 진행합니다</p>
-</div>`,
-    { dark: true, bare: true },
-  ),
-);
+// PART3 간지는 삭제했다 — SNS 파트와 종합 파트를 하나로 합치면서
+// 간지가 둘일 이유가 없어졌다. (2026-08-20)
 
 // 15-4 IMC 프로젝트 기록 — 프레이머 CMS 포트폴리오 28건을 그대로 싣는다 (2026-08-20)
+sec("imc");
 
 
 
@@ -888,45 +1393,58 @@ pages.push(
  * 다 동일하게 넣으면 돼. 소개서에도 넣고."* — 요약하거나 골라 담지 않는다.
  * 두 줄 설명은 프레이머 원문 그대로다.
  */
-for (let from = 0; from < FRAMER_CASES.length; from += 6) {
-  const rows = FRAMER_CASES.slice(from, from + 6);
+/* 앞의 "주요 성장 사례 10건"과 겹치지 않게 **나머지만** 싣는다.
+   사장님: *"35-39번이 위에 주요 10개 포폴이랑 겹치지않아?"* */
+const REST = FRAMER_CASES.filter((c) => !FEATURED_STORIES.some((st) => st.framer === c.slug));
+for (let from = 0; from < REST.length; from += 6) {
+  const rows = REST.slice(from, from + 6);
   const page = from / 6;
-  const total = Math.ceil(FRAMER_CASES.length / 6);
-  pages.push(
-    slide(`
-${head(
-  total > 1 ? `IMC 프로젝트 기록 (${page + 1}/${total})` : "IMC 프로젝트 기록",
-  page === 0
-    ? `브랜드를 통으로 맡았던 프로젝트 ${FRAMER_CASES.length}건입니다`
-    : "이어서 보여드립니다",
-)}
+  const total = Math.ceil(REST.length / 6);
+  addPage(
+    slide(
+      `
+<div class="shead">
+  <p class="eyebrow-lime">IMC PROJECTS</p>
+  <h2>${total > 1 ? `그 밖의 프로젝트 ${REST.length}건 (${page + 1}/${total})` : `그 밖의 프로젝트 ${REST.length}건`}</h2>
+  <p class="subline">${page === 0 ? `앞의 10건을 포함해 브랜드를 통으로 맡았던 프로젝트는 모두 ${FRAMER_CASES.length}건입니다 — 누르면 상세로 넘어갑니다` : "이어서 보여드립니다"}</p>
+</div>
 <div class="imc">
 ${rows
   .map((c) => {
     const cover = c.blocks.find((b) => "img" in b) as { img: string } | undefined;
-    return `<div class="imc-card">
+    /* 카드마다 홈페이지로 넘어가는 링크를 단다. 고객 이야기가 있으면 그 글로,
+       없으면 포트폴리오 상세로. (2026-08-20 사장님 지시) */
+    const story = storyByFramer(c.slug);
+    const href = story
+      ? `${PLAY_ORIGIN}/blog/${story.slug}`
+      : `${PLAY_ORIGIN}/portfolio/${encodeURIComponent(c.slug)}`;
+    return `<a class="imc-card" href="${href}">
   ${cover ? `<img src="${asset(cover.img)}" alt="">` : `<div class="imc-nopic"></div>`}
   <div class="imc-body">
     <strong>${esc(c.name)}</strong>
     ${c.summary.map((line) => `<span>${esc(line)}</span>`).join("")}
+    <em class="imc-go">${story ? "프로젝트 기록 읽기 →" : "자세히 보기 →"}</em>
   </div>
-</div>`;
+</a>`;
   })
   .join("")}
-</div>`),
+</div>`,
+      { dark: true },
+    ),
   );
 }
 
 // 15-5 통합 브랜드 액션 — 랜딩의 원형 다이어그램을 정지 상태로
+sec("brand-aarrr");
 
 
 
 
 
 [0, 4].forEach((actFrom, actPage) => {
-  pages.push(
+  addPage(
     slide(`
-${head(actPage === 0 ? "통합 브랜드 액션 수행 결과" : "통합 브랜드 액션 수행 결과 (2)", actPage === 0 ? ACTIONS.lead : "이어서 보여드립니다")}
+${head(actPage === 0 ? "AARRR 퍼널로 묶은 브랜드 액션" : "AARRR 퍼널로 묶은 브랜드 액션 (2)", actPage === 0 ? "각 궤도는 한 브랜드에서 실제로 손 댄 지점입니다 — 유입·활성·유지·매출·추천을 한 전략으로 묶습니다" : "이어서 보여드립니다")}
 <div class="orbits">
 ${ACTIONS.items
   .slice(actFrom, actFrom + 4)
@@ -951,13 +1469,91 @@ ${actPage === 1 ? `<p class="foot-note">${esc(POLICY.noGuarantee)}</p>` : ""}`),
   );
 });
 
+// 18 Appendix — AI와 일하는 방식 / 진행·정산·소통 (2026-08-20 사장님 지시)
+sec("appendix");
+
+/**
+ * 사장님: *"1번은 AI 내용을 너가 추가해주라. 기존에 준 내용도 같이 들어갔으면
+ * 해서 너가 제목이랑 알아서해줘."*
+ *
+ * ⚠️ AI 쪽 문구는 **레포에서 확인된 것만** 쓴다. 지어내지 않았다 —
+ *  · `브랜드 AI 기본 분석` : 실제 대시보드 기능 (`/deck/ui-brandai.png` 스크린샷)
+ *  · `AI_EFFICIENCY_NOTE` : lib/constants.ts:177 원문
+ *  · `AI 강연자 출신 총괄 디렉터` : components/landing/s-system.tsx:51-52
+ *  · `담당이 소재 판독을 맡습니다` : 같은 파일 System 카드 3
+ * 두 번째 장의 네 항목은 사장님이 불러 주신 문구 그대로다.
+ */
+addPage(
+  slide(
+    `
+${head("Appendix. 해그로시가 AI와 일하는 방식", esc(AI_EFFICIENCY_NOTE) + " — 다만 무엇을 왜 만들지는 사람이 정합니다")}
+<p class="ai-lead">해그로시는 브랜드 단가 경쟁력을 맞추기 위해 오래 긴밀하게 일한 팀원들이 원격으로 매일 함께 업무하며, AI(AX) 시스템 구축을 통해 휴먼 에러를 최대한 줄이고 클라이언트 커뮤니케이션 및 시너지 프로세스에 집중합니다.</p>
+<div class="two ai2">
+  <div class="ai-col">
+    <p class="ai-k">AI가 맡는 것</p>
+    <ul class="ai-list">
+      <li><strong>브랜드 기본 분석</strong><span>상세페이지 URL 하나로 타겟 · USP · 객단가 · 금지 표현을 구조화합니다. 넘길 때마다 브랜드를 다시 설명하실 일이 없습니다.</span></li>
+      <li><strong>제작 전반의 효율화</strong><span>기획 정리부터 편집 보조까지, 사람이 오래 붙잡던 반복 작업을 줄여 같은 예산에서 편수를 늘립니다.</span></li>
+      <li><strong>진행 상황 정리</strong><span>단계 · 기한 · 산출물을 대시보드에 자동으로 쌓아 지금 어디까지 왔는지 바로 보이게 합니다.</span></li>
+    </ul>
+  </div>
+  <div class="ai-col ai-col-h">
+    <p class="ai-k">사람이 맡는 것</p>
+    <ul class="ai-list">
+      <li><strong>무엇을 왜 찍을지</strong><span>컨텐츠 가이드라인과 후킹 편성은 사람이 확정합니다. 이 판단이 성과의 대부분을 가릅니다.</span></li>
+      <li><strong>소재 판독</strong><span>숏폼 납품 이력이 다수인 담당이 어떤 각이 도는 소재인지 직접 봅니다.</span></li>
+      <li><strong>브랜드 톤과 금지선</strong><span>과장 표현 · 업종 규제 · 브랜드 어휘는 사람이 마지막으로 확인하고 내보냅니다.</span></li>
+    </ul>
+    <p class="ai-note">중소기업청 모두의창업 AI 강연자로 선 총괄 디렉터가 제작 감도를 잡습니다.</p>
+  </div>
+</div>`,
+    { alt: true, layout: "cards" },
+  ),
+);
+
+addPage(
+  slide(
+    `
+${head("Appendix. 진행 · 정산 · 소통", "계약 후 실제로 이렇게 굴러갑니다")}
+<div class="appx">
+${[
+  [
+    "어드민 대시보드",
+    "브랜드 프로젝트 진행은 어드민 대시보드를 제공해 업무 진행과 성과를 실시간 트래킹할 수 있게 제공합니다. 서로간 효율적인 커뮤니케이션을 전제로 합니다.",
+  ],
+  [
+    "재계약 고객 정산",
+    "재계약 고객은 에스크로 결제 및 세금계산서 자동 발행과 카드결제 등을 제공합니다.",
+  ],
+  [
+    "숏폼 프로젝트 소통",
+    "클라이언트와 담당자와의 소통은 어드민 대시보드를 통해 진행되고, 필요 시 PM이 줌미팅으로 조율합니다.",
+  ],
+  [
+    "채널 운영 · 종합 마케팅 소통",
+    "그 외 채널 운영 및 종합 마케팅의 경우 오프라인 정기 미팅을 제공합니다.",
+  ],
+]
+  .map(
+    ([t, d], i) => `<div class="appx-row">
+  <span class="appx-no">${String(i + 1).padStart(2, "0")}</span>
+  <div><p class="appx-t">${t}</p><p class="appx-d">${d}</p></div>
+</div>`,
+  )
+  .join("")}
+</div>`,
+    { alt: true, layout: "cards" },
+  ),
+);
+
 // 17 문의처
+sec("close");
 
 
 
 
 
-pages.push(
+addPage(
   slide(
     `<div class="cover end">
   <div class="cover-l">
@@ -977,6 +1573,46 @@ pages.push(
   ),
 );
 
+/* ───────────────────────── 목차 순서 ───────────────────────── */
+
+/**
+ * 최종 목차 (2026-08-20)
+ *
+ * 사이트 `/shortform` 의 설득 순서를 따른다 —
+ * 훅 → 정체 → 만든 것 → 숫자 → 방법 → 규모 → 시작.
+ * 브랜드 하나가 여러 구간에 겹쳐 나오지 않도록 구간을 나눴다.
+ */
+const ORDER = [
+  "cover", "hook", "identity", "lines", "team", "corp",
+
+  /* ── 서비스 1. 숏폼 스튜디오 */
+  "part-shortform",
+  "shortform-seeding", //  인플루언서 시딩 3단 (히어로 바로 밑)
+  "numbers-shortform", //  브랜드 성과 4건
+  "made-shortform", //     숏폼 포트폴리오
+  "how-shortform", //      프로세스 · 대시보드
+  "shortform-plan",
+
+  /* ── 서비스 2. 브랜드 채널 마케팅 프로젝트 */
+  "part-brand",
+  "brand-aarrr",
+  "brand-stories", //      주요 성장 사례 10건
+  "numbers-sns", //        채널 케이스 (이야기 + 산출물)
+  "brand-channels", //     직접 운영한 채널
+  "made-longform", //      팬덤 시리즈 롱폼 — 채널 케이스 뒤로
+  "how-sns",
+  "imc", //                나머지 프로젝트 목록
+  "brand-plan",
+
+  "appendix",
+  "close",
+];
+
+const unknown = secOf.filter((k) => !ORDER.includes(k));
+if (unknown.length) throw new Error(`목차에 없는 구간: ${[...new Set(unknown)].join(", ")}`);
+
+const ordered = ORDER.flatMap((k) => pages.filter((_, i) => secOf[i] === k));
+
 /* ───────────────────────── 스타일 ───────────────────────── */
 
 const html = `<!doctype html>
@@ -994,8 +1630,36 @@ body:has(.page:target) .page:not(:target){display:none}
 :root{
   --indigo:#4d5fe8; --indigo-deep:#3948b8; --indigo-tint:#eceefb;
   --gold:#b89b8d; --gold-deep:#8e6b68; --gold-tint:#f6efeb;
+  --navy:#0c0a3d;
   --ink:#030303; --muted:#595959; --line:#e6e6e6; --alt:#f7f5f3; --night:#0a0a0c;
+
+  /* ── 그리드 (2026-08-20) ─────────────────────────────────────
+     매번 mm 를 손으로 맞추다 같은 실수를 반복했다(증빙 표가 잘리고,
+     원 지름을 눈대중으로 고치고). 치수를 여기 한 곳에 두고 장표는
+     이 값만 쓴다. 규격 설명은 docs/deck/LAYOUT.md.
+
+       페이지  338.67 × 190.5mm (16:9)
+       안전영역 306.67 × 163.5mm  (패딩 15/16/12)
+       머리     32mm  (h2 26pt + 서브라인 15pt + 아래 여백)
+       푸터      8mm
+       본문     123.5mm  ← 본문 요소는 이 높이를 절대 넘지 않는다
+       12칼럼 · 거터 6mm · 칼럼 20.06mm · 세로 리듬 4mm            */
+  --pg-w:338.67mm; --pg-h:190.5mm;
+  --pad-t:15mm; --pad-x:16mm; --pad-b:12mm;
+  --safe-w:306.67mm; --safe-h:163.5mm;
+  --head-h:32mm; --foot-h:8mm; --body-h:123.5mm;
+  --gut:6mm; --col:20.06mm; --u:4mm;
 }
+
+/* ── 그리드 유틸 ─────────────────────────────────────────────
+   .grid  12칼럼. 자식은 .c{n} 으로 폭을 잡는다 (.c6 = 절반)
+   .fit   본문 밴드를 넘지 않는다 — 넘치면 잘리지 말고 장을 나눈다
+   .rows2 2행 균등                                              */
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gut);flex:1;min-height:0}
+.grid.rows2{grid-template-rows:1fr 1fr}
+.c3{grid-column:span 3}.c4{grid-column:span 4}.c5{grid-column:span 5}
+.c6{grid-column:span 6}.c7{grid-column:span 7}.c8{grid-column:span 8}.c12{grid-column:span 12}
+.fit{max-height:var(--body-h);min-height:0}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Pyeojin,-apple-system,sans-serif;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
 
@@ -1079,13 +1743,24 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .verdict{background:var(--night);color:#fff;border-radius:3mm;padding:7mm 8mm;font-size:10.5pt;line-height:1.8;margin-top:6mm;flex-shrink:0}
 
 /* 벤 */
-.venn{position:relative;height:120mm}
-.venn-c{position:absolute;top:0;width:106mm;height:106mm;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5pt;font-weight:700;line-height:1.5;text-align:center}
-.venn-a{left:0;background:rgba(77,95,232,.18);border:1.5px solid var(--indigo);color:var(--indigo-deep)}
-.venn-a span{margin-right:38mm}
-.venn-b{right:0;background:rgba(184,155,141,.26);border:1.5px solid var(--gold);color:var(--gold-deep)}
-.venn-b span{margin-left:38mm}
-.venn-mid{position:absolute;left:50%;top:53mm;transform:translate(-50%,-50%);text-align:center;z-index:2}
+/* 원 3개 삼각 배치 (2026-08-20)
+   지름 78mm, 중심 삼각형 한 변 48mm → 세로 오프셋 48*0.866≈42mm.
+   컨테이너 높이 = 78+42 = 120mm 로 2원 때와 같다.
+   교집합 라벨은 세 중심의 무게중심(=위 두 원 중심선에서 42/3≈14mm 아래) */
+.venn{position:relative;height:120mm;max-height:var(--body-h)}
+.venn-c{position:absolute;width:78mm;height:78mm;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9.5pt;font-weight:700;line-height:1.5;text-align:center}
+.venn-a{top:0;left:calc(50% - 63mm);background:rgba(77,95,232,.16);border:1.5px solid var(--indigo);color:var(--indigo-deep)}
+.venn-a span{transform:translate(-15mm,-12mm)}
+.venn-b{top:0;left:calc(50% - 15mm);background:rgba(184,155,141,.24);border:1.5px solid var(--gold);color:var(--gold-deep)}
+.venn-b span{transform:translate(15mm,-12mm)}
+.venn-d{top:42mm;left:calc(50% - 39mm);background:rgba(12,10,61,.16);border:1.5px solid #0c0a3d;color:#0c0a3d}
+.venn-d span{transform:translate(0,19mm)}
+.venn-mid{position:absolute;left:50%;top:58mm;transform:translate(-50%,-50%);text-align:center;z-index:2}
+/* 원마다 플랜명을 한 줄 더 — 명칭만으로는 뭘 사는 건지 안 잡힌다
+   (2026-08-20 사장님 지시) */
+.line-plans{list-style:none;margin-top:4mm;display:flex;flex-direction:column;gap:2mm}
+.line-plans li{background:var(--alt);border-radius:2mm;padding:2.6mm 3.4mm;font-size:9pt;font-weight:600;line-height:1.5}
+.venn-c em{display:block;margin-top:1.6mm;font-size:7.2pt;font-weight:600;font-style:normal;opacity:.75;letter-spacing:-.01em}
 .venn-mid strong{display:block;font-size:14pt;font-weight:700}
 .venn-mid span{font-size:8pt;color:var(--muted)}
 .pos-col{display:flex;flex-direction:column;gap:5mm}
@@ -1289,9 +1964,12 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 
 /* 브랜드 케이스 — 한 브랜드 한 장 */
 /* 사례 슬라이드의 실적 증빙 (2026-08-19) */
-.bc-ev{display:flex;flex-direction:column;gap:3mm;margin-top:5mm;flex:1 1 auto;min-height:0;overflow:hidden;justify-content:flex-start}
-.bc-ev figure{margin:0;min-height:0}
-.bc-ev img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block;object-fit:contain;object-position:left top}
+/* 증빙은 **남은 높이 안에서만** 큰다. 앞 판은 img 에 상한이 없어 원본
+   높이대로 밀고 나갔고, .bc-ev 의 overflow:hidden 이 그걸 잘라 냈다.
+   flex:1 1 0 + object-fit:contain 이면 넘치는 대신 줄어든다. */
+.bc-ev{display:flex;flex-direction:column;gap:3mm;margin-top:5mm;flex:1 1 0;min-height:0;overflow:hidden;justify-content:flex-start}
+.bc-ev figure{margin:0;min-height:0;display:flex;flex-direction:column;flex:1 1 0}
+.bc-ev img{width:100%;min-height:0;flex:1 1 0;border:1px solid var(--line);border-radius:1.5mm;display:block;object-fit:contain;object-position:left top}
 .bc-ev-1 img{max-height:74mm}
 .bc-ev-2 img{max-height:30mm}
 .bc-ev-3 img{max-height:19mm}
@@ -1305,6 +1983,201 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .bp-ev img{width:100%;border:1px solid var(--line);border-radius:1.5mm;display:block}
 .bp-ev figcaption{font-size:7pt;color:var(--muted);margin-top:1.5mm;line-height:1.5}
 .bp-none{font-size:9pt;color:var(--muted)}
+/* ── 배경 체계 (2026-08-20) ──────────────────────────────────────
+   사장님: *"어떤 건 검정색 어떤건 흰색배경인데. 우리 브랜드 색상은 어디에도
+   반영이 통일감있게 안되어있다."* → 장표 유형마다 배경을 고정한다.
+
+     다크 #0a0a0c   표지 · 파트 간지 · 성과 사례 · 클로징
+     웜그레이 #f7f5f3  포트폴리오·도판 나열 (소재가 주인공인 장)
+     화이트 #ffffff  프로세스 · 시스템 · 표 · 플랜 (읽는 장)
+
+   아이브로우는 어느 장이든 골드, 단계 번호는 어느 장이든 인디고.       */
+.page.alt{background:var(--alt)}
+
+/* ── 파트 간지 = 홈페이지 .hero-night 그대로 (globals.css:104-140)
+   color-mix(in oklab, X n%, transparent) 를 rgba 로 풀어 동일하게 깐다 */
+.page.hero{position:relative;overflow:hidden;background:var(--night)}
+.page.hero::before,.page.hero::after{content:"";position:absolute;inset:-20% -10%;z-index:0;pointer-events:none}
+.page.hero::before{background:
+  radial-gradient(60% 45% at 78% 18%,rgba(77,95,232,.55),transparent 70%),
+  radial-gradient(55% 40% at 12% 88%,rgba(77,95,232,.42),transparent 72%);
+  filter:blur(10px)}
+.page.hero::after{background:radial-gradient(50% 38% at 22% 12%,rgba(184,155,141,.38),transparent 68%);filter:blur(14px)}
+.page.hero .page-body{position:relative;z-index:1}
+
+.phero{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:14mm;align-items:center;flex:1;min-height:0}
+.phero-k{font-size:9pt;font-weight:500;letter-spacing:.02em;color:var(--gold)}
+.phero-t{margin-top:5mm;font-size:34pt;font-weight:700;line-height:1.24;letter-spacing:-.04em}
+.phero-s{margin-top:5mm;font-size:15pt;font-weight:700;line-height:1.7;color:rgba(255,255,255,.7)}
+.phero-stats{margin-top:9mm;display:flex;border:1px solid rgba(255,255,255,.12);border-radius:4mm;background:rgba(10,10,12,.7);overflow:hidden}
+.phero-stats>div{flex:1;padding:5mm 4mm;border-left:1px solid rgba(255,255,255,.12)}
+.phero-stats>div:first-child{border-left:0}
+.phero-stats strong{display:block;font-size:19pt;font-weight:600;line-height:1;letter-spacing:-.04em;color:var(--gold)}
+.phero-stats span{display:block;margin-top:2mm;font-size:8pt;color:rgba(255,255,255,.55)}
+/* 홈은 3열 세로 마퀴 — PDF엔 움직임이 없으니 같은 소재의 정지 그리드로 */
+/* 홈페이지는 3열 세로 마퀴(높이 560px). PDF엔 움직임이 없으니 같은 3열을
+   **꽉 채운 정지 컬럼**으로 낸다. 앞 판은 9:16 6칸을 작게 욱여넣어 자막이
+   잘렸다 — 열마다 2칸씩, 가운데 열을 어긋나게 내려 홈과 같은 리듬을 준다. */
+.phero-r{display:grid;grid-template-columns:repeat(3,1fr);gap:3.5mm;height:var(--body-h);min-height:0}
+.phero-col{display:flex;flex-direction:column;gap:3.5mm;min-height:0}
+/* 9:16 을 고정하면 2칸이 밴드보다 길어져 넘친다 — 남은 높이를 나눠 갖게 한다 */
+.phero-r img{width:100%;flex:1 1 0;min-height:0;object-fit:cover;border-radius:3mm;background:#171717;display:block}
+
+/* ── 성장 사례 — 홈페이지 GrowthCases 이식 (2026-08-20) ──────────
+   웹 1px = 0.755pt 로 환산했다 (홈 본문 1152px ↔ 소개서 306.67mm).
+   다크 위 색 세트도 홈페이지 값 그대로: 본문 #fff, 보조 .70/.60/.55/.50,
+   구분선 .10, 카드 면 .03                                            */
+.gcase{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:14mm;align-items:stretch;flex:1 1 auto;min-height:0}
+.page.dark .gcase+.bc-ev-wide{flex:1.1 1 auto}
+.gc-eyebrow{font-size:9pt;font-weight:500;letter-spacing:.02em;text-transform:uppercase;color:var(--gold)}
+.gc-title{margin-top:4mm;font-size:21pt;font-weight:700;line-height:1.3;letter-spacing:-.04em}
+.gc-title span{margin-left:2mm;font-size:13.5pt;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:-.02em}
+.gc-result{margin-top:7mm;border-left:.5mm solid var(--gold);padding-left:5mm;font-size:15pt;font-weight:700;line-height:1.6}
+.gc-scope{margin-top:5mm;display:inline-block;border-radius:99mm;background:rgba(255,255,255,.1);padding:1.6mm 3.7mm;font-size:9pt;font-weight:700;color:rgba(255,255,255,.7)}
+.gc-media img{width:100%;border-radius:4mm;border:1px solid rgba(255,255,255,.1);box-shadow:0 8mm 18mm -8mm rgba(0,0,0,.8);display:block;max-height:96mm;object-fit:contain;background:rgba(255,255,255,.04)}
+.gm{margin-top:8mm}
+.gm-line{width:100%;max-width:85mm;height:13mm;display:block}
+.gm-stats{margin-top:4mm;display:flex;flex-wrap:wrap;column-gap:10mm;row-gap:4mm}
+.gm-stats dd{font-size:22pt;font-weight:600;line-height:1;letter-spacing:-.04em;color:var(--gold)}
+.gm-stats dt{margin-top:1.6mm;font-size:9pt;color:rgba(255,255,255,.55)}
+
+/* 다크 장표 위의 증빙·표 — 흰 스크린샷이 뜨지 않도록 테두리를 낮춘다 */
+.page.dark .bc-ev-wide img,.page.dark .bc-ev img{border-color:rgba(255,255,255,.14)}
+.page.dark .bc-ev figcaption{color:rgba(255,255,255,.5)}
+.gc-body{display:flex;flex-direction:column;min-height:0;justify-content:center}
+.gc-body .bc-ev{margin-top:7mm;flex:1 1 0;min-height:0;overflow:visible}
+.gc-body .bc-ev figcaption{font-size:7pt;line-height:1.5}
+.gc-media{display:flex;flex-direction:column;justify-content:center;min-height:0}
+.page.dark .bc-ev-wide figcaption,.page.dark .foot-note{color:rgba(255,255,255,.5)}
+/* 표는 배경이 다크든 아니든 **흰 종이**로 낸다. 다크 위에 얹었더니 줄과
+   숫자가 사라져 안 보였다. (2026-08-20 사장님 스크린샷) */
+.tbl-sheet{background:#fff;border-radius:2mm;padding:3mm;border:1px solid var(--line)}
+.page.dark .tbl-sheet,.page.dark .tbl-sheet .dtable{color:var(--ink)}
+.page.dark .tbl-sheet .dtable td{border-bottom:1px solid var(--line)}
+.page.dark .tbl-sheet .dtable tbody tr:nth-child(even){background:var(--alt)}
+
+/* ── SNS 채널 케이스 — 홈페이지 s-cases.tsx 카드 그대로 ───────────
+   원본: article rounded-2xl border-white/12 bg-white/[0.03] p-8
+   웹 px → pt 는 ×0.755 (16px=12.1pt). 카드 안 요소 색·간격 모두 원본 값. */
+.fcard{display:flex;flex-direction:column;flex:1;min-height:0;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);border-radius:5mm;padding:7mm 8mm}
+.fcard-h{display:flex;justify-content:space-between;align-items:baseline;gap:4mm;flex-shrink:0}
+.fcard-cat{font-size:8pt;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--gold)}
+.fcard-meta{font-size:9pt;color:rgba(255,255,255,.45)}
+.fcard-b{margin-top:5mm;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:10mm;flex:1;min-height:0}
+.fcard-t{font-size:17pt;line-height:1.45;font-weight:700;color:#fff;letter-spacing:-.03em}
+.fcard-p{margin-top:4mm;font-size:9.5pt;line-height:1.85;color:rgba(255,255,255,.8)}
+.fstats{margin-top:6mm;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.35mm;background:rgba(255,255,255,.12);border-radius:3mm;overflow:hidden;list-style:none}
+.fstats li{background:var(--night);padding:4mm 3.5mm}
+.fstats strong{display:block;font-size:9.5pt;font-weight:700;color:#fff;line-height:1.4}
+.fstats span{display:block;margin-top:1.4mm;font-size:8pt;line-height:1.6;color:rgba(255,255,255,.45)}
+.fcard-m{min-width:0;display:flex;flex-direction:column;min-height:0}
+.fcard-m figure{margin:0;display:flex;flex-direction:column;flex:1;min-height:0}
+.fcard-m img{width:100%;flex:1 1 0;min-height:0;object-fit:contain;object-position:center top;border:1px solid rgba(255,255,255,.12);border-radius:3mm;background:#171717;padding:1.5mm}
+.fcard-m figcaption{margin-top:2.5mm;font-size:8pt;line-height:1.7;color:rgba(255,255,255,.5)}
+
+/* ② 산출물 장 — 도판·유튜브·채널 */
+.fout{margin-top:5mm;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:9mm;flex:1;min-height:0}
+.fout-l{display:flex;flex-direction:column;gap:4mm;min-height:0}
+.fout-l figure{margin:0;display:flex;flex-direction:column;flex:1 1 0;min-height:0}
+.fout-l img{width:100%;flex:1 1 0;min-height:0;object-fit:contain;object-position:left top;border:1px solid rgba(255,255,255,.12);border-radius:2.5mm;background:#171717;padding:1.5mm}
+.fout-l figcaption{margin-top:2mm;font-size:7.6pt;line-height:1.6;color:rgba(255,255,255,.5)}
+.fout-r{display:flex;flex-direction:column;gap:4mm;min-height:0}
+.fvids{display:grid;grid-template-columns:1fr 1fr;gap:3mm}
+.fchan-k{font-size:8pt;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+.fchan-n{margin-top:1mm;font-size:9pt;font-weight:700;line-height:1.6;color:rgba(255,255,255,.8)}
+.fchan{margin-top:3mm;display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.chan img{width:100%;aspect-ratio:16/9;object-fit:cover;border:1px solid rgba(255,255,255,.12);border-radius:2.5mm;background:var(--night);display:block}
+.chan-n{margin-top:2mm;font-size:9pt;font-weight:700;color:#fff;line-height:1.5}
+.chan-h{margin-top:.6mm;font-size:8pt;color:rgba(255,255,255,.6);line-height:1.5}
+.chan-m{margin-top:.6mm;font-size:8pt;color:rgba(255,255,255,.45);line-height:1.6}
+.page.dark .thumb{background:var(--night);border:1px solid rgba(255,255,255,.12)}
+.page.dark .thumb>span:not(.play){color:rgba(255,255,255,.6)}
+
+/* 채널·유튜브가 없는 케이스는 도판을 2열로 펴서 장을 채운다 */
+.fout-grid{margin-top:5mm;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:6mm;flex:1;min-height:0}
+.fout-grid figure{margin:0;display:flex;flex-direction:column;min-height:0}
+.fout-grid img{width:100%;flex:1 1 0;min-height:0;object-fit:contain;object-position:center;border:1px solid rgba(255,255,255,.12);border-radius:2.5mm;background:#171717;padding:2mm}
+.fout-grid figcaption{margin-top:2mm;font-size:7.8pt;line-height:1.6;color:rgba(255,255,255,.5)}
+.fout-l figure{flex:1 1 0}
+
+/* ── 시딩 3단 밴드 (홈 ServiceFlow 의 light→indigo→night 교차를 면 색으로) */
+.flow3{display:grid;grid-template-columns:repeat(3,1fr);gap:6mm;flex:1;min-height:0}
+.f3{display:flex;flex-direction:column;border-radius:4mm;overflow:hidden;min-height:0}
+.f3 img{width:100%;flex:1 1 0;min-height:0;object-fit:cover;display:block}
+.f3-b{padding:5mm 5mm 6mm}
+.f3-k{font-size:8pt;font-weight:700;letter-spacing:.02em}
+.f3-t{margin-top:2.5mm;font-size:12.5pt;font-weight:700;line-height:1.5;letter-spacing:-.02em}
+.f3-d{margin-top:3mm;font-size:8.4pt;line-height:1.7}
+.f3-light{background:var(--alt);color:var(--ink)}
+.f3-light .f3-k{color:var(--gold-deep)}
+.f3-light .f3-d{color:var(--muted)}
+.f3-indigo{background:var(--indigo);color:#fff}
+.f3-indigo .f3-k{color:rgba(255,255,255,.72)}
+.f3-indigo .f3-d{color:rgba(255,255,255,.78)}
+.f3-night{background:var(--night);color:#fff}
+.f3-night .f3-k{color:var(--gold)}
+.f3-night .f3-d{color:rgba(255,255,255,.7)}
+
+/* ── 플랜 항목 목록 */
+.plan-list{list-style:none;margin-top:5mm;display:flex;flex-direction:column;gap:3mm}
+.plan-list li{background:var(--alt);border-radius:2.5mm;padding:3.5mm 4mm}
+.plan-list strong{display:block;font-size:10pt;font-weight:700}
+.plan-list span{display:block;margin-top:1.2mm;font-size:8.4pt;line-height:1.6;color:var(--muted)}
+
+/* ── Appendix · AI 분업 */
+.ai-lead{margin-bottom:6mm;border-left:.5mm solid var(--indigo);padding-left:5mm;font-size:10.5pt;line-height:1.85;color:#2a2a2a;flex-shrink:0}
+.ai2{flex:1;min-height:0}
+.ai-col{background:#fff;border:1px solid var(--line);border-radius:4mm;padding:6mm 6.5mm;display:flex;flex-direction:column;min-height:0}
+.ai-col-h{background:var(--night);border-color:var(--night);color:#fff}
+.ai-k{font-size:9pt;font-weight:700;letter-spacing:.02em;color:var(--gold-deep)}
+.ai-col-h .ai-k{color:var(--gold)}
+.ai-list{list-style:none;margin-top:4mm;display:flex;flex-direction:column;gap:4mm;flex:1;min-height:0}
+.ai-list li{border-left:.5mm solid var(--indigo);padding-left:4mm}
+.ai-col-h .ai-list li{border-left-color:var(--gold)}
+.ai-list strong{display:block;font-size:11pt;font-weight:700}
+.ai-list span{display:block;margin-top:1.6mm;font-size:9pt;line-height:1.75;color:#3a3a3a}
+.ai-col-h .ai-list span{color:rgba(255,255,255,.72)}
+.ai-note{margin-top:4mm;font-size:8pt;line-height:1.7;color:rgba(255,255,255,.5)}
+
+/* ── Appendix */
+.appx{display:flex;flex-direction:column;gap:5mm;flex:1;min-height:0;justify-content:center}
+.appx-row{display:grid;grid-template-columns:16mm 1fr;gap:5mm;align-items:start;background:#fff;border:1px solid var(--line);border-radius:3.5mm;padding:5mm 6mm}
+.appx-no{font-size:15pt;font-weight:700;color:var(--indigo);line-height:1}
+.appx-t{font-size:11pt;font-weight:700}
+.appx-d{margin-top:2mm;font-size:9.5pt;line-height:1.8;color:#333}
+
+/* ── 주요 성장 사례 카드 — 제목은 /blog 고객 이야기 원문 그대로 ─── */
+/* 5×2 로 장을 채운다 — 한 줄만 두면 아래가 통째로 빈다 (2026-08-20) */
+.stories{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-rows:1fr;gap:4.5mm;flex:1;min-height:0}
+.story{display:flex;flex-direction:column;text-decoration:none;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);border-radius:3.5mm;padding:2.6mm;min-height:0}
+.story img{width:100%;flex:1 1 0;min-height:0;object-fit:cover;border-radius:2.5mm;border:1px solid rgba(255,255,255,.1);background:#171717;display:block}
+.story-t{margin-top:2.6mm;font-size:8.6pt;font-weight:600;line-height:1.5;color:#fff;letter-spacing:-.02em;flex:0 0 auto}
+
+/* IMC 카드가 <a> 가 됐다 — 링크 표시 */
+.imc-card{text-decoration:none}
+.page.dark .imc-go{display:block;margin-top:2.5mm;font-size:7.6pt;font-weight:600;font-style:normal;color:#bbf451}
+
+/* ── 운영 채널 모음 ─────────────────────────────────────────────── */
+.chan-wall{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:1fr;gap:5mm;flex:1;min-height:0}
+.chan-p{margin-top:2.5mm;font-size:7.4pt;font-weight:700;letter-spacing:.02em;color:var(--gold)}
+.page.dark .chan-wall .chan{display:flex;flex-direction:column;min-height:0}
+.page.dark .chan-wall .chan img{flex:1 1 0;min-height:0;height:auto;aspect-ratio:auto;object-fit:cover}
+.chan-note{margin-top:1mm;font-size:7.4pt;line-height:1.5;color:rgba(255,255,255,.45)}
+
+/* ── IMC 카드 — 홈페이지 /portfolio FramerCases 이식 ─────────────── */
+/* ⚠️ 홈페이지의 **색·테두리·카드 면**만 가져오고 **글자 크기는 소개서 값**을
+   쓴다. 홈 카드는 373px 폭에 세로로 흐르는 페이지지만, 소개서는 한 행이
+   60mm 뿐이라 16px/14px 를 그대로 옮기면 카드가 7mm 넘친다(검사기가 잡음). */
+.page.dark .imc-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:3.5mm;padding:3mm}
+.page.dark .imc-card img{height:24mm;object-fit:cover;border-radius:2.5mm;border:1px solid rgba(255,255,255,.1);background:#171717;width:100%;display:block}
+.page.dark .imc-body{padding:0;gap:1.2mm}
+.page.dark .imc-body strong{display:block;margin-top:3mm;font-size:9.5pt;font-weight:600;letter-spacing:-.03em;color:#fff}
+.page.dark .imc-body span{display:block;font-size:7.8pt;line-height:1.55;color:rgba(255,255,255,.6)}
+.page.dark .imc-nopic{height:24mm;border-radius:2.5mm;background:#171717;border:1px solid rgba(255,255,255,.1)}
+.page.dark .eyebrow-lime{font-size:9pt;font-weight:600;letter-spacing:.2em;color:#bbf451}
+.page.dark .subline{color:rgba(255,255,255,.6)}
+.page.dark h2{color:#fff}
+
 .brandcase{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:8mm;flex:1 1 auto;min-height:0;overflow:hidden}
 .bc-body{display:flex;flex-direction:column;min-width:0}
 .bc-p{font-size:9.5pt;line-height:1.9;color:var(--ink-soft, #171717);margin-bottom:4mm}
@@ -1328,9 +2201,18 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 
 /* 사례 슬라이드의 실적표 — 가로 전체 폭 (2026-08-20)
    왼쪽 열 안에 두면 가로로 긴 표가 40px 높이로 눌려 숫자가 안 읽힌다 */
-.bc-ev-wide{flex:0 0 auto;margin-top:5mm;display:flex;flex-direction:column;gap:4mm}
+/* HTML 표(모에브)는 이미지가 아니라 flex 로 줄지 않는다 — 따로 둔다 */
+.bc-tbl{flex:0 0 auto;margin-top:6mm;display:flex;flex-direction:column;gap:3mm}
+.bc-tbl figure{margin:0}
+.bc-tbl figcaption{font-size:7.5pt;color:var(--muted);margin-top:2mm;line-height:1.55}
+.page.dark .bc-tbl figcaption{color:rgba(255,255,255,.5)}
+/* 증빙 이미지는 flex 로 늘려 장을 채운다 — 고정 높이면 아래가 비고 표는 작아진다 */
+.bc-ev-wide{flex:1 1 auto;min-height:0;margin-top:6mm;display:flex;flex-direction:column;gap:3mm}
 .bc-ev-wide figure{margin:0}
-.bc-ev-wide img{width:auto;max-width:100%;max-height:34mm;border:1px solid var(--line);border-radius:1.5mm;display:block;margin:0 auto}
+/* 표는 왼쪽 기준으로 붙이고 크게 — 가운데 띄우면 여백에 떠 있는 것처럼 보이고
+   34mm 로는 숫자가 안 읽힌다 (2026-08-20 사장님 스크린샷) */
+.bc-ev-wide figure{margin:0;display:flex;flex-direction:column;flex:1 1 0;min-height:0}
+.bc-ev-wide img{width:100%;flex:1 1 0;min-height:0;object-fit:contain;object-position:left top;border:1px solid var(--line);border-radius:1.5mm;display:block;margin:0}
 .bc-ev-wide figcaption{font-size:7.5pt;color:var(--muted);margin-top:2mm;line-height:1.55}
 
 /* 실적 증빙 전용 장표 */
@@ -1356,6 +2238,8 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .short-b{position:absolute;left:2mm;bottom:2mm;background:rgba(0,0,0,.72);color:#fff;font-size:6.5pt;font-weight:700;padding:.8mm 2mm;border-radius:1mm;letter-spacing:-.01em}
 .shorts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:3.5mm;flex:1 1 0;min-height:0;overflow:hidden}
 .short{border-radius:2.5mm;overflow:hidden;background:var(--alt);min-height:0}
+/* 배지 둘 — 위는 소재의 목적(주), 아래는 브랜드(부) */
+.short-brand{position:absolute;left:2mm;top:2mm;font-size:5.6pt;font-weight:500;color:rgba(255,255,255,.82);background:rgba(0,0,0,.42);border-radius:1mm;padding:.5mm 1.4mm;letter-spacing:-.01em}
 .short img{width:100%;height:100%;object-fit:cover;display:block}
 
 /* 4분할 카드 (이미지 + 본문) */
@@ -1369,9 +2253,11 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 
 /* 영상 썸네일 그리드 */
 .thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:3.5mm;flex:1;align-content:start}
-.thumb{border-radius:2.5mm;overflow:hidden;background:var(--alt)}
+/* 롱폼도 <a> 가 됐다 — .play 배지가 캡션 스타일에 먹히지 않도록 분리 */
+.thumb{position:relative;display:block;text-decoration:none;border-radius:2.5mm;overflow:hidden;background:var(--alt)}
 .thumb img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
-.thumb span{display:block;font-size:7.5pt;line-height:1.5;color:var(--muted);padding:3mm 3.5mm}
+.thumb>span:not(.play){display:block;font-size:7.5pt;line-height:1.5;color:var(--muted);padding:3mm 3.5mm}
+.thumb .play{top:calc(50% - 5mm)}
 
 /* 관점 선언 (전면) */
 .stmt{height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 26mm}
@@ -1417,9 +2303,9 @@ h2{font-size:26pt;line-height:1.25;font-weight:700;letter-spacing:-.02em}
 .rv span{display:block;font-size:7.5pt;color:#8a8a8a;margin-top:auto;padding-top:4mm}
 </style></head>
 <body>
-${pages.join("\n")}
+${ordered.join("\n")}
 </body></html>`;
 
 const out = resolve(ROOT, "docs/deck/소개서.html");
 writeFileSync(out, html, "utf-8");
-console.log(`생성: ${out} (${pages.length}슬라이드 · 16:9)`);
+console.log(`생성: ${out} (${ordered.length}슬라이드 · 16:9)`);
