@@ -20,6 +20,11 @@ import { shortformFromLine } from "@/lib/inquiry-plans";
  * 숨기려는 게 아니다. 다른 편수 구성과 상세 안내만 소개서로 넘긴다.
  * 상담·문의 유도 장치는 두지 않는다 — 다음 행동은 신청 폼 하나뿐이다.
  */
+/**
+ * ⚠️ 소요 시간은 **히어로 CTA(`s1-hero.tsx` "30초 진단받기")와 같은 숫자**를 쓴다.
+ * 2026-08-20 까지 히어로는 30초, 여기는 1분이라 눌러 들어온 사람이 바로
+ * 어긋난 숫자를 봤다. 한쪽을 고치면 다른 쪽도 같이 고친다.
+ */
 export function Diagnosis() {
   const { answers, setAnswers, result } = useDiagnosis();
   const [step, setStep] = useState(0);
@@ -49,7 +54,7 @@ export function Diagnosis() {
           <h2 className="mt-5 text-[1.5rem] leading-[1.35] font-bold sm:text-[2.125rem] sm:leading-[1.3] lg:text-[2.75rem]">
             지금 소재를 갈아야 할 때인지
             <br />
-            <strong className="font-bold">1분이면 판별됩니다</strong>
+            <strong className="font-bold">30초면 판별됩니다</strong>
           </h2>
           {/* 2026-08-19 사장님 지시: 접수 21건 중 현황 체크를 마치고 온 건이
               거의 없다("현황 체크 로그 없음"). 문구가 "체크/진단"으로 읽혀
@@ -58,7 +63,7 @@ export function Diagnosis() {
               금액)을 첫 문단으로 끌어올렸다. 로직·문항·판정은 그대로다. */}
           <p className="mt-4 flex flex-wrap items-center gap-2">
             <span className="inline-block rounded-full border border-gold/40 bg-gold/10 px-3.5 py-1.5 text-xs font-bold tracking-wide text-gold">
-              5문항 · 약 1분
+              5문항 · 약 30초
             </span>
             {/**
              * 가격 한 줄. (2026-08-19 사장님 지시)
