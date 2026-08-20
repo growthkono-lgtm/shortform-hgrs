@@ -106,7 +106,7 @@ export function FinalCta() {
           </p>
           <div className="mt-9">
             <Cta href="#contact" variant="invert">
-              대면 미팅 신청하기
+              상담 신청하기
             </Cta>
           </div>
         </div>

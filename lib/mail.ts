@@ -1,23 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/server";
 import { SERVICE } from "@/lib/constants";
-import { BRAND_PLANS } from "@/lib/sns-brand";
 import { KAKAO_CHANNEL } from "@/lib/constants";
-
-/**
- * 소개서 메일의 선택 카드 ① — **숏폼 스튜디오**. (2026-08-20)
- *
- * 카드 ②(브랜드 채널 그로스)는 문구를 여기에 적지 않는다. 홈페이지·
- * 소개서와 같은 말을 쓰기 위해 `lib/sns-brand.ts` 의 `BRAND_PLANS` 를 그대로
- * 읽는다. 숏폼 쪽은 그런 카피 상수가 따로 없어 이 한 덩어리만 메일 전용으로 둔다.
- */
-const SHORTFORM_CHOICE = {
-  // 메일에서는 **숏폼 스튜디오**. (2026-08-20 사장님)
-  // 소개서 안 카드 제목은 "인플루언서-전환 숏폼 스튜디오" 지만, 메일은 처음
-  // 만나는 자리라 사이트 카테고리명과 같은 짧은 이름이 맞다.
-  title: "숏폼 스튜디오",
-  desc: "인플루언서 시딩 → 2차 활용 소스컷 → 매출형 숏폼",
-  note: "편수 단위 정가 결제가 되는 유일한 라인입니다.",
-} as const;
 
 /** 소개서를 보낼 신청 건 — 인사말에 쓰는 이름만 필요하다 */
 export type BrochureInquiry = {
@@ -27,7 +10,6 @@ export type BrochureInquiry = {
 
 /** `npm run deck` 이 만들어 public/ 에 두는 소개서 파일명 */
 /** `npm run deck` 이 만들어 public/ 에 두는 소개서 파일명 (숏폼 + 브랜드 채널 그로스 종합) */
-const BROCHURE_FILE = "hgrs-studio-brochure.pdf";
 
 /**
  * 자동 메일 발송.
@@ -106,6 +88,8 @@ type SendInput = {
   projectId?: string;
   /** Resend 가 path 를 직접 받아 붙인다 — 10MB 를 base64 로 실어 보내지 않는다 */
   attachments?: Attachment[];
+  /** 같은 메일을 연달아 보내야 할 때만 켠다 — 기본은 2분 중복 차단 */
+  allowDuplicate?: boolean;
   /**
    * 답장이 갈 주소. 안 주면 contact@h-grs.com. (2026-08-18)
    *
@@ -125,9 +109,40 @@ export async function sendMail({
   projectId,
   attachments,
   replyTo,
+  allowDuplicate,
 }: SendInput): Promise<{ ok: boolean; skipped: boolean; error?: string }> {
   const key = process.env.RESEND_API_KEY;
   const admin = createAdminClient();
+
+  /**
+   * **중복 발송 차단 — 모든 경로 공통.** (2026-08-20)
+   *
+   * 08-19 에 공개 문의 폼이 22초 동안 7번 접수돼 고객에게 소개서가 7통 나갔다.
+   * 그때는 폼 한 곳만 막았는데, **어드민의 [소개서 보내기]·[브랜드에게 알리기]
+   * 버튼 세 곳은 여전히 두 번 누르면 두 번 나간다.** 화면마다 잠금을 다는 대신
+   * 모든 발송이 지나는 여기 한 곳에서 막는다.
+   *
+   * 기준은 **같은 kind + 같은 수신자 + 같은 제목이 2분 안에** 이미 나갔는가.
+   * 2분이면 더블클릭·새로고침·네트워크 재시도를 덮고, 정말 다시 보내야 하는
+   * 경우(내용을 고쳐 재발송)는 제목이 다르거나 2분이 지나 있다.
+   * 일부러 같은 메일을 연달아 보내야 하면 `allowDuplicate` 로 푼다.
+   */
+  if (!allowDuplicate) {
+    const since = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+    const { data: dup } = await admin
+      .from("email_log")
+      .select("id")
+      .eq("kind", kind)
+      .eq("to_email", to)
+      .eq("subject", subject)
+      .in("status", ["sent", "scheduled"])
+      .gte("created_at", since)
+      .limit(1);
+    if (dup?.length) {
+      // 화면에는 성공으로 돌려준다 — 실제로 이미 나갔기 때문이다
+      return { ok: true, skipped: true };
+    }
+  }
 
   // 조용시간에 걸리면 다음 오전 10시로 미룬다. 소개서 발송처럼 내가 직접 누르는 건 예외로 둔다
   const scheduledAt = kind === "brochure" ? null : nextSendableAt();
@@ -254,92 +269,12 @@ export const brochureUrl = `${PUBLIC_ORIGIN}/${BROCHURE.file}`;
  * 본문은 **사장님이 직접 쓴 문안**이다. 임의로 줄이거나 다듬지 않는다.
  * PDF 는 첨부와 링크를 함께 건다 — 첨부를 막아 둔 메일 환경이 적지 않다.
  */
-export function brochureMail(inquiry: BrochureInquiry) {
+export function brochureMail(_inquiry: BrochureInquiry) {
   const para = (t: string) =>
     `<p style="font-size:14px;line-height:1.9;margin:0 0 16px">${t}</p>`;
 
-  /**
-   * 두 갈래 선택지 — 문의한 사람이 자기 상황을 고르게 만든다. (2026-08-20)
-   *
-   * 앞 판은 세 갈래(숏폼 / 브랜드 SNS 채널 컨텐츠 활성화 / 종합 브랜드 마케팅)였는데,
-   * 뒤의 둘이 **브랜드 채널 그로스** 하나로 합쳐졌다. 그 아래 플랜이 둘이다.
-   *
-   * 메일이라 flex·grid 를 쓰지 않는다 — 전부 table + 인라인 스타일이고, 폭을
-   * 고정하지 않아 모바일에서는 그대로 한 줄씩 떨어진다.
-   */
-  const choice = (title: string, desc: string, href: string, note?: string) =>
-    `<tr><td style="padding:0 0 10px">
-  <a href="${href}" style="display:block;background:#f7f5f3;border-radius:12px;padding:16px 18px;text-decoration:none">
-    <span style="display:block;font-size:14px;font-weight:700;color:#030303">${title}</span>
-    <span style="display:block;font-size:13px;color:#5c5c5c;line-height:1.7;margin-top:4px">${desc}</span>${
-      note
-        ? `
-    <span style="display:block;font-size:12px;color:#8a8a8a;line-height:1.7;margin-top:6px">${note}</span>`
-        : ""
-    }
-  </a>
-</td></tr>`;
-
-  /**
-   * 카드 ② 안에 들어가는 플랜 한 칸.
-   *
-   * 문구는 한 글자도 여기서 짓지 않는다 — `BRAND_PLANS` 가 원본이고 홈페이지
-   * `/sns-brand#plans` · 소개서 `brand-plan` 장이 같은 상수를 읽는다.
-   */
-  type MailPlan = {
-    key: string;
-    name: string;
-    desc: string;
-    items: readonly { title: string; note: string }[];
-    meta: readonly { k: string; v: string }[];
-  };
-  const brandPlans: readonly MailPlan[] = BRAND_PLANS.plans;
-
-  const planBox = (p: MailPlan) =>
-    `<table role="presentation" width="100%" style="width:100%;border-collapse:collapse;background:#ffffff;border-radius:10px;margin:0 0 8px">
-  <tr><td style="padding:14px 16px">
-    <span style="display:block;font-size:11px;font-weight:700;letter-spacing:0.08em;color:#8a8a8a">${p.key}</span>
-    <span style="display:block;font-size:14px;font-weight:700;color:#030303;line-height:1.5;margin-top:3px">${p.name}</span>
-    <span style="display:block;font-size:13px;color:#5c5c5c;line-height:1.7;margin-top:4px">${p.desc}</span>
-    <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;margin:8px 0 0">
-${p.items
-  .map(
-    (it) => `      <tr><td style="padding:6px 0 0">
-        <span style="display:block;font-size:13px;font-weight:700;color:#030303;line-height:1.6">· ${it.title}</span>${
-          it.note
-            ? `
-        <span style="display:block;font-size:12px;color:#8a8a8a;line-height:1.6;padding-left:11px">${it.note}</span>`
-            : ""
-        }
-      </td></tr>`,
-  )
-  .join("\n")}
-    </table>
-    <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;margin:12px 0 0">
-${p.meta
-  .map(
-    (m) => `      <tr>
-        <td style="padding:7px 12px 0 0;border-top:1px solid #eeeeee;font-size:12px;color:#8a8a8a;white-space:nowrap;vertical-align:top">${m.k}</td>
-        <td style="padding:7px 0 0;border-top:1px solid #eeeeee;font-size:12px;font-weight:700;color:#030303;line-height:1.6">${m.v}</td>
-      </tr>`,
-  )
-  .join("\n")}
-    </table>
-  </td></tr>
-</table>`;
-
-  /** 카드 ② — 플랜 두 칸이 들어가서 카드 통째로 링크를 걸지 않고 아래에 링크를 단다 */
-  const brandChoice = (href: string) =>
-    `<tr><td style="padding:0 0 10px">
-  <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;background:#f7f5f3;border-radius:12px">
-    <tr><td style="padding:16px 18px">
-      <span style="display:block;font-size:14px;font-weight:700;color:#030303">${BRAND_PLANS.title[0]}</span>
-      <span style="display:block;font-size:13px;color:#5c5c5c;line-height:1.7;margin:4px 0 12px">${BRAND_PLANS.lead}</span>
-${brandPlans.map(planBox).join("\n")}
-      <a href="${href}" style="display:inline-block;font-size:13px;font-weight:700;color:#030303;text-decoration:underline;margin-top:4px">플랜 자세히 보기</a>
-    </td></tr>
-  </table>
-</td></tr>`;
+  /* 서비스 카드(두 갈래 선택지)는 2026-08-20 에 뺐다 — 소개서에 이미 다 있어
+     메일에서 또 늘어놓을 이유가 없다. */
 
   return {
     subject: `[${SERVICE.name}] 프로젝트 소개서를 전달 드립니다.`,
@@ -349,10 +284,24 @@ ${brandPlans.map(planBox).join("\n")}
 <!-- 다음에 무슨 일이 일어나는지 먼저 말한다. (2026-08-18 사장님 지시)
      소개서만 오고 아무 말이 없으면 문의한 쪽은 "접수가 된 건가" 를 모른다.
      끝까지 안 읽어도 보이도록 인사 바로 뒤에 박스로 둔다 -->
-<table style="width:100%;border-collapse:collapse;margin:0 0 22px">
-  <tr><td style="background:#f0f4f8;border-radius:12px;padding:16px 18px">
-    <span style="display:block;font-size:14px;font-weight:700;color:#030303;line-height:1.6">영업일 2일 이내 안내 연락이 진행됩니다.</span>
-    <span style="display:block;font-size:13px;color:#5c5c5c;line-height:1.7;margin-top:5px">부재 시 문자를 함께 남겨드립니다.</span>
+<!-- 상담 배너 — 예전의 "영업일 2일 이내 안내" 안내박스를 대체한다. (2026-08-20)
+     사장님: *"목적은 바로 연락이 오가게 하려고. 상담해주고 얘기 나누고 해야 일이 풀린다."*
+     기다리게 하는 문장 대신 **지금 잡을 수 있는 자리**를 준다. 영업일 2일은 없애지
+     않고 아래 한 줄로 남긴다 — 약속은 지켜야 하니까.
+     캘린들리 대신 카톡/문자에서 스케줄링한다(사장님 방식). -->
+<table role="presentation" width="100%" style="width:100%;border-collapse:collapse;background:#fee500;border-radius:12px;margin:0 0 22px">
+  <tr><td style="padding:20px 22px">
+    <p style="font-size:16px;font-weight:700;color:#191600;margin:0 0 6px">15분 사전상담 받기</p>
+    <p style="font-size:13px;color:#3b3600;line-height:1.8;margin:0 0 14px">
+      브랜드 목표와 현재 상황을 미리 준비해 주시면 더 유익한 상담이 됩니다.<br>
+      상담은 <strong>줌미팅 또는 유선</strong> 중 편하신 쪽으로 진행하고, 일정은 카카오톡에서 바로 잡아 드립니다.
+    </p>
+    <a href="${KAKAO_CHANNEL.chatUrl}" style="display:inline-block;background:#191600;color:#fee500;text-decoration:none;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:700">
+      카카오톡으로 상담 잡기
+    </a>
+    <p style="font-size:12px;color:#5b5400;line-height:1.7;margin:12px 0 0">
+      따로 요청하지 않으셔도 <strong>영업일 2일 이내</strong>에 안내 연락을 드립니다. 부재 시 문자를 남겨 드립니다.
+    </p>
   </td></tr>
 </table>
 
@@ -362,24 +311,19 @@ ${para(
 
 <img src="${PUBLIC_ORIGIN}/deck/mail-hero.jpg" alt="해그로시 촬영 현장" width="512" style="width:100%;max-width:512px;border-radius:12px;display:block;margin:4px 0 20px">
 
-<p style="font-size:15px;font-weight:700;margin:24px 0 12px">지금 어느 쪽이 필요하신가요?</p>
-<table style="width:100%;border-collapse:collapse;margin:0 0 20px">
-${choice(
-  SHORTFORM_CHOICE.title,
-  SHORTFORM_CHOICE.desc,
-  `${PUBLIC_ORIGIN}/shortform`,
-  SHORTFORM_CHOICE.note,
-)}
-${brandChoice(`${PUBLIC_ORIGIN}/sns-brand#plans`)}
-</table>
-
-<table style="width:100%;border-collapse:collapse;background:#f7f5f3;border-radius:12px;margin:0 0 20px">
+<!-- 소개서를 위로 올리고 표지를 함께 띄운다. (2026-08-20 사장님)
+     첨부 파일 이름만으로는 무엇이 들었는지 안 보인다. 표지 한 장이면 열기 전에
+     "브랜드 성공 사례와 서비스 플랜" 이 들어 있다는 게 전달된다. -->
+<table role="presentation" width="100%" style="width:100%;border-collapse:collapse;background:#f7f5f3;border-radius:12px;margin:0 0 14px">
   <tr><td style="padding:20px 22px">
     <p style="font-size:15px;font-weight:700;margin:0 0 6px">해그로시 스튜디오 종합 소개서</p>
-    <p style="font-size:13px;color:#5c5c5c;line-height:1.8;margin:0">
-      서비스 두 갈래 · 성과 사례 · 진행 프로세스 · 플랜과 계약 절차까지 한 부에 담았습니다.<br>
-      <strong style="color:#030303">이 메일에 PDF로 첨부</strong>해 두었고, 아래 버튼으로도 바로 보실 수 있습니다.
+    <p style="font-size:13px;color:#5c5c5c;line-height:1.8;margin:0 0 14px">
+      <strong style="color:#030303">브랜드 성공 사례와 서비스 플랜</strong>을 한 부에 담았습니다.<br>
+      이 메일에 PDF로 첨부해 두었고, 아래 버튼으로도 바로 보실 수 있습니다.
     </p>
+    <a href="${brochureUrl}">
+      <img src="${PUBLIC_ORIGIN}/deck/brochure-cover.jpg" alt="해그로시 스튜디오 종합 소개서 표지" width="512" style="width:100%;max-width:512px;border-radius:8px;border:1px solid #e6e6e6;display:block">
+    </a>
   </td></tr>
 </table>
 
@@ -393,20 +337,6 @@ ${brandChoice(`${PUBLIC_ORIGIN}/sns-brand#plans`)}
   채널 현황과 목표를 보내주시면 필요한 작업 범위를 정리해 회신드립니다.
 </p>
 
-<!-- 실시간 소통 배너 — 채팅 바로 열기(chatUrl)로 건다. 채널 홈을 거치면
-     한 번 더 눌러야 하고 거기서 이탈한다. 주소는 lib/constants.ts 한 곳에서 읽는다.
-     메일 호환: 테이블 + 인라인 스타일만. -->
-<table role="presentation" width="100%" style="width:100%;border-collapse:collapse;background:#fee500;border-radius:12px;margin:20px 0 0">
-  <tr><td style="padding:18px 22px">
-    <p style="font-size:14px;font-weight:700;color:#191600;margin:0 0 4px">지금 바로 물어보고 싶으시다면</p>
-    <p style="font-size:13px;color:#3b3600;line-height:1.7;margin:0 0 12px">
-      카카오톡으로 실시간 소통하실 수 있습니다. 담당자가 바로 확인합니다.
-    </p>
-    <a href="${KAKAO_CHANNEL.chatUrl}" style="display:inline-block;background:#191600;color:#fee500;text-decoration:none;padding:11px 22px;border-radius:999px;font-size:14px;font-weight:700">
-      카카오톡으로 실시간 소통하기
-    </a>
-  </td></tr>
-</table>
 <p style="font-size:15px;font-weight:700;margin:14px 0 0">
   <a href="${PUBLIC_ORIGIN}" style="color:#030303">${PUBLIC_ORIGIN.replace("https://", "")}</a>
 </p>`),
