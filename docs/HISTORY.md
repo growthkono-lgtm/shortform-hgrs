@@ -2811,3 +2811,27 @@ SNS 채널 커뮤니케이션 + 종합 브랜드 마케팅을 합쳤다. 갈라 
 - Vercel 런타임 에러 콘솔은 API 403 으로 확인 못함
 - 홈 h2 가 1개뿐, `/portfolio/[slug]` 28건에 본문 h2/h3 0 — 제목을 새로 만드는 건
   카피 결정이라 손대지 않았다
+
+### 슈파베이스 전 표 권한 점검 (2026-08-20 마감)
+
+36개 표를 익명 키와 `set role anon` 으로 전부 재봤다. 측정값만 적는다.
+
+| 항목 | 결과 |
+|---|---|
+| RLS 꺼진 표 | **0개** |
+| 익명이 읽을 수 있는 표 | `plans`(active=true) · `blog_post`(status=published) — 둘 다 공개가 맞음 |
+| 익명이 **쓸 수** 있는 표 | **0개** (트랜잭션 안에서 실제 INSERT 시도 후 롤백해 확인) |
+| 무조건 통과(`true`)하는 쓰기 정책 | 0건 |
+
+`anon`/`authenticated` 에 INSERT·UPDATE·DELETE **GRANT 는 34개 표에 남아 있다.**
+슈파베이스 기본값이다. 다만 쓰기 정책이 하나도 없어 RLS 가 전부 막는다 —
+`inquiries` `orders` `plans` `spend_log` `profiles` 에 실제로 넣어 보고
+다섯 건 모두 `row-level security` 로 거부되는 것을 확인했다.
+
+즉 **GRANT 회수는 방어층을 한 겹 더 얹는 일이지 지금 뚫려 있는 구멍이 아니다.**
+급하지 않다. 하게 되면 `revoke insert,update,delete,truncate on all tables
+in schema public from anon, authenticated` 한 줄인데, 서버 코드가 전부
+서비스 롤을 쓰는지 먼저 확인하고 돌려야 한다.
+
+이날 실제로 막은 것은 `blog_post_week` · `blog_post_metric` 두 개다
+(마이그레이션 `20260820000003`).
