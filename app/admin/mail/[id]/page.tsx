@@ -3,8 +3,10 @@ import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/server";
 import {
   DELIVERY_LABEL,
+  READ_SCOPE_NOTE,
   deliveryTone,
   fetchResendEmail,
+  readScope,
 } from "@/lib/mail-delivery";
 import { MAIL_KIND_LABEL, MAIL_STATUS_LABEL } from "@/lib/mail-labels";
 
@@ -41,7 +43,11 @@ export default async function SentMailPage(props: PageProps<"/admin/mail/[id]">)
 
   if (!log) notFound();
 
-  const mail = log.provider_id ? await fetchResendEmail(log.provider_id) : null;
+  const scope = log.provider_id ? await readScope() : "ok";
+  const mail =
+    log.provider_id && scope === "ok"
+      ? await fetchResendEmail(log.provider_id)
+      : null;
   const st = MAIL_STATUS_LABEL[log.status] ?? {
     text: log.status,
     tone: "wait" as const,
@@ -89,9 +95,11 @@ export default async function SentMailPage(props: PageProps<"/admin/mail/[id]">)
         />
       ) : (
         <p className="mt-6 rounded-2xl border border-line bg-paper-alt p-6 text-xs leading-[1.9] text-muted">
-          {log.provider_id
-            ? "Resend 에서 원본을 받아오지 못했습니다. 발송 키가 없거나, 보관 기간이 지난 메일입니다."
-            : "이 건은 메일 ID 를 저장하기 전(2026-08-21 이전)에 나가서 원본을 되받을 수 없습니다."}
+          {!log.provider_id
+            ? "이 건은 메일 ID 를 저장하기 전(2026-08-21 이전)에 나가서 원본을 되받을 수 없습니다."
+            : scope !== "ok"
+              ? READ_SCOPE_NOTE[scope]
+              : "Resend 에서 원본을 받아오지 못했습니다. 보관 기간이 지났을 수 있습니다."}
         </p>
       )}
     </>

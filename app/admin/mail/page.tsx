@@ -2,7 +2,12 @@ import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/server";
 import { ActionForm } from "@/components/admin/action-form";
 import { BROCHURE, brochureMail, brochureUrl } from "@/lib/mail";
-import { DELIVERY_LABEL, deliveryTone } from "@/lib/mail-delivery";
+import {
+  DELIVERY_LABEL,
+  READ_SCOPE_NOTE,
+  deliveryTone,
+  readScope,
+} from "@/lib/mail-delivery";
 import { MAIL_KIND_LABEL, MAIL_STATUS_LABEL } from "@/lib/mail-labels";
 import { refreshMailDelivery, sendBrochureTest } from "../actions";
 
@@ -66,7 +71,7 @@ async function brochureFile() {
 export default async function AdminMailPage() {
   const admin = createAdminClient();
 
-  const [{ data: logs }, file] = await Promise.all([
+  const [{ data: logs }, file, scope] = await Promise.all([
     admin
       .from("email_log")
       .select(
@@ -75,6 +80,7 @@ export default async function AdminMailPage() {
       .order("created_at", { ascending: false })
       .limit(60),
     brochureFile(),
+    readScope(),
   ]);
 
   const preview = brochureMail({ contact_name: "홍길동", company_name: null });
@@ -87,6 +93,21 @@ export default async function AdminMailPage() {
           나가는 내용과 실제 도달 여부를 한 자리에서 본다
         </p>
       </div>
+
+      {/**
+       * 못 하는 것을 화면에 먼저 적는다. (2026-08-21)
+       *
+       * 도달 칸이 조용히 "—" 로만 차 있으면 *확인해 봤는데 아무 문제 없음*
+       * 으로 읽힌다. 실제로는 **물어보지도 못한 상태**다. 그 차이를 화면이
+       * 말하지 않으면 화면이 거짓말을 하는 셈이다.
+       */}
+      {scope !== "ok" && (
+        <p className="mt-6 rounded-2xl border border-amber-300 bg-amber-50 p-5 text-xs leading-[1.9] text-amber-900">
+          <b>도달 확인이 꺼져 있습니다.</b>
+          <br />
+          {READ_SCOPE_NOTE[scope]}
+        </p>
+      )}
 
       {/* ── ① 지금 나가는 소개서 ───────────────────────────────────── */}
       <section className="mt-8 rounded-2xl border border-line p-6">
@@ -220,7 +241,9 @@ export default async function AdminMailPage() {
                         {dv
                           ? (DELIVERY_LABEL[dv] ?? dv)
                           : m.provider_id
-                            ? "미확인"
+                            ? scope === "ok"
+                              ? "미확인"
+                              : "확인 불가"
                             : "—"}
                       </td>
                       <td className="py-2.5 whitespace-nowrap">
@@ -247,6 +270,8 @@ export default async function AdminMailPage() {
         <p className="mt-4 text-[0.6875rem] leading-[1.8] text-muted">
           [실제 발송본]은 08-21 이후 나간 메일부터 열립니다 — 그 전에는 메일
           ID 를 저장하지 않아 되돌려 받을 열쇠가 없습니다.
+          {scope !== "ok" &&
+            " 지금은 Resend 키 권한 때문에 08-21 이후 건도 원본을 못 받아 옵니다."}
         </p>
       </section>
     </>

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/supabase/auth";
 import { createAdminClient } from "@/lib/supabase/server";
 import { BROCHURE, brochureMail, brochureUrl, projectStartMail, sendMail } from "@/lib/mail";
-import { refreshDeliveries } from "@/lib/mail-delivery";
+import { READ_SCOPE_NOTE, refreshDeliveries } from "@/lib/mail-delivery";
 import { FIRST_SEEDING_STAGE, FIRST_SHORTS_STAGE } from "@/lib/stages";
 import { parseChannelUrl } from "@/lib/channel-url";
 import { computeCpv, fetchChannelMetrics } from "@/lib/channel-metrics";
@@ -121,10 +121,12 @@ export async function refreshMailDelivery(
   _formData: FormData,
 ): Promise<ActionState> {
   await requireAdmin();
-  const n = await refreshDeliveries(30);
+  const { updated, scope } = await refreshDeliveries(30);
   revalidatePath("/admin/mail");
   revalidatePath("/admin");
-  return done(`${n}건의 도달 상태를 다시 확인했습니다.`);
+  // 못 한 걸 "0건 확인함" 으로 적지 않는다 — 왜 못 했는지가 답이다
+  if (scope !== "ok") return fail(READ_SCOPE_NOTE[scope]);
+  return done(`${updated}건의 도달 상태를 다시 확인했습니다.`);
 }
 
 /**
