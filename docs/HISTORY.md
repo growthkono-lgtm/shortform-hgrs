@@ -2835,3 +2835,78 @@ in schema public from anon, authenticated` 한 줄인데, 서버 코드가 전�
 
 이날 실제로 막은 것은 `blog_post_week` · `blog_post_metric` 두 개다
 (마이그레이션 `20260820000003`).
+
+---
+
+## 2026-08-21 — 메일 점검 화면
+
+사장님 질문 세 개에서 시작했다.
+
+> "메일발송에 저렇게 시간은 안뜨게할수있지 제목. / 어드민에 소개서재발송 누르면
+> 최종 업데이트된 소개서 나가는거맞아? / 소개서발송이 문의들어올때 잘갔는지,
+> 내가 재발송 누를때 잘갔는지 확인할수있나? 그내용이 제대로가는지를 보고싶은데."
+
+### ① 제목의 시각 — 제품 코드에는 없다
+
+받으신 메일 제목은 `[해그로시 스튜디오] 프로젝트 소개서를 전달 드립니다.
+(재발송 PM 11:27:20)` 였다. `brochureMail()` 은 시각을 붙이지 않는다.
+레포 전체(`git log -S`, 전 브랜치)에도 그런 코드가 없다.
+
+`email_log` 를 열어 보니 답이 나왔다.
+
+```
+08-20 PM 11:27:24  sent       brochure  ceo@h-grs.com  … (재발송 PM 11:27:20)
+08-20 PM 11:25:16  scheduled  other     ceo@h-grs.com  [중복차단 검증] 1787235912657
+08-20 PM 11:12:18  sent       brochure  ceo@h-grs.com  … 전달 드립니다.
+```
+
+**08-20 밤 중복차단을 검증하려고 임시 스크립트로 보낸 한 통이다.** 2분 중복차단을
+피하려면 제목이 달라야 해서 시각을 붙였다. 고객에게 나간 건은 전부 깨끗하다
+(08-19 younguk@orio.co.kr 7통, 08-18 yw@odyneer.biz 2통 — 제목에 시각 없음).
+
+그래도 같은 일이 또 생기지 않게 **[나에게 시험 발송]** 버튼을 만들었다.
+`allowDuplicate` 로 차단만 풀고 제목은 손대지 않는다. 수신은 로그인 계정 고정.
+
+### ② 재발송 = 최신본 — 구조가 그렇게 돼 있다
+
+첨부는 파일을 메일에 넣어 두는 게 아니라 **발송 순간 URL 을 Resend 가 받아 간다**
+(`attachments: [{ path: brochureUrl }]`). 그래서 소개서를 다시 만들어 배포하면
+그 뒤 재발송은 자동으로 최신본이다. 라이브 실측으로 확인했다.
+
+```
+https://hgrs.io/hgrs-studio-brochure.pdf   200 · 10,567,744 bytes
+md5  49163fd3c0f850cc5955edd7fea30477   ← public/ 의 로컬 파일과 동일
+```
+
+### ③ 확인 수단 — /admin/mail 신설
+
+| 칸 | 답하는 질문 |
+|---|---|
+| 지금 나가는 소개서 | 제목·첨부명·첨부 원본 URL·**라이브 HEAD 실측**(용량·갱신시각) |
+| 본문 미리보기 | `brochureMail()` 을 그 자리에서 불러 iframe 에 그대로 |
+| 발송 이력 60건 | 발송(우리 쪽) / 도달(받는 쪽) 을 **다른 칸에** |
+| 실제 발송본 | Resend 에서 원본을 되받아 렌더 — 재구성이 아니다 |
+
+`email_log` 에 `provider_id` · `delivery` · `delivery_checked_at` 추가
+(마이그레이션 `20260821000001`, Management API 로 적용).
+
+### 같이 고친 것 — 중복차단이 성공으로 위장하던 자리
+
+2분 안에 다시 누르면 **아무 기록 없이 화면에만 "발송했습니다"** 가 떴다.
+[소개서 재발송]을 누르고 그 문구를 봐도 실제로는 안 나간 경우가 있었다는 뜻이다.
+이제 `status='blocked'` 로 남기고 화면에 *"이번에는 보내지 않았습니다"* 라고 적는다.
+
+### 막힌 것 — Resend 키가 발송 전용
+
+```
+GET https://api.resend.com/emails/{id}
+401 {"name":"restricted_api_key",
+     "message":"This API key is restricted to only send emails"}
+```
+
+**도달 확인과 실제 발송본 열기는 지금 키로는 안 된다.** 발송은 정상이다.
+빈칸으로 두면 "확인해 봤는데 문제 없음" 으로 읽히므로, `readScope()` 가 실제로
+물어보고 `/admin/mail` 상단에 노란 배너로 이유를 적는다.
+
+푸는 법 — resend.com/api-keys → [Create API Key] → Permission **Full access** →
+Vercel 의 `RESEND_API_KEY` 교체 → 재배포. 코드 수정은 필요 없다.
