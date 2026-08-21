@@ -36,6 +36,9 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
             <Link href="/admin/blog" className="text-muted hover:text-ink">
               블로그
             </Link>
+            <Link href="/admin/mail" className="text-muted hover:text-ink">
+              메일
+            </Link>
           </div>
           <Link href="/app" className="text-xs text-muted hover:text-ink">
             내 프로젝트로

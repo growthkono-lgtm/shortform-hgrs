@@ -567,27 +567,6 @@ export type Database = {
           },
         ]
       }
-      blog_visit: {
-        Row: {
-          first_seen: string
-          landing: boolean
-          slug: string
-          visitor_id: string
-        }
-        Insert: {
-          first_seen?: string
-          landing?: boolean
-          slug: string
-          visitor_id: string
-        }
-        Update: {
-          first_seen?: string
-          landing?: boolean
-          slug?: string
-          visitor_id?: string
-        }
-        Relationships: []
-      }
       blog_remind_log: {
         Row: {
           day: string
@@ -732,6 +711,27 @@ export type Database = {
           day?: string
           slug?: string
           views?: number
+        }
+        Relationships: []
+      }
+      blog_visit: {
+        Row: {
+          first_seen: string
+          landing: boolean
+          slug: string
+          visitor_id: string
+        }
+        Insert: {
+          first_seen?: string
+          landing?: boolean
+          slug: string
+          visitor_id: string
+        }
+        Update: {
+          first_seen?: string
+          landing?: boolean
+          slug?: string
+          visitor_id?: string
         }
         Relationships: []
       }
@@ -913,33 +913,42 @@ export type Database = {
       email_log: {
         Row: {
           created_at: string
+          delivery: string | null
+          delivery_checked_at: string | null
           error: string | null
           id: string
           inquiry_id: string | null
           kind: string
           project_id: string | null
+          provider_id: string | null
           status: string
           subject: string
           to_email: string
         }
         Insert: {
           created_at?: string
+          delivery?: string | null
+          delivery_checked_at?: string | null
           error?: string | null
           id?: string
           inquiry_id?: string | null
           kind: string
           project_id?: string | null
+          provider_id?: string | null
           status?: string
           subject: string
           to_email: string
         }
         Update: {
           created_at?: string
+          delivery?: string | null
+          delivery_checked_at?: string | null
           error?: string | null
           id?: string
           inquiry_id?: string | null
           kind?: string
           project_id?: string | null
+          provider_id?: string | null
           status?: string
           subject?: string
           to_email?: string
@@ -1179,21 +1188,19 @@ export type Database = {
         Row: {
           applied_at: string | null
           assist_post_ids: string[] | null
-          contact_title: string | null
-          entry_post_id: string | null
-          first_at: string | null
-          first_path: string | null
-          first_referrer: string | null
-          utm: Json | null
-          visitor_id: string | null
           brand_url: string | null
           brochure_sent_at: string | null
           company_name: string
           consent_version: string
           contact_name: string
+          contact_title: string | null
           created_at: string
           diagnosis: Json | null
           email: string
+          entry_post_id: string | null
+          first_at: string | null
+          first_path: string | null
+          first_referrer: string | null
           id: string
           interest: string
           ip_address: unknown
@@ -1203,26 +1210,26 @@ export type Database = {
           project_id: string | null
           status: string
           user_agent: string | null
+          utm: Json | null
+          visitor_id: string | null
           volume: string
         }
         Insert: {
           applied_at?: string | null
           assist_post_ids?: string[] | null
-          contact_title?: string | null
-          entry_post_id?: string | null
-          first_at?: string | null
-          first_path?: string | null
-          first_referrer?: string | null
-          utm?: Json | null
-          visitor_id?: string | null
           brand_url?: string | null
           brochure_sent_at?: string | null
           company_name: string
           consent_version: string
           contact_name: string
+          contact_title?: string | null
           created_at?: string
           diagnosis?: Json | null
           email: string
+          entry_post_id?: string | null
+          first_at?: string | null
+          first_path?: string | null
+          first_referrer?: string | null
           id?: string
           interest: string
           ip_address?: unknown
@@ -1232,26 +1239,26 @@ export type Database = {
           project_id?: string | null
           status?: string
           user_agent?: string | null
+          utm?: Json | null
+          visitor_id?: string | null
           volume: string
         }
         Update: {
           applied_at?: string | null
           assist_post_ids?: string[] | null
-          contact_title?: string | null
-          entry_post_id?: string | null
-          first_at?: string | null
-          first_path?: string | null
-          first_referrer?: string | null
-          utm?: Json | null
-          visitor_id?: string | null
           brand_url?: string | null
           brochure_sent_at?: string | null
           company_name?: string
           consent_version?: string
           contact_name?: string
+          contact_title?: string | null
           created_at?: string
           diagnosis?: Json | null
           email?: string
+          entry_post_id?: string | null
+          first_at?: string | null
+          first_path?: string | null
+          first_referrer?: string | null
           id?: string
           interest?: string
           ip_address?: unknown
@@ -1261,6 +1268,8 @@ export type Database = {
           project_id?: string | null
           status?: string
           user_agent?: string | null
+          utm?: Json | null
+          visitor_id?: string | null
           volume?: string
         }
         Relationships: [
@@ -1847,12 +1856,12 @@ export type Database = {
     }
     Functions: {
       blog_cron_hit: { Args: { path: string }; Returns: number }
-      blog_visit_mark: {
-        Args: { p_landing: boolean; p_slug: string; p_visitor: string }
-        Returns: undefined
-      }
       blog_view_bump: {
         Args: { p_day: string; p_slug: string }
+        Returns: undefined
+      }
+      blog_visit_mark: {
+        Args: { p_landing: boolean; p_slug: string; p_visitor: string }
         Returns: undefined
       }
     }

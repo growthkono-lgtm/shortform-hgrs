@@ -110,9 +110,36 @@ export async function sendMail({
   attachments,
   replyTo,
   allowDuplicate,
-}: SendInput): Promise<{ ok: boolean; skipped: boolean; error?: string }> {
+}: SendInput): Promise<{
+  ok: boolean;
+  skipped: boolean;
+  /** 2분 중복차단에 걸려 **실제로는 나가지 않았다.** 화면에 그대로 적는다 */
+  duplicate?: boolean;
+  error?: string;
+}> {
   const key = process.env.RESEND_API_KEY;
   const admin = createAdminClient();
+
+  // 조용시간에 걸리면 다음 오전 10시로 미룬다. 소개서 발송처럼 내가 직접 누르는 건 예외로 둔다
+  const scheduledAt = kind === "brochure" ? null : nextSendableAt();
+
+  const log = async (
+    status: "sent" | "failed" | "skipped" | "scheduled" | "blocked",
+    error?: string,
+    providerId?: string | null,
+  ) => {
+    await admin.from("email_log").insert({
+      kind,
+      to_email: to,
+      subject,
+      inquiry_id: inquiryId ?? null,
+      project_id: projectId ?? null,
+      status,
+      error: error ?? null,
+      // 이 ID 가 있어야 나중에 "정말 도착했나" 를 Resend 에 물어볼 수 있다
+      provider_id: providerId ?? null,
+    });
+  };
 
   /**
    * **중복 발송 차단 — 모든 경로 공통.** (2026-08-20)
@@ -126,6 +153,13 @@ export async function sendMail({
    * 2분이면 더블클릭·새로고침·네트워크 재시도를 덮고, 정말 다시 보내야 하는
    * 경우(내용을 고쳐 재발송)는 제목이 다르거나 2분이 지나 있다.
    * 일부러 같은 메일을 연달아 보내야 하면 `allowDuplicate` 로 푼다.
+   *
+   * ── 2026-08-21 고침 ────────────────────────────────────────────────
+   * 예전에는 여기서 **조용히 성공을 돌려주고 아무 기록도 남기지 않았다.**
+   * 그래서 [소개서 재발송]을 눌러 "발송했습니다" 를 봐도 실제로는 안 나간
+   * 경우가 생겼고, 그걸 구분할 방법이 화면에 없었다. 이제 `blocked` 로
+   * 이력을 남기고 호출한 쪽에 `duplicate` 를 알려 준다 —
+   * **화면에 "안 나갔다" 고 그대로 적기 위해서다.**
    */
   if (!allowDuplicate) {
     const since = new Date(Date.now() - 2 * 60 * 1000).toISOString();
@@ -139,28 +173,10 @@ export async function sendMail({
       .gte("created_at", since)
       .limit(1);
     if (dup?.length) {
-      // 화면에는 성공으로 돌려준다 — 실제로 이미 나갔기 때문이다
-      return { ok: true, skipped: true };
+      await log("blocked", "2분 안에 같은 메일이 이미 나가 보내지 않음");
+      return { ok: true, skipped: true, duplicate: true };
     }
   }
-
-  // 조용시간에 걸리면 다음 오전 10시로 미룬다. 소개서 발송처럼 내가 직접 누르는 건 예외로 둔다
-  const scheduledAt = kind === "brochure" ? null : nextSendableAt();
-
-  const log = async (
-    status: "sent" | "failed" | "skipped" | "scheduled",
-    error?: string,
-  ) => {
-    await admin.from("email_log").insert({
-      kind,
-      to_email: to,
-      subject,
-      inquiry_id: inquiryId ?? null,
-      project_id: projectId ?? null,
-      status,
-      error: error ?? null,
-    });
-  };
 
   if (!key) {
     await log("skipped", "RESEND_API_KEY 미설정");
@@ -208,7 +224,11 @@ export async function sendMail({
           body: JSON.stringify({ from: FROM, to: [to], reply_to: replyTo ?? REPLY_TO, subject, html }),
         });
         if (retry.ok) {
-          await log("sent", `첨부 실패로 링크만 재발송: ${error}`);
+          const retryId = await retry
+            .json()
+            .then((b: { id?: string }) => b?.id ?? null)
+            .catch(() => null);
+          await log("sent", `첨부 실패로 링크만 재발송: ${error}`, retryId);
           return { ok: true, skipped: false };
         }
       }
@@ -217,14 +237,25 @@ export async function sendMail({
       return { ok: false, skipped: false, error };
     }
 
+    /**
+     * Resend 가 돌려주는 메일 ID 를 반드시 챙긴다. (2026-08-21)
+     * 이게 없으면 나중에 "그 메일 정말 도착했나" 를 물어볼 열쇠가 없다.
+     * 응답 본문이 깨져도 발송 자체는 성공이므로 여기서 던지지 않는다.
+     */
+    const providerId = await res
+      .json()
+      .then((b: { id?: string }) => b?.id ?? null)
+      .catch(() => null);
+
     if (scheduledAt) {
       await log(
         "scheduled",
         `조용시간(20~10시)이라 ${scheduledAt.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })} 발송 예약`,
+        providerId,
       );
       return { ok: true, skipped: false };
     }
-    await log("sent");
+    await log("sent", undefined, providerId);
     return { ok: true, skipped: false };
   } catch (e) {
     const error = e instanceof Error ? e.message : String(e);

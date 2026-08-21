@@ -12,6 +12,8 @@ import {
   postLabel,
   type LeadSource,
 } from "@/lib/lead-source";
+import { DELIVERY_LABEL, deliveryTone } from "@/lib/mail-delivery";
+import { MAIL_KIND_LABEL, MAIL_STATUS_LABEL } from "@/lib/mail-labels";
 import { sendBrochure, startProject } from "./actions";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -177,7 +179,7 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
       .order("contact_name"),
     admin
       .from("email_log")
-      .select("id, kind, to_email, status, error, created_at")
+      .select("id, kind, to_email, subject, status, error, created_at, delivery")
       .order("created_at", { ascending: false })
       .limit(8),
   ]);
@@ -563,32 +565,68 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
         </section>
       )}
 
-      {/* 발송 이력 — 메일이 실제로 나갔는지 여기서 확인한다 */}
+      {/**
+       * 발송 이력 — 메일이 실제로 나갔는지 여기서 확인한다.
+       *
+       * 2026-08-21 에 두 가지를 고쳤다.
+       *   ① **제목을 적는다.** 종류·수신자만으로는 "무엇이" 갔는지 모른다.
+       *   ② **상태를 한글로.** `blocked` 는 성공이 아니라 *중복이라 안 나간
+       *      것*인데, 영문 그대로 두면 sent 옆에 나란히 놓여 성공처럼 읽힌다.
+       * 자세한 건(도달 여부·실제 발송본)은 [메일] 화면으로 넘긴다.
+       */}
       <section className="mt-14">
-        <h2 className="text-sm font-bold">최근 메일 발송</h2>
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <h2 className="text-sm font-bold">최근 메일 발송</h2>
+          <Link
+            href="/admin/mail"
+            className="text-xs text-muted underline underline-offset-2 hover:text-ink"
+          >
+            전부 보기 · 도달 확인 · 발송본 열기
+          </Link>
+        </div>
         {!mails || mails.length === 0 ? (
           <p className="mt-3 text-xs text-muted">발송 이력이 없습니다.</p>
         ) : (
           <ul className="mt-3 space-y-1.5 text-xs">
-            {mails.map((m) => (
-              <li key={m.id} className="flex flex-wrap gap-x-3 text-muted">
-                <span className="font-mono">{fmt(m.created_at)}</span>
-                <span
-                  className={
-                    m.status === "sent"
-                      ? "font-bold text-accent-deep"
-                      : "font-bold text-red-600"
-                  }
-                >
-                  {m.status}
-                </span>
-                <span>{m.kind}</span>
-                <span className="break-all">{m.to_email}</span>
-                {m.error && (
-                  <span className="w-full text-red-600">{m.error}</span>
-                )}
-              </li>
-            ))}
+            {mails.map((m) => {
+              const st = MAIL_STATUS_LABEL[m.status] ?? {
+                text: m.status,
+                tone: "wait" as const,
+              };
+              return (
+                <li key={m.id} className="flex flex-wrap gap-x-3 text-muted">
+                  <span className="font-mono">{fmt(m.created_at)}</span>
+                  <span
+                    className={
+                      st.tone === "good"
+                        ? "font-bold text-accent-deep"
+                        : st.tone === "bad"
+                          ? "font-bold text-red-600"
+                          : "font-bold text-amber-700"
+                    }
+                  >
+                    {st.text}
+                  </span>
+                  <span>{MAIL_KIND_LABEL[m.kind] ?? m.kind}</span>
+                  <span className="break-all">{m.to_email}</span>
+                  <span className="break-all text-ink/70">{m.subject}</span>
+                  {m.delivery && (
+                    <span
+                      className={
+                        deliveryTone(m.delivery) === "bad"
+                          ? "text-red-600"
+                          : "text-muted"
+                      }
+                    >
+                      {DELIVERY_LABEL[m.delivery] ?? m.delivery}
+                    </span>
+                  )}
+                  {m.error && (
+                    <span className="w-full text-red-600">{m.error}</span>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>

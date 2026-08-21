@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/supabase/auth";
 import { createAdminClient } from "@/lib/supabase/server";
 import { BROCHURE, brochureMail, brochureUrl, projectStartMail, sendMail } from "@/lib/mail";
+import { refreshDeliveries } from "@/lib/mail-delivery";
 import { FIRST_SEEDING_STAGE, FIRST_SHORTS_STAGE } from "@/lib/stages";
 import { parseChannelUrl } from "@/lib/channel-url";
 import { computeCpv, fetchChannelMetrics } from "@/lib/channel-metrics";
@@ -51,13 +52,79 @@ export async function sendBrochure(
   }
 
   revalidatePath("/admin");
+  revalidatePath("/admin/mail");
+
+  /**
+   * **안 나간 걸 나갔다고 하지 않는다.** (2026-08-21)
+   *
+   * 2분 중복차단에 걸린 건은 예전에도 화면에 "발송했습니다" 로 떴다.
+   * 사장님이 [소개서 재발송]을 누르고 그 문구를 봐도 실제로는 아무것도
+   * 나가지 않은 경우가 있었다는 뜻이다. 이제 그 경우를 따로 적는다.
+   */
+  if (res.duplicate) {
+    return done(
+      "2분 안에 같은 메일이 이미 나가 이번에는 보내지 않았습니다. 2분 뒤 다시 누르시거나, 아래 [메일] 화면에서 실제 발송본을 확인해 주세요.",
+    );
+  }
   return res.ok
-    ? done("소개서를 발송했습니다.")
+    ? done("소개서를 발송했습니다. [메일] 화면에서 도달 여부를 확인하실 수 있습니다.")
     : fail(
         res.skipped
           ? "발송 키(RESEND_API_KEY)가 없어 건너뛰었습니다. 이력에 skipped로 남았습니다."
           : `발송 실패: ${res.error}`,
       );
+}
+
+/**
+ * **나에게 시험 발송** — 고객에게 가기 전에 내 메일함에서 눈으로 본다. (2026-08-21)
+ *
+ * 08-20 밤에 이걸 확인하려고 제목 뒤에 시각을 붙여 보냈다
+ * (`… 전달 드립니다. (재발송 PM 11:27:20)`). 2분 중복차단을 피하려면
+ * 제목을 달리 해야 했기 때문인데, **그 제목이 그대로 메일에 남는다.**
+ * 시험용 제목이 고객에게 갈 뻔한 자리다. 그래서 제목은 손대지 않고
+ * `allowDuplicate` 로 차단만 푸는 버튼을 따로 둔다.
+ *
+ * 받는 곳은 **로그인한 어드민 본인**이다. 주소를 입력받지 않는다 —
+ * 오타 한 번이면 시험 메일이 남의 메일함으로 간다.
+ */
+export async function sendBrochureTest(
+  _prev: ActionState,
+  _formData: FormData,
+): Promise<ActionState> {
+  const me = await requireAdmin();
+  const to = me.email;
+  if (!to)
+    return fail(
+      "로그인 계정에 메일 주소가 없습니다 (profiles.email 이 비어 있습니다).",
+    );
+
+  const mail = brochureMail({ contact_name: "테스트", company_name: null });
+  const res = await sendMail({
+    kind: "brochure",
+    to,
+    subject: mail.subject,
+    html: mail.html,
+    attachments: [{ filename: BROCHURE.filename, path: brochureUrl }],
+    // 시험은 연달아 눌러야 할 때가 있다. 제목을 바꾸는 대신 여기서 푼다
+    allowDuplicate: true,
+  });
+
+  revalidatePath("/admin/mail");
+  return res.ok
+    ? done(`${to} 로 실제와 똑같은 소개서 메일을 보냈습니다.`)
+    : fail(`발송 실패: ${res.error}`);
+}
+
+/** 도달 상태 갱신 — Resend 에 "그 메일들 어떻게 됐냐" 고 물어 캐시를 새로 쓴다 */
+export async function refreshMailDelivery(
+  _prev: ActionState,
+  _formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const n = await refreshDeliveries(30);
+  revalidatePath("/admin/mail");
+  revalidatePath("/admin");
+  return done(`${n}건의 도달 상태를 다시 확인했습니다.`);
 }
 
 /**
