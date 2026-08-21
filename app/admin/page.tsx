@@ -9,7 +9,9 @@ import { ActionForm } from "@/components/admin/action-form";
 import {
   TRACKING_SINCE,
   leadSources,
+  ponderLabel,
   postLabel,
+  visitLabel,
   type LeadSource,
 } from "@/lib/lead-source";
 import {
@@ -94,21 +96,59 @@ function BlogEntry({ source }: { source?: LeadSource }) {
         <dd className="min-w-0 font-medium">{body}</dd>
       </div>
       {source?.recorded && (
-        <div className="flex gap-3 text-xs">
-          <dt className="w-16 shrink-0 text-muted">첫 유입</dt>
-          <dd className="min-w-0 font-medium break-all">
-            {source.from}
-            {source.firstPath && (
-              <span className="text-muted"> → {source.firstPath}</span>
-            )}
-            {source.utm && (
-              <span className="text-muted">
-                {" "}
-                · {Object.entries(source.utm).map(([k, v]) => `${k}=${v}`).join(" ")}
+        <>
+          <div className="flex gap-3 text-xs">
+            <dt className="w-16 shrink-0 text-muted">첫 유입</dt>
+            <dd className="min-w-0 font-medium break-all">
+              {source.from}
+              {source.firstPath && (
+                <span className="text-muted"> → {source.firstPath}</span>
+              )}
+              {source.utm && (
+                <span className="text-muted">
+                  {" "}
+                  · {Object.entries(source.utm).map(([k, v]) => `${k}=${v}`).join(" ")}
+                </span>
+              )}
+            </dd>
+          </div>
+
+          {/**
+           * 마지막 유입은 **첫 접점과 다를 때만** 적는다. (2026-08-21)
+           * 같은 값을 두 줄로 적으면 읽는 사람이 두 번 확인하게 된다.
+           */}
+          {!source.sameTouch && (
+            <div className="flex gap-3 text-xs">
+              <dt className="w-16 shrink-0 text-muted">마지막</dt>
+              <dd className="min-w-0 font-medium break-all">
+                {source.lastFrom}
+                {source.lastPath && (
+                  <span className="text-muted"> → {source.lastPath}</span>
+                )}
+              </dd>
+            </div>
+          )}
+
+          <div className="flex gap-3 text-xs">
+            <dt className="w-16 shrink-0 text-muted">방문</dt>
+            <dd className="min-w-0 font-medium">
+              <span
+                className={
+                  visitLabel(source).tone === "return"
+                    ? "text-accent-deep"
+                    : visitLabel(source).tone === "unknown"
+                      ? "text-muted"
+                      : ""
+                }
+              >
+                {visitLabel(source).text}
               </span>
-            )}
-          </dd>
-        </div>
+              {ponderLabel(source) && (
+                <span className="text-muted"> · {ponderLabel(source)}</span>
+              )}
+            </dd>
+          </div>
+        </>
       )}
     </>
   );
@@ -572,6 +612,132 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
           </ul>
         </section>
       )}
+
+      {/**
+       * **유입 장부.** (2026-08-21)
+       *
+       * 사장님 지시: *"first touch / last touch라고 그로스툴에서는 말하거든.
+       * … 블로그 컨텐츠 통해 우리 홈페이지에 유입했던 고객인지가 궁금.
+       * 그리고 첫방문인지 재방문유저인지도. 이런걸 표에 열 추가해서 기록."*
+       *
+       * 카드 안에도 같은 값이 있지만, 카드는 **한 건을 처리할 때** 보는 것이고
+       * 이 표는 **여러 건을 비교할 때** 보는 것이다. 어느 글이 몇 건을 데려왔나,
+       * 첫 방문에 바로 신청하는가 며칠 재는가 — 그건 줄을 세워야 보인다.
+       *
+       * 기록 이전(08-19 전) 건도 숨기지 않는다. 빼면 분모가 달라져 전환율이
+       * 실제보다 좋아 보인다.
+       */}
+      <section className="mt-14">
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <h2 className="text-sm font-bold">유입 장부 {rows.length}건</h2>
+          <p className="text-[0.6875rem] text-muted">
+            첫 접점 {TRACKING_SINCE}부터 · 마지막 접점·방문수 2026-08-21부터
+          </p>
+        </div>
+
+        <div className="mt-3 overflow-x-auto">
+          <table className="w-full min-w-[60rem] border-collapse text-xs">
+            <thead>
+              <tr className="border-b border-line text-left text-muted">
+                <th className="py-2 pr-3 font-normal">접수</th>
+                <th className="py-2 pr-3 font-normal">브랜드</th>
+                <th className="py-2 pr-3 font-normal">방문</th>
+                <th className="py-2 pr-3 font-normal">첫 접점 (first touch)</th>
+                <th className="py-2 pr-3 font-normal">데려온 글</th>
+                <th className="py-2 pr-3 font-normal">마지막 접점 (last touch)</th>
+                <th className="py-2 font-normal">걸린 시간</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => {
+                const src = sources.get(row.id);
+                const v = visitLabel(src);
+                const post = src?.entry ?? null;
+                return (
+                  <tr key={row.id} className="border-b border-line/60 align-top">
+                    <td className="py-2.5 pr-3 font-mono whitespace-nowrap text-muted">
+                      {fmt(row.created_at)}
+                    </td>
+                    <td className="py-2.5 pr-3 font-bold">{row.company_name}</td>
+                    <td
+                      className={`py-2.5 pr-3 whitespace-nowrap ${
+                        v.tone === "return"
+                          ? "font-bold text-accent-deep"
+                          : v.tone === "unknown"
+                            ? "text-muted"
+                            : ""
+                      }`}
+                    >
+                      {v.text}
+                    </td>
+                    <td className="py-2.5 pr-3 break-all">
+                      {src?.recorded ? (
+                        <>
+                          <span className="font-medium">{src.from}</span>
+                          {src.firstPath && (
+                            <span className="text-muted"> {src.firstPath}</span>
+                          )}
+                        </>
+                      ) : (
+                        <span className="text-amber-700">기록 이전</span>
+                      )}
+                    </td>
+                    <td className="py-2.5 pr-3 break-all">
+                      {post ? (
+                        <a
+                          href={post.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-bold text-accent-deep underline underline-offset-2"
+                        >
+                          {postLabel(post)}
+                        </a>
+                      ) : src?.assists.length ? (
+                        <span className="text-muted">
+                          {postLabel(src.assists[0])} 읽고 옴
+                        </span>
+                      ) : src?.recorded ? (
+                        <span className="text-muted">—</span>
+                      ) : (
+                        <span className="text-muted">—</span>
+                      )}
+                    </td>
+                    <td className="py-2.5 pr-3 break-all">
+                      {!src?.recorded ? (
+                        <span className="text-muted">—</span>
+                      ) : src.sameTouch ? (
+                        <span className="text-muted">
+                          {src.lastPath ? "첫 접점과 같음" : "기록 없음"}
+                        </span>
+                      ) : (
+                        <>
+                          <span className="font-medium">{src.lastFrom}</span>
+                          {src.lastPath && (
+                            <span className="text-muted"> {src.lastPath}</span>
+                          )}
+                        </>
+                      )}
+                    </td>
+                    <td className="py-2.5 whitespace-nowrap text-muted">
+                      {ponderLabel(src) ?? "—"}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        <p className="mt-3 text-[0.6875rem] leading-[1.8] text-muted">
+          <b className="text-ink">방문</b>은 <b className="text-ink">밖에서 들어온 횟수</b>입니다 —
+          사이트 안에서 페이지를 넘긴 건 세지 않습니다. 한 번 와서 다섯 장 읽은
+          분을 5회 방문으로 세면 재방문 판정이 무너지기 때문입니다.
+          <br />
+          외부 채널(브런치·인스타 등)은 <b className="text-ink">리퍼러</b>로 잡힙니다.
+          링크에 <code>?utm_source=</code>를 붙여 보내시면 더 정확하게 갈립니다 —
+          구글 애널리틱스 없이도 여기까지는 됩니다.
+        </p>
+      </section>
 
       {/**
        * 발송 이력 — 메일이 실제로 나갔는지 여기서 확인한다.

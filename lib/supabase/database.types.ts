@@ -1204,6 +1204,9 @@ export type Database = {
           id: string
           interest: string
           ip_address: unknown
+          last_at: string | null
+          last_path: string | null
+          last_referrer: string | null
           marketing_agreed: boolean
           message: string | null
           phone: string | null
@@ -1211,6 +1214,7 @@ export type Database = {
           status: string
           user_agent: string | null
           utm: Json | null
+          visit_count: number | null
           visitor_id: string | null
           volume: string
         }
@@ -1233,6 +1237,9 @@ export type Database = {
           id?: string
           interest: string
           ip_address?: unknown
+          last_at?: string | null
+          last_path?: string | null
+          last_referrer?: string | null
           marketing_agreed?: boolean
           message?: string | null
           phone?: string | null
@@ -1240,6 +1247,7 @@ export type Database = {
           status?: string
           user_agent?: string | null
           utm?: Json | null
+          visit_count?: number | null
           visitor_id?: string | null
           volume: string
         }
@@ -1262,6 +1270,9 @@ export type Database = {
           id?: string
           interest?: string
           ip_address?: unknown
+          last_at?: string | null
+          last_path?: string | null
+          last_referrer?: string | null
           marketing_agreed?: boolean
           message?: string | null
           phone?: string | null
@@ -1269,6 +1280,7 @@ export type Database = {
           status?: string
           user_agent?: string | null
           utm?: Json | null
+          visit_count?: number | null
           visitor_id?: string | null
           volume?: string
         }

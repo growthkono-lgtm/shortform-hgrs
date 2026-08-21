@@ -3,10 +3,14 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import {
   FIRST_TOUCH_COOKIE,
+  LAST_TOUCH_COOKIE,
   TOUCH_BOT,
   TOUCH_MAX_AGE,
   VISITOR_COOKIE,
+  decodeLastTouch,
+  encodeLastTouch,
   encodeTouch,
+  isExternalEntry,
   readTouch,
 } from "@/lib/attribution";
 
@@ -124,17 +128,32 @@ function markFirstTouch(request: NextRequest, response: NextResponse) {
     maxAge: TOUCH_MAX_AGE,
   };
 
+  const referrer = request.headers.get("referer");
+
   if (!request.cookies.get(VISITOR_COOKIE)) {
     response.cookies.set(VISITOR_COOKIE, crypto.randomUUID(), base);
   }
   if (!request.cookies.get(FIRST_TOUCH_COOKIE)) {
-    const touch = readTouch(
-      request.nextUrl,
-      request.headers.get("referer"),
-      new Date(),
-    );
+    const touch = readTouch(request.nextUrl, referrer, new Date());
     response.cookies.set(FIRST_TOUCH_COOKIE, encodeTouch(touch), base);
   }
+
+  /**
+   * **라스트 터치는 밖에서 들어올 때만 덮는다.** (2026-08-21)
+   *
+   * 사이트 안에서 페이지를 넘길 때마다 덮으면 마지막 접점이 늘 우리 자신이
+   * 되어 아무 정보가 없다. 같은 이유로 진입 횟수도 여기서만 올린다 —
+   * 한 번 와서 다섯 장 본 사람을 5회 방문으로 세면 재방문 판정이 무너진다.
+   */
+  if (!isExternalEntry(request.nextUrl, referrer)) return;
+
+  const prev = decodeLastTouch(request.cookies.get(LAST_TOUCH_COOKIE)?.value);
+  const touch = readTouch(request.nextUrl, referrer, new Date());
+  response.cookies.set(
+    LAST_TOUCH_COOKIE,
+    encodeLastTouch({ ...touch, n: (prev?.n ?? 0) + 1 }),
+    base,
+  );
 }
 
 export const config = {

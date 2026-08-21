@@ -3,8 +3,10 @@
 import { cookies, headers } from "next/headers";
 import {
   FIRST_TOUCH_COOKIE,
+  LAST_TOUCH_COOKIE,
   VISITOR_COOKIE,
   blogSlugOf,
+  decodeLastTouch,
   decodeTouch,
 } from "@/lib/attribution";
 import { createAdminClient } from "@/lib/supabase/server";
@@ -284,7 +286,12 @@ async function attachFirstTouch(inquiryId: string) {
     const jar = await cookies();
     const visitorId = jar.get(VISITOR_COOKIE)?.value ?? null;
     const touch = decodeTouch(jar.get(FIRST_TOUCH_COOKIE)?.value);
-    if (!visitorId && !touch) return;
+    /**
+     * 라스트 터치 — 신청 직전 마지막 진입. (2026-08-21)
+     * 08-21 이전 방문자는 이 쿠키가 없다. 그때는 첫 접점만 남는다.
+     */
+    const last = decodeLastTouch(jar.get(LAST_TOUCH_COOKIE)?.value);
+    if (!visitorId && !touch && !last) return;
 
     const admin = createAdminClient();
 
@@ -328,6 +335,10 @@ async function attachFirstTouch(inquiryId: string) {
         utm: (touch?.u ?? null) as never,
         entry_post_id: entryId,
         assist_post_ids: assists.length ? assists : null,
+        last_path: last?.p ?? null,
+        last_referrer: last?.r ?? null,
+        last_at: last?.t ?? null,
+        visit_count: last?.n ?? null,
       })
       .eq("id", inquiryId);
   } catch {

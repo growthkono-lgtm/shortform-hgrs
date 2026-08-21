@@ -661,7 +661,12 @@ ${input.checkLog
     : `<span style="color:#b45309;font-weight:600">체크 로그 없음</span>`;
 
   return {
-    subject: `[문의] ${input.companyName} · ${input.planLabel}`,
+    /**
+     * 제목은 짧게, 그러나 **문의만은 눈에 띄게.** (2026-08-21)
+     * 나머지 내부 메일은 그러려니 하고 넘겨도 되지만 이건 회신해야 하는 건이다.
+     * 플랜 라벨의 "숏폼 — " 같은 접두는 뗀다 — 어차피 우리가 파는 것이다.
+     */
+    subject: `문의 🔔 ${input.companyName} · ${input.planLabel.replace(/^[^—]*—\s*/, "")}`,
     html: mailShell(`
 <p style="margin:0 0 4px;font-size:12px;color:#8a8a8a">새 프로젝트 문의</p>
 <p style="margin:0 0 18px;font-size:20px;font-weight:800;line-height:1.4">${esc(input.companyName)}</p>

@@ -333,15 +333,30 @@ export async function sendDailyReport(now = new Date()): Promise<ReportResult> {
     </p>
   `);
 
+  /**
+   * **제목은 앞 8자로 판단이 끝나야 한다.** (2026-08-21)
+   *
+   * 사장님: *"그것들이 다 쌓이니까 정신이 없네 메일함이. … 차라리 메일제목이라도
+   * 아주 짧게 해서 정리할까? 빠르게 읽고 그러려니 하게."*
+   *
+   * 그래서 `블로그 ✅` / `블로그 ⚠️` / `블로그 🚨` 세 가지로 앞을 고정한다.
+   * 날짜는 `8/20` 처럼 줄이고(연도는 메일 목록에 이미 있다), 뒤에 한 마디만.
+   * 모바일 메일함은 제목을 30자쯤에서 자른다 — 그 안에 판단이 끝나야 한다.
+   *
+   *   블로그 ✅ 8/20 #6편
+   *   블로그 ⚠️ 8/20 발행 없음
+   *   블로그 🚨 8/20 크레딧 소진
+   */
+  const md = day.slice(5).replace(/^0/, "").replace("-0", "-").replace("-", "/");
   const subject = published?.length
-    ? `[블로그] ${day} — ${published[0].seq ? `#${published[0].seq}편 ` : ""}발행 완료`
+    ? `블로그 ✅ ${md}${published[0].seq ? ` #${published[0].seq}편` : ""}`
     : held
-      ? `[블로그] ${day} — 규격 미달로 발행 보류`
+      ? `블로그 ⚠️ ${md} 규격 미달`
       : /credit|quota|insufficient|billing/i.test(String(job?.last_error ?? ""))
-          ? `[블로그] ${day} — 🚨 발행 없음 · API 크레딧 소진`
+          ? `블로그 🚨 ${md} 크레딧 소진`
           : job?.stage === "failed"
-            ? `[블로그] ${day} — 🚨 발행 없음 · 생성 실패`
-            : `[블로그] ${day} — 발행 없음`;
+            ? `블로그 🚨 ${md} 생성 실패`
+            : `블로그 ⚠️ ${md} 발행 없음`;
 
   const result = await sendMail({ kind: "other", to: ADMIN, subject, html });
 

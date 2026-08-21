@@ -25,6 +25,18 @@
 export const VISITOR_COOKIE = "hg_v";
 export const FIRST_TOUCH_COOKIE = "hg_ft";
 
+/**
+ * **라스트 터치** — 신청 직전에 마지막으로 우리를 찾은 경로. (2026-08-21)
+ *
+ * 첫 접점(`hg_ft`)과 반대로 이건 **매번 덮어쓴다.** 다만 아무 요청에나 덮지
+ * 않는다 — 사이트 안에서 페이지를 넘길 때마다 덮으면 마지막 접점이 늘 우리
+ * 자신이 되어 아무 정보가 없다. **밖에서 들어온 요청일 때만** 갱신한다.
+ *
+ * 같은 쿠키에 진입 횟수(n)도 같이 들고 다닌다. 표를 하나 더 만들지 않고
+ * 첫 방문 전환과 재방문 전환을 가르기 위해서다.
+ */
+export const LAST_TOUCH_COOKIE = "hg_lt";
+
 /** 400일. 브라우저가 받아 주는 상한선 근처다 */
 export const TOUCH_MAX_AGE = 400 * 24 * 60 * 60;
 
@@ -51,6 +63,43 @@ export const TOUCH_BOT =
  */
 export function encodeTouch(t: FirstTouch): string {
   return Buffer.from(JSON.stringify(t), "utf8").toString("base64url");
+}
+
+/**
+ * 라스트 터치 — 첫 접점과 같은 모양에 **n(진입 횟수)** 만 더 있다.
+ * 별도 타입으로 두는 이유는 n 을 첫 접점에 끼워 넣으면 "처음 온 시각"
+ * 옆에 계속 변하는 값이 붙어 두 값의 성격이 섞이기 때문이다.
+ */
+export type LastTouch = FirstTouch & { n: number };
+
+export function decodeLastTouch(raw: string | undefined): LastTouch | null {
+  const t = decodeTouch(raw) as LastTouch | null;
+  if (!t) return null;
+  return { ...t, n: Number.isFinite(t.n) && t.n > 0 ? Math.floor(t.n) : 1 };
+}
+
+export function encodeLastTouch(t: LastTouch): string {
+  return Buffer.from(JSON.stringify(t), "utf8").toString("base64url");
+}
+
+/**
+ * 이 요청이 **밖에서 들어온 것**인가.
+ *
+ * 판정은 리퍼러 하나로 한다 — 우리 호스트가 아니면 밖이다. 리퍼러가 아예
+ * 없는 경우(주소 직접 입력·북마크·앱에서 열기)도 밖으로 친다. 내부 링크
+ * 클릭은 브라우저가 우리 호스트를 리퍼러로 붙여 주므로 걸러진다.
+ *
+ * 완벽하지 않다. 리퍼러를 지우는 브라우저 설정이나 `noreferrer` 링크는
+ * 내부 이동인데도 밖으로 세어진다. 그래도 **첫 방문/재방문을 가르는 데는
+ * 충분한 근사**이고, 이보다 정확해지려면 세션 저장소가 필요해진다.
+ */
+export function isExternalEntry(url: URL, referrer: string | null): boolean {
+  if (!referrer) return true;
+  try {
+    return new URL(referrer).host !== url.host;
+  } catch {
+    return true;
+  }
 }
 
 export function decodeTouch(raw: string | undefined): FirstTouch | null {

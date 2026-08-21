@@ -69,7 +69,8 @@ async function alertIfFatal(note: string) {
 
   try {
     const admin = createAdminClient();
-    const subject = "[긴급] 블로그 자동 생성이 멈췄습니다 — API 크레딧·인증 확인 필요";
+    // 제목 규칙은 `lib/blog-report.ts` 와 같다 — 앞 8자로 판단이 끝나야 한다
+    const subject = "블로그 🚨 자동생성 멈춤";
 
     // 하루 한 통. 같은 제목이 24시간 안에 나갔으면 건너뛴다
     const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
