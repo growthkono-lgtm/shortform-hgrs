@@ -78,16 +78,26 @@ export const READ_SCOPE_NOTE: Record<Exclude<ReadScope, "ok">, string> = {
  * 이 키로 조회가 되는지 **직접 물어본다.** 문서를 읽고 판단하지 않는다.
  * 없는 ID 를 물어 200/404 면 조회 가능, 401 이면 발송 전용이다.
  */
+let scopeCache: ReadScope | null = null;
+
 export async function readScope(): Promise<ReadScope> {
   const key = process.env.RESEND_API_KEY;
   if (!key) return "no_key";
+
+  /**
+   * 판정은 배포 한 벌에 한 번이면 된다 — 키는 런타임에 바뀌지 않고,
+   * 바뀌면 재배포라 이 모듈이 새로 뜬다. 어드민을 열 때마다 Resend 에
+   * 묻지 않게 캐시한다. (error 는 일시적일 수 있어 캐시하지 않는다)
+   */
+  if (scopeCache) return scopeCache;
+
   try {
     const res = await fetch(
       "https://api.resend.com/emails/00000000-0000-0000-0000-000000000000",
       { headers: { Authorization: `Bearer ${key}` }, cache: "no-store" },
     );
-    if (res.status === 401 || res.status === 403) return "restricted";
-    return "ok";
+    scopeCache = res.status === 401 || res.status === 403 ? "restricted" : "ok";
+    return scopeCache;
   } catch {
     return "error";
   }

@@ -12,9 +12,14 @@ import {
   postLabel,
   type LeadSource,
 } from "@/lib/lead-source";
-import { DELIVERY_LABEL, deliveryTone } from "@/lib/mail-delivery";
+import {
+  DELIVERY_LABEL,
+  READ_SCOPE_NOTE,
+  deliveryTone,
+  readScope,
+} from "@/lib/mail-delivery";
 import { MAIL_KIND_LABEL, MAIL_STATUS_LABEL } from "@/lib/mail-labels";
-import { sendBrochure, startProject } from "./actions";
+import { sendBrochure, sendBrochureTest, startProject } from "./actions";
 
 const STATUS_LABEL: Record<string, string> = {
   new: "접수",
@@ -159,6 +164,7 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
     { data: plans },
     { data: workers },
     { data: mails },
+    mailScope,
   ] = await Promise.all([
     admin
       .from("inquiries")
@@ -182,6 +188,8 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
       .select("id, kind, to_email, subject, status, error, created_at, delivery")
       .order("created_at", { ascending: false })
       .limit(8),
+    // 도달 칸이 왜 비어 있는지 그 자리에서 말하려면 권한 상태를 알아야 한다
+    readScope(),
   ]);
 
   /**
@@ -575,15 +583,41 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
        * 자세한 건(도달 여부·실제 발송본)은 [메일] 화면으로 넘긴다.
        */}
       <section className="mt-14">
-        <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-sm font-bold">최근 메일 발송</h2>
-          <Link
-            href="/admin/mail"
-            className="text-xs text-muted underline underline-offset-2 hover:text-ink"
-          >
-            전부 보기 · 도달 확인 · 발송본 열기
-          </Link>
+          {/**
+           * 시험 발송은 **여기 있어야 한다.** (2026-08-21)
+           *
+           * 처음에는 /admin/mail 안에만 뒀는데 사장님이 못 찾으셨다 —
+           * *"나에게 시험발송은 어디있어? 어드민에 안보이는데."*
+           * 소개서를 보내는 자리와 확인하는 자리가 다른 화면이면 그렇다.
+           * 버튼은 쓰는 자리에 둔다.
+           */}
+          <div className="flex flex-wrap items-center gap-2">
+            <ActionForm
+              action={sendBrochureTest}
+              label="나에게 시험 발송"
+              variant="outline"
+              inline
+            />
+            <Link
+              href="/admin/mail"
+              className="shrink-0 rounded-lg bg-ink px-3.5 py-2 text-xs font-bold whitespace-nowrap text-paper"
+            >
+              메일 점검 열기
+            </Link>
+          </div>
         </div>
+        <p className="mt-2 text-xs leading-[1.8] text-muted">
+          <b className="text-ink">발송</b>은 우리가 Resend 에 넘긴 결과,{" "}
+          <b className="text-ink">도달</b>은 상대 메일함까지 갔는지다. 본문
+          미리보기와 실제 발송본은 [메일 점검]에 있다.
+        </p>
+        {mailScope !== "ok" && (
+          <p className="mt-2 text-[0.6875rem] leading-[1.8] text-amber-700">
+            {READ_SCOPE_NOTE[mailScope]}
+          </p>
+        )}
         {!mails || mails.length === 0 ? (
           <p className="mt-3 text-xs text-muted">발송 이력이 없습니다.</p>
         ) : (
@@ -610,17 +644,24 @@ export default async function AdminInquiriesPage(props: PageProps<"/admin">) {
                   <span>{MAIL_KIND_LABEL[m.kind] ?? m.kind}</span>
                   <span className="break-all">{m.to_email}</span>
                   <span className="break-all text-ink/70">{m.subject}</span>
-                  {m.delivery && (
-                    <span
-                      className={
-                        deliveryTone(m.delivery) === "bad"
+                  {/* 값이 없다고 칸을 지우지 않는다. 비어 있는 것과
+                      못 물어본 것은 다른 말이다 */}
+                  <span
+                    className={
+                      m.delivery
+                        ? deliveryTone(m.delivery) === "bad"
                           ? "text-red-600"
-                          : "text-muted"
-                      }
-                    >
-                      {DELIVERY_LABEL[m.delivery] ?? m.delivery}
-                    </span>
-                  )}
+                          : "text-accent-deep"
+                        : "text-muted"
+                    }
+                  >
+                    도달{" "}
+                    {m.delivery
+                      ? (DELIVERY_LABEL[m.delivery] ?? m.delivery)
+                      : mailScope === "ok"
+                        ? "미확인"
+                        : "확인 불가"}
+                  </span>
                   {m.error && (
                     <span className="w-full text-red-600">{m.error}</span>
                   )}
