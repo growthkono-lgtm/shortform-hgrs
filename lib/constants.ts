@@ -328,6 +328,26 @@ export const discountRate = (listPrice: number, betaPrice: number) =>
  * 메일이고, 어드민 프로젝트 화면의 [브랜드에게 알리기]가 그 입구다.
  * 먼저 알려 두면 여기로 오는 문의가 줄고, 남는 건 진짜 물어볼 것뿐이다.
  */
+/**
+ * **마케팅 팀 구독제 월 금액.** (2026-08-21 사장님 지시)
+ *
+ * 랜딩과 소개서는 지금도 "브랜드 단위 협의" 로 둔다 — 처음 보는 자리에
+ * 월 단위 금액이 먼저 뜨면 문턱이 된다. **메일에만** 숫자를 적는다.
+ * 이미 문의한 분께 가는 자리라, 금액이 보이는 편이 다음 대화가 빠르다.
+ *
+ * 업무 범위에 따라 가감이 되는 값이라 메일 문안에도 그 말을 같이 적는다.
+ */
+export const SUBSCRIPTION_MONTHLY = 2_700_000;
+
+/**
+ * 미팅 예약 링크(캘린들리 등). 없으면 메일이 **일정 슬롯을 회신받는 문안**으로
+ * 자동으로 바뀐다 — 링크가 없는데 버튼만 있는 상황을 만들지 않는다.
+ *
+ * 캘린들리에서 Google Meet 을 연동해 두면 예약과 동시에 미팅 링크가
+ * 자동 발급된다. `CALENDLY_URL` 에 그 이벤트 주소를 넣으면 켜진다.
+ */
+export const MEETING_BOOKING_URL = process.env.CALENDLY_URL ?? "";
+
 export const KAKAO_CHANNEL = {
   /** 채널 홈 */
   url: "https://pf.kakao.com/_QExiiX",

@@ -1,6 +1,12 @@
 import { createAdminClient } from "@/lib/supabase/server";
 import { SERVICE } from "@/lib/constants";
-import { KAKAO_CHANNEL } from "@/lib/constants";
+import {
+  KAKAO_CHANNEL,
+  MEETING_BOOKING_URL,
+  PLANS,
+  SUBSCRIPTION_MONTHLY,
+  type PlanCode,
+} from "@/lib/constants";
 
 /** 소개서를 보낼 신청 건 — 인사말에 쓰는 이름만 필요하다 */
 export type BrochureInquiry = {
@@ -295,42 +301,83 @@ const PUBLIC_ORIGIN = SERVICE.url.includes("localhost")
 export const brochureUrl = `${PUBLIC_ORIGIN}/${BROCHURE.file}`;
 
 /**
- * ① 소개서 발송 — 어드민이 신청 건에서 [소개서 발송]을 누를 때.
+ * ① 소개서 발송 — 문의가 들어오면 자동으로, 어드민에서 [소개서 재발송]으로도.
  *
- * 본문은 **사장님이 직접 쓴 문안**이다. 임의로 줄이거나 다듬지 않는다.
- * PDF 는 첨부와 링크를 함께 건다 — 첨부를 막아 둔 메일 환경이 적지 않다.
+ * ── 2026-08-21 전면 개편 ───────────────────────────────────────────────
+ * 사장님이 실제 회신하시던 메일을 그대로 옮겼다. *"내가 방금 답변하다보니까
+ * … 이런 식으로 답장하게 되더라."* 손으로 매번 쓰시던 것이 곧 정답이라,
+ * 그 문안을 이 메일이 대신 쓰게 한다.
+ *
+ * 담은 것 — 상담 두 경로(카톡·구글밋) / **플랜별 포함 범위와 단가** /
+ * 소개서의 실적 증빙·30여 브랜드 포트폴리오 안내 / 진행 방식(R&R).
+ *
+ * ⚠️ **광고 집행·운영 이야기는 한 줄도 넣지 않는다.** (사장님 명시)
+ *    챔피언 소재 디벨롭·월 예산 기준·주단위 리포팅 전부 제외.
+ * ⚠️ **발신자는 개인명이 아니라 "PM팀"** 이다. 자동 발송이라 특정인 이름을
+ *    박으면 그 사람이 직접 쓴 메일처럼 읽힌다.
+ * ⚠️ 금액은 반드시 `PLANS` 에서 파생한다. 문안에 숫자를 손으로 적으면
+ *    가격이 두 벌이 되고, 메일에 적힌 값과 실제 청구액이 갈린다.
  */
+function planPrice(code: PlanCode, tier: string): string {
+  const row = PLANS.find((p) => p.code === code && p.tier === tier);
+  return row ? row.betaPrice.toLocaleString("ko-KR") : "";
+}
+
 export function brochureMail(_inquiry: BrochureInquiry) {
   const para = (t: string) =>
     `<p style="font-size:14px;line-height:1.9;margin:0 0 16px">${t}</p>`;
 
-  /* 서비스 카드(두 갈래 선택지)는 2026-08-20 에 뺐다 — 소개서에 이미 다 있어
-     메일에서 또 늘어놓을 이유가 없다. */
+  /** 플랜 한 칸 — 이름 · 금액 · 포함 범위 */
+  const plan = (name: string, price: string, lead: string, items: string) => `
+<table role="presentation" width="100%" style="width:100%;border-collapse:collapse;margin:0 0 10px;background:#f7f5f3;border-radius:12px">
+  <tr><td style="padding:16px 18px">
+    <p style="font-size:15px;font-weight:700;line-height:1.5;margin:0 0 4px">${name}</p>
+    <p style="font-size:15px;font-weight:800;color:#030303;line-height:1.5;margin:0 0 8px">${price}</p>
+    <p style="font-size:13px;color:#5c5c5c;line-height:1.75;margin:0">${lead}<br>${items}</p>
+  </td></tr>
+</table>`;
+
+  /**
+   * 미팅 잡는 법 — 예약 링크가 있으면 **버튼 한 번**, 없으면 슬롯을 받는다.
+   * 링크를 아직 안 만들었는데 버튼만 있으면 누른 사람이 막다른 곳에 닿는다.
+   */
+  const meeting = MEETING_BOOKING_URL
+    ? `<a href="${MEETING_BOOKING_URL}" style="display:inline-block;background:#191600;color:#fee500;text-decoration:none;padding:11px 22px;border-radius:999px;font-size:14px;font-weight:700;margin:0 0 4px">
+      미팅 시간 고르기
+    </a>
+    <p style="font-size:12px;color:#5b5400;line-height:1.7;margin:8px 0 0">
+      원하시는 시간을 고르시면 <strong>구글 미팅 링크가 바로 발급</strong>됩니다.
+    </p>`
+    : `<p style="font-size:13px;color:#3b3600;line-height:1.8;margin:0">
+      편하신 <strong>일정 슬롯을 두세 개</strong> 회신해 주시면 맞춰서 미팅 링크를 보내 드립니다.<br>
+      <span style="color:#5b5400">(예: 차주 월·화 오후 1시~4시)</span>
+    </p>`;
 
   return {
     subject: `[${SERVICE.name}] 프로젝트 소개서를 전달 드립니다.`,
     html: mailShell(`
-<p style="font-size:16px;font-weight:700;line-height:1.65;margin:0 0 20px">요즘 브랜드는 컨텐츠에서 시작해<br>고객으로 전환시키는 그로스 퍼널로 끝납니다.</p>
+<p style="font-size:16px;font-weight:700;line-height:1.65;margin:0 0 14px">요즘 브랜드는 컨텐츠에서 시작해<br>고객으로 전환시키는 그로스 퍼널로 끝납니다.</p>
 
-<!-- 다음에 무슨 일이 일어나는지 먼저 말한다. (2026-08-18 사장님 지시)
-     소개서만 오고 아무 말이 없으면 문의한 쪽은 "접수가 된 건가" 를 모른다.
-     끝까지 안 읽어도 보이도록 인사 바로 뒤에 박스로 둔다 -->
-<!-- 상담 배너 — 예전의 "영업일 2일 이내 안내" 안내박스를 대체한다. (2026-08-20)
-     사장님: *"목적은 바로 연락이 오가게 하려고. 상담해주고 얘기 나누고 해야 일이 풀린다."*
-     기다리게 하는 문장 대신 **지금 잡을 수 있는 자리**를 준다. 영업일 2일은 없애지
-     않고 아래 한 줄로 남긴다 — 약속은 지켜야 하니까.
-     캘린들리 대신 카톡/문자에서 스케줄링한다(사장님 방식). -->
+${para(
+  `안녕하세요. <strong>${SERVICE.name} PM팀</strong>입니다.<br>
+   요청하신 <strong>종합 소개서</strong>를 전달 드립니다. 궁금한 점은 이 메일에 그대로 답장 주시거나, 아래 카카오톡으로 편하게 말씀 주세요.`,
+)}
+
+<!-- 상담 배너 — 기다리게 하는 문장 대신 **지금 잡을 수 있는 자리**를 준다.
+     08-21 에 경로를 둘로 명시했다. 카톡은 즉시, 화상은 일정 조율. -->
 <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;background:#fee500;border-radius:12px;margin:0 0 22px">
   <tr><td style="padding:20px 22px">
-    <p style="font-size:16px;font-weight:700;color:#191600;margin:0 0 6px">15분 사전상담 받기</p>
-    <p style="font-size:13px;color:#3b3600;line-height:1.8;margin:0 0 14px">
-      브랜드 목표와 현재 상황을 미리 준비해 주시면 더 유익한 상담이 됩니다.<br>
-      상담은 <strong>줌미팅 또는 유선</strong> 중 편하신 쪽으로 진행하고, 일정은 카카오톡에서 바로 잡아 드립니다.
-    </p>
-    <a href="${KAKAO_CHANNEL.chatUrl}" style="display:inline-block;background:#191600;color:#fee500;text-decoration:none;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:700">
-      카카오톡으로 상담 잡기
+    <p style="font-size:16px;font-weight:700;color:#191600;margin:0 0 14px">상담은 두 가지로 진행합니다</p>
+
+    <p style="font-size:14px;font-weight:700;color:#191600;margin:0 0 6px">1. 카카오톡 실시간 상담 — 지금 바로 가능합니다</p>
+    <a href="${KAKAO_CHANNEL.chatUrl}" style="display:inline-block;background:#191600;color:#fee500;text-decoration:none;padding:11px 22px;border-radius:999px;font-size:14px;font-weight:700;margin:0 0 18px">
+      카카오톡으로 상담하기
     </a>
-    <p style="font-size:12px;color:#5b5400;line-height:1.7;margin:12px 0 0">
+
+    <p style="font-size:14px;font-weight:700;color:#191600;margin:0 0 6px">2. 구글 화상 미팅 — 숏폼 플랜·구독제는 화상 미팅을 우선 진행합니다</p>
+    ${meeting}
+
+    <p style="font-size:12px;color:#5b5400;line-height:1.7;margin:14px 0 0;border-top:1px solid rgba(25,22,0,0.15);padding-top:12px">
       따로 요청하지 않으셔도 <strong>영업일 2일 이내</strong>에 안내 연락을 드립니다. 부재 시 문자를 남겨 드립니다.
     </p>
   </td></tr>
@@ -342,15 +389,15 @@ ${para(
 
 <img src="${PUBLIC_ORIGIN}/deck/mail-hero.jpg" alt="해그로시 촬영 현장" width="512" style="width:100%;max-width:512px;border-radius:12px;display:block;margin:4px 0 20px">
 
-<!-- 소개서를 위로 올리고 표지를 함께 띄운다. (2026-08-20 사장님)
-     첨부 파일 이름만으로는 무엇이 들었는지 안 보인다. 표지 한 장이면 열기 전에
-     "브랜드 성공 사례와 서비스 플랜" 이 들어 있다는 게 전달된다. -->
+<!-- 소개서 카드 — 표지를 함께 띄운다. 첨부 파일 이름만으로는 무엇이 들었는지
+     안 보인다. 08-21 에 **실적 증빙을 먼저 보라**는 안내를 넣었다. -->
 <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;background:#f7f5f3;border-radius:12px;margin:0 0 14px">
   <tr><td style="padding:20px 22px">
     <p style="font-size:15px;font-weight:700;margin:0 0 6px">해그로시 스튜디오 종합 소개서</p>
     <p style="font-size:13px;color:#5c5c5c;line-height:1.8;margin:0 0 14px">
-      <strong style="color:#030303">브랜드 성공 사례와 서비스 플랜</strong>을 한 부에 담았습니다.<br>
-      이 메일에 PDF로 첨부해 두었고, 아래 버튼으로도 바로 보실 수 있습니다.
+      <strong style="color:#030303">30여 브랜드 포트폴리오</strong>와 <strong style="color:#030303">실적 증빙</strong>을 담았습니다.
+      월별 구매금액·구매건수·ROAS 표와 실제 편성표를 브랜드별 장표에 그대로 실었으니,
+      성과 부분을 먼저 확인해 주시면 이야기가 빨라집니다.
     </p>
     <a href="${brochureUrl}">
       <img src="${PUBLIC_ORIGIN}/deck/brochure-cover.jpg" alt="해그로시 스튜디오 종합 소개서 표지" width="512" style="width:100%;max-width:512px;border-radius:8px;border:1px solid #e6e6e6;display:block">
@@ -358,12 +405,78 @@ ${para(
   </td></tr>
 </table>
 
-<p style="margin:0 0 8px">
+<p style="margin:0 0 26px">
   <a href="${brochureUrl}" style="display:inline-block;background:#030303;color:#fff;text-decoration:none;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:700">
     종합 소개서 보기 (PDF)
   </a>
 </p>
-<p style="font-size:13px;color:#5c5c5c;margin:16px 0 0;line-height:1.9">
+
+<!-- ── 플랜과 단가 ────────────────────────────────────────────────
+     소개서에도 있지만 메일에서 한 번 더 적는다. 사장님이 회신할 때마다
+     손으로 쓰시던 부분이고, 첨부를 안 여는 분이 실제로 많다. -->
+<p style="font-size:17px;font-weight:800;margin:0 0 10px">플랜과 단가</p>
+<p style="font-size:13px;color:#5c5c5c;line-height:1.8;margin:0 0 16px">
+  <strong style="color:#030303">기획은 옵션이 아니라 필수 포함입니다.</strong>
+  브랜드 소구점 분석과 퍼포먼스 최적화 기획안, 최신 트렌드 레퍼런스 테스트가
+  모든 숏폼 플랜에 기본으로 들어갑니다.
+</p>
+
+${plan(
+  "숏폼 싱글 플랜",
+  `10편 기준 ${planPrice("shorts_only", "10")}원`,
+  "구매 전환형 숏폼 기획·제작",
+  "기획 · 대본 · 콘티 / 편집 · 자막 · 보정 / 트렌드 레퍼런스 테스트 / AI 활용 효율화 / 편당 1회 무상 수정",
+)}
+${plan(
+  "숏폼 멀티 플랜",
+  `숏폼 10편 + 인플루언서 시딩 10명 기준 ${planPrice("full", "growth")}원`,
+  "소재 확보부터 함께합니다",
+  "<strong style=\"color:#030303\">싱글 플랜의 기획·제작 전부</strong> + 인플루언서 시딩 / 콘텐츠 가이드라인 설계 / 회수 소재 광고용 재편집",
+)}
+${plan(
+  "마케팅 팀 구독제",
+  `월 ${SUBSCRIPTION_MONTHLY.toLocaleString("ko-KR")}원`,
+  "꼭 필요한 우선순위 전략만 조합해 팀 단위로 투입합니다",
+  "<strong style=\"color:#030303\">업무 범위에 따라 부분 가감 협의 가능합니다.</strong>",
+)}
+${plan(
+  "SNS 채널 운영",
+  "6개월 또는 1년 단위 별도 진행",
+  "브랜드가 가진 채널을 실제로 도는 채널로 만듭니다",
+  "유튜브의 경우 <strong style=\"color:#030303\">PD · 촬영 · 기획작가까지 포함하는 스펙</strong>부터, <strong style=\"color:#030303\">쇼츠 · 릴스 미러링 형태</strong>까지 범위를 맞춰 구성합니다.",
+)}
+
+<p style="font-size:12px;color:#8a8a8a;margin:0 0 28px">모든 금액 부가세 별도</p>
+
+<!-- ── 진행 방식 ──────────────────────────────────────────────────
+     "우리가 뭘 해야 하나" 가 안 보이면 견적서만 받고 멈춘다.
+     브랜드가 줄 것을 **네 가지로 못 박아** 문턱을 낮춘다. -->
+<p style="font-size:17px;font-weight:800;margin:0 0 14px">진행 방식</p>
+
+<table role="presentation" width="100%" style="width:100%;border-collapse:collapse;margin:0 0 26px">
+  <tr><td style="padding:0 0 14px;border-bottom:1px solid #e6e6e6">
+    <p style="font-size:12px;color:#8a8a8a;margin:0 0 4px">브랜드에서 주실 것</p>
+    <p style="font-size:14px;line-height:1.8;margin:0">
+      싱글 플랜 기준 네 가지면 충분합니다 —<br>
+      <strong>소스컷 / 목표 / 프로모션·가격 / 예산과 준수해야 할 요청사항</strong>
+    </p>
+  </td></tr>
+  <tr><td style="padding:14px 0;border-bottom:1px solid #e6e6e6">
+    <p style="font-size:12px;color:#8a8a8a;margin:0 0 4px">저희가 하는 것</p>
+    <p style="font-size:14px;line-height:1.8;margin:0">
+      소구점 분석 → 기획안 → 제작.<br>
+      진행 단계는 제공해 드리는 <strong>프로젝트 어드민</strong>에서 실시간으로 보실 수 있습니다.
+    </p>
+  </td></tr>
+  <tr><td style="padding:14px 0 0">
+    <p style="font-size:12px;color:#8a8a8a;margin:0 0 4px">확인만 해 주시면 됩니다</p>
+    <p style="font-size:14px;line-height:1.8;margin:0">
+      영상 피드백 → 최종 컨펌. 여기서 끝납니다.
+    </p>
+  </td></tr>
+</table>
+
+<p style="font-size:13px;color:#5c5c5c;margin:0;line-height:1.9">
   브랜드 상황에 맞는 구성이 궁금하시면 <strong style="color:#030303">이 메일에 그대로 답장</strong>해 주세요.<br>
   채널 현황과 목표를 보내주시면 필요한 작업 범위를 정리해 회신드립니다.
 </p>
