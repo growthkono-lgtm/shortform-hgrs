@@ -268,7 +268,7 @@ export function auditPost(input: {
   if (dupes.length) {
     findings.push({
       level: "fail",
-      message: `같은 발행처에서 2건 이상 가져왔습니다 (${dupes.join("·")}). 한 브랜드·한 캠페인에서는 한 건만 씁니다`,
+      message: `같은 캠페인을 길이만 바꿔 여러 건 세었습니다 (${dupes.join("·")}). 브랜드가 겹치는 건 괜찮습니다 — 주제만 맞으면 한 브랜드에서 두세 건도 씁니다. 막는 건 **같은 영상의 변주**뿐입니다`,
     });
   }
 
@@ -356,6 +356,28 @@ export function auditPost(input: {
       message: `시각 자료 ${visuals}개 (기준 ${STRUCTURE.minVisuals}개 이상 — 재생 ${embedded} + 표 ${tableCount} + 원문카드 ${carded} + 도해 ${okFigs}). 링크 한 줄은 시각물로 세지 않습니다`,
     });
   }
+  /**
+   * **시각물이 앞쪽에 와야 한다.** (2026-08-22)
+   *
+   * 사장님: *"시각자료들이 더 위에 등장해야지."*
+   *
+   * 총 개수만 세면 그림이 전부 글 뒷부분에 몰려도 통과한다. 독자는 첫 화면에서
+   * 읽을지 말지를 정하는데, 거기가 글자만 있으면 뒤에 뭘 넣어도 안 읽힌다.
+   * 그래서 **첫 본론 섹션 안에 시각물이 최소 하나** 있는지 따로 본다.
+   */
+  const firstBody = sections[0];
+  if (firstBody) {
+    const hasEarlyVisual =
+      /^:::(?:source|figure)/m.test(firstBody.text) || /^\|/m.test(firstBody.text);
+    if (!hasEarlyVisual) {
+      findings.push({
+        level: "fail",
+        message:
+          "첫 본론 섹션에 시각 자료가 없습니다. 재생 자료·도해·표 중 하나를 그 섹션 안에 넣습니다 — 첫 화면이 글자뿐이면 뒤쪽 그림은 안 보입니다",
+      });
+    }
+  }
+
   if (citedValid.length < f.minSources) {
     findings.push({
       level: "fail",
