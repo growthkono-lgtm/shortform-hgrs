@@ -921,6 +921,33 @@ export async function stepOnce(now = new Date()): Promise<StepResult> {
             citedIndexes: citedSourceIndexes(post.body ?? ""),
           });
           const misfit = fitFindings(judged);
+
+          /**
+           * **여러 건이 엉뚱하면 검사로는 못 고친다 — 다시 찾아야 한다.** (2026-08-22)
+           *
+           * 사장님: *"소스를 못 찾았으면 찾으면 되는 거 아니었어?"*
+           *
+           * 판정기는 **버리는 일만** 한다. 사다리(패치·재집필)는 **같은 자료 풀**을
+           * 다시 쓴다. 9편처럼 풀 전체가 주제 밖이면 바꿔 낄 것이 없어서, 사다리만
+           * 태우고 죽거나 자료 없는 원고가 나온다. 한 건이면 빼고 가면 되지만
+           * 두 건 이상이면 **수집이 잘못된 것**이므로 조사부터 되감는다.
+           *
+           * 되감을 때 이 문구가 `last_error` 로 남고, 조사 프롬프트의 `retryNote`
+           * 로 그대로 들어간다 — 무엇이 왜 어긋났는지 모르고 다시 찾으면 같은
+           * 자료가 또 올라온다. `attempts` 는 안 지운다. 세 바퀴면 `fail()` 이 끊는다.
+           */
+          if (misfit.length >= 2) {
+            return rewind(
+              "research",
+              [
+                "자료 적합성 2차 판정에서 여러 건이 주제와 어긋났습니다.",
+                "같은 자료 풀로는 못 고칩니다 — 검색어를 바꿔 다시 찾으십시오.",
+                "",
+                ...misfit,
+              ].join("\n"),
+            );
+          }
+
           if (misfit.length) {
             result = {
               ...result,
