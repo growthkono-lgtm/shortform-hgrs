@@ -3278,6 +3278,9 @@ polish **첫 진입에서만** 불렀다. 원고는 거의 항상 교정을 한 
 그대로 죽는다.** 8/17·8/18 이틀이 비었던 것과 같은 원인이다.
 충전: https://platform.openai.com/settings/organization/billing/
 
+**해결.** 사장님이 $10 충전. 실제 호출로 확인 — `HTTP 200`, `cost-doctor` 전 계정
+✅. 8/23 09시는 정상 출발한다.
+
 문서 갱신: `docs/BLOG_CHECKLIST.md` 3층 표에 글자수·6축·시각물 배치·경쟁사·
 브랜드 반복·워터마크 6줄 추가, **3.2층 「자료 적합성」 신설**.
 `docs/CLAUDE_RULES.md` 5장에 *"검사를 붙였으면 실제로 걸리는지까지 본다"*,
