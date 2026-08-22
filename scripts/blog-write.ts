@@ -18,6 +18,8 @@
  *   --from-research <경로>   조사를 건너뛴다 (기획부터)
  *   --from-plan <경로>       조사·기획을 건너뛴다 (자료 검증부터)
  */
+import type { FitContext } from "../lib/blog-fit";
+import { leadTargetOf } from "../lib/blog-spec";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -60,6 +62,17 @@ async function main() {
   const dir = path.join(process.cwd(), "drafts");
   await mkdir(dir, { recursive: true });
 
+  /** 6축 적합성 좌표 — 2026-08-22. `--keyword` 로 검색어를 넘긴다 */
+  const keywordTerm = arg("keyword") ?? topic;
+  const segmentKey = (arg("segment") ?? null) as never;
+  const fit: FitContext = {
+    keyword: keywordTerm,
+    topic,
+    pillarKey,
+    leadTargetKey: leadTargetOf(keywordTerm).key,
+    difficulty: (arg("difficulty") ?? null) as never,
+  };
+
   const planPath = arg("from-plan");
   const researchPath = arg("from-research");
 
@@ -80,6 +93,7 @@ async function main() {
         pillarKey,
         formatKey,
         topic,
+        fit,
         onPass: (label, ok, detail) =>
           console.log(`  ${ok ? "✓" : "✗"} ${label} — ${detail}`),
       });
@@ -98,7 +112,7 @@ async function main() {
   // ── 2단계 기획 ────────────────────────────────────────────────────────
   const plan: BlogPlan = planPath
     ? (JSON.parse(await readFile(planPath, "utf8")) as BlogPlan)
-    : await planPost({ pillarKey, formatKey, topic, research: research! });
+    : await planPost({ pillarKey, formatKey, topic, research: research!, fit, segmentKey });
 
   console.log(`\n[기획]${planPath ? " 구성안 재사용" : ""}`);
   console.log(`  제목: ${plan.title}`);

@@ -1,3 +1,8 @@
+import {
+  fitBriefing,
+  publisherBriefing,
+  type FitContext,
+} from "@/lib/blog-fit";
 import { ORG, SERVICE } from "./constants";
 import {
   AEO_SPEC,
@@ -412,6 +417,12 @@ ${SOURCE_SPEC.region.domesticStatSources.map((s) => `· ${s}`).join("\n")}
 
 **국내 실물 URL 을 최소 4건 건져야 한다.** 못 건지면 검색어를 바꿔서라도 다시 찾아라.
 
+🔑 **가장 흔한 실패 — 주제어를 그대로 검색하는 것.** (2026-08-22 실측)
+"브랜드스토어 유입" 처럼 **우리가 쓰는 말**로 영상을 찾으면 플랫폼 고객센터 문서만 나온다.
+브랜드는 영상 제목에 그런 말을 쓰지 않는다. **그 주제를 겪는 브랜드의 업종·제품·상황**으로 찾아라.
+그래도 안 나오면 **해당 업종의 국내 브랜드 이름을 직접 떠올려** 그 공식 채널을 열어라.
+브랜드명을 아는 것은 리서처의 일이다 — "검색에 안 나왔다"는 보고는 받지 않는다.
+
 🚫 **해외 영상·해외 브랜드 사례는 한 건도 가져오지 않는다.** 없는 것보다 낫지 않다.
    국내에서 못 찾으면 주제를 좁혀서라도 국내에서 찾는다.
 
@@ -461,6 +472,7 @@ async function runResearchPass(
     formatKey: FormatKey;
     topic: string;
     retryNote?: string | null;
+    fit?: FitContext | null;
   },
 ): Promise<{ text: string; searches: number }> {
   const p = pillar(input.pillarKey);
@@ -472,6 +484,7 @@ async function runResearchPass(
 ${BRAND_CONTEXT}
 
 ${audienceContext(input.topic)}
+${input.fit ? `\n${fitBriefing(input.fit)}\n\n${publisherBriefing()}\n` : ""}
 
 [조사 규칙 — 이 규칙이 이 회사 콘텐츠의 신뢰도를 결정한다]
 - **검색해서 확인한 것만 보고한다.** 기억으로 아는 수치나 URL 을 쓰지 않는다.
@@ -500,7 +513,14 @@ ${pass.brief}
 [유형: ${f.label}] ${f.brief}
 이 글은 실물 자료가 최소 ${f.minSources}건 필요하고, 그중 **${f.minEmbeds}건 이상은
 본문에서 재생되는 국내 자료**(국내 유튜브·틱톡)여야 한다.
-이 패스에서 최소 ${f.minEmbeds + 1}건은 건져야 한다 — 뒤에서 URL 검증으로 일부가 탈락하기 때문이다.`;
+이 패스에서 최소 ${f.minEmbeds + 3}건은 건져야 한다 — 뒤에서 URL 검증으로 일부가 탈락하기 때문이다.
+⚠️ **채널 홈 주소(youtube.com/@계정)는 자료가 아니다.** 반드시 개별 영상
+(youtube.com/watch?v=... 또는 youtube.com/shorts/...) 주소를 적는다.
+📌 **브랜드 개수는 따지지 않는다.** 주제와 맞으면 한 브랜드에서 3건을 가져와도 된다.
+   다만 **같은 영상의 길이 변주(43초/15초A/15초B)는 한 건으로 친다.**
+🇰🇷 **국내 브랜드**여야 한다. 규모는 상관없다 — 스몰브랜드·스타트업 사례도 그대로 쓴다.
+⚠️ **개수를 채우는 것이 이 패스의 목적이다.** 주제에 맞는 것을 못 찾겠으면 검색어를
+   바꿔서라도 찾는다. 여기서 적게 건지면 뒷단계가 통째로 막힌다.`;
 
   const message = `필러: ${p.label} — ${p.scope}
 이번 주제: ${input.topic}
@@ -552,6 +572,8 @@ export async function researchTopic(input: {
   pillarKey: PillarKey;
   formatKey: FormatKey;
   topic: string;
+  /** 6축 적합성 좌표. 없으면 예전처럼 돈다(구 호출부 호환) — 2026-08-22 */
+  fit?: FitContext | null;
   /** 되감겨 온 경우 무엇이 모자랐는지 — 같은 검색을 반복하지 않게 한다 */
   retryNote?: string | null;
   /** 패스가 끝날 때마다 부른다 — CLI 가 진행 상황을 찍는 용도 */
@@ -855,6 +877,21 @@ function editorialRules(formatKey: FormatKey, segmentKey?: SegmentKey | null): s
   return `[문단 흐름 — 이 순서와 역할을 지킨다. 자리마다 할 일이 다르다]
 ${FLOW.map((f) => `  ${f.no}. ${f.role} — ${f.job}`).join("\n")}
 
+🚫🚫 **도입부와 본문을 인용 나열로 채우지 마라.** (2026-08-22)
+   실제로 이렇게 나갔다 —
+     "한국방송광고진흥공사는 2026년 발표한 보고서에서 ~ 제시했습니다." → 출처
+     "유튜브 코리아는 2024년 ~ 공개했습니다."                        → 출처
+     "Meta 한국어 뉴스룸도 2026년 발표에서 ~ 다뤘습니다."             → 출처
+   **우리가 하는 말이 한 줄도 없다.** 남의 발표를 옮기고 각주를 다는 것은 글이 아니다.
+
+   지킬 것:
+   · **첫 문단은 독자가 지금 겪는 장면으로 연다.** 기관·플랫폼 이름으로 시작하지 않는다.
+   · "A가 B를 발표했습니다" 형태의 **전달 문장을 연속 두 개 이상 쓰지 않는다.**
+   · 자료는 **우리 주장의 근거로만** 붙인다 — 먼저 우리 판단을 쓰고, 그 뒤에 근거를 댄다.
+     순서가 뒤집히면 글이 요약문이 된다.
+   · 이 블로그의 목적은 **우리 서비스에 맞는 고객의 리드 확보**다. 플랫폼 발표 요약으로는
+     문의가 오지 않는다. 우리가 무엇을 아는지가 보여야 한다.
+
 ⚠️ **질문형 H2 를 달았으면 그 아래 첫 문장이 그 질문에 직접 답해야 한다.**
    "무엇이 차이를 만드나?" 라고 물었으면 차이를 만드는 것이 무엇인지로 답한다.
    배경 설명("~가 표준이 됐기 때문입니다")으로 답하면 질문과 어긋난다.
@@ -896,6 +933,20 @@ ${VISUAL_SPEC.point.syntax
   ${VISUAL_SPEC.point.rule}
   항목은 ${VISUAL_SPEC.point.minItems}~${VISUAL_SPEC.point.maxItems}개. 앞 문단을 그대로 베끼지 않는다.
 
+[6-2] 📊 **도해 ${VISUAL_SPEC.figure.min}~${VISUAL_SPEC.figure.max}장** — 사장님 지적: "제안 솔루션 주는 부분은 시각화가 굉장히 중요해"
+  **제안·해법을 펴는 섹션에 최소 ${VISUAL_SPEC.figure.min}장.** 이 모양으로 넣는다:
+${VISUAL_SPEC.figure.syntax
+  .split("\n")
+  .map((l) => `    ${l}`)
+  .join("\n")}
+  고를 수 있는 kind 는 넷뿐이다:
+${Object.entries(VISUAL_SPEC.figure.kinds)
+  .map(([k, v]) => `    · ${k} — ${v}`)
+  .join("\n")}
+  ${VISUAL_SPEC.figure.rule}
+  ⚠️ JSON 은 **한 줄로** 쓴다. 줄바꿈이 들어가면 파싱이 깨져 그림이 안 나온다.
+  ⚠️ 본문이 이미 말한 것을 그대로 옮기지 마라. **글로 쓰면 길어지는 관계·순서·구분**을 그린다.
+
 [7] ✅ **실행 블록 ${VISUAL_SPEC.action.count}개** — 사장님 지적: "뭘 어떻게 하라는 건지 안 나온다"
   ${VISUAL_SPEC.action.place} 에 정확히 한 번 둔다:
 ${VISUAL_SPEC.action.syntax
@@ -935,8 +986,21 @@ ${WRITING_RULES.headings.bad.map((b) => `  ✗ ${b}`).join("\n")}
 [톤]
 ${WRITING_RULES.tone}
 
-[글의 골격]
+[제목 — 이 글이 열리느냐가 여기서 갈린다]
 - ${hookRule}
+- ⚠️ **위 훅 강도를 제목에도 그대로 적용한다.** 본문만 세게 열고 제목이 밋밋하면
+  검색 결과에서 눌리지 않는다. 안 눌린 글은 없는 글이다.
+- 🚫 **이런 마무리를 쓰지 마라** — "~할 기준", "~하는 법", "~해야 할 것",
+  "~에 대하여". 무슨 얘긴지 알 수 없고 클릭할 이유가 없다.
+- ✅ **제목에는 독자가 겪는 상황이나 판단할 대상이 들어간다.**
+  나쁜 예: "브랜드스토어 유입이 안 늘 때, 콘텐츠 예산을 더 실을 기준"
+    → "예산을 싣는다" 는 말이 성립하지 않고, 무엇을 어디에 쓰라는지도 없다.
+  고친 예: "브랜드스토어 방문이 그대로인데 광고비만 늘고 있다면"
+  고친 예: "스토어를 고쳐도 유입이 안 느는 진짜 이유"
+- 🚫 **말이 성립하는지 소리 내어 읽어 보고 쓴다.** "예산을 싣는다", "유입을 태운다"
+  처럼 어색한 연결어를 만들지 마라.
+
+[글의 골격]
 - 본론 H2 는 위 [1] 의 ${sectionMin}~${sectionMax}개이고 **전부 질문형**이다. 결정권자가 실제로 검색창에 칠 질문이어야 한다.
 - **H2 바로 아래에 직답 블록**을 둔다(${AEO_SPEC.answerBlock.minChars}~${AEO_SPEC.answerBlock.maxChars}자). AI 답변 엔진이 이 단위를 인용한다. ${AEO_SPEC.requireSourceInAnswer}
   ⚠️ 이 자릿수도 검사식이 센다. 짧아도 길어도 걸린다.
@@ -944,7 +1008,9 @@ ${WRITING_RULES.tone}
 - FAQ ${BLOG_SPEC.faqCount}문항 → "맺으며" → 다음 편 예고 순으로 닫는다.
 
 [읽는 맛 — 사장님 지시: 산뜻하게, 스낵 콘텐츠처럼]
-- **한 문단은 ${BLOG_SPEC.maxParagraphChars}자를 넘기지 않는다.** 길면 끊는다. 이게 1차 원고가 무겁게 읽힌 원인이었다.
+- **한 문단(줄바꿈 두 번 사이)은 ${BLOG_SPEC.maxParagraphChars}자를 넘기지 않는다.** 길면 끊는다. 이게 1차 원고가 무겁게 읽힌 원인이었다.
+  ⚠️ 위의 "섹션 ${STRUCTURE.minCharsPerSection}자 이상" 과 충돌하지 않는다 — **섹션 하나는 여러 문단으로 이루어진다.**
+  ${STRUCTURE.minCharsPerSection}자짜리 섹션이면 ${BLOG_SPEC.maxParagraphChars}자 이하 문단이 서너 개 들어간다는 뜻이다.
 - 소제목으로 계속 끊어 준다. 길어도 빠르게 읽혀야 한다.
 - 존댓말. 단정적이고 직설적으로 쓰되 과장하지 않는다.
 
@@ -1005,6 +1071,8 @@ export async function planPost(input: {
   segmentKey?: SegmentKey | null;
   topic: string;
   research: Research;
+  /** 6축 적합성 좌표 — 2026-08-22 */
+  fit?: FitContext | null;
   publishedTitles?: string[];
   /** 검증에서 되감겨 온 경우 무엇이 모자랐는지 */
   retryNote?: string | null;
@@ -1031,16 +1099,30 @@ ${audienceContext(input.topic)}
 
 ${editorialRules(input.formatKey, input.segmentKey)}
 
+${input.fit ? `${fitBriefing(input.fit)}\n\n${publisherBriefing()}\n` : ""}
 [자료 규격 — 이 규칙을 어기면 발행 검사에서 전부 걸러진다]
 - sources 배열에는 **조사 보고에 URL 이 실제로 나온 것만** 넣는다. 기억이나 추측으로 URL 을 만들지 않는다.
 - 각 자료마다 출처명·연도·기준(${SOURCE_SPEC.citation.join(" / ")})을 채운다. 하나라도 비면 그 자료는 탈락한다.
 - **모든 H2 섹션에 자료를 최소 ${SOURCE_SPEC.minPerSection}개** 붙인다(source_refs).
-  재생되는 자료가 있는 섹션은 그것을 우선 배치한다.
+- 🎬 **첫 번째 H2 섹션에 재생 자료(영상)를 반드시 하나 넣는다.**
+  독자가 첫 화면에서 시각물을 만나야 한다. 영상이 글 뒤쪽에 몰리면 그 앞은 글자뿐이다.
+- 🎬 **재생 자료를 한 섹션에 몰지 마라.** 섹션마다 흩어서 배치한다.
 - sources 배열 자체는 ${f.minSources + 3}건 이상 **넉넉히** 담는다. 검증에서 탈락하는 것이
   나오기 때문이다. 넉넉히 담는 것과 본문에 많이 인용하는 것은 다른 이야기다.
-- ⚠️ **재생 가능한 자료(youtube·tiktok)를 최소 ${f.minEmbeds + 1}건 반드시 포함한다.**
-  조사 보고에 그런 URL 이 있으면 무조건 넣어라. 재생되는 자료가 ${f.minEmbeds}건에
-  못 미치면 발행 검사에서 걸린다 — 링크 인용만으로 채운 원고는 통과하지 못한다.
+- ⚠️ **재생 가능한 자료(youtube·tiktok·instagram)를 최소 ${f.minEmbeds + 3}건 포함한다.**
+  URL 검증에서 일부가 탈락하므로 넉넉히 담는다. **채널 홈 주소는 자료가 아니다** — 개별 영상 주소만.
+  단 **적합성 6축을 통과한 것만** 센다. 조사 보고에 URL 이 있다고 무조건 넣지 마라 —
+  그렇게 해서 "블로그 운영" 글에 에어컨 A/S 안내 영상 4편이 들어갔다.
+  📌 **브랜드 개수는 따지지 않는다.** 단 **한 캠페인·한 사례를 여러 각도로** 보여 줄 때만이다
+     (예: 백세주 캠페인 3편 — 본편·티저·리캡). 한 채널에서 **서로 무관한 영상을 여러 개**
+     긁어오는 것은 도배다. 컬리 만두 쇼츠 4편이 그 예였다 — 각각 다른 제품 얘기라
+     "하나의 사례"가 아니었다.
+     같은 영상의 길이 변주(43초/15초A/15초B)도 한 건으로 친다.
+  🇰🇷 **국내 브랜드**여야 한다. **규모는 상관없다** — 스몰브랜드·스타트업 사례도 그대로 쓴다.
+  통과분이 모자라면 **조사 보고를 다시 훑어 유튜브·틱톡·인스타 URL 을 찾아낸다.**
+  🚫 자료가 모자란다고 **원고 작성을 거부하지 마라.** 그건 답이 아니다.
+     조사 보고 안에 반드시 재생 자료가 있다 — 못 찾겠으면 주제에 맞는 국내 브랜드
+     공식 채널 영상을 조사 보고에서 골라 넣는다. 없는 URL 을 지어내는 것만 금지다.
 - 🇰🇷 **${SOURCE_SPEC.region.rule}**
   youtube·tiktok 자료는 **채널명(author)과 제목(title)을 한글 그대로** 적는다.
   검증기가 그 값으로 국내 여부를 판정한다. 해외 영상이 한 건이라도 인용되면 발행되지 않는다.
@@ -1144,7 +1226,11 @@ ${editorialRules(input.formatKey, input.segmentKey)}
 - 자료를 인용한 자리마다 지시자를 한 줄로 넣는다:
   \`:::source N\`  (N 은 자료 번호)
   페이지가 이 자리에 임베드 또는 출처 카드를 렌더링한다. 지시자는 문단과 문단 사이 **독립된 줄**에 둔다.
-- \`[🎬 본문에서 재생됨]\` 자료는 영상이 그 자리에서 재생된다. **이걸 ${f.minEmbeds}건 이상 반드시 인용한다.**
+- \`[🎬 본문에서 재생됨]\` 자료는 영상이 그 자리에서 재생된다. **목록에 있는 것은 전부 인용한다.**
+  🚫 **재생 자료가 ${f.minEmbeds}건에 못 미쳐도 원고를 반드시 완성한다.**
+     자료가 모자라다는 이유로 "작성할 수 없습니다" 라고 답하지 마라 — 그건 답이 아니다.
+     자료 확보는 앞 단계의 책임이고, 모자란 것은 발행 검사가 잡아 되돌린다.
+     **네 일은 지금 있는 자료로 규격에 맞는 원고를 끝까지 쓰는 것이다.**
   앞뒤 문장을 "무엇을 보라는 것인지" 알 수 있게 쓰고, 앞에 H3 소제목을 단다.
 - \`[🔗 링크 인용만]\` 자료는 화면에 아무것도 안 보인다. 시각물로 세지 않으므로
   ${STRUCTURE.maxLinkOnlyCitations}건까지만 쓴다. 문장 안에서 출처명과 연도를 밝히고 지시자를 붙인다.

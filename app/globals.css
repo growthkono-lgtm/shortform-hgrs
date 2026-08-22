@@ -390,14 +390,38 @@ dd {
   background: var(--color-accent);
 }
 
-/* 중제목 — 사례 이름 등. 대제목보다 작고 색으로 구분 */
+/*
+ * 중제목 — 사례 이름 등. (2026-08-22 개정)
+ *
+ * 사장님 지적: *"대제목이나 중제목이 없으니 나처럼 대충 빠르게 핵심만 보면서
+ * 넘기려는 사람들은 놓쳐."* 실제로는 중제목이 있었지만 **본문 굵은 글씨와
+ * 구분이 약해서** 스크롤할 때 안 걸렸다.
+ *
+ * 색을 더 쓰지 않는다 — 이 페이지의 파란색은 이미 세 군데가 쓴다
+ * (굵게 하이라이트 · 링크 · 핵심 칩). 소제목까지 파랗게 두면 파란색이
+ * 강조 신호로서 힘을 잃는다. **검정 볼드 + 왼쪽 세로선**으로,
+ * 색이 아니라 **위치**로 구분한다.
+ */
 .blog-body h3 {
-  margin: 2.2rem 0 0.6rem;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--color-accent-deep);
+  position: relative;
+  margin: 2.4rem 0 0.7rem;
+  padding-left: 0.75rem;
+  font-size: 1.0625rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.5;
+  color: var(--color-ink);
   scroll-margin-top: 5rem;
+}
+.blog-body h3::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.28em;
+  bottom: 0.28em;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--color-accent);
 }
 
 .blog-body p {

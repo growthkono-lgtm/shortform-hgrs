@@ -196,6 +196,22 @@ function sourceBlock(source: Source): string {
       : "embed embed-social";
     return `<figure class="src src-embed"><div class="${shape}">${source.embedHtml}</div><figcaption>${citation(source)}</figcaption></figure>`;
   }
+  /**
+   * 대표 이미지가 있으면 **카드로** 보여 준다. (2026-08-22)
+   *
+   * 앞 판은 통계·발표 자료를 예외 없이 텍스트 한 줄로 떨궜다. 그래서
+   * "시각물 3~4개" 규격을 채우려고 주제와 안 맞는 영상을 억지로 넣게 됐다.
+   * 원문에 이미 그림이 있는데 그걸 안 쓴 것이 문제의 절반이었다.
+   */
+  if (source.previewImage) {
+    return (
+      `<figure class="src src-card">` +
+      `<a href="${esc(source.url)}" target="_blank" rel="noopener">` +
+      `<img src="${esc(source.previewImage)}" alt="${esc(source.title)} — ${esc(source.author ?? "")}" loading="lazy">` +
+      `</a>` +
+      `<figcaption>${citation(source)}</figcaption></figure>`
+    );
+  }
   return `<p class="src-inline">${citation(source)}</p>`;
 }
 
@@ -221,6 +237,33 @@ function calloutBlock(
     `<p class="callout-title"><span class="callout-label">${label}</span>${inline(title)}</p>` +
     (items.length ? list : "") +
     `</aside>`
+  );
+}
+
+/**
+ * 도해 한 장. 사양이 깨져 있으면 **아무것도 그리지 않는다** — 빈 상자나
+ * 오류 문구가 본문에 남는 것보다 낫다. 검사식이 개수로 잡아낸다.
+ */
+function figureBlock(raw: string): string {
+  let spec: { kind?: string; title?: string; caption?: string };
+  try {
+    spec = JSON.parse(raw) as typeof spec;
+  } catch {
+    return "";
+  }
+  if (!spec?.kind || !spec?.title) return "";
+
+  const s = Buffer.from(JSON.stringify(spec), "utf8").toString("base64url");
+  /**
+   * alt 에 브랜드를 붙이는 이유 — 이미지 검색 결과에서 우리 것으로 읽히게.
+   * 파일명 대신 alt 가 그 역할을 한다(주소가 쿼리라 파일명이 없다).
+   */
+  const alt = esc(`${spec.title} | 해그로시 숏폼 스튜디오`);
+  const cap = spec.caption ? `<figcaption>${esc(spec.caption)}</figcaption>` : "";
+  return (
+    `<figure class="fig">` +
+    `<img src="/api/blog/figure?s=${s}" alt="${alt}" width="1200" height="675" loading="lazy">` +
+    `${cap}</figure>`
   );
 }
 
@@ -257,6 +300,28 @@ export function renderBody(body: string, sources: Source[]): string {
       const source = sources[n - 1];
       if (source) out.push(sourceBlock(source));
       i += 1;
+      continue;
+    }
+
+    /**
+     * 도해 — `:::figure` 다음 줄부터 JSON, `:::` 로 닫는다. (2026-08-22)
+     *
+     * 사장님: *"무언가 제안 솔루션을 주는 부분은 시각화가 굉장히 중요해.
+     * 전환 이니까 유입 전환을 퍼널 aarrr로 보여주던가."*
+     *
+     * 그림은 `/api/blog/figure` 가 **PNG 로** 그린다. 인라인 SVG 로 그리면
+     * 구글·네이버 이미지 탭에 안 걸린다 — 주소가 있는 실제 이미지여야 하고,
+     * 그 파일에 우리 로고·도메인이 박혀 있어야 퍼가도 출처가 따라간다.
+     */
+    if (/^:::figure\s*$/.test(line)) {
+      const json: string[] = [];
+      i += 1;
+      while (i < lines.length && !/^:::\s*$/.test(lines[i])) {
+        json.push(lines[i]);
+        i += 1;
+      }
+      i += 1;
+      out.push(figureBlock(json.join("\n")));
       continue;
     }
 

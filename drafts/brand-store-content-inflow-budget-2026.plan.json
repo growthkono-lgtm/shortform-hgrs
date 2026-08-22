@@ -1,0 +1,289 @@
+{
+  "title": "브랜드스토어 유입이 안 늘면, 콘텐츠 예산을 어디에 먼저 써야 하나",
+  "slug": "brand-store-content-inflow-budget-2026",
+  "lead": "브랜드스토어를 열고도 자사몰 유입이 멈췄다면, 다음 예산은 상세페이지가 아니라 고객이 상품을 발견할 콘텐츠에 먼저 써야 합니다.",
+  "head_keyword": "브랜드스토어",
+  "sub_keywords": [
+    "브랜드스토어 유입",
+    "자사몰 유입",
+    "브랜드 SNS 채널 운영",
+    "릴스 부스팅",
+    "유튜브 쇼핑",
+    "상품 태그",
+    "콘텐츠 커머스",
+    "재구매"
+  ],
+  "sections": [
+    {
+      "heading": "브랜드스토어를 열었는데도 자사몰 유입이 멈추는 이유는 무엇인가요?",
+      "intent": "브랜드스토어는 모바일 구매를 받는 전환 거점이지만, 고객이 상품을 처음 발견하고 스토어에 들어올 이유는 콘텐츠 접점에서 만들어진다는 점을 설명합니다.",
+      "answer": "브랜드스토어만으로는 신규 유입이 생기지 않습니다. 고객은 피드·쇼츠·리뷰에서 상품을 발견한 뒤 링크와 태그를 따라 스토어로 들어오므로, 스토어 투자와 콘텐츠 유입 투자를 분리해 봐야 합니다.",
+      "table": null,
+      "source_refs": [
+        0,
+        4,
+        5,
+        7
+      ],
+      "key_point": {
+        "title": "스토어는 도착지이고, 콘텐츠는 방문 이유를 만듭니다",
+        "items": [
+          "스토어 이탈률만 보기 전에 콘텐츠별 스토어 유입 비중을 먼저 확인합니다",
+          "상품 등록 수보다 고객이 멈출 구매 맥락의 수를 봅니다",
+          "모바일 랜딩은 콘텐츠를 본 직후의 질문에 바로 답해야 합니다"
+        ]
+      }
+    },
+    {
+      "heading": "브랜드스토어 유입 예산은 어디에 먼저 써야 하나요?",
+      "intent": "스토어 고도화와 콘텐츠 유입 운영을 같은 예산 항목으로 보지 않고, 발견·설득·전환·재방문을 각각 맡기는 투자 구조를 제시합니다.\n\n### 판단 도해 · 스토어 투자와 콘텐츠 투자 구분하기\n:::figure\n{\"kind\":\"matrix\",\"title\":\"브랜드스토어 유입 투자 판단\",\"axes\":{\"x\":\"클릭 이후 전환\",\"y\":\"발견·관심\"},\"cells\":[{\"label\":\"확대\",\"v\":\"발견과 전환이 모두 확인된 콘텐츠\",\"tone\":\"good\"},{\"label\":\"보완\",\"v\":\"관심은 있으나 랜딩 연결이 약한 콘텐츠\",\"tone\":\"bad\"},{\"label\":\"재기획\",\"v\":\"클릭은 나지만 구매 이유가 불명확한 랜딩\",\"tone\":\"bad\"},{\"label\":\"정리\",\"v\":\"발견도 전환도 만들지 못한 공지형 게시물\",\"tone\":\"bad\"}],\"caption\":\"예산은 조회수나 스토어 완성도가 아니라 발견과 전환이 함께 연결되는지로 나눠 판단합니다.\"}\n:::",
+      "answer": "먼저 살 곳은 스토어가 아니라 상품 발견을 만드는 콘텐츠입니다. 채널 편성, 리뷰·사용 장면, 상품 태그와 링크 연결, 재방문 메시지를 한 흐름으로 운영한 뒤 스토어 전환 병목을 고쳐야 합니다.",
+      "table": {
+        "caption": "브랜드스토어 고도화와 콘텐츠 유입 운영을 분리해 투자 우선순위를 판단하는 비교표",
+        "columns": [
+          "구분",
+          "스토어 고도화",
+          "콘텐츠 유입 운영"
+        ]
+      },
+      "source_refs": [
+        0,
+        1,
+        5
+      ],
+      "key_point": {
+        "title": "예산은 제작비가 아니라 유입 공급 구조에 배분합니다",
+        "items": [
+          "콘텐츠 예산은 게시물 수가 아니라 새로운 구매 이유를 만드는지로 판단합니다",
+          "상품 태그·링크는 콘텐츠 기획 단계에서 함께 설계합니다",
+          "클릭이 난 소재만 부스팅하고, 스토어는 클릭 이후 이탈 원인을 고칩니다"
+        ]
+      }
+    },
+    {
+      "heading": "자사몰로 고객을 데려온 브랜드는 콘텐츠를 어떻게 운영했나요?",
+      "intent": "목적 → 무엇을 봤나 → 결과의 순서로, 제품 USP를 한 편에 몰지 않고 구매 갈등별로 나눈 오트몬드와 콘텐츠·소통으로 자사몰 유입을 만든 VT코스메틱·플랫퍼 사례를 비교합니다.\n\n### 사례 · 롯데칠성음료 오트몬드 — 건강과 맛의 갈등을 나눈 영상\n### 사례 · VT코스메틱 — SNS 바이럴을 자사몰 유입으로 연결한 인터뷰\n### 사례 · 플랫퍼 — 인스타그램과 라이브로 구매 맥락을 만든 인터뷰",
+      "answer": "자사몰로 고객을 데려온 브랜드는 상품 특징을 한 번에 설명하지 않았습니다. 고객이 멈추는 선택 갈등과 사용 장면을 나눠 콘텐츠로 만들고, 그 관심을 스토어 방문과 구매 고려로 이어지게 했습니다.",
+      "table": null,
+      "source_refs": [
+        8,
+        11,
+        13,
+        16
+      ],
+      "key_point": {
+        "title": "챔피언 소재는 상품 설명이 아니라 구매 직전 갈등에서 나옵니다",
+        "items": [
+          "한 영상에 USP를 몰아넣기보다 고객의 선택 상황별로 소재를 나눕니다",
+          "조회수보다 상품 클릭 이후의 스토어 행동을 함께 봅니다",
+          "라이브와 댓글·DM에서 반복되는 질문은 다음 콘텐츠의 기획 근거로 씁니다"
+        ]
+      }
+    },
+    {
+      "heading": "우리 브랜드스토어 유입, 이번 주 무엇부터 고쳐야 하나요?",
+      "intent": "광고와 자사몰의 메시지 정합을 확인하고, 계속할 콘텐츠와 중단할 콘텐츠를 가르는 짧은 점검 순서를 제공합니다.",
+      "answer": "이번 주에는 콘텐츠별 스토어 유입과 클릭 이후 행동을 먼저 겹쳐 보세요. 조회수는 높아도 유입이 없는 소재, 유입은 있어도 구매 이유가 이어지지 않는 랜딩을 분리하면 다음 예산의 우선순위가 보입니다.",
+      "table": null,
+      "source_refs": [
+        4,
+        5,
+        6,
+        14
+      ],
+      "key_point": {
+        "title": "콘텐츠와 자사몰은 같은 구매 이유를 말해야 합니다",
+        "items": [
+          "콘텐츠의 첫 갈등과 랜딩 첫 화면의 질문이 같아야 합니다",
+          "상품 클릭은 많지만 장바구니가 적으면 소재보다 랜딩의 설득 순서를 봅니다",
+          "구매 고객의 후기·재구매 질문은 다음 편성의 우선 소재로 둡니다"
+        ]
+      }
+    },
+    {
+      "heading": "브랜드 채널 운영을 맡길 때 무엇을 확인해야 하나요?",
+      "intent": "채널 운영 파트너가 단순 게시물 제작이 아니라 포지셔닝, 반복 편성, 부스팅, 자사몰·CRM 연결까지 유입 구조를 운영하는지 확인하게 합니다.",
+      "answer": "채널 운영은 게시물 업로드 대행으로 고르면 안 됩니다. 브랜드 포지셔닝을 구매 맥락으로 번역하고, 콘텐츠별 유입·전환을 읽어 다음 편성과 부스팅까지 조정하는 운영 구조를 확인해야 합니다.",
+      "table": null,
+      "source_refs": [
+        0,
+        2,
+        3,
+        15
+      ],
+      "key_point": {
+        "title": "운영 파트너는 콘텐츠 수가 아니라 다음 예산의 판단 근거를 남겨야 합니다",
+        "items": [
+          "월간 편성에 신규 발견·구매 설득·재방문 역할이 구분돼 있는지 봅니다",
+          "부스팅 기준이 조회수가 아닌 스토어 유입과 구매 기여로 연결되는지 확인합니다",
+          "채널·스토어·CRM의 메시지를 한 팀이 조정할 수 있는지 묻습니다"
+        ]
+      }
+    }
+  ],
+  "actions": {
+    "title": "이번 주에 확인할 것",
+    "steps": [
+      "지난 30일 게시물별 링크 유입을 · 채널 인사이트와 자사몰 분석 화면에서 · 조회수 대비 스토어 세션과 장바구니 담기 흐름으로 비교합니다.",
+      "상위 유입 콘텐츠의 첫 장면과 랜딩 첫 화면을 · 브랜드 SNS 게시물과 브랜드스토어 상품 페이지에서 · 같은 구매 갈등을 말하는지 기준으로 대조합니다.",
+      "최근 부스팅 소재를 · 광고 관리자와 자사몰 주문 데이터에서 · 클릭 이후 구매·장바구니·이탈 중 어디에서 멈췄는지로 세 그룹으로 나눕니다.",
+      "고객 질문이 반복된 상품을 · 댓글·DM·리뷰에서 · 다음 콘텐츠가 풀어야 할 선택 이유인지 기준으로 세 개만 추립니다.",
+      "다음 달 콘텐츠 후보를 · 채널 편성표에서 · 신규 발견·상품 이해·재구매 중 어느 역할을 맡는지 기준으로 배치합니다."
+    ],
+    "handoff": "구매 갈등을 계속 수집해 채널 편성·제작·부스팅·자사몰 연결까지 매주 조정하는 일은 내부 인력만으로 끊기기 쉬우므로, 해그로시는 [브랜드 SNS 채널 운영](https://hgrs.io/sns-brand)에서 이 흐름을 하나의 운영 단위로 맡습니다."
+  },
+  "sources": [
+    {
+      "kind": "stat",
+      "url": "https://youtube-kr.googleblog.com/2024/06/youtube-shopping-kr-update.html",
+      "title": "한국 유튜브 쇼핑 제휴 프로그램 및 유튜브 쇼핑 전용 스토어 업데이트",
+      "author": "YouTube Korea Blog",
+      "year": "2024",
+      "basis": "2024년, 한국 유튜브 쇼핑 제휴 프로그램 및 유튜브 쇼핑 전용 스토어 출시 기준"
+    },
+    {
+      "kind": "stat",
+      "url": "https://newsroom.tiktok.com/ko-kr/ttw-2025",
+      "title": "TikTok World 2025 제품 발표",
+      "author": "TikTok Newsroom 한국어판",
+      "year": "2025",
+      "basis": "2025년, 글로벌 TikTok World 제품 발표 기준"
+    },
+    {
+      "kind": "stat",
+      "url": "https://news.nate.com/view/20250714n12278",
+      "title": "유통업계 숏폼 커머스 운영 현황 보도",
+      "author": "뉴스핌·네이트 뉴스",
+      "year": "2025",
+      "basis": "2025년 7월 14일, 국내 이커머스 숏폼 커머스 운영 현황 및 사업자 공개 수치 기준"
+    },
+    {
+      "kind": "stat",
+      "url": "https://biz.chosun.com/distribution/channel/2025/08/10/6HZ4TNXZWFCNPNQKS2WK4Q4SA4/?outputType=amp",
+      "title": "유튜브 쇼핑 제휴 프로그램 확산 보도",
+      "author": "조선비즈",
+      "year": "2025",
+      "basis": "2025년 8월 10일, 한국 유튜브 쇼핑 제휴 프로그램 참여 크리에이터와 상품 태그 영상 기준"
+    },
+    {
+      "kind": "stat",
+      "url": "https://sns.kocca.kr/kocca/koccanews/reportview.do?menuNo=204767&nttNo=1067",
+      "title": "2025 콘텐츠 이용행태 조사",
+      "author": "한국콘텐츠진흥원",
+      "year": "2025",
+      "basis": "2025년 발표, 국내 숏폼 이용자 기준"
+    },
+    {
+      "kind": "stat",
+      "url": "https://blog.opensurvey.co.kr/article/socialmedia-2025-2/",
+      "title": "소셜미디어 트렌드 리포트 2025",
+      "author": "오픈서베이",
+      "year": "2025",
+      "basis": "2025년 9월 3~9일, 전국 만 15~59세 3,000명 및 유튜브·인스타그램 사용자 각 400명 기준"
+    },
+    {
+      "kind": "stat",
+      "url": "https://www.navercorp.com/navercorp_/ir/sustainabilityReport/NAVER_2021_ESG_KOR.pdf",
+      "title": "NAVER 2021 ESG 보고서",
+      "author": "NAVER",
+      "year": "2021",
+      "basis": "2021년, 국내 네이버 브랜드스토어 및 쇼핑라이브 운영 기준"
+    },
+    {
+      "kind": "stat",
+      "url": "https://sri.kostat.go.kr/boardDownload.es?bid=241&list_no=443337&seq=1",
+      "title": "2025년 12월 온라인쇼핑동향",
+      "author": "국가데이터처",
+      "year": "2026",
+      "basis": "2025년 12월, 대한민국 온라인쇼핑 및 모바일쇼핑 거래액 기준"
+    },
+    {
+      "kind": "youtube",
+      "url": "https://www.youtube.com/watch?v=B83Bd9ANdEQ",
+      "title": "오트몬드 건강과 맛 구매 갈등 소재",
+      "author": "롯데칠성음료",
+      "year": "2024",
+      "basis": "2024년 YouTube Works Korea 출품, 국내 식물성음료 신규 론칭 캠페인 기준"
+    },
+    {
+      "kind": "youtube",
+      "url": "https://www.youtube.com/watch?v=xmgStgX4Hbk",
+      "title": "오트몬드 아몬드와 오트 선택 갈등 소재",
+      "author": "롯데칠성음료",
+      "year": "2024",
+      "basis": "2024년 YouTube Works Korea 출품, 국내 식물성음료 신규 론칭 캠페인 기준"
+    },
+    {
+      "kind": "youtube",
+      "url": "https://www.youtube.com/shorts/C8gLWJ4ZO1c",
+      "title": "한잔용 옥수수차 15초 A편",
+      "author": "동서식품",
+      "year": "2024",
+      "basis": "2024년 YouTube Works Korea 출품, 국내 식품 신제품 인지도·고려도 확대 캠페인 기준"
+    },
+    {
+      "kind": "youtube",
+      "url": "https://www.youtube.com/watch?v=rrhB84xOIkc",
+      "title": "연매출 1700억원, 일본과 한국 뷰티업계 뒤흔든 VT 리들샷의 초기 마케팅 전략",
+      "author": "스몰톡라운지",
+      "year": "2025",
+      "basis": "2025년 1월 24일 채널톡 벤치마크 게시물에서 소개한 국내 VT코스메틱 리들샷 초기 마케팅 사례 기준"
+    },
+    {
+      "kind": "youtube",
+      "url": "https://www.youtube.com/watch?v=syNjVSxRK5k",
+      "title": "글로니 대표 인터뷰 영상",
+      "author": "채널톡 유튜브",
+      "year": "2023",
+      "basis": "2023년 8월 14일, 국내 패션 브랜드 글로니의 인스타그램 콘텐츠·자사몰 고객관리 사례 기준"
+    },
+    {
+      "kind": "youtube",
+      "url": "https://www.youtube.com/watch?v=1dc0p9rv5tw",
+      "title": "플랫퍼 대표 인터뷰 영상",
+      "author": "채널톡 유튜브",
+      "year": "2023",
+      "basis": "2023년 10월 24일, 국내 여성 패션 자사몰 플랫퍼의 인스타그램·라이브 운영 사례 기준"
+    },
+    {
+      "kind": "youtube",
+      "url": "https://www.youtube.com/watch?v=oyXFPwgR2-0",
+      "title": "휩드 인터뷰 풀버전",
+      "author": "채널톡 유튜브",
+      "year": "2025",
+      "basis": "2025년, 국내 비건 팩클렌저 브랜드 휩드의 자사몰 단골·브랜드 메시지 운영 사례 기준"
+    },
+    {
+      "kind": "youtube",
+      "url": "https://www.youtube.com/watch?v=CYLRbpsZy48",
+      "title": "세터 인터뷰 하이라이트",
+      "author": "채널톡 유튜브",
+      "year": "2023",
+      "basis": "2023년 6월 19일, 국내 패션 브랜드 세터의 자사몰 성장·고객 콘텐츠 운영 사례 기준"
+    },
+    {
+      "kind": "stat",
+      "url": "https://services.google.com/fh/files/events/ytw2024lotte_health.pdf",
+      "title": "오트몬드 YouTube Works Korea 출품 캠페인 자료",
+      "author": "YouTube Works Korea",
+      "year": "2024",
+      "basis": "2024년, 국내 식물성음료 오트몬드 신규 론칭 캠페인 기준"
+    },
+    {
+      "kind": "stat",
+      "url": "https://services.google.com/fh/files/events/ytw2024dongsuh.pdf",
+      "title": "한잔용 옥수수차 YouTube Works Korea 출품 캠페인 자료",
+      "author": "YouTube Works Korea",
+      "year": "2024",
+      "basis": "2024년, 국내 식품 신제품 인지도·고려도 확대 캠페인 기준"
+    }
+  ],
+  "faq": [
+    "브랜드스토어 유입이 적으면 검색광고 예산부터 늘려야 하나요?",
+    "릴스 조회수가 높아도 자사몰 매출로 이어지지 않으면 중단해야 하나요?",
+    "브랜드 공식 계정 콘텐츠와 크리에이터 협업 콘텐츠는 어떻게 역할을 나눠야 하나요?",
+    "재구매 고객에게도 새 콘텐츠를 계속 보여줘야 하나요?"
+  ],
+  "next_teaser": "다음 편에서는 브랜드스토어 랜딩 첫 화면이 콘텐츠의 구매 이유를 어떻게 이어받아야 장바구니 이탈을 줄일 수 있는지 다룹니다.",
+  "thumbnail_prompt": "A premium Korean D2C ecommerce scene: a smartphone displaying a clean online brand store checkout screen, surrounded by floating vertical short-form video frames showing product use, customer review and lifestyle moments, content streams visually guiding toward the store, sophisticated editorial marketing illustration, dark navy and warm coral accents, no text, no logos"
+}

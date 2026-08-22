@@ -1,4 +1,9 @@
 import {
+  duplicatePublishers,
+  isCompetitorSource,
+  isStale,
+} from "@/lib/blog-fit";
+import {
   HOOKING,
   AEO_SPEC,
   BLOG_SPEC,
@@ -112,6 +117,176 @@ export function auditPost(input: {
   });
 
   /**
+   * **인용 나열 — 우리가 하는 말이 없는 글.** (2026-08-22)
+   *
+   * 사장님: *"너가 말하는건 아니고 다 인용이야? 도입부본문은?"*
+   * 그 화면에 이런 문단이 네 개 연속으로 있었다 —
+   *   "한국방송광고진흥공사는 ~ 제시했습니다." / "유튜브 코리아는 ~ 공개했습니다."
+   * 남의 발표를 옮기고 각주를 다는 것이 반복되면 글이 아니라 요약문이다.
+   * 이 블로그의 목적은 **리드 확보**인데 요약문으로는 문의가 오지 않는다.
+   */
+  /**
+   * 문장 끝을 요구하면 못 잡는다 — 실제 원고는 전달 문장 뒤에 다른 문장이
+   * 이어 붙는다. **문단 단위로 보고 그 안에 전달 동사가 있는지**만 센다.
+   */
+  /**
+   * 주어에 조건을 걸면 못 잡는다 — "유튜브 코리아는", "Meta 한국어 뉴스룸도"
+   * 처럼 띄어쓰기가 들어간다. **동사만 센다.**
+   */
+  const relayVerb = /(?:발표했|공개했|밝혔|제시했|다뤘|소개했|언급했|설명했)습니다/;
+  const relays = body.split("\n").filter((l) => relayVerb.test(l));
+  if (relays.length >= 3) {
+    findings.push({
+      level: "fail",
+      message: `"A가 B를 발표했습니다" 형태의 전달 문장 ${relays.length}개. 남의 발표를 옮기는 글이 됐습니다 — 우리 판단을 먼저 쓰고 자료는 근거로만 붙입니다`,
+    });
+  }
+
+  /** 첫 문단이 기관·플랫폼 이름으로 시작하면 장면이 아니라 보고서다 */
+  /**
+   * 첫 문단 — frontmatter·목차·읽는시간을 건너뛴 **진짜 본문 첫 줄**.
+   * 08-22 첫 판은 `slug:` 를 첫 문단으로 잡았다.
+   */
+  const openingPara = body
+    .split("\n")
+    .find(
+      (l) =>
+        l.trim().length > 30 &&
+        !l.startsWith("#") &&
+        !l.startsWith("📖") &&
+        !l.startsWith(":::") &&
+        !l.startsWith("---") &&
+        !l.startsWith("|") &&
+        !/^[a-z_]+:/i.test(l.trim()),
+    );
+  if (
+    openingPara &&
+    /^(?:네이버|카카오|메타|Meta|구글|Google|유튜브|YouTube|틱톡|TikTok|한국[가-힣]+원|한국[가-힣]+공사|국가데이터처|정보통신정책연구원)/.test(
+      openingPara.trim(),
+    )
+  ) {
+    findings.push({
+      level: "fail",
+      message: `첫 문단이 "${openingPara.trim().slice(0, 18)}…" 로 시작합니다. 도입부는 독자가 겪는 장면으로 엽니다 — 기관·플랫폼 이름으로 시작하지 않습니다`,
+    });
+  }
+
+  /** 제목이 밋밋하게 닫히면 검색 결과에서 안 눌린다 */
+  if (input.title && /(?:할 기준|하는 법|해야 할 것|에 대하여|하는 방법)$/.test(input.title.trim())) {
+    findings.push({
+      level: "fail",
+      message: `제목이 "${input.title.trim().slice(-8)}" 로 닫힙니다. 무슨 얘긴지 알 수 없고 클릭할 이유가 없습니다 — 독자가 겪는 상황이나 판단할 대상을 제목에 넣습니다`,
+    });
+  }
+
+  /**
+   * 도해 — 제안·해법 자리의 시각화. (2026-08-22)
+   *
+   * 사양이 깨져 있으면 렌더러가 **아무것도 안 그린다.** 본문에 빈자리가
+   * 생기는데 글자 수는 그대로라 눈으로는 안 보인다. 그래서 여기서 센다.
+   */
+  const figs = [...body.matchAll(/^:::figure\s*$([\s\S]*?)^:::\s*$/gm)];
+  const figSpecs = figs.map((m) => {
+    try {
+      return JSON.parse(m[1].trim()) as { kind?: string; title?: string };
+    } catch {
+      return null;
+    }
+  });
+  const broken = figSpecs.filter((x) => !x?.kind || !x?.title).length;
+  if (broken) {
+    findings.push({
+      level: "fail",
+      message: `도해 ${broken}개의 사양이 깨졌습니다. JSON 은 한 줄로 쓰고 kind·title 은 반드시 채웁니다`,
+    });
+  }
+  const okFigs = figSpecs.length - broken;
+  if (okFigs < VISUAL_SPEC.figure.min) {
+    findings.push({
+      level: "fail",
+      message: `도해 ${okFigs}장 (기준 ${VISUAL_SPEC.figure.min}장). 제안·해법을 펴는 섹션에는 그림이 있어야 합니다 — 구조적 주장을 글머리표로만 쓰면 안 읽힙니다`,
+    });
+  }
+  if (okFigs > VISUAL_SPEC.figure.max) {
+    findings.push({
+      level: "warn",
+      message: `도해 ${okFigs}장 (상한 ${VISUAL_SPEC.figure.max}장). 많으면 그림이 배경이 됩니다`,
+    });
+  }
+  const badKind = figSpecs.filter(
+    (x) => x?.kind && !(x.kind in VISUAL_SPEC.figure.kinds),
+  );
+  if (badKind.length) {
+    findings.push({
+      level: "fail",
+      message: `도해 종류가 잘못됐습니다 (${badKind.map((x) => x?.kind).join("·")}). ${Object.keys(VISUAL_SPEC.figure.kinds).join(" · ")} 중에서 고릅니다`,
+    });
+  }
+
+  /* ── 발행처 · 중복 · 시즌성 — 2차 체크 (2026-08-22) ──────────────
+   *
+   * 1차는 수집 단계에서 프롬프트가 본다. 여기는 **완성 원고**를 다시 보는
+   * 자리다. 프롬프트는 지시일 뿐이고 지켜졌는지는 따로 세야 한다 —
+   * 그걸 안 해서 9편에 에어컨 A/S 영상이 나갔다.
+   */
+  const competitors = sources.filter((x) => isCompetitorSource(x));
+
+  // 경쟁사 자료는 **임베드하지 않는다.** 우리 독자를 그쪽으로 보내는 셈이다
+  const embeddedCompetitor = competitors.filter((x) => x.embedHtml);
+  if (embeddedCompetitor.length) {
+    findings.push({
+      level: "fail",
+      message: `경쟁 사업자 자료를 임베드했습니다 (${embeddedCompetitor
+        .map((x) => x.author)
+        .join("·")}). 인용은 하되 임베드는 하지 않고 각주로만 남깁니다`,
+    });
+  }
+  // 근거의 중심이 경쟁사면 우리 글이 아니라 그들 글의 요약이 된다
+  if (competitors.length > 1) {
+    findings.push({
+      level: "fail",
+      message: `경쟁 사업자 자료 ${competitors.length}건 (${competitors
+        .map((x) => x.author)
+        .join("·")}). 한 글에 한 건까지입니다 — 근거의 중심은 공공·플랫폼 자료여야 합니다`,
+    });
+  }
+  // 본문에 경쟁사 이름이 드러나면 그쪽을 홍보하는 꼴이다
+  for (const c of competitors) {
+    if (c.author && body.includes(c.author)) {
+      findings.push({
+        level: "warn",
+        message: `본문에 경쟁사명 "${c.author}" 이 노출됩니다. "한 미디어렙 조사" 처럼 적고 이름은 각주에만 남깁니다`,
+      });
+    }
+  }
+
+  /**
+   * 같은 발행처 두 번 — 6편이 동서식품 옥수수차 하나를
+   * 43초·6초·15초A·15초B 로 네 건 세었다. 자료가 넷인 게 아니라 채우기가 넷이다.
+   */
+  const dupes = duplicatePublishers(sources);
+  if (dupes.length) {
+    findings.push({
+      level: "fail",
+      message: `같은 발행처에서 2건 이상 가져왔습니다 (${dupes.join("·")}). 한 브랜드·한 캠페인에서는 한 건만 씁니다`,
+    });
+  }
+
+  /**
+   * 낡은 자료 — 5편에 2021년 TVCF 가 세 건 들어갔다. 브랜드 사례는
+   * **지금 돌고 있는 것**이라야 독자가 자기 얘기로 읽는다.
+   */
+  const stale = sources.filter((x) => isStale(x, input.formatKey));
+  if (stale.length) {
+    findings.push({
+      level: "warn",
+      message: `오래된 자료 ${stale.length}건 (${stale
+        .map((x) => `${x.year} ${x.title?.slice(0, 20)}`)
+        .join(" · ")}). 더 최근 것을 먼저 찾습니다`,
+    });
+  }
+
+  /**
    * 모호어 — 뒤에 '무엇이' 가 안 붙은 채로 쓰였는가. (2026-08-14)
    *
    * 사장님 지적: *"가령 반응·성과 이런 말 썼으면 어떤 반응, 어떤 성과인지
@@ -161,18 +336,24 @@ export function auditPost(input: {
   const embedded = citedSourceList.filter((s) => s.embedHtml).length;
   const linkOnly = citedSourceList.filter((s) => !s.embedHtml).length;
   const tableCount = (body.match(/^\|[\s:|-]+\|\s*$/gm) ?? []).length;
-  const visuals = embedded + tableCount;
+  /**
+   * 원문 대표 이미지가 붙은 자료도 시각물이다. (2026-08-22)
+   * 08-22 이전에는 통계·발표가 전부 텍스트 한 줄이라 시각물 0점이었고,
+   * 그 빈자리를 채우려고 주제와 안 맞는 영상을 넣게 됐다.
+   */
+  const carded = citedSourceList.filter((s) => !s.embedHtml && s.previewImage).length;
+  const visuals = embedded + tableCount + carded + okFigs;
 
   if (visuals > STRUCTURE.maxVisuals) {
     findings.push({
       level: "fail",
-      message: `시각 자료 ${visuals}개 (재생 ${embedded} + 표 ${tableCount}). ${STRUCTURE.maxVisuals}개 이내로 줄이세요`,
+      message: `시각 자료 ${visuals}개 (재생 ${embedded} + 표 ${tableCount} + 원문카드 ${carded} + 도해 ${okFigs}). ${STRUCTURE.maxVisuals}개 이내로 줄이세요`,
     });
   }
   if (visuals < STRUCTURE.minVisuals) {
     findings.push({
       level: "fail",
-      message: `시각 자료 ${visuals}개 (기준 ${STRUCTURE.minVisuals}개 이상 — 재생 ${embedded} + 표 ${tableCount}). 링크 인용은 시각물로 세지 않습니다`,
+      message: `시각 자료 ${visuals}개 (기준 ${STRUCTURE.minVisuals}개 이상 — 재생 ${embedded} + 표 ${tableCount} + 원문카드 ${carded} + 도해 ${okFigs}). 링크 한 줄은 시각물로 세지 않습니다`,
     });
   }
   if (citedValid.length < f.minSources) {

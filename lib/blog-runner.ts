@@ -1,3 +1,7 @@
+import { citedSourceIndexes } from "@/lib/blog-ai";
+import { fitFindings, judgeSourceFit } from "@/lib/blog-fit-judge";
+import type { FitContext } from "@/lib/blog-fit";
+import { leadTargetOf } from "@/lib/blog-spec";
 import "server-only";
 
 import {
@@ -668,6 +672,21 @@ export async function stepOnce(now = new Date()): Promise<StepResult> {
     return { jobId: job.id, from: job.stage, to, note, ok: true };
   };
 
+  /**
+   * **6축 적합성 좌표.** (2026-08-22)
+   *
+   * 조사·기획 프롬프트가 이걸 보고 자료를 고른다. 앞 판에는 이 값이
+   * 프롬프트에 닿지 않아서, 모델이 아는 것이라곤 "국내 유튜브 4건" 뿐이었다.
+   * 그 결과가 "블로그 운영" 글의 에어컨 A/S 영상 4편이다.
+   */
+  const fit: FitContext = {
+    keyword: job.keyword_term ?? job.topic,
+    topic: job.topic,
+    pillarKey,
+    leadTargetKey: leadTargetOf(job.keyword_term ?? job.topic).key,
+    difficulty: null,
+  };
+
   try {
     switch (job.stage) {
       /* ── 조사 ─────────────────────────────────────────────────────── */
@@ -677,6 +696,7 @@ export async function stepOnce(now = new Date()): Promise<StepResult> {
             pillarKey,
             formatKey,
             topic: job.topic,
+            fit,
             // 되감겨 온 조사면 무엇이 모자랐는지 알려 준다. 안 주면 같은
             // 검색어를 다시 쳐서 같은 결과를 가져온다
             retryNote: job.last_error,
@@ -702,6 +722,7 @@ export async function stepOnce(now = new Date()): Promise<StepResult> {
             segmentKey: (job.segment as SegmentKey | null) ?? null,
             topic: job.topic,
             research: { findings: job.research, searchCount: job.search_count ?? 0 },
+            fit,
             retryNote: job.last_error,
           }),
           "기획",
@@ -879,6 +900,39 @@ export async function stepOnce(now = new Date()): Promise<StepResult> {
           });
 
         let result = check(post.body ?? "");
+
+        /**
+         * **적합성 2차 판정 — 발행 직전 마지막 관문.** (2026-08-22)
+         *
+         * 사장님: *"이중으로 기획수집단계에서 한번 제작배포단계에서 한번해서
+         * 더블체크하고 배포해."*
+         *
+         * 1차는 조사·기획 프롬프트가 본다. 그건 지시일 뿐 지켜졌는지는 아무도
+         * 안 셌다. 여기서 **완성 원고에 실제로 인용된 자료**를 6축에 다시 댄다.
+         * 개수·연도·해상도는 검사식이 세고, **의미가 맞는지는 모델이 판정**한다.
+         *
+         * 기계 검사를 통과한 경우에만 부른다 — 어차피 되돌아갈 원고에
+         * 모델 호출을 더 쓸 이유가 없다.
+         */
+        if (result.ok) {
+          const judged = await judgeSourceFit({
+            fit,
+            sources,
+            citedIndexes: citedSourceIndexes(post.body ?? ""),
+          });
+          const misfit = fitFindings(judged);
+          if (misfit.length) {
+            result = {
+              ...result,
+              ok: false,
+              failures: [...result.failures, ...misfit],
+              findings: [
+                ...result.findings,
+                ...misfit.map((m) => ({ level: "fail" as const, message: m })),
+              ],
+            };
+          }
+        }
 
         // ── 통과 → 승인. 이 한 줄이 사장님의 "발행하기" 버튼을 대신한다
         if (result.ok) {

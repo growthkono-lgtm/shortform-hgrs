@@ -43,6 +43,18 @@ export type Source = {
   basis: string;
   /** 본문에 심을 임베드 HTML. 링크 인용만 하는 자료는 없다 */
   embedHtml?: string;
+  /**
+   * 원문의 대표 이미지(og:image). (2026-08-22)
+   *
+   * 사장님: *"왜 이미지나 영상 안들어가있어? 크리에이터 인플루언서 실제
+   * 얼굴들도 많잖아. … 초상권핑계대지말고."*
+   *
+   * 08-22 이전에는 통계·발표 자료가 예외 없이 **텍스트 한 줄**로 떨어졌다.
+   * 네이버 보도자료도 올리브영 가이드도 유튜브 블로그도 전부 대표 이미지가
+   * 있는데 그걸 안 쓰고 있었다. 공개된 og:image 를 **출처 표기와 함께**
+   * 인용하는 것이라 저작권 문제도 없다.
+   */
+  previewImage?: string;
   /** 검증 시각 — 나중에 깨진 자료를 찾을 때 쓴다 */
   verifiedAt: string;
 };
@@ -88,6 +100,162 @@ async function getJson(url: string, timeoutMs = 8000): Promise<unknown> {
     return JSON.parse(text);
   } finally {
     clearTimeout(timer);
+  }
+}
+
+/**
+ * 원문에서 대표 이미지를 뽑는다. (2026-08-22)
+ *
+ * 못 뽑아도 **조용히 넘어간다** — 이미지 하나 때문에 자료가 통째로 탈락하면
+ * 근거가 좋은 통계를 못 쓰게 된다. 이미지는 있으면 좋은 것이고 근거는
+ * 반드시 있어야 하는 것이다.
+ */
+/**
+ * **사이트 공통 OG 이미지는 대표 이미지가 아니다.** (2026-08-22)
+ *
+ * 08-22 실측에서 이런 것들이 카드로 나갔다 —
+ *
+ *   네이버      `OG_TAG_6_Media.png`   빈 기자간담회장. 모든 미디어 페이지에 붙는 공통 이미지
+ *   콘텐츠진흥원 `logo-og.png`          그냥 기관 로고
+ *   유튜브블로그 `default.jpg`          120×90 최저화질 썸네일
+ *
+ * 셋 다 **그 글의 내용을 담고 있지 않다.** 화질만으로는 못 거른다 —
+ * 네이버 것은 1200×630 이라 해상도 검사를 통과한다. 파일명이 단서다.
+ */
+const GENERIC_IMAGE =
+  /(?:^|[/_.-])(?:og[_-]?tag|og[_-]?image|logo|common|default|share|thumb(?:nail)?|placeholder|no[_-]?image|blank|main[_-]?visual|site[_-]?image)(?:[/_.-]|$)/i;
+
+/** 카드로 쓸 만한 최소 폭. 이보다 작으면 본문에서 뭉개진다 */
+const MIN_IMAGE_WIDTH = 800;
+
+/**
+ * **로고·심볼 이미지는 자료가 아니다.** (2026-08-22)
+ *
+ * 사장님: *"넌 이딴게 의미가 있는 시각자료라고 생각하냐?"*
+ * 그 화면에 KOCCA 로고 한 장, TikTok World 로고 한 장이 크게 박혀 있었다.
+ * **정보가 0이다.** 읽는 사람이 그 앞에서 멈출 이유가 없으니 체류시간에도
+ * 도움이 안 된다.
+ *
+ * 파일명으로는 못 잡는다 — KOCCA 는 경로가 달랐고 TikTok 은 파일명이
+ * 해시였다. 그래서 **그림 자체를 본다.**
+ *
+ *   · 색이 몇 개 안 쓰인다      로고는 단색·2색이 대부분이다
+ *   · 여백이 태반이다           로고는 가운데만 차 있다
+ *
+ * 사진·차트·화면 캡처는 색이 수백 개고 여백이 그렇게 크지 않다.
+ */
+async function looksLikeLogo(url: string): Promise<boolean> {
+  try {
+    const res = await fetch(url, {
+      headers: { "user-agent": UA },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) return false;
+    const buf = Buffer.from(await res.arrayBuffer());
+
+    const sharp = (await import("sharp")).default;
+    // 160px 로 줄여 픽셀을 훑는다. 원본을 다 읽으면 느리고 판정은 안 달라진다
+    const { data, info } = await sharp(buf)
+      .resize(160, 160, { fit: "inside" })
+      .removeAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+
+    const bucket = new Map<number, number>();
+    const total = info.width * info.height;
+    for (let i = 0; i < data.length; i += info.channels) {
+      // 16단계로 뭉뚱그린다. 사진의 미세한 색차이를 다른 색으로 세지 않게
+      const key =
+        ((data[i] >> 4) << 8) | ((data[i + 1] >> 4) << 4) | (data[i + 2] >> 4);
+      bucket.set(key, (bucket.get(key) ?? 0) + 1);
+    }
+    const colors = bucket.size;
+    const background = Math.max(...bucket.values()) / total;
+
+    /**
+     * 실측 기준 (2026-08-22)
+     *   KOCCA 로고      색 55 · 배경 52%
+     *   네이버 간담회    색 110 · 배경 37%   ← 이건 사진이지만 내용이 없어 파일명으로 이미 걸린다
+     *   유튜브 썸네일    색 176 · 배경 8.5%
+     */
+    return colors < 90 || background > 0.45;
+  } catch {
+    // 못 읽으면 막지 않는다. 근거를 잃는 것보다 낫다
+    return false;
+  }
+}
+
+/**
+ * 이미지가 실제로 쓸 만한가 — 폭을 **직접 재서** 판정한다.
+ * HEAD 로는 크기를 알 수 없어 앞부분만 받아 헤더에서 읽는다.
+ */
+async function imageWidth(url: string): Promise<number | null> {
+  try {
+    const res = await fetch(url, {
+      headers: { "user-agent": UA, range: "bytes=0-65535" },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok && res.status !== 206) return null;
+    const buf = Buffer.from(await res.arrayBuffer());
+
+    // PNG — IHDR 의 폭은 16바이트 위치
+    if (buf.length > 24 && buf.toString("hex", 0, 8) === "89504e470d0a1a0a") {
+      return buf.readUInt32BE(16);
+    }
+    // JPEG — SOF 마커를 찾아 폭을 읽는다
+    if (buf.length > 4 && buf[0] === 0xff && buf[1] === 0xd8) {
+      let i = 2;
+      while (i < buf.length - 9) {
+        if (buf[i] !== 0xff) { i += 1; continue; }
+        const marker = buf[i + 1];
+        if (marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc) {
+          return buf.readUInt16BE(i + 7);
+        }
+        i += 2 + buf.readUInt16BE(i + 2);
+      }
+    }
+    // WebP(VP8X) — 24바이트 위치에 폭-1 이 24비트로 들어 있다
+    if (buf.length > 30 && buf.toString("ascii", 8, 12) === "WEBP" && buf.toString("ascii", 12, 16) === "VP8X") {
+      return 1 + (buf[24] | (buf[25] << 8) | (buf[26] << 16));
+    }
+    return null; // 형식을 모르면 막지 않는다 — 근거를 잃는 것보다 낫다
+  } catch {
+    return null;
+  }
+}
+
+async function fetchPreviewImage(url: string): Promise<string | undefined> {
+  try {
+    const res = await fetch(url, {
+      headers: { "user-agent": "Mozilla/5.0 (compatible; hgrs-blog/1.0)" },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) return undefined;
+    const html = (await res.text()).slice(0, 200_000);
+    const m =
+      /<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']/i.exec(html) ??
+      /<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']/i.exec(html) ??
+      /<meta[^>]+name=["\']twitter:image["\'][^>]+content=["\']([^"\']+)["\']/i.exec(html);
+    if (!m) return undefined;
+    const raw = m[1].trim();
+    if (!raw) return undefined;
+    // 상대 경로로 준 곳이 있다. 절대 주소로 바꿔 둔다
+    const abs = new URL(raw, url).toString();
+    if (!abs.startsWith("http")) return undefined;
+
+    // 사이트 공통 이미지는 그 글의 그림이 아니다
+    if (GENERIC_IMAGE.test(new URL(abs).pathname)) return undefined;
+
+    // 너무 작으면 본문에서 뭉개진다. 폭을 못 재면 통과시킨다
+    const w = await imageWidth(abs);
+    if (w !== null && w < MIN_IMAGE_WIDTH) return undefined;
+
+    // 로고 한 장은 시각 자료가 아니다
+    if (await looksLikeLogo(abs)) return undefined;
+
+    return abs;
+  } catch {
+    return undefined;
   }
 }
 
@@ -204,6 +372,9 @@ export async function resolveLink(
     clearTimeout(timer);
   }
 
+  // 대표 이미지는 있으면 카드로 보여 준다. 없어도 자료는 그대로 산다
+  const previewImage = await fetchPreviewImage(candidate.url);
+
   return {
     kind: candidate.kind,
     url: candidate.url,
@@ -211,6 +382,7 @@ export async function resolveLink(
     author: candidate.author,
     year: candidate.year,
     basis: candidate.basis,
+    ...(previewImage ? { previewImage } : {}),
     verifiedAt: nowIso(),
   };
 }
