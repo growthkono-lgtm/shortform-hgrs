@@ -899,67 +899,74 @@ export async function stepOnce(now = new Date()): Promise<StepResult> {
             slug: post.slug,
           });
 
-        let result = check(post.body ?? "");
-
         /**
-         * **적합성 2차 판정 — 발행 직전 마지막 관문.** (2026-08-22)
+         * **검사식 + 적합성 2차 판정.** (2026-08-22)
          *
          * 사장님: *"이중으로 기획수집단계에서 한번 제작배포단계에서 한번해서
          * 더블체크하고 배포해."*
          *
-         * 1차는 조사·기획 프롬프트가 본다. 그건 지시일 뿐 지켜졌는지는 아무도
-         * 안 셌다. 여기서 **완성 원고에 실제로 인용된 자료**를 6축에 다시 댄다.
-         * 개수·연도·해상도는 검사식이 세고, **의미가 맞는지는 모델이 판정**한다.
+         * ⚠️ 앞 판은 이 판정을 polish **첫 진입에서만** 했다. 그런데 원고는
+         * 거의 항상 교정을 한 번 거치고, 교정 분기는 `check()` 만 다시 돌려
+         * 바로 승인해 버렸다 — **판정을 건너뛴 채로 발행되고 있었다.**
+         * 08-22 실측: 오트몬드 2건·비트 2건이 판정에서 떨어지는데도
+         * "1차 교정 후 규격 통과 · 자동 승인" 으로 나갔다.
          *
-         * 기계 검사를 통과한 경우에만 부른다 — 어차피 되돌아갈 원고에
-         * 모델 호출을 더 쓸 이유가 없다.
+         * 그래서 두 자리 모두 이 함수를 쓴다. 기계 검사를 통과한 경우에만
+         * 모델을 부른다 — 어차피 되돌아갈 원고에 돈을 더 쓸 이유가 없다.
          */
-        if (result.ok) {
-          const judged = await judgeSourceFit({
-            fit,
-            sources,
-            citedIndexes: citedSourceIndexes(post.body ?? ""),
-          });
-          const misfit = fitFindings(judged);
-
-          /**
-           * **여러 건이 엉뚱하면 검사로는 못 고친다 — 다시 찾아야 한다.** (2026-08-22)
-           *
-           * 사장님: *"소스를 못 찾았으면 찾으면 되는 거 아니었어?"*
-           *
-           * 판정기는 **버리는 일만** 한다. 사다리(패치·재집필)는 **같은 자료 풀**을
-           * 다시 쓴다. 9편처럼 풀 전체가 주제 밖이면 바꿔 낄 것이 없어서, 사다리만
-           * 태우고 죽거나 자료 없는 원고가 나온다. 한 건이면 빼고 가면 되지만
-           * 두 건 이상이면 **수집이 잘못된 것**이므로 조사부터 되감는다.
-           *
-           * 되감을 때 이 문구가 `last_error` 로 남고, 조사 프롬프트의 `retryNote`
-           * 로 그대로 들어간다 — 무엇이 왜 어긋났는지 모르고 다시 찾으면 같은
-           * 자료가 또 올라온다. `attempts` 는 안 지운다. 세 바퀴면 `fail()` 이 끊는다.
-           */
-          if (misfit.length >= 2) {
-            return rewind(
-              "research",
-              [
-                "자료 적합성 2차 판정에서 여러 건이 주제와 어긋났습니다.",
-                "같은 자료 풀로는 못 고칩니다 — 검색어를 바꿔 다시 찾으십시오.",
-                "",
-                ...misfit,
-              ].join("\n"),
-            );
+        const checkWithFit = async (candidate: string) => {
+          let r = check(candidate);
+          let misfit: string[] = [];
+          if (r.ok) {
+            const judged = await judgeSourceFit({
+              fit,
+              sources,
+              citedIndexes: citedSourceIndexes(candidate),
+            });
+            misfit = fitFindings(judged);
+            if (misfit.length) {
+              r = {
+                ...r,
+                ok: false,
+                failures: [...r.failures, ...misfit],
+                findings: [
+                  ...r.findings,
+                  ...misfit.map((m) => ({ level: "fail" as const, message: m })),
+                ],
+              };
+            }
           }
+          return { result: r, misfit };
+        };
 
-          if (misfit.length) {
-            result = {
-              ...result,
-              ok: false,
-              failures: [...result.failures, ...misfit],
-              findings: [
-                ...result.findings,
-                ...misfit.map((m) => ({ level: "fail" as const, message: m })),
-              ],
-            };
-          }
-        }
+        /**
+         * **여러 건이 엉뚱하면 검사로는 못 고친다 — 다시 찾아야 한다.**
+         *
+         * 사장님: *"소스를 못 찾았으면 찾으면 되는 거 아니었어?"*
+         *
+         * 판정기는 **버리는 일만** 한다. 사다리(패치·재집필)는 **같은 자료 풀**을
+         * 다시 쓴다. 9편처럼 풀 전체가 주제 밖이면 바꿔 낄 것이 없어서, 사다리만
+         * 태우고 죽거나 자료 없는 원고가 나온다. 한 건이면 빼고 가면 되지만
+         * 두 건 이상이면 **수집이 잘못된 것**이므로 조사부터 되감는다.
+         *
+         * 사유가 `last_error` 로 남아 조사 프롬프트의 `retryNote` 에 붙는다 —
+         * 뭐가 왜 어긋났는지 모르고 다시 찾으면 같은 자료가 또 올라온다.
+         * `attempts` 는 안 지운다. 세 바퀴면 `fail()` 이 끊는다.
+         */
+        const rewindForMisfit = (misfit: string[]) =>
+          rewind(
+            "research",
+            [
+              "자료 적합성 2차 판정에서 여러 건이 주제와 어긋났습니다.",
+              "같은 자료 풀로는 못 고칩니다 — 검색어를 바꿔 다시 찾으십시오.",
+              "",
+              ...misfit,
+            ].join("\n"),
+          );
+
+        const first = await checkWithFit(post.body ?? "");
+        let result = first.result;
+        if (first.misfit.length >= 2) return rewindForMisfit(first.misfit);
 
         // ── 통과 → 승인. 이 한 줄이 사장님의 "발행하기" 버튼을 대신한다
         if (result.ok) {
@@ -1006,7 +1013,8 @@ export async function stepOnce(now = new Date()): Promise<StepResult> {
             revised.replace(/^📖[^\n]*\n+/, "").trim() +
             "\n";
 
-          result = check(body);
+          const after = await checkWithFit(body);
+          result = after.result;
 
           await supabase
             .from("blog_post")
@@ -1021,6 +1029,9 @@ export async function stepOnce(now = new Date()): Promise<StepResult> {
               updated_at: now.toISOString(),
             })
             .eq("id", post.id);
+
+          // 자료가 여러 건 어긋났으면 문장을 고쳐 봐야 소용없다. 조사부터 다시
+          if (after.misfit.length >= 2) return rewindForMisfit(after.misfit);
 
           return advance(
             result.ok ? "done" : "polish",
