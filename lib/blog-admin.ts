@@ -625,7 +625,14 @@ export async function scheduleBoard(weeks = 4): Promise<BoardRow[]> {
   // 앞선 판은 앞으로의 슬롯만 보여 줬는데, 그러면 1편을 발행하고도 표가
   // 2번부터 시작해서 "1번은 어디 갔나" 가 된다. 지나온 회차도 같이 세운다.
   const settled = insights
-    .filter((p) => p.status !== "planned")
+    /**
+     * `archived` 는 편성표에 세우지 않는다. (2026-08-22)
+     *
+     * 내린 원고·재생성으로 대체된 판본이 계속 **"검수 대기"** 로 남아서,
+     * 08-22 에 죽은 초안 3건이 표에 앉아 있었다. 그중 하나는 다음 날짜에
+     * 겹쳐 보여서 "내일 두 편 나가나" 로 읽혔다. 보관은 하되 표에선 뺀다.
+     */
+    .filter((p) => p.status !== "planned" && p.status !== "archived")
     .sort((a, b) => {
       const an = a.seq ?? Number.MAX_SAFE_INTEGER;
       const bn = b.seq ?? Number.MAX_SAFE_INTEGER;
