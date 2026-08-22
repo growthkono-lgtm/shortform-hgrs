@@ -105,6 +105,8 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
       acc.clicks += r.funnel.clicks;
       acc.views += r.funnel.views;
       acc.inquiries += r.funnel.inquiries;
+      acc.assists += r.funnel.assists;
+      acc.lastTouch += r.funnel.lastTouch;
       if (r.funnel.position !== null) acc.ranked.push(r.funnel.position);
       return acc;
     },
@@ -114,6 +116,8 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
       clicks: 0,
       views: 0,
       inquiries: 0,
+      assists: 0,
+      lastTouch: 0,
       ranked: [] as number[],
     },
   );
@@ -252,7 +256,9 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
             채웁니다 — 값이 없는 것과 0 은 다르므로 비워 둡니다.
           </p>
         ) : (
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          // 08-22 에 전환이 셋으로 갈리며 카드가 4 → 6 개가 됐다.
+          // 4열에 6개를 두면 둘째 줄이 반만 차서 표가 어색해진다
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {[
               {
                 label: "노출",
@@ -277,12 +283,29 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
                   : null,
               },
               {
-                label: "전환",
-                sub: "그 글로 들어와 신청",
+                label: "데려옴",
+                sub: "그 글로 처음 들어와 신청 (first)",
                 value: `${funnel.inquiries}건`,
                 rate: funnel.views
                   ? `전환율 ${((funnel.inquiries / funnel.views) * 100).toFixed(1)}%`
                   : null,
+              },
+              /**
+               * 거듦·마지막을 **전환과 따로** 세운다. (2026-08-22)
+               * 합치면 한 건이 두 번 세어져 전환 수가 부풀려진다.
+               * 전환율의 분자는 first 만 쓴다 — 그래야 합이 100%를 안 넘는다.
+               */
+              {
+                label: "거듦",
+                sub: "첫 착지는 아니지만 읽고 신청 (assist)",
+                value: `${funnel.assists}건`,
+                rate: null,
+              },
+              {
+                label: "마지막",
+                sub: "신청 직전 마지막 진입 (last)",
+                value: `${funnel.lastTouch}건`,
+                rate: null,
               },
             ].map((s) => (
               <div
@@ -361,8 +384,23 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
                 <th className="px-3 py-2.5 text-right font-medium">
                   유입 <span className="font-normal text-muted/60">7일</span>
                 </th>
+                {/**
+                 * 전환을 **세 갈래로** 나눈다. (2026-08-22 사장님: *"first last"*)
+                 *
+                 *   데려옴  이 글로 처음 들어와 신청 (first touch)
+                 *   거듦    첫 착지는 아니지만 이 글도 읽고 신청 (assist)
+                 *   마지막  신청 직전 마지막 진입이 이 글 (last touch)
+                 *
+                 * ⚠️ 셋을 더하지 않는다. 한 건이 데려옴이면서 마지막일 수 있다.
+                 */}
                 <th className="px-3 py-2.5 text-right font-medium">
-                  전환 <span className="font-normal text-muted/60">7일</span>
+                  데려옴 <span className="font-normal text-muted/60">first</span>
+                </th>
+                <th className="px-3 py-2.5 text-right font-medium">
+                  거듦 <span className="font-normal text-muted/60">assist</span>
+                </th>
+                <th className="px-3 py-2.5 text-right font-medium">
+                  마지막 <span className="font-normal text-muted/60">last</span>
                 </th>
                 <th className="px-3 py-2.5 font-medium">타겟</th>
                 <th className="px-3 py-2.5 font-medium">세부타겟</th>
@@ -593,6 +631,44 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
                             </span>
                           )}
                         </>
+                      )}
+                    </td>
+                    {/**
+                     * 거듦(assist) — 첫 착지는 아니지만 이 글도 읽고 신청했다.
+                     * 실무에서 제일 흔한 모양인데 08-22 전까지 0 으로 세고 있었다.
+                     */}
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      {row.funnel === null ? (
+                        <span className="text-muted/40">—</span>
+                      ) : (
+                        <span
+                          className={
+                            row.funnel.assists
+                              ? "font-bold text-sky-700"
+                              : "text-muted/50"
+                          }
+                        >
+                          {row.funnel.assists}건
+                        </span>
+                      )}
+                    </td>
+                    {/**
+                     * 마지막(last touch) — 신청 직전 마지막 진입이 이 글이었다.
+                     * "무엇이 알게 했나" 와 "무엇이 결심시켰나" 는 다른 질문이다.
+                     */}
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      {row.funnel === null ? (
+                        <span className="text-muted/40">—</span>
+                      ) : (
+                        <span
+                          className={
+                            row.funnel.lastTouch
+                              ? "font-bold text-violet-700"
+                              : "text-muted/50"
+                          }
+                        >
+                          {row.funnel.lastTouch}건
+                        </span>
                       )}
                     </td>
                     {/**

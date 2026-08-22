@@ -1,5 +1,6 @@
 import "server-only";
 
+import { blogSlugOf } from "@/lib/attribution";
 import { kstAddDays, kstDate, kstParts } from "@/lib/blog-schedule";
 import { pagePerformance } from "@/lib/search-console";
 import { createAdminClient } from "@/lib/supabase/server";
@@ -194,7 +195,12 @@ export type WeekFunnel = {
   clicks: number;
   position: number | null;
   views: number;
+  /** first touch — 이 글로 **처음** 들어와 신청까지 간 건수 */
   inquiries: number;
+  /** assist — 첫 착지는 아니지만 이 글도 읽고 신청한 건수 (2026-08-22) */
+  assists: number;
+  /** last touch — 신청 직전 **마지막** 진입이 이 글이었던 건수 (2026-08-22) */
+  lastTouch: number;
 };
 
 export type WeeklyRunResult = { rows: number; note: string };
@@ -278,24 +284,46 @@ export async function recordWeekly(
     }
 
     /**
-     * 전환 — 그 주에 접수됐고, **그 글로 처음 들어온** 신청.
+     * 전환을 **세 갈래로** 센다. (2026-08-22)
      *
-     * 어시스트(다른 곳으로 들어왔지만 그 글도 읽은 경우)는 여기 세지 않는다.
-     * 한 건이 여러 글에 중복으로 잡히면 전환율 합이 100% 를 넘는다.
-     * 어시스트는 신청 상세에서 따로 보여 준다.
+     *   first    그 글로 **처음** 들어와 신청까지 갔다 → 이 글이 알게 했다
+     *   assist   첫 착지는 아니지만 그 글도 읽고 신청했다 → 이 글이 거들었다
+     *   last     신청 직전 **마지막** 진입이 그 글이었다 → 이 글이 결심시켰다
      *
-     * 마이그레이션 적용 전에는 이 컬럼이 없어 에러가 난다 — 그때는 0 이다.
+     * 앞 판은 first 만 셌다. 그래서 "블로그를 읽고 랜딩으로 넘어와 신청"
+     * 이라는 **제일 흔한 모양이 장부에서 0 이었다.**
+     *
+     * ⚠️ **세 값을 더하지 않는다.** 한 건이 first 이면서 last 일 수 있어
+     *    합하면 전환 수가 부풀려진다. 화면에서도 열을 따로 세운다.
+     *    first 만 전환율의 분자로 쓴다 — 그래야 합이 100%를 넘지 않는다.
+     *
+     * 마이그레이션 적용 전에는 컬럼이 없어 전부 0 이 된다.
      */
     const converted = new Map<string, number>();
+    const assisted = new Map<string, number>();
+    const lastTouched = new Map<string, number>();
+
     const { data: leads } = await supabase
       .from("inquiries")
-      .select("entry_post_id")
-      .not("entry_post_id", "is", null)
+      .select("entry_post_id, assist_post_ids, last_path")
+      .or("entry_post_id.not.is.null,assist_post_ids.not.is.null,last_path.not.is.null")
       .gte("created_at", from.toISOString())
       .lte("created_at", to.toISOString());
+
+    /* 라스트 터치는 경로(`/blog/슬러그`)로 오므로 이 주의 글에서 되찾는다 */
+    const idBySlug = new Map(live.map((p) => [p.slug, p.id]));
+
     for (const l of leads ?? []) {
-      const id = l.entry_post_id as string | null;
-      if (id) converted.set(id, (converted.get(id) ?? 0) + 1);
+      const entry = l.entry_post_id as string | null;
+      if (entry) converted.set(entry, (converted.get(entry) ?? 0) + 1);
+
+      /* 어시스트는 배열이다. 같은 건에서 한 글이 두 번 세어지지 않게 묶는다 */
+      const seen = new Set((l.assist_post_ids as string[] | null) ?? []);
+      seen.delete(entry ?? "");
+      for (const id of seen) assisted.set(id, (assisted.get(id) ?? 0) + 1);
+
+      const lastId = idBySlug.get(blogSlugOf(l.last_path as string | null) ?? "");
+      if (lastId) lastTouched.set(lastId, (lastTouched.get(lastId) ?? 0) + 1);
     }
 
     const payload = live
@@ -309,6 +337,8 @@ export async function recordWeekly(
           position: g?.position ?? null,
           views: views.get(p.slug) ?? 0,
           inquiries: converted.get(p.id) ?? 0,
+          assists: assisted.get(p.id) ?? 0,
+          last_touch: lastTouched.get(p.id) ?? 0,
           captured_at: now.toISOString(),
         };
         /**
@@ -318,7 +348,13 @@ export async function recordWeekly(
          */
         const fresh =
           now.getTime() - new Date(p.published_at).getTime() < 90 * 86_400_000;
-        const any = row.impressions || row.clicks || row.views || row.inquiries;
+        const any =
+          row.impressions ||
+          row.clicks ||
+          row.views ||
+          row.inquiries ||
+          row.assists ||
+          row.last_touch;
         return fresh || any ? row : null;
       })
       .filter((r): r is NonNullable<typeof r> => r !== null);
@@ -343,7 +379,9 @@ export async function weeklyByPost(weeks = 8): Promise<Map<string, WeekFunnel[]>
   const supabase = createAdminClient();
   const { data } = await supabase
     .from("blog_post_week")
-    .select("post_id, week_start, impressions, clicks, position, views, inquiries")
+    .select(
+      "post_id, week_start, impressions, clicks, position, views, inquiries, assists, last_touch",
+    )
     .order("week_start", { ascending: false })
     .limit(weeks * 400);
 
@@ -356,6 +394,8 @@ export async function weeklyByPost(weeks = 8): Promise<Map<string, WeekFunnel[]>
     position: number | null;
     views: number;
     inquiries: number;
+    assists: number | null;
+    last_touch: number | null;
   }[]) {
     const list = out.get(r.post_id) ?? [];
     list.push({
@@ -365,6 +405,8 @@ export async function weeklyByPost(weeks = 8): Promise<Map<string, WeekFunnel[]>
       position: r.position === null ? null : Number(r.position),
       views: r.views,
       inquiries: r.inquiries,
+      assists: r.assists ?? 0,
+      lastTouch: r.last_touch ?? 0,
     });
     out.set(r.post_id, list);
   }

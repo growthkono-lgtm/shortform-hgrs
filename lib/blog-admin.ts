@@ -410,7 +410,12 @@ export type BoardRow = {
    * 못 답한다. 이건 이번 주(월~일, KST) 구간 값이고 매일 다시 계산된다.
    *
    * `views` 는 우리 실측(blog_view)이라 검색 밖에서 들어온 사람까지 잡힌다.
-   * `inquiries` 는 **이 글로 처음 들어와** 신청까지 간 건수다.
+   *
+   * 전환은 **세 갈래**다. (2026-08-22)
+   *   inquiries  first  — 이 글로 처음 들어와 신청까지 갔다
+   *   assists    assist — 첫 착지는 아니지만 이 글도 읽고 신청했다
+   *   lastTouch  last   — 신청 직전 마지막 진입이 이 글이었다
+   * ⚠️ 셋을 더하지 않는다. 한 건이 first 이면서 last 일 수 있다.
    */
   funnel: {
     weekStart: string | null;
@@ -418,6 +423,8 @@ export type BoardRow = {
     clicks: number;
     views: number;
     inquiries: number;
+    assists: number;
+    lastTouch: number;
     position: number | null;
   } | null;
   /** 발행됐다면 실제 라이브 주소. 어드민 상세가 아니라 손님이 보는 그 화면 */
@@ -542,6 +549,8 @@ export async function scheduleBoard(weeks = 4): Promise<BoardRow[]> {
           clicks: hit.clicks,
           views: hit.views,
           inquiries: hit.inquiries,
+          assists: hit.assists,
+          lastTouch: hit.lastTouch,
           position: hit.position,
         }
       : null;

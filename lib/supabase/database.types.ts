@@ -528,30 +528,36 @@ export type Database = {
       }
       blog_post_week: {
         Row: {
+          assists: number
           captured_at: string
           clicks: number
           impressions: number
           inquiries: number
+          last_touch: number
           position: number | null
           post_id: string
           views: number
           week_start: string
         }
         Insert: {
+          assists?: number
           captured_at?: string
           clicks?: number
           impressions?: number
           inquiries?: number
+          last_touch?: number
           position?: number | null
           post_id: string
           views?: number
           week_start: string
         }
         Update: {
+          assists?: number
           captured_at?: string
           clicks?: number
           impressions?: number
           inquiries?: number
+          last_touch?: number
           position?: number | null
           post_id?: string
           views?: number
