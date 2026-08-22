@@ -37,6 +37,46 @@ export const FIRST_TOUCH_COOKIE = "hg_ft";
  */
 export const LAST_TOUCH_COOKIE = "hg_lt";
 
+/**
+ * **수집 제외 쿠키.** (2026-08-22)
+ *
+ * 사장님: *"내 ip는 모든 수집에서 제외해야겠지."*
+ *
+ * IP 가 아니라 쿠키로 막는 이유 — IP 는 집·사무실·LTE 마다 바뀌고, 공유기
+ * 뒤에서는 남과 겹친다. 통째로 빼면 진짜 손님까지 사라진다.
+ * `hgrs.io/blog?notrack=1` 을 한 번 열면 그 브라우저만 정확히 빠진다.
+ * (고정 IP 를 빼고 싶으면 `EXCLUDE_IPS` 환경변수를 같이 쓴다)
+ */
+export const NO_TRACK_COOKIE = "hg_no";
+
+/** 주소창에 이걸 붙이면 그 브라우저가 수집에서 빠진다 */
+export const NO_TRACK_PARAM = "notrack";
+
+/**
+ * 수집에서 뺄 고정 IP 목록. 쉼표로 구분한다.
+ * 비어 있으면 아무도 빼지 않는다 — 기본값으로 남을 빼는 일은 없어야 한다.
+ */
+const EXCLUDED_IPS = (process.env.EXCLUDE_IPS ?? "")
+  .split(",")
+  .map((v) => v.trim())
+  .filter(Boolean);
+
+/**
+ * 프록시를 거쳐 오므로 `x-forwarded-for` 의 **맨 앞**이 진짜 클라이언트다.
+ * 뒤쪽은 중간 프록시라 그걸로 판정하면 전부 걸리거나 전부 통과한다.
+ */
+export function clientIp(headers: Headers): string | null {
+  const fwd = headers.get("x-forwarded-for");
+  if (fwd) return fwd.split(",")[0]?.trim() || null;
+  return headers.get("x-real-ip");
+}
+
+export function isExcludedIp(headers: Headers): boolean {
+  if (!EXCLUDED_IPS.length) return false;
+  const ip = clientIp(headers);
+  return Boolean(ip && EXCLUDED_IPS.includes(ip));
+}
+
 /** 400일. 브라우저가 받아 주는 상한선 근처다 */
 export const TOUCH_MAX_AGE = 400 * 24 * 60 * 60;
 

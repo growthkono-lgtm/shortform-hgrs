@@ -4,12 +4,15 @@ import { NextResponse, type NextRequest } from "next/server";
 import {
   FIRST_TOUCH_COOKIE,
   LAST_TOUCH_COOKIE,
+  NO_TRACK_COOKIE,
+  NO_TRACK_PARAM,
   TOUCH_BOT,
   TOUCH_MAX_AGE,
   VISITOR_COOKIE,
   decodeLastTouch,
   encodeLastTouch,
   encodeTouch,
+  isExcludedIp,
   isExternalEntry,
   readTouch,
 } from "@/lib/attribution";
@@ -119,11 +122,37 @@ function markFirstTouch(request: NextRequest, response: NextResponse) {
   // 우리 내부 화면은 유입이 아니다. 어드민·작업자·인증 콜백은 세지 않는다
   if (/^\/(admin|work|auth|api)(\/|$)/.test(pathname)) return;
 
-  const secure = request.nextUrl.protocol === "https:";
+  const secureFlag = request.nextUrl.protocol === "https:";
+
+  /**
+   * **수집 제외 스위치.** (2026-08-22 사장님: *"내 ip는 모든 수집에서 제외"*)
+   *
+   * `?notrack=1` 을 한 번 열면 쿠키가 심기고 그 브라우저는 이후 전부 빠진다.
+   * `?notrack=0` 으로 되돌린다. IP 가 아니라 쿠키인 이유는
+   * `lib/attribution.ts` 머리말에 적었다 — IP 는 옮겨 다니고 남과 겹친다.
+   */
+  const flag = request.nextUrl.searchParams.get(NO_TRACK_PARAM);
+  if (flag === "1") {
+    response.cookies.set(NO_TRACK_COOKIE, "1", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: secureFlag,
+      path: "/",
+      maxAge: TOUCH_MAX_AGE,
+    });
+    return;
+  }
+  if (flag === "0") {
+    response.cookies.delete(NO_TRACK_COOKIE);
+    return;
+  }
+  if (request.cookies.get(NO_TRACK_COOKIE)?.value === "1") return;
+  if (isExcludedIp(request.headers)) return;
+
   const base = {
     httpOnly: true,
     sameSite: "lax" as const,
-    secure,
+    secure: secureFlag,
     path: "/",
     maxAge: TOUCH_MAX_AGE,
   };

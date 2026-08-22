@@ -24,6 +24,18 @@ import { searchSummary } from "@/lib/search-console";
  */
 export const metadata = { title: "블로그" };
 
+/**
+ * 체류 초를 사람 말로. (2026-08-22)
+ * 60초 미만은 초로, 그 위는 분·초로 적는다 — "185초" 는 읽고 나서
+ * 다시 계산해야 하지만 "3분 5초" 는 그대로 감이 온다.
+ */
+function dwellText(sec: number): string {
+  if (sec < 60) return `${sec}초`;
+  const m = Math.floor(sec / 60);
+  const r = sec % 60;
+  return r ? `${m}분 ${r}초` : `${m}분`;
+}
+
 const nf = new Intl.NumberFormat("ko-KR");
 
 const compTone: Record<string, string> = {
@@ -104,6 +116,8 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
       acc.impressions += r.funnel.impressions;
       acc.clicks += r.funnel.clicks;
       acc.views += r.funnel.views;
+      acc.visitors += r.funnel.visitors;
+      if (r.funnel.dwellSec !== null) acc.dwells.push(r.funnel.dwellSec);
       acc.inquiries += r.funnel.inquiries;
       acc.assists += r.funnel.assists;
       acc.lastTouch += r.funnel.lastTouch;
@@ -115,12 +129,28 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
       impressions: 0,
       clicks: 0,
       views: 0,
+      visitors: 0,
+      dwells: [] as number[],
       inquiries: 0,
       assists: 0,
       lastTouch: 0,
       ranked: [] as number[],
     },
   );
+
+  /**
+   * 전체 체류 중앙값 — 글별 중앙값들의 중앙값이다. 정확히는 표본 전체의
+   * 중앙값과 다르지만, 글마다 표본이 한두 개인 지금은 이게 덜 흔들린다.
+   * 표본이 쌓이면 원자료에서 다시 재는 쪽으로 옮긴다.
+   */
+  const medianDwell = (() => {
+    if (!funnel.dwells.length) return null;
+    const sorted = [...funnel.dwells].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    return sorted.length % 2
+      ? sorted[mid]
+      : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+  })();
 
   const qs = (over: Record<string, string | number | undefined>) => {
     const p = new URLSearchParams();
@@ -280,7 +310,19 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
                 value: nf.format(funnel.views),
                 rate: funnel.clicks
                   ? `검색 밖 ${nf.format(Math.max(0, funnel.views - funnel.clicks))}`
-                  : null,
+                  : `검색 밖 ${nf.format(funnel.views)}`,
+              },
+              {
+                label: "순방문자",
+                sub: "사람 수 (유입은 열린 횟수)",
+                value: `${nf.format(funnel.visitors)}명`,
+                rate: null,
+              },
+              {
+                label: "체류",
+                sub: "중앙값 · 탭이 보이는 동안만",
+                value: medianDwell === null ? "—" : dwellText(medianDwell),
+                rate: null,
               },
               {
                 label: "데려옴",
@@ -383,6 +425,14 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
                     신청까지 간 건수를 같은 줄에서 본다. 7일 구간이라 매주 바뀐다 */}
                 <th className="px-3 py-2.5 text-right font-medium">
                   유입 <span className="font-normal text-muted/60">7일</span>
+                </th>
+                {/* 사장님 지시(08-22) — "노출-클릭-순방문자수-체류시간".
+                    유입은 열린 횟수, 순방문자는 사람 수다. 다른 값이라 나란히 둔다 */}
+                <th className="px-3 py-2.5 text-right font-medium">
+                  순방문자 <span className="font-normal text-muted/60">명</span>
+                </th>
+                <th className="px-3 py-2.5 text-right font-medium">
+                  체류 <span className="font-normal text-muted/60">중앙값</span>
                 </th>
                 {/**
                  * 전환을 **세 갈래로** 나눈다. (2026-08-22 사장님: *"first last"*)
@@ -600,6 +650,45 @@ export default async function AdminBlogPage(props: PageProps<"/admin/blog">) {
                             검색 클릭 {nf.format(row.funnel.clicks)}
                           </span>
                         </>
+                      )}
+                    </td>
+                    {/**
+                     * 순방문자 — **사람 수**. 유입(열린 횟수)과 다른 값이다.
+                     * 한 사람이 세 번 열면 유입 3 · 순방문자 1 이다.
+                     */}
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      {row.funnel === null ? (
+                        <span className="text-muted/40">—</span>
+                      ) : (
+                        <span
+                          className={
+                            row.funnel.visitors ? "font-medium" : "text-muted/50"
+                          }
+                        >
+                          {nf.format(row.funnel.visitors)}
+                        </span>
+                      )}
+                    </td>
+                    {/**
+                     * 체류 — **중앙값**. 평균이 아니다. 탭을 켜 둔 채 잊은
+                     * 한 명이 평균을 통째로 망가뜨리고, 표본이 한 자릿수인
+                     * 지금은 특히 그렇다. 안 쟀으면 0초가 아니라 "—" 다.
+                     */}
+                    <td className="px-3 py-3 text-right tabular-nums">
+                      {row.funnel === null || row.funnel.dwellSec === null ? (
+                        <span className="text-muted/40">—</span>
+                      ) : (
+                        <span
+                          className={
+                            row.funnel.dwellSec >= 60
+                              ? "font-bold text-emerald-700"
+                              : row.funnel.dwellSec >= 30
+                                ? "text-amber-700"
+                                : "text-muted"
+                          }
+                        >
+                          {dwellText(row.funnel.dwellSec)}
+                        </span>
                       )}
                     </td>
                     {/**

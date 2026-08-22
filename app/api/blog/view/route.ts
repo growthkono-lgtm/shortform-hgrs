@@ -3,9 +3,11 @@ import { NextResponse } from "next/server";
 
 import {
   FIRST_TOUCH_COOKIE,
+  NO_TRACK_COOKIE,
   VISITOR_COOKIE,
   blogSlugOf,
   decodeTouch,
+  isExcludedIp,
 } from "@/lib/attribution";
 import { kstParts } from "@/lib/blog-schedule";
 import { createAdminClient } from "@/lib/supabase/server";
@@ -36,8 +38,15 @@ export async function POST(request: Request) {
   if (BOT.test(ua)) return NextResponse.json({ counted: false });
 
   let slug = "";
+  /** 이탈 시점에 오는 체류시간(ms). 없으면 첫 진입 신호다 */
+  let dwellMs = 0;
   try {
-    slug = String(((await request.json()) as { slug?: string }).slug ?? "");
+    const body = (await request.json()) as { slug?: string; dwellMs?: number };
+    slug = String(body.slug ?? "");
+    dwellMs =
+      Number.isFinite(body.dwellMs) && (body.dwellMs as number) > 0
+        ? Math.min(Math.round(body.dwellMs as number), 30 * 60 * 1000)
+        : 0;
   } catch {
     return NextResponse.json({ counted: false }, { status: 400 });
   }
@@ -46,6 +55,43 @@ export async function POST(request: Request) {
   // 아무 문자열이나 받으면 표가 남의 쓰레기로 찬다
   if (!/^[a-z0-9-]{3,120}$/.test(slug)) {
     return NextResponse.json({ counted: false }, { status: 400 });
+  }
+
+  const jarEarly = await cookies();
+
+  /**
+   * **수집 제외.** (2026-08-22 사장님: *"내 ip는 모든 수집에서 제외해야겠지"*)
+   *
+   * 두 갈래로 막는다.
+   *
+   *   1. `hg_no` 쿠키 — `/blog?notrack=1` 을 한 번 열면 그 브라우저는 영구 제외.
+   *      IP 는 이동하면 바뀌고(집·사무실·LTE) 공유기 뒤에서는 남과 겹친다.
+   *      쿠키는 그 브라우저 하나만 정확히 집는다.
+   *   2. `EXCLUDE_IPS` 환경변수 — 고정 IP(사무실)를 통째로 뺄 때.
+   *
+   * 조회수·방문자·체류 **전부** 여기서 끊는다. 하나만 막으면 표가 어긋난다.
+   */
+  if (jarEarly.get(NO_TRACK_COOKIE)?.value === "1") {
+    return NextResponse.json({ counted: false, reason: "opted-out" });
+  }
+  if (isExcludedIp(request.headers)) {
+    return NextResponse.json({ counted: false, reason: "excluded-ip" });
+  }
+
+  /**
+   * 체류시간만 오는 요청이면 조회수를 다시 올리지 않는다.
+   * 한 사람이 한 번 읽은 것을 두 번 세면 그게 곧 뻥튀기다.
+   */
+  if (dwellMs > 0) {
+    const visitorId = jarEarly.get(VISITOR_COOKIE)?.value;
+    if (visitorId) {
+      await createAdminClient().rpc("blog_dwell_mark", {
+        p_visitor: visitorId,
+        p_slug: slug,
+        p_ms: dwellMs,
+      });
+    }
+    return NextResponse.json({ counted: false, dwell: true });
   }
 
   const { year, month, day } = kstParts(new Date());
@@ -65,7 +111,7 @@ export async function POST(request: Request) {
    * ⚠️ 실패해도 조회수는 이미 올라갔다. 여기서 던지면 멀쩡한 집계까지 500 이
    * 된다. 마이그레이션 적용 전에도 이 라우트는 그대로 돌아야 한다.
    */
-  const jar = await cookies();
+  const jar = jarEarly;
   const visitor = jar.get(VISITOR_COOKIE)?.value;
   if (visitor) {
     const touch = decodeTouch(jar.get(FIRST_TOUCH_COOKIE)?.value);

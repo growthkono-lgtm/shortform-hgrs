@@ -4,6 +4,7 @@ import {
   describeSelection,
 } from "@/lib/inquiry-plans";
 import Link from "next/link";
+import { SERVICE } from "@/lib/constants";
 import { createAdminClient } from "@/lib/supabase/server";
 import { ActionForm } from "@/components/admin/action-form";
 import {
@@ -45,6 +46,25 @@ const STATUS_LABEL: Record<string, string> = {
  *   읽고 옴      다른 데로 들어왔지만 그 글도 읽었다 (어시스트)
  *   기록 이전    08-19 전 접수. 블로그를 안 거친 게 **아니라** 안 재고 있었다
  */
+/**
+ * 착지 경로 한 줄. `/blog/…` 면 **눌러서 그 글로** 간다. (2026-08-22)
+ * 나머지 경로(랜딩·포트폴리오)는 링크로 걸어도 새로울 게 없어 글자만 적는다.
+ */
+function PathLink({ path }: { path: string }) {
+  const isBlog = path.startsWith("/blog/");
+  if (!isBlog) return <span className="text-muted">{path}</span>;
+  return (
+    <a
+      href={`${SERVICE.url}${path}`}
+      target="_blank"
+      rel="noreferrer"
+      className="font-bold text-accent-deep underline underline-offset-2"
+    >
+      {path}
+    </a>
+  );
+}
+
 function BlogEntry({ source }: { source?: LeadSource }) {
   const body = (() => {
     if (!source || !source.recorded) {
@@ -102,7 +122,10 @@ function BlogEntry({ source }: { source?: LeadSource }) {
             <dd className="min-w-0 font-medium break-all">
               {source.from}
               {source.firstPath && (
-                <span className="text-muted"> → {source.firstPath}</span>
+                <>
+                  <span className="text-muted"> → </span>
+                  <PathLink path={source.firstPath} />
+                </>
               )}
               {source.utm && (
                 <span className="text-muted">
@@ -114,20 +137,32 @@ function BlogEntry({ source }: { source?: LeadSource }) {
           </div>
 
           {/**
-           * 마지막 유입은 **첫 접점과 다를 때만** 적는다. (2026-08-21)
-           * 같은 값을 두 줄로 적으면 읽는 사람이 두 번 확인하게 된다.
+           * 마지막 유입(last touch). (2026-08-21 / 08-22 링크화)
+           *
+           * 사장님: *"어떤 블로그 컨텐츠 url 통해 first가 찍혔는지 알아야지.
+           * 최종 last도 보면 좋고."*
+           *
+           * 그래서 경로가 `/blog/…` 면 **눌러서 바로 열리게** 건다. 슬러그만
+           * 적혀 있으면 어느 글인지 알아보려고 또 찾아야 한다.
+           * 첫 접점과 같으면 "첫 접점과 같음" 한 줄로 끝낸다 — 같은 값을
+           * 두 번 적으면 읽는 사람이 두 번 확인하게 된다.
            */}
-          {!source.sameTouch && (
-            <div className="flex gap-3 text-xs">
-              <dt className="w-16 shrink-0 text-muted">마지막</dt>
-              <dd className="min-w-0 font-medium break-all">
-                {source.lastFrom}
-                {source.lastPath && (
-                  <span className="text-muted"> → {source.lastPath}</span>
-                )}
-              </dd>
-            </div>
-          )}
+          <div className="flex gap-3 text-xs">
+            <dt className="w-16 shrink-0 text-muted">마지막</dt>
+            <dd className="min-w-0 font-medium break-all">
+              {!source.lastPath ? (
+                <span className="text-muted">기록 없음 (08-21부터 수집)</span>
+              ) : source.sameTouch ? (
+                <span className="text-muted">첫 접점과 같음</span>
+              ) : (
+                <>
+                  {source.lastFrom}
+                  <span className="text-muted"> → </span>
+                  <PathLink path={source.lastPath} />
+                </>
+              )}
+            </dd>
+          </div>
 
           <div className="flex gap-3 text-xs">
             <dt className="w-16 shrink-0 text-muted">방문</dt>

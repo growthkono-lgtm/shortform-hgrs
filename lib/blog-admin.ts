@@ -422,6 +422,10 @@ export type BoardRow = {
     impressions: number;
     clicks: number;
     views: number;
+    /** 사람 수 — views(열린 횟수)와 다르다 (2026-08-22) */
+    visitors: number;
+    /** 체류 중앙값(초). 표본 없으면 null (2026-08-22) */
+    dwellSec: number | null;
     inquiries: number;
     assists: number;
     lastTouch: number;
@@ -548,6 +552,8 @@ export async function scheduleBoard(weeks = 4): Promise<BoardRow[]> {
           impressions: hit.impressions,
           clicks: hit.clicks,
           views: hit.views,
+          visitors: hit.visitors,
+          dwellSec: hit.dwellSec,
           inquiries: hit.inquiries,
           assists: hit.assists,
           lastTouch: hit.lastTouch,

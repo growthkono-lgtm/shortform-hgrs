@@ -195,6 +195,10 @@ export type WeekFunnel = {
   clicks: number;
   position: number | null;
   views: number;
+  /** 그 주 **사람 수**. views(열린 횟수)와 다른 값이다 (2026-08-22) */
+  visitors: number;
+  /** 그 주 체류시간 **중앙값**(초). 표본이 없으면 null (2026-08-22) */
+  dwellSec: number | null;
   /** first touch — 이 글로 **처음** 들어와 신청까지 간 건수 */
   inquiries: number;
   /** assist — 첫 착지는 아니지만 이 글도 읽고 신청한 건수 (2026-08-22) */
@@ -272,6 +276,41 @@ export async function recordWeekly(
       to,
     );
 
+    /**
+     * 순방문자수 · 체류시간 — 그 주에 이 글을 본 **사람**. (2026-08-22)
+     *
+     * `views` 는 열린 횟수라 한 사람이 세 번 열면 3 이다. 사장님이 보려는
+     * "몇 명이 읽었나" 는 그 값이 아니다.
+     *
+     * 체류는 **중앙값**을 쓴다. 평균은 탭을 켜 둔 채 잊은 한 명이 통째로
+     * 망가뜨린다 — 표본이 한 자릿수인 지금 특히 그렇다.
+     */
+    const { data: visitRows } = await supabase
+      .from("blog_visit")
+      .select("slug, dwell_ms")
+      .gte("first_seen", from.toISOString())
+      .lte("first_seen", to.toISOString());
+
+    const visitorCount = new Map<string, number>();
+    const dwells = new Map<string, number[]>();
+    for (const v of visitRows ?? []) {
+      visitorCount.set(v.slug, (visitorCount.get(v.slug) ?? 0) + 1);
+      if (typeof v.dwell_ms === "number" && v.dwell_ms > 0) {
+        const list = dwells.get(v.slug) ?? [];
+        list.push(v.dwell_ms);
+        dwells.set(v.slug, list);
+      }
+    }
+    const medianSec = (slug: string): number | null => {
+      const list = dwells.get(slug);
+      if (!list?.length) return null;
+      const sorted = [...list].sort((a, b) => a - b);
+      const mid = Math.floor(sorted.length / 2);
+      const ms =
+        sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+      return Math.round(ms / 1000);
+    };
+
     /* 조회수 — 우리 실측(blog_view). 검색 밖에서 들어온 사람이 여기 잡힌다 */
     const { data: viewRows } = await supabase
       .from("blog_view")
@@ -336,6 +375,8 @@ export async function recordWeekly(
           clicks: g?.clicks ?? 0,
           position: g?.position ?? null,
           views: views.get(p.slug) ?? 0,
+          visitors: visitorCount.get(p.slug) ?? 0,
+          dwell_sec: medianSec(p.slug),
           inquiries: converted.get(p.id) ?? 0,
           assists: assisted.get(p.id) ?? 0,
           last_touch: lastTouched.get(p.id) ?? 0,
@@ -352,6 +393,7 @@ export async function recordWeekly(
           row.impressions ||
           row.clicks ||
           row.views ||
+          row.visitors ||
           row.inquiries ||
           row.assists ||
           row.last_touch;
@@ -380,7 +422,7 @@ export async function weeklyByPost(weeks = 8): Promise<Map<string, WeekFunnel[]>
   const { data } = await supabase
     .from("blog_post_week")
     .select(
-      "post_id, week_start, impressions, clicks, position, views, inquiries, assists, last_touch",
+      "post_id, week_start, impressions, clicks, position, views, visitors, dwell_sec, inquiries, assists, last_touch",
     )
     .order("week_start", { ascending: false })
     .limit(weeks * 400);
@@ -393,6 +435,8 @@ export async function weeklyByPost(weeks = 8): Promise<Map<string, WeekFunnel[]>
     clicks: number;
     position: number | null;
     views: number;
+    visitors: number | null;
+    dwell_sec: number | null;
     inquiries: number;
     assists: number | null;
     last_touch: number | null;
@@ -404,6 +448,8 @@ export async function weeklyByPost(weeks = 8): Promise<Map<string, WeekFunnel[]>
       clicks: r.clicks,
       position: r.position === null ? null : Number(r.position),
       views: r.views,
+      visitors: r.visitors ?? 0,
+      dwellSec: r.dwell_sec ?? null,
       inquiries: r.inquiries,
       assists: r.assists ?? 0,
       lastTouch: r.last_touch ?? 0,

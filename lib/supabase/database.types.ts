@@ -531,36 +531,42 @@ export type Database = {
           assists: number
           captured_at: string
           clicks: number
+          dwell_sec: number | null
           impressions: number
           inquiries: number
           last_touch: number
           position: number | null
           post_id: string
           views: number
+          visitors: number
           week_start: string
         }
         Insert: {
           assists?: number
           captured_at?: string
           clicks?: number
+          dwell_sec?: number | null
           impressions?: number
           inquiries?: number
           last_touch?: number
           position?: number | null
           post_id: string
           views?: number
+          visitors?: number
           week_start: string
         }
         Update: {
           assists?: number
           captured_at?: string
           clicks?: number
+          dwell_sec?: number | null
           impressions?: number
           inquiries?: number
           last_touch?: number
           position?: number | null
           post_id?: string
           views?: number
+          visitors?: number
           week_start?: string
         }
         Relationships: [
@@ -722,18 +728,21 @@ export type Database = {
       }
       blog_visit: {
         Row: {
+          dwell_ms: number | null
           first_seen: string
           landing: boolean
           slug: string
           visitor_id: string
         }
         Insert: {
+          dwell_ms?: number | null
           first_seen?: string
           landing?: boolean
           slug: string
           visitor_id: string
         }
         Update: {
+          dwell_ms?: number | null
           first_seen?: string
           landing?: boolean
           slug?: string
@@ -1874,6 +1883,10 @@ export type Database = {
     }
     Functions: {
       blog_cron_hit: { Args: { path: string }; Returns: number }
+      blog_dwell_mark: {
+        Args: { p_ms: number; p_slug: string; p_visitor: string }
+        Returns: undefined
+      }
       blog_view_bump: {
         Args: { p_day: string; p_slug: string }
         Returns: undefined
