@@ -1,5 +1,8 @@
-import "server-only";
-
+/**
+ * `server-only` 를 넣지 않는다 — `scripts/` 의 CLI 검증이 이 모듈을 직접
+ * 부르기 때문이다. 같은 이유로 `blog-ai.ts` · `blog-runner.ts` 도 안 쓴다.
+ * 실제 보호는 이 모듈이 읽는 `OPENAI_API_KEY` 가 서버에만 있다는 데서 온다.
+ */
 import { respond } from "@/lib/blog-ai";
 import {
   FIT_AXES,
